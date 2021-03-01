@@ -1,0 +1,13 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# build files
+public/bundle.js*

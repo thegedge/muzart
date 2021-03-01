@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "useDefineForClassFields": true,
+
+    "jsx": "react",
+    "target": "es2017",
+    "lib": ["esnext", "DOM"],
+    // "module": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "exclude": ["build", "node_modules", "tmp"]
+}
