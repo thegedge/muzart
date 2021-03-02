@@ -1,9 +1,10 @@
 export interface Score {
-  title: string;
+  title?: string;
   parts: Part[];
 }
 
 export interface Part {
+  name?: string;
   measures: Measure[];
 }
 

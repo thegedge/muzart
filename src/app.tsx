@@ -1,90 +1,21 @@
 import * as React from "react";
+import { useEffect, useState } from "react";
 import "./app.css";
 import ScoreComponent from "./components/Score";
+import loadMusicXml from "./loaders/musicxml";
 import { Score } from "./notation";
 
 export default function App() {
-  const testScore: Score = {
-    title: "Sweet Child O' Mine",
-    parts: [
-      {
-        measures: [
-          {
-            chords: [
-              { fret: 12, string: 4 },
-              { fret: 15, string: 2 },
-              { fret: 14, string: 3 },
-              { fret: 12, string: 3 },
-              { fret: 15, string: 1 },
-              { fret: 14, string: 3 },
-              { fret: 14, string: 1 },
-              { fret: 14, string: 3 },
-            ],
-          },
-          {
-            chords: [
-              { fret: 12, string: 4 },
-              { fret: 15, string: 2 },
-              { fret: 14, string: 3 },
-              { fret: 12, string: 3 },
-              { fret: 15, string: 1 },
-              { fret: 14, string: 3 },
-              { fret: 14, string: 1 },
-              { fret: 14, string: 3 },
-            ],
-          },
-          {
-            chords: [
-              { fret: 14, string: 5 },
-              { fret: 15, string: 2 },
-              { fret: 14, string: 3 },
-              { fret: 12, string: 3 },
-              { fret: 15, string: 1 },
-              { fret: 14, string: 3 },
-              { fret: 14, string: 1 },
-              { fret: 14, string: 3 },
-            ],
-          },
-          {
-            chords: [
-              { fret: 14, string: 5 },
-              { fret: 15, string: 2 },
-              { fret: 14, string: 3 },
-              { fret: 12, string: 3 },
-              { fret: 15, string: 1 },
-              { fret: 14, string: 3 },
-              { fret: 14, string: 1 },
-              { fret: 14, string: 3 },
-            ],
-          },
-          {
-            chords: [
-              { fret: 12, string: 3 },
-              { fret: 15, string: 2 },
-              { fret: 14, string: 3 },
-              { fret: 12, string: 3 },
-              { fret: 15, string: 1 },
-              { fret: 14, string: 3 },
-              { fret: 14, string: 1 },
-              { fret: 14, string: 3 },
-            ],
-          },
-          {
-            chords: [
-              { fret: 12, string: 3 },
-              { fret: 15, string: 2 },
-              { fret: 14, string: 3 },
-              { fret: 12, string: 3 },
-              { fret: 15, string: 1 },
-              { fret: 14, string: 3 },
-              { fret: 14, string: 1 },
-              { fret: 14, string: 3 },
-            ],
-          },
-        ],
-      },
-    ],
-  };
+  const [score, setScore] = useState<Score>();
 
-  return <ScoreComponent score={testScore} />;
+  useEffect(() => {
+    fetch("example.xml").then((response) => {
+      response.text().then((value) => {
+        console.log(loadMusicXml(value));
+        setScore(loadMusicXml(value));
+      });
+    });
+  }, []);
+
+  return <ScoreComponent score={score} />;
 }
