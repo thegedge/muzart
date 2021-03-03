@@ -6,7 +6,15 @@ export default function Score(props: { score?: Score }) {
   return (
     <div className="bg-gray-400 p-24 min-h-screen">
       <div className="mx-auto bg-white p-24 border-black border">
-        {props.score && props.score.parts[0] && <MeasureRow measures={props.score.parts[2].measures} />}
+        {props.score && (
+          <>
+            {props.score.title && <h1 className="text-center text-4xl font-serif mb-4">{props.score.title}</h1>}
+            {props.score.composer && (
+              <h2 className="text-center text-large font-serif mb-16">{props.score.composer}</h2>
+            )}
+            {props.score.parts[0] && <MeasureRow measures={props.score.parts[2].measures} />}
+          </>
+        )}
       </div>
     </div>
   );

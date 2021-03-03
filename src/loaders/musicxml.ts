@@ -14,8 +14,10 @@ export default function loadMusicXml(source: string): Score {
   }
 
   const title = textQuery(document, score, "work/work-title");
+  const composer = textQuery(document, score, "identification/creator[@type='composer']");
   return {
     title,
+    composer,
     parts: parts(document, score),
   };
 }

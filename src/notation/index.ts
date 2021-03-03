@@ -1,5 +1,6 @@
 export interface Score {
   title?: string;
+  composer?: string;
   parts: Part[];
 }
 
