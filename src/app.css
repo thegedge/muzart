@@ -6,6 +6,9 @@
   html,
   body {
     @apply m-0 p-0;
+
+    /* Set an absolute size here to impact all the relative units used by tailwind */
+    font-size: 12pt; /* 1/6th of an inch */
   }
 
   * {

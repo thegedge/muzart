@@ -11,9 +11,9 @@ export default function Score(props: { score?: Score }) {
       <div className="mx-auto bg-white p-24 border-black border">
         {props.score && (
           <>
-            {props.score.title && <h1 className="text-center text-4xl font-serif mb-4">{props.score.title}</h1>}
+            {props.score.title && <h1 className="text-center text-6xl font-serif mb-4">{props.score.title}</h1>}
             {props.score.composer && (
-              <h2 className="text-center text-large font-serif mb-16">{props.score.composer}</h2>
+              <div className="text-right text-xl font-serif mb-24">Composed by {props.score.composer}</div>
             )}
             {props.score.parts[partIndex] && <MeasureRow measures={props.score.parts[partIndex].measures} />}
           </>
