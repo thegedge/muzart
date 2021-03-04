@@ -11,8 +11,11 @@ export default function App() {
   useEffect(() => {
     fetch("example2.xml").then((response) => {
       response.text().then((value) => {
-        console.log(loadMusicXml(value));
-        setScore(loadMusicXml(value));
+        try {
+          setScore(loadMusicXml(value));
+        } catch (e) {
+          setScore({ title: e.message, parts: [] });
+        }
       });
     });
   }, []);
