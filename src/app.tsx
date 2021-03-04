@@ -9,7 +9,7 @@ export default function App() {
   const [score, setScore] = useState<Score>();
 
   useEffect(() => {
-    fetch("example.xml").then((response) => {
+    fetch("example2.xml").then((response) => {
       response.text().then((value) => {
         console.log(loadMusicXml(value));
         setScore(loadMusicXml(value));
