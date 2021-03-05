@@ -2286,19 +2286,19 @@ raw-body@2.4.0:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
-react-dom@^17.0.1:
-  version "17.0.1"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-17.0.1.tgz#1de2560474ec9f0e334285662ede52dbc5426fc6"
-  integrity sha512-6eV150oJZ9U2t9svnsspTMrWNyHc6chX0KzDeAOXftRa8bNeOKTTfCJ7KorIwenkHd2xqVTBTCZd79yk/lx/Ug==
+react-dom@^0.0.0-experimental-ee4326357:
+  version "0.0.0-experimental-ee4326357"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-0.0.0-experimental-ee4326357.tgz#c2177c2012ace6ff8c85a62ee4e369f8e9c18d9d"
+  integrity sha512-a9B0FhnEioy7jSbJY0Rrd1cy7mVjpHW4W5OWW4ViSdMAL4XzQ4/eEmg5JfxNAheWbprfVloOWvSu7+yIF+lr8w==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
-    scheduler "^0.20.1"
+    scheduler "0.0.0-experimental-ee4326357"
 
-react@^17.0.1:
-  version "17.0.1"
-  resolved "https://registry.yarnpkg.com/react/-/react-17.0.1.tgz#6e0600416bd57574e3f86d92edba3d9008726127"
-  integrity sha512-lG9c9UuMHdcAexXtigOZLX8exLWkW0Ku29qPRU8uhF2R9BN96dLCt0psvzPLlHc5OWkgymP3qwTRgbnw5BKx3w==
+react@^0.0.0-experimental-ee4326357:
+  version "0.0.0-experimental-ee4326357"
+  resolved "https://registry.yarnpkg.com/react/-/react-0.0.0-experimental-ee4326357.tgz#0577231b8b3028743dd7cb4a56e0a9f0bd5d49a1"
+  integrity sha512-DX1N2UFXioXunrNi4JksZLPVlrgj37eW6rDWyJS3falQ85sXlxmRAA22pmzirmj+Ua6+xLrxYrUlu2tkOvaulg==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
@@ -2417,10 +2417,10 @@ safe-buffer@^5.1.0:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-scheduler@^0.20.1:
-  version "0.20.1"
-  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.20.1.tgz#da0b907e24026b01181ecbc75efdc7f27b5a000c"
-  integrity sha512-LKTe+2xNJBNxu/QhHvDR14wUXHRQbVY5ZOYpOGWRzhydZUqrLb2JBvLPY7cAqFmqrWuDED0Mjk7013SZiOz6Bw==
+scheduler@0.0.0-experimental-ee4326357:
+  version "0.0.0-experimental-ee4326357"
+  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.0.0-experimental-ee4326357.tgz#1fde953960a5aa989b4aabd963bc5eff36e94af2"
+  integrity sha512-T3vd8ZYavkHF9xmTd1CGfuc7calSTxmPOolVGmdwkZoe2gkcZvv/z1jnrZiljwgOtH8Dd/Ko8i+0bG1quTV96g==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
