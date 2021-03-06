@@ -11,3 +11,4 @@
 
 # build files
 public/bundle.js*
+public/*.hot*
