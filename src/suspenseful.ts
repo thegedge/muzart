@@ -5,15 +5,16 @@ export interface Suspenseful<T> {
 /** Wrap a promise so that it works with React Suspense */
 export default function suspenseful<T>(promise: Promise<T>): Suspenseful<T> {
   let response: T;
+  let error: Error;
   let status: "pending" | "success" | "error" = "pending";
   const suspender = promise.then(
-    (res) => {
+    (res: T) => {
       status = "success";
       response = res;
     },
-    (err) => {
+    (err: Error) => {
       status = "error";
-      response = err;
+      error = err;
     }
   );
 
@@ -22,7 +23,7 @@ export default function suspenseful<T>(promise: Promise<T>): Suspenseful<T> {
       case "pending":
         throw suspender;
       case "error":
-        throw response;
+        throw error;
       default:
         return response;
     }

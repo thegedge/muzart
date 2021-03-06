@@ -93,6 +93,7 @@ function tuning(document: Document, node: Node): Note[] | undefined {
     return staffLines.map((line) => ({
       step: textQuery(document, line, "tuning-step") as Step,
       octave: parseInt(textQuery(document, line, "tuning-octave")),
+      duration: 1,
     }));
   }
 }

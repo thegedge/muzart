@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "server": "ts-node-dev --watch --transpile-only --ignore-watch node_modules --rs --exit-child --respawn --files server.ts",
+    "server": "ts-node-dev --watch --transpile-only --ignore-watch node_modules --rs --exit-child --respawn --files src/server.ts",
     "build": "webpack",
     "build:watch": "webpack --watch"
   },

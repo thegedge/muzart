@@ -6,13 +6,13 @@ export default function MeasureRow(props: { measures: Measure[] }) {
   return (
     <div className="flex flex-row flex-wrap leading-tight">
       {props.measures.map((measure, index) => (
-        <Measure key={index} measure={measure} />
+        <MeasureComponent key={index} measure={measure} />
       ))}
     </div>
   );
 }
 
-function Measure(props: { measure: Measure }) {
+function MeasureComponent(props: { measure: Measure }) {
   const minWidth = `${clamp(props.measure.chords.length * 2.5, 10, 40)}em`;
 
   let chordComponents;

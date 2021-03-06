@@ -3,7 +3,7 @@ import { Score } from "../notation";
 import { Suspenseful } from "../suspenseful";
 import MeasureRow from "./MeasureRow";
 
-export default function Score(props: { score: Score | Suspenseful<Score> }) {
+export default function ScoreComponent(props: { score: Score | Suspenseful<Score> }) {
   // TODO eventually we'll be able to switch between them
   const partIndex = 0;
 
