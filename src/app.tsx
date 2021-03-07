@@ -15,13 +15,11 @@ export default function App() {
 
   return (
     <div className="bg-gray-400 p-24 min-h-screen">
-      <div className="mx-auto bg-white p-24 border-black border">
-        <Suspense fallback={<h1>Loading...</h1>}>
-          <ErrorBoundary>
-            <Score score={score} />
-          </ErrorBoundary>
-        </Suspense>
-      </div>
+      <Suspense fallback={<h1>Loading...</h1>}>
+        <ErrorBoundary>
+          <Score score={score} />
+        </ErrorBoundary>
+      </Suspense>
     </div>
   );
 }

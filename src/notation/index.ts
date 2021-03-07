@@ -1,3 +1,5 @@
+import { isArray } from "lodash";
+
 export interface Score {
   title?: string;
   composer?: string;
@@ -65,7 +67,7 @@ export interface Note {
   step: Step;
   octave: number;
   duration: number;
-  placement?: Fret;
+  fret?: Fret;
 }
 
 export interface Fret {
@@ -75,3 +77,13 @@ export interface Fret {
 }
 
 export type Chord = Note | Note[];
+
+export function* notes(chord: Chord) {
+  if (isArray(chord)) {
+    for (const note of chord) {
+      yield note;
+    }
+  } else {
+    yield chord;
+  }
+}

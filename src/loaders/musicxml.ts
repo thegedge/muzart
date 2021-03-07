@@ -137,7 +137,7 @@ function note(document: Document, node: Node): Note {
   const fret = textQueryMaybe(document, node, "notations/technical/fret");
   const string = textQueryMaybe(document, node, "notations/technical/string");
   if (fret && string) {
-    note.placement = { fret: parseInt(fret), string: parseInt(string) };
+    note.fret = { fret: parseInt(fret), string: parseInt(string) };
   }
 
   return note;

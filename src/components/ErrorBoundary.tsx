@@ -13,7 +13,12 @@ export default class ErrorBoundary extends React.Component<{}, { error?: Error }
   render() {
     if (this.state.error) {
       // TODO if development, show stack trace
-      return <h1 className="text-red-600 text-4xl">{this.state.error.message}</h1>;
+      return (
+        <div>
+          <h1 className="text-red-600 text-4xl">{this.state.error.message}</h1>
+          {this.state.error.stack}
+        </div>
+      );
     }
     return this.props.children;
   }
