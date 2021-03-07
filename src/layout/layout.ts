@@ -102,16 +102,16 @@ export function layout(input: notation.Score) {
   const contentWidth = page.width - page.margins.left - page.margins.right;
   const contentHeight = page.height - page.margins.top - page.margins.bottom;
 
+  // Lay out the staves
+  let measureX = 0;
   let line: Line = { elements: [], x: 0, y: 0, width: contentWidth, height: 0 };
 
-  let width = 0;
-  let height = 0;
-  let remainingLineWidth = contentWidth;
-  let remainingPageHeight = contentHeight;
+  // TODO: Ideally, the bottom of the last line lines up with the bottom of the content box of the page. We should iterate
+  //       over the lines and scale the space between them so that that happens. Basically, a flex + flex-col layout.
 
   for (const measureToLayOut of measures) {
     const measure = layoutMeasure(measureToLayOut);
-    measure.x = width;
+    measure.x = measureX;
 
     line.height = Math.max(line.height, measure.height);
 
@@ -120,12 +120,11 @@ export function layout(input: notation.Score) {
     // When "committing" the current line, it may be too large to fit on the current page, in which case we'll also
     // start a new page.
 
-    if (measure.width > remainingLineWidth) {
-      if (line.height > remainingPageHeight) {
+    if (measure.x + measure.width > line.width) {
+      if (line.y + line.height > contentHeight) {
         score.pages.push(page);
 
-        height = line.height;
-        remainingPageHeight = contentHeight - line.height;
+        line.y = 0;
         page = {
           lines: [relayoutLine(line, contentWidth)],
           margins: clone(DEFAULT_MARGINS),
@@ -133,24 +132,18 @@ export function layout(input: notation.Score) {
           height: DEFAULT_PAGE_HEIGHT,
         };
       } else {
-        line.y = height;
-        remainingPageHeight -= line.height + LINE_MARGIN;
-        height += line.height + LINE_MARGIN;
         page.lines.push(relayoutLine(line, contentWidth));
       }
 
-      line = { elements: [], x: 0, y: 0, width: contentWidth, height: 0 };
-      remainingLineWidth = contentWidth;
-      width = 0;
+      line = { elements: [], x: 0, y: line.y + line.height + LINE_MARGIN, width: contentWidth, height: 0 };
+      measureX = 0;
     } else {
-      width += measure.width;
-      remainingLineWidth -= measure.width;
+      measureX += measure.width;
       line.elements.push(measure);
     }
   }
 
   if (line.elements.length > 0) {
-    line.y = height;
     page.lines.push(relayoutLine(line, contentWidth));
   }
 
