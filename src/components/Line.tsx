@@ -11,15 +11,15 @@ export default function Line(props: { line: Line }) {
     const text = props.line.elements[0];
 
     let x = 0;
-    let y = text.y + text.height / 2;
+    let y = text.box.bottom / 2;
     let anchor: string;
     switch (text.align) {
       case "center":
-        x = text.x + text.width / 2;
+        x = text.box.right / 2;
         anchor = "middle";
         break;
       case "right":
-        x = text.x + text.width;
+        x = text.box.right;
         anchor = "end";
         break;
       case "left":
@@ -46,7 +46,7 @@ export default function Line(props: { line: Line }) {
           <line
             x1={0}
             y1={(staffLineIndex + 0.5) * STAFF_LINE_HEIGHT}
-            x2={props.line.width}
+            x2={props.line.box.width}
             y2={(staffLineIndex + 0.5) * STAFF_LINE_HEIGHT}
             stroke="black"
             strokeWidth={LINE_STROKE_WIDTH}
@@ -60,10 +60,10 @@ export default function Line(props: { line: Line }) {
             case "BarLine":
               return (
                 <line
-                  x1={e.x}
-                  y1={e.y}
-                  x2={e.x + e.width}
-                  y2={e.y + e.height}
+                  x1={e.box.x}
+                  y1={e.box.y}
+                  x2={e.box.right}
+                  y2={e.box.bottom}
                   stroke="black"
                   strokeWidth={e.strokeSize}
                 />
@@ -74,5 +74,5 @@ export default function Line(props: { line: Line }) {
     );
   }
 
-  return <g transform={svgPositionTransform(props.line)}>{children}</g>;
+  return <g transform={svgPositionTransform(props.line.box)}>{children}</g>;
 }

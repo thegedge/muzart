@@ -10,7 +10,7 @@ export interface Sized {
   height: Inches;
 }
 
-export type Box = Positioned & Sized;
+export type Boxed = Positioned & Sized;
 
 export type Margins = {
   left: Inches;

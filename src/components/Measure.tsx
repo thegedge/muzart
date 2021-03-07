@@ -9,13 +9,13 @@ export default function Measure(props: { measure: Measure }) {
         <g transform={svgPositionTransform(chord)}>
           {chord.notes.map((note) => (
             <>
-              <rect {...svgPositionProps(note)} width={note.height} height={note.height} fill="white" />
+              <rect {...svgPositionProps(note)} width={note.box.height} height={note.box.height} fill="white" />
               <text
-                x={note.x + 0.5 * note.height}
-                y={note.y + 0.5 * note.height}
+                x={note.box.x + 0.5 * note.box.height}
+                y={note.box.y + 0.5 * note.box.height}
                 dominantBaseline="middle"
                 textAnchor="middle"
-                style={{ fontSize: note.height }}
+                style={{ fontSize: note.box.height }}
               >
                 {note.note.fret?.fret}
               </text>

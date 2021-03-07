@@ -1,6 +1,7 @@
 import { clone, last } from "lodash";
-import { Box, Inches, Margins, Sized } from ".";
+import { Inches, Margins, Sized } from ".";
 import * as notation from "../notation";
+import Box from "./Box";
 
 export interface Score {
   score: notation.Score;
@@ -12,37 +13,43 @@ export interface Page extends Sized {
   margins: Margins;
 }
 
-export interface Line extends Box {
+export interface Line {
   elements: LineElement[];
+  box: Box;
 }
 
 export type LineElement = Text | Measure | BarLine;
 
-export interface BarLine extends Box {
+export interface BarLine {
   type: "BarLine";
   strokeSize: number;
+  box: Box;
 }
-export interface Text extends Box {
+export interface Text {
   type: "Text";
   value: string;
   size: Inches;
   align: Alignment;
+  box: Box;
 }
 
-export interface Measure extends Box {
+export interface Measure {
   type: "Measure";
   measure: notation.Measure;
   chords: Chord[];
   // TODO decorations, like time signatures, clefs, etc
+  box: Box;
 }
 
-export interface Chord extends Box {
+export interface Chord {
   chord: notation.Chord;
   notes: Note[];
+  box: Box;
 }
 
-export interface Note extends Box {
+export interface Note {
   note: notation.Note;
+  box: Box;
 }
 
 export type Alignment = "left" | "center" | "right";
@@ -111,19 +118,14 @@ export function layout(input: notation.Score) {
       elements: [
         {
           type: "Text",
-          x: 0,
-          y: 0,
-          width: contentWidth,
-          height,
+          box: new Box(0, 0, contentWidth, height),
           align: "center",
           size: height,
           value: input.title,
         },
       ],
-      x: 0,
-      y: lineY,
-      width: contentWidth,
-      height,
+
+      box: new Box(0, lineY, contentWidth, height),
     });
 
     lineY += height;
@@ -136,19 +138,13 @@ export function layout(input: notation.Score) {
       elements: [
         {
           type: "Text",
-          x: 0,
-          y: 0,
-          width: contentWidth,
-          height,
+          box: new Box(0, 0, contentWidth, height),
           align: "right",
           size: height,
           value: input.composer,
         },
       ],
-      x: 0,
-      y: lineY,
-      width: contentWidth,
-      height,
+      box: new Box(0, lineY, contentWidth, height),
     });
 
     lineY += height;
@@ -160,27 +156,26 @@ export function layout(input: notation.Score) {
 
   // Lay out the staves
   let measureX = 0;
-  let line: Line = { elements: [], x: 0, y: lineY, width: contentWidth, height: 0 };
+  let line: Line = { elements: [], box: new Box(0, lineY, contentWidth, 0) };
 
   // TODO: Ideally, the bottom of the last line lines up with the bottom of the content box of the page. We should iterate
   //       over the lines and scale the space between them so that that happens. Basically, a flex + flex-col layout.
 
   for (const measureToLayOut of measures) {
     const measure = layoutMeasure(measureToLayOut);
-    measure.x = measureX;
-
-    line.height = Math.max(line.height, measure.height);
+    measure.box.x = measureX;
+    line.box.height = Math.max(line.box.height, measure.box.height);
 
     // Determine if we need to be on a new line.
     //
     // When "committing" the current line, it may be too large to fit on the current page, in which case we'll also
     // start a new page.
 
-    if (measure.x + measure.width > line.width) {
-      if (line.y + line.height > contentHeight) {
+    if (measure.box.right > line.box.width) {
+      if (line.box.bottom > contentHeight) {
         score.pages.push(page);
 
-        line.y = 0;
+        line.box.y = 0;
         page = {
           lines: [relayoutLine(line, contentWidth)],
           margins: clone(DEFAULT_MARGINS),
@@ -191,10 +186,10 @@ export function layout(input: notation.Score) {
         page.lines.push(relayoutLine(line, contentWidth));
       }
 
-      line = { elements: [], x: 0, y: line.y + line.height + LINE_MARGIN, width: contentWidth, height: 0 };
+      line = { elements: [], box: new Box(0, line.box.bottom + LINE_MARGIN, contentWidth, 0) };
       measureX = 0;
     } else {
-      measureX += measure.width;
+      measureX += measure.box.width;
       line.elements.push(measure);
     }
   }
@@ -219,10 +214,7 @@ export function layout(input: notation.Score) {
 
         const barLineRight: BarLine = {
           type: "BarLine",
-          x: element.x + element.width,
-          y: 0.5 * STAFF_LINE_HEIGHT,
-          width: 0,
-          height: element.height - STAFF_LINE_HEIGHT,
+          box: new Box(element.box.right, 0.5 * STAFF_LINE_HEIGHT, 0, element.box.height - STAFF_LINE_HEIGHT),
           strokeSize: LINE_STROKE_WIDTH,
         };
 
@@ -231,10 +223,7 @@ export function layout(input: notation.Score) {
           return [
             {
               type: "BarLine",
-              x: 0,
-              y: 0.5 * STAFF_LINE_HEIGHT,
-              width: 0,
-              height: element.height - STAFF_LINE_HEIGHT,
+              box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, 0, element.box.height - STAFF_LINE_HEIGHT),
               strokeSize: LINE_STROKE_WIDTH,
             } as BarLine,
             element,
@@ -260,21 +249,21 @@ function relayoutLine(line: Line, desiredWidth: number) {
   let stretchFactor = 1;
   switch (lastElement.type) {
     case "BarLine":
-      stretchFactor = desiredWidth / (lastElement.x + lastElement.strokeSize);
+      stretchFactor = desiredWidth / (lastElement.box.x + lastElement.strokeSize);
       break;
     default:
-      stretchFactor = desiredWidth / (lastElement.x + lastElement.width);
+      stretchFactor = desiredWidth / lastElement.box.right;
       break;
   }
 
   let x = 0;
   for (const element of line.elements) {
-    element.x = x;
-    element.width *= stretchFactor;
-    x += element.width;
+    element.box.x = x;
+    element.box.width *= stretchFactor;
+    x += element.box.width;
   }
 
-  line.width = desiredWidth;
+  line.box.width = desiredWidth;
   return line;
 }
 
@@ -290,11 +279,13 @@ function layoutMeasure(measure: notation.Measure): Measure {
   const chords: Chord[] = [];
   for (const chord of measure.chords) {
     const chordLayout: Chord = {
-      x: width,
-      y: 0,
-      width: 0,
-      // TODO for regular score, needs to be computed from actual notes
-      height: STAFF_LINE_HEIGHT * numStaffLines,
+      box: new Box(
+        width,
+        0,
+        0,
+        // TODO for regular score, needs to be computed from actual notes
+        STAFF_LINE_HEIGHT * numStaffLines
+      ),
       chord,
       notes: [],
     };
@@ -303,26 +294,20 @@ function layoutMeasure(measure: notation.Measure): Measure {
       // TODO need to pass around divisions attribute instead of hardcoded 960
       const noteWidth = Math.max(MIN_NOTE_WIDTH, (QUARTER_NOTE_WIDTH * note.duration) / 960);
 
-      chordLayout.width = Math.max(chordLayout.width, noteWidth);
+      chordLayout.box.width = Math.max(chordLayout.box.width, noteWidth);
       chordLayout.notes.push({
-        x: 0,
-        y: note.fret ? (note.fret.string - 1) * STAFF_LINE_HEIGHT : 0,
-        width: noteWidth,
-        height: STAFF_LINE_HEIGHT,
+        box: new Box(0, note.fret ? (note.fret.string - 1) * STAFF_LINE_HEIGHT : 0, noteWidth, STAFF_LINE_HEIGHT),
         note,
       });
     }
 
-    width += chordLayout.width;
+    width += chordLayout.box.width;
     chords.push(chordLayout);
   }
 
   return {
     type: "Measure",
-    x: 0,
-    y: 0,
-    width,
-    height,
+    box: new Box(0, 0, width, height),
     chords,
     measure,
   };
