@@ -12,19 +12,25 @@ export interface Page extends Sized {
   margins: Margins;
 }
 
-export type Line = Text | StaffLine;
+export interface Line extends Box {
+  elements: LineElement[];
+}
 
+export type LineElement = Text | Measure | BarLine;
+
+export interface BarLine extends Box {
+  type: "BarLine";
+  strokeSize: number;
+}
 export interface Text extends Box {
+  type: "Text";
   value: string;
   size: Inches;
   align: Alignment;
 }
 
-export interface StaffLine extends Box {
-  measures: Measure[];
-}
-
 export interface Measure extends Box {
+  type: "Measure";
   measure: notation.Measure;
   chords: Chord[];
   // TODO decorations, like time signatures, clefs, etc
@@ -96,7 +102,7 @@ export function layout(input: notation.Score) {
   const contentWidth = page.width - page.margins.left - page.margins.right;
   const contentHeight = page.height - page.margins.top - page.margins.bottom;
 
-  let line: StaffLine = { measures: [], x: 0, y: 0, width: contentWidth, height: 0 };
+  let line: Line = { elements: [], x: 0, y: 0, width: contentWidth, height: 0 };
 
   let width = 0;
   let height = 0;
@@ -133,17 +139,17 @@ export function layout(input: notation.Score) {
         page.lines.push(relayoutLine(line, contentWidth));
       }
 
-      line = { measures: [], x: 0, y: 0, width: contentWidth, height: 0 };
+      line = { elements: [], x: 0, y: 0, width: contentWidth, height: 0 };
       remainingLineWidth = contentWidth;
       width = 0;
     } else {
       width += measure.width;
       remainingLineWidth -= measure.width;
-      line.measures.push(measure);
+      line.elements.push(measure);
     }
   }
 
-  if (line.measures.length > 0) {
+  if (line.elements.length > 0) {
     line.y = height;
     page.lines.push(relayoutLine(line, contentWidth));
   }
@@ -152,22 +158,71 @@ export function layout(input: notation.Score) {
     score.pages.push(page);
   }
 
+  // For every line, put a bar line in between each measure.
+  // TODO ideally just make this part of the above loop
+  for (const page of score.pages) {
+    for (const line of page.lines) {
+      let first = true;
+      line.elements = line.elements.flatMap((element): LineElement | LineElement[] => {
+        if (element.type != "Measure") {
+          return element;
+        }
+
+        const barLineRight: BarLine = {
+          type: "BarLine",
+          x: element.x + element.width,
+          y: 0.5 * STAFF_LINE_HEIGHT,
+          width: 0,
+          height: element.height - STAFF_LINE_HEIGHT,
+          strokeSize: LINE_STROKE_WIDTH,
+        };
+
+        if (first) {
+          first = false;
+          return [
+            {
+              type: "BarLine",
+              x: 0,
+              y: 0.5 * STAFF_LINE_HEIGHT,
+              width: 0,
+              height: element.height - STAFF_LINE_HEIGHT,
+              strokeSize: LINE_STROKE_WIDTH,
+            } as BarLine,
+            element,
+            barLineRight,
+          ];
+        } else {
+          return [element, barLineRight];
+        }
+      });
+    }
+  }
+
   return score;
 }
 
 /** Take an existing staff line and reposition all elements horizontally so that they fill the line. */
-function relayoutLine(line: StaffLine, desiredWidth: number) {
-  const lastMeasure = last(line.measures);
-  if (!lastMeasure) {
+function relayoutLine(line: Line, desiredWidth: number) {
+  const lastElement = last(line.elements);
+  if (!lastElement) {
     return line;
   }
 
-  const stretchFactor = desiredWidth / (lastMeasure.x + lastMeasure.width);
+  let stretchFactor = 1;
+  switch (lastElement.type) {
+    case "BarLine":
+      stretchFactor = desiredWidth / (lastElement.x + lastElement.strokeSize);
+      break;
+    default:
+      stretchFactor = desiredWidth / (lastElement.x + lastElement.width);
+      break;
+  }
+
   let x = 0;
-  for (const measure of line.measures) {
-    measure.x = x;
-    measure.width *= stretchFactor;
-    x += measure.width;
+  for (const element of line.elements) {
+    element.x = x;
+    element.width *= stretchFactor;
+    x += element.width;
   }
 
   line.width = desiredWidth;
@@ -214,6 +269,7 @@ function layoutMeasure(measure: notation.Measure): Measure {
   }
 
   return {
+    type: "Measure",
     x: 0,
     y: 0,
     width,
