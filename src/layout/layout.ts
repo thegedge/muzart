@@ -45,7 +45,7 @@ export interface Note extends Box {
   note: notation.Note;
 }
 
-export type Alignment = "left" | "center" | "right" | "justify";
+export type Alignment = "left" | "center" | "right";
 
 const DEFAULT_PAGE_WIDTH: Inches = 8.5;
 const DEFAULT_PAGE_HEIGHT: Inches = 11;
@@ -102,9 +102,65 @@ export function layout(input: notation.Score) {
   const contentWidth = page.width - page.margins.left - page.margins.right;
   const contentHeight = page.height - page.margins.top - page.margins.bottom;
 
+  // Lay out the composition title, composer, etc
+  let lineY = 0;
+  if (input.title) {
+    const height = 4 * STAFF_LINE_HEIGHT;
+
+    page.lines.push({
+      elements: [
+        {
+          type: "Text",
+          x: 0,
+          y: 0,
+          width: contentWidth,
+          height,
+          align: "center",
+          size: height,
+          value: input.title,
+        },
+      ],
+      x: 0,
+      y: lineY,
+      width: contentWidth,
+      height,
+    });
+
+    lineY += height;
+  }
+
+  if (input.composer) {
+    const height = 1.5 * STAFF_LINE_HEIGHT;
+
+    page.lines.push({
+      elements: [
+        {
+          type: "Text",
+          x: 0,
+          y: 0,
+          width: contentWidth,
+          height,
+          align: "right",
+          size: height,
+          value: input.composer,
+        },
+      ],
+      x: 0,
+      y: lineY,
+      width: contentWidth,
+      height,
+    });
+
+    lineY += height;
+  }
+
+  if (page.lines.length > 0) {
+    lineY += 2 * LINE_MARGIN;
+  }
+
   // Lay out the staves
   let measureX = 0;
-  let line: Line = { elements: [], x: 0, y: 0, width: contentWidth, height: 0 };
+  let line: Line = { elements: [], x: 0, y: lineY, width: contentWidth, height: 0 };
 
   // TODO: Ideally, the bottom of the last line lines up with the bottom of the content box of the page. We should iterate
   //       over the lines and scale the space between them so that that happens. Basically, a flex + flex-col layout.
