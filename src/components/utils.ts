@@ -1,6 +1,6 @@
 import { pick } from "lodash";
 import { CSSProperties, SVGAttributes } from "react";
-import { Boxed, Margins, Positioned, Sized } from "../layout";
+import { Boxed, Margins, Positioned, Sized } from "../layout/types";
 
 //
 // DOM Props

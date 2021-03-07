@@ -1,58 +1,7 @@
 import { clone, last } from "lodash";
-import { Inches, Margins, Sized } from ".";
 import * as notation from "../notation";
 import Box from "./Box";
-
-export interface Score {
-  score: notation.Score;
-  pages: Page[];
-}
-
-export interface Page extends Sized {
-  lines: Line[];
-  margins: Margins;
-}
-
-export interface Line {
-  elements: LineElement[];
-  box: Box;
-}
-
-export type LineElement = Text | Measure | BarLine;
-
-export interface BarLine {
-  type: "BarLine";
-  strokeSize: number;
-  box: Box;
-}
-export interface Text {
-  type: "Text";
-  value: string;
-  size: Inches;
-  align: Alignment;
-  box: Box;
-}
-
-export interface Measure {
-  type: "Measure";
-  measure: notation.Measure;
-  chords: Chord[];
-  // TODO decorations, like time signatures, clefs, etc
-  box: Box;
-}
-
-export interface Chord {
-  chord: notation.Chord;
-  notes: Note[];
-  box: Box;
-}
-
-export interface Note {
-  note: notation.Note;
-  box: Box;
-}
-
-export type Alignment = "left" | "center" | "right";
+import { BarLine, Chord, Inches, Line, LineElement, Margins, Measure, Page, Score } from "./types";
 
 const DEFAULT_PAGE_WIDTH: Inches = 8.5;
 const DEFAULT_PAGE_HEIGHT: Inches = 11;
@@ -122,6 +71,9 @@ export function layout(input: notation.Score) {
           align: "center",
           size: height,
           value: input.title,
+          style: {
+            fontFamily: "serif",
+          },
         },
       ],
 
@@ -142,6 +94,9 @@ export function layout(input: notation.Score) {
           align: "right",
           size: height,
           value: input.composer,
+          style: {
+            fontFamily: "serif",
+          },
         },
       ],
       box: new Box(0, lineY, contentWidth, height),
@@ -154,15 +109,49 @@ export function layout(input: notation.Score) {
     lineY += 2 * LINE_MARGIN;
   }
 
+  // Put a vertical TAB text on the first part of every line
+  const tabTextSize = (STAFF_LINE_HEIGHT * 4.5) / 3;
+  let line: Line = {
+    elements: [
+      {
+        type: "Group",
+        box: new Box(0, STAFF_LINE_HEIGHT, tabTextSize, STAFF_LINE_HEIGHT * 5),
+        elements: [
+          {
+            type: "Text",
+            box: new Box(0, 0, tabTextSize, tabTextSize),
+            align: "center",
+            size: tabTextSize,
+            value: "T",
+          },
+          {
+            type: "Text",
+            box: new Box(0, 1 * tabTextSize, tabTextSize, tabTextSize),
+            align: "center",
+            size: tabTextSize,
+            value: "A",
+          },
+          {
+            type: "Text",
+            box: new Box(0, 2 * tabTextSize, tabTextSize, tabTextSize),
+            align: "center",
+            size: tabTextSize,
+            value: "B",
+          },
+        ],
+      },
+    ],
+    box: new Box(0, lineY, contentWidth, 0),
+  };
+
   // Lay out the staves
-  let measureX = 0;
-  let line: Line = { elements: [], box: new Box(0, lineY, contentWidth, 0) };
+  let measureX = tabTextSize;
 
   // TODO: Ideally, the bottom of the last line lines up with the bottom of the content box of the page. We should iterate
   //       over the lines and scale the space between them so that that happens. Basically, a flex + flex-col layout.
 
   for (const measureToLayOut of measures) {
-    const measure = layoutMeasure(measureToLayOut);
+    const measure = layOutMeasure(measureToLayOut);
     measure.box.x = measureX;
     line.box.height = Math.max(line.box.height, measure.box.height);
 
@@ -267,7 +256,7 @@ function relayoutLine(line: Line, desiredWidth: number) {
   return line;
 }
 
-function layoutMeasure(measure: notation.Measure): Measure {
+function layOutMeasure(measure: notation.Measure): Measure {
   const numStaffLines = 6;
   if (measure.staveDetails) {
     // TODO get staff details from previous measure, if one not given, so we can get lines

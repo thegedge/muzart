@@ -13,4 +13,12 @@ export default class Box {
   get bottom() {
     return this.y + this.height;
   }
+
+  get centerX() {
+    return this.x + 0.5 * this.width;
+  }
+
+  get centerY() {
+    return this.y + 0.5 * this.height;
+  }
 }
