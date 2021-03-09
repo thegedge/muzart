@@ -49,14 +49,18 @@ export class FlexGroup<T extends HasBox> {
     this.elements.push(element);
   }
 
-  /** Reposition and scale all inner elements so that they fill this flex group's box  */
-  public layout() {
+  /**
+   * Reposition and scale all inner elements so that they fill this flex group's box
+   *
+   * @param stretch if `true`, stretch relevant elements to fit the layout
+   */
+  public layout(stretch: boolean = true) {
     const farthest = maxBy(this.elements, `box.${this.endAttribute}`);
     if (!farthest) {
       return;
     }
 
-    const stretchFactor = this.box[this.dimensionAttribute] / farthest.box[this.endAttribute];
+    const stretchFactor = stretch ? this.box[this.dimensionAttribute] / farthest.box[this.endAttribute] : 1;
 
     let start = 0;
     for (const element of this.elements) {

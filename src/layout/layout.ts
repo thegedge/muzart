@@ -187,7 +187,7 @@ export function layout(input: notation.Score) {
   }
 
   if (pageGroup.elements.length > 0) {
-    pageGroup.layout();
+    pageGroup.layout(false);
     score.pages.push({
       elements: pageGroup.elements,
       width: DEFAULT_PAGE_WIDTH,
