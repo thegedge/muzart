@@ -1,7 +1,7 @@
 import { range } from "lodash";
 import React from "react";
 import { LineElement, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../layout";
-import Measure from "./Measure";
+import { Measure } from "./Measure";
 import { TextElement } from "./TextElement";
 import { svgPositionTransform } from "./utils";
 

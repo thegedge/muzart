@@ -4,15 +4,15 @@ import Box from "./Box";
 
 export type Inches = number;
 
-export interface Positioned {
+export type Positioned = {
   x: Inches;
   y: Inches;
-}
+};
 
-export interface Sized {
+export type Sized = {
   width: Inches;
   height: Inches;
-}
+};
 
 export type Boxed = Positioned &
   Sized & {
@@ -20,7 +20,9 @@ export type Boxed = Positioned &
     bottom: Inches;
   };
 
-export type HasBox = { box: Boxed };
+export type HasBox = {
+  box: Boxed;
+};
 
 export type Margins = {
   left: Inches;

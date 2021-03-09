@@ -1,8 +1,8 @@
 import React from "react";
-import { Measure } from "../layout/layout";
+import * as layout from "../layout";
 import { svgPositionProps, svgPositionTransform } from "./utils";
 
-export default function Measure(props: { measure: Measure }) {
+export function Measure(props: { measure: layout.Measure }) {
   return (
     <g transform={svgPositionTransform(props.measure)}>
       {props.measure.chords.map((chord) => (
