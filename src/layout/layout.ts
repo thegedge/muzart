@@ -122,7 +122,7 @@ export function layout(input: notation.Score) {
   if (pageGroup.elements.length > 0) {
     pageGroup.addElement({
       type: "Space",
-      box: new Box(0, 0, 3 * STAFF_LINE_HEIGHT, 3 * STAFF_LINE_HEIGHT),
+      box: new Box(0, 0, LINE_MARGIN, LINE_MARGIN),
     });
   }
 
@@ -152,7 +152,7 @@ export function layout(input: notation.Score) {
       if (pageGroup.tryAddElement(line)) {
         pageGroup.addElement({
           type: "Space",
-          box: new Box(0, 0, 3 * STAFF_LINE_HEIGHT, 3 * STAFF_LINE_HEIGHT),
+          box: new Box(0, 0, LINE_MARGIN, LINE_MARGIN),
         });
       } else {
         // TODO popping sucks, better = nested vertical group with "space between" option
