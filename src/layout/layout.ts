@@ -1,7 +1,8 @@
-import { clone, last } from "lodash";
+import { clone } from "lodash";
 import * as notation from "../notation";
 import Box from "./Box";
-import { BarLine, Chord, Inches, Line, LineElement, Margins, Measure, Page, Score } from "./types";
+import { HorizontalFlexGroup, VerticalFlexGroup } from "./Group";
+import { Chord, Inches, Margins, Measure, Score } from "./types";
 
 const DEFAULT_PAGE_WIDTH: Inches = 8.5;
 const DEFAULT_PAGE_HEIGHT: Inches = 11;
@@ -39,12 +40,12 @@ export function layout(input: notation.Score) {
   // TODO specify part
   const measures = input.parts[0].measures;
 
-  let page: Page = {
-    lines: [],
-    margins: clone(DEFAULT_MARGINS),
-    width: DEFAULT_PAGE_WIDTH,
-    height: DEFAULT_PAGE_HEIGHT,
-  };
+  const margins = DEFAULT_MARGINS;
+  const contentWidth = DEFAULT_PAGE_WIDTH - 2 * margins.right;
+  const contentHeight = DEFAULT_PAGE_HEIGHT - 2 * margins.bottom;
+  const pageContentBox = new Box(margins.left, margins.top, contentWidth, contentHeight);
+
+  let pageGroup = new VerticalFlexGroup(clone(pageContentBox));
 
   // For each measure, if we can fit it on the current line, we do so.
   // If the line will exceed the page height, we break into a new page.
@@ -55,104 +56,50 @@ export function layout(input: notation.Score) {
   //    2. Even though we have a desired width for note durations, allow them to be stretched if it produces
   //       a nicer line.
 
-  const contentWidth = page.width - page.margins.left - page.margins.right;
-  const contentHeight = page.height - page.margins.top - page.margins.bottom;
-
   // Lay out the composition title, composer, etc
-  let lineY = 0;
   if (input.title) {
     const height = 4 * STAFF_LINE_HEIGHT;
-
-    page.lines.push({
-      elements: [
-        {
-          type: "Text",
-          box: new Box(0, 0, contentWidth, height),
-          align: "center",
-          size: height,
-          value: input.title,
-          style: {
-            fontFamily: "serif",
-          },
-        },
-      ],
-
-      box: new Box(0, lineY, contentWidth, height),
+    pageGroup.addElement({
+      type: "Text",
+      box: new Box(0, 0, contentWidth, height),
+      align: "center",
+      size: height,
+      value: input.title,
+      style: {
+        fontFamily: "serif",
+      },
     });
-
-    lineY += height;
   }
 
   if (input.composer) {
     const height = 1.5 * STAFF_LINE_HEIGHT;
 
-    page.lines.push({
-      elements: [
-        {
-          type: "Text",
-          box: new Box(0, 0, contentWidth, height),
-          align: "right",
-          size: height,
-          value: input.composer,
-          style: {
-            fontFamily: "serif",
-          },
-        },
-      ],
-      box: new Box(0, lineY, contentWidth, height),
-    });
-
-    lineY += height;
-  }
-
-  if (page.lines.length > 0) {
-    lineY += 2 * LINE_MARGIN;
-  }
-
-  // Put a vertical TAB text on the first part of every line
-  const tabTextSize = (STAFF_LINE_HEIGHT * 4.5) / 3;
-  let line: Line = {
-    elements: [
-      {
-        type: "Group",
-        box: new Box(0, STAFF_LINE_HEIGHT, tabTextSize, STAFF_LINE_HEIGHT * 5),
-        elements: [
-          {
-            type: "Text",
-            box: new Box(0, 0, tabTextSize, tabTextSize),
-            align: "center",
-            size: tabTextSize,
-            value: "T",
-          },
-          {
-            type: "Text",
-            box: new Box(0, 1 * tabTextSize, tabTextSize, tabTextSize),
-            align: "center",
-            size: tabTextSize,
-            value: "A",
-          },
-          {
-            type: "Text",
-            box: new Box(0, 2 * tabTextSize, tabTextSize, tabTextSize),
-            align: "center",
-            size: tabTextSize,
-            value: "B",
-          },
-        ],
+    pageGroup.addElement({
+      type: "Text",
+      box: new Box(0, 0, contentWidth, height),
+      align: "right",
+      size: height,
+      value: input.composer,
+      style: {
+        fontFamily: "serif",
       },
-    ],
-    box: new Box(0, lineY, contentWidth, 0),
-  };
+    });
+  }
 
-  // Lay out the staves
-  let measureX = tabTextSize;
+  if (pageGroup.elements.length > 0) {
+    pageGroup.addElement({
+      type: "Space",
+      box: new Box(0, 0, 3 * STAFF_LINE_HEIGHT, 3 * STAFF_LINE_HEIGHT),
+    });
+  }
+
+  let line = newLine(contentWidth);
 
   // TODO: Ideally, the bottom of the last line lines up with the bottom of the content box of the page. We should iterate
   //       over the lines and scale the space between them so that that happens. Basically, a flex + flex-col layout.
 
   for (const measureToLayOut of measures) {
     const measure = layOutMeasure(measureToLayOut);
-    measure.box.x = measureX;
     line.box.height = Math.max(line.box.height, measure.box.height);
 
     // Determine if we need to be on a new line.
@@ -160,100 +107,63 @@ export function layout(input: notation.Score) {
     // When "committing" the current line, it may be too large to fit on the current page, in which case we'll also
     // start a new page.
 
-    if (measure.box.right > line.box.width) {
-      if (line.box.bottom > contentHeight) {
-        score.pages.push(page);
+    if (line.tryAddElement(measure)) {
+      line.addElement({
+        type: "BarLine",
+        box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, 0, 5 * STAFF_LINE_HEIGHT),
+        strokeSize: LINE_STROKE_WIDTH,
+      });
+    } else {
+      line.layout();
 
-        line.box.y = 0;
-        page = {
-          lines: [relayoutLine(line, contentWidth)],
-          margins: clone(DEFAULT_MARGINS),
+      if (pageGroup.tryAddElement(line)) {
+        pageGroup.addElement({
+          type: "Space",
+          box: new Box(0, 0, 3 * STAFF_LINE_HEIGHT, 3 * STAFF_LINE_HEIGHT),
+        });
+      } else {
+        // TODO popping sucks, better = nested vertical group with "space between" option
+        pageGroup.elements.pop(); // Pop off the last space element so that the last line's bottom coincides with content bottom
+        pageGroup.layout();
+
+        score.pages.push({
+          elements: pageGroup.elements,
           width: DEFAULT_PAGE_WIDTH,
           height: DEFAULT_PAGE_HEIGHT,
-        };
-      } else {
-        page.lines.push(relayoutLine(line, contentWidth));
+          margins: clone(margins),
+        });
+
+        pageGroup = new VerticalFlexGroup(clone(pageContentBox));
       }
 
-      line = { elements: [], box: new Box(0, line.box.bottom + LINE_MARGIN, contentWidth, 0) };
-      measureX = 0;
-    } else {
-      measureX += measure.box.width;
-      line.elements.push(measure);
-    }
-  }
-
-  if (line.elements.length > 0) {
-    page.lines.push(relayoutLine(line, contentWidth));
-  }
-
-  if (page.lines.length > 0) {
-    score.pages.push(page);
-  }
-
-  // For every line, put a bar line in between each measure.
-  // TODO ideally just make this part of the above loop
-  for (const page of score.pages) {
-    for (const line of page.lines) {
-      let first = true;
-      line.elements = line.elements.flatMap((element): LineElement | LineElement[] => {
-        if (element.type != "Measure") {
-          return element;
-        }
-
-        const barLineRight: BarLine = {
-          type: "BarLine",
-          box: new Box(element.box.right, 0.5 * STAFF_LINE_HEIGHT, 0, element.box.height - STAFF_LINE_HEIGHT),
-          strokeSize: LINE_STROKE_WIDTH,
-        };
-
-        if (first) {
-          first = false;
-          return [
-            {
-              type: "BarLine",
-              box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, 0, element.box.height - STAFF_LINE_HEIGHT),
-              strokeSize: LINE_STROKE_WIDTH,
-            } as BarLine,
-            element,
-            barLineRight,
-          ];
-        } else {
-          return [element, barLineRight];
-        }
+      line = newLine(contentWidth);
+      line.addElement(measure);
+      line.addElement({
+        type: "BarLine",
+        box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, 0, 5 * STAFF_LINE_HEIGHT),
+        strokeSize: LINE_STROKE_WIDTH,
       });
     }
   }
 
+  if (line.elements.length > 0) {
+    line.layout();
+    pageGroup.elements.push(line);
+  } else {
+    pageGroup.elements.pop();
+  }
+
+  if (pageGroup.elements.length > 0) {
+    pageGroup.layout();
+    score.pages.push({
+      elements: pageGroup.elements,
+      width: DEFAULT_PAGE_WIDTH,
+      height: DEFAULT_PAGE_HEIGHT,
+      margins: clone(margins),
+    });
+  }
+
   return score;
-}
-
-/** Take an existing staff line and reposition all elements horizontally so that they fill the line. */
-function relayoutLine(line: Line, desiredWidth: number) {
-  const lastElement = last(line.elements);
-  if (!lastElement) {
-    return line;
-  }
-
-  let stretchFactor = 1;
-  switch (lastElement.type) {
-    case "BarLine":
-      stretchFactor = desiredWidth / (lastElement.box.x + lastElement.strokeSize);
-      break;
-    default:
-      stretchFactor = desiredWidth / lastElement.box.right;
-      break;
-  }
-
-  let x = 0;
-  for (const element of line.elements) {
-    element.box.x = x;
-    element.box.width *= stretchFactor;
-    x += element.box.width;
-  }
-
-  line.box.width = desiredWidth;
-  return line;
 }
 
 function layOutMeasure(measure: notation.Measure): Measure {
@@ -300,4 +210,48 @@ function layOutMeasure(measure: notation.Measure): Measure {
     chords,
     measure,
   };
+}
+
+function newLine(contentWidth: number) {
+  const tabTextSize = (STAFF_LINE_HEIGHT * 4.5) / 3;
+  const line = new HorizontalFlexGroup(new Box(0, 0, contentWidth, 0), true);
+
+  addBarLine(line);
+
+  line.addElement({
+    type: "Group",
+    box: new Box(0, STAFF_LINE_HEIGHT, tabTextSize, STAFF_LINE_HEIGHT * 5),
+    elements: [
+      {
+        type: "Text",
+        box: new Box(0, 0, tabTextSize, tabTextSize),
+        align: "center",
+        size: tabTextSize,
+        value: "T",
+      },
+      {
+        type: "Text",
+        box: new Box(0, 1 * tabTextSize, tabTextSize, tabTextSize),
+        align: "center",
+        size: tabTextSize,
+        value: "A",
+      },
+      {
+        type: "Text",
+        box: new Box(0, 2 * tabTextSize, tabTextSize, tabTextSize),
+        align: "center",
+        size: tabTextSize,
+        value: "B",
+      },
+    ],
+  });
+  return line;
+}
+
+function addBarLine(group: HorizontalFlexGroup) {
+  group.addElement({
+    type: "BarLine",
+    box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, 0, 5 * STAFF_LINE_HEIGHT),
+    strokeSize: LINE_STROKE_WIDTH,
+  });
 }

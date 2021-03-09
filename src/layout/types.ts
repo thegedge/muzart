@@ -29,22 +29,23 @@ export interface Score {
 }
 
 export interface Page extends Sized {
-  lines: Line[];
+  elements: LineElement[];
   margins: Margins;
 }
+
+export type LineElement = Space | Text | Measure | BarLine | Group;
 
 export interface Group {
   type: "Group";
   elements: LineElement[];
   box: Box;
+  drawStaffLines?: boolean; // TODO :( find a better way
 }
 
-export interface Line {
-  elements: LineElement[];
+export interface Space {
+  type: "Space";
   box: Box;
 }
-
-export type LineElement = Text | Measure | BarLine | Group;
 
 export interface BarLine {
   type: "BarLine";
