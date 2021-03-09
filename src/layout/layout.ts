@@ -38,7 +38,8 @@ export function layout(input: notation.Score) {
   };
 
   // TODO specify part
-  const measures = input.parts[0].measures;
+  const part = input.parts[0];
+  const measures = part.measures;
 
   const margins = DEFAULT_MARGINS;
   const contentWidth = DEFAULT_PAGE_WIDTH - 2 * margins.right;
@@ -82,6 +83,38 @@ export function layout(input: notation.Score) {
       value: input.composer,
       style: {
         fontFamily: "serif",
+      },
+    });
+  }
+
+  if (measures[0].staveDetails && measures[0].staveDetails[0]?.tuning) {
+    // TODO show the actual tuning, but okay using a name if it matches the tuning value
+    const height = 1.2 * STAFF_LINE_HEIGHT;
+
+    pageGroup.addElement({
+      type: "Text",
+      box: new Box(height, 0, contentWidth - height, height),
+      align: "left",
+      size: height,
+      value: "Standard tuning",
+      style: {
+        fontFamily: "serif",
+      },
+    });
+  }
+
+  if (measures[0].staveDetails && measures[0].staveDetails[0]?.tempo) {
+    const height = 1.2 * STAFF_LINE_HEIGHT;
+
+    pageGroup.addElement({
+      type: "Text",
+      box: new Box(2 * height, 10, contentWidth - height, 2 * height),
+      align: "left",
+      size: height,
+      value: `♩ = ${measures[0].staveDetails[0].tempo}`,
+      style: {
+        fontFamily: "serif",
+        fontWeight: 800,
       },
     });
   }

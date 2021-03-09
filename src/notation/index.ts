@@ -22,6 +22,7 @@ export interface StaffDetails {
   clef?: Clef;
   tuning?: Note[];
   time?: TimeSignature;
+  tempo?: number;
 }
 
 export interface Key {

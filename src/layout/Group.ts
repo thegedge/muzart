@@ -87,7 +87,7 @@ export class VerticalFlexGroup {
       return;
     }
 
-    const stretchFactor = this.box.height / farthest.box.bottom;
+    // const stretchFactor = this.box.height / farthest.box.bottom;
 
     let y = 0;
     for (const element of this.elements) {

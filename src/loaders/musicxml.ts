@@ -48,9 +48,17 @@ function staves(document: Document, node: Node): StaffDetails[] | undefined {
     tuning: tuning(document, attributesNode),
     time: time(document, attributesNode),
     lineCount: parseInt(staffLines || "6"), // TODO default to previous in same staff?
+    tempo: tempo(document, node),
   };
 
   return [staff];
+}
+
+function tempo(document: Document, node: Node): number | undefined {
+  const tempo = textQueryMaybe(document, node, "direction/sound/@tempo");
+  if (tempo) {
+    return parseInt(tempo);
+  }
 }
 
 function clef(document: Document, node: Node): Clef | undefined {
