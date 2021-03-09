@@ -1,17 +1,17 @@
 import { last, maxBy } from "lodash";
 import Box from "./Box";
-import { LineElement } from "./types";
+import { HasBox } from "./types";
 
 // TODO "space between" option
 // TODO elements need to specify if a dimension should stretch or not
 // TODO combine these into one thing, with getters for the relevant axis
-export class HorizontalFlexGroup {
+export class HorizontalFlexGroup<T extends HasBox> {
   readonly type = "Group";
-  readonly elements: LineElement[] = [];
+  readonly elements: T[] = [];
 
   constructor(public box: Box, readonly drawStaffLines = false) {}
 
-  tryAddElement(element: LineElement) {
+  tryAddElement(element: T) {
     const lastElement = last(this.elements);
     if (lastElement) {
       if (lastElement.box.right + element.box.width > this.box.right) {
@@ -25,7 +25,7 @@ export class HorizontalFlexGroup {
     return true;
   }
 
-  addElement(element: LineElement) {
+  addElement(element: T) {
     const lastElement = last(this.elements);
     if (lastElement) {
       element.box.x = lastElement.box.right;
@@ -51,13 +51,13 @@ export class HorizontalFlexGroup {
   }
 }
 
-export class VerticalFlexGroup {
+export class VerticalFlexGroup<T extends HasBox> {
   readonly type = "Group";
-  readonly elements: LineElement[] = [];
+  readonly elements: T[] = [];
 
   constructor(public box: Box) {}
 
-  tryAddElement(element: LineElement) {
+  tryAddElement(element: T) {
     const lastElement = last(this.elements);
     if (lastElement) {
       if (lastElement.box.bottom + element.box.height > this.box.bottom) {
@@ -71,7 +71,7 @@ export class VerticalFlexGroup {
     return true;
   }
 
-  addElement(element: LineElement) {
+  addElement(element: T) {
     const lastElement = last(this.elements);
     if (lastElement) {
       element.box.y = lastElement.box.bottom;

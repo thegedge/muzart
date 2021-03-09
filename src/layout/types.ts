@@ -14,7 +14,13 @@ export interface Sized {
   height: Inches;
 }
 
-export type Boxed = Positioned & Sized;
+export type Boxed = Positioned &
+  Sized & {
+    right: Inches;
+    bottom: Inches;
+  };
+
+export type HasBox = { box: Boxed };
 
 export type Margins = {
   left: Inches;
