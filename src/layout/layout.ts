@@ -46,7 +46,7 @@ export function layout(input: notation.Score) {
   const contentHeight = DEFAULT_PAGE_HEIGHT - 2 * margins.bottom;
   const pageContentBox = new Box(margins.left, margins.top, contentWidth, contentHeight);
 
-  let pageGroup = new FlexGroup<LineElement>(clone(pageContentBox), "vertical");
+  let pageGroup = new FlexGroup<LineElement>({ box: clone(pageContentBox), axis: "vertical" });
 
   // For each measure, if we can fit it on the current line, we do so.
   // If the line will exceed the page height, we break into a new page.
@@ -140,12 +140,8 @@ export function layout(input: notation.Score) {
     // When "committing" the current line, it may be too large to fit on the current page, in which case we'll also
     // start a new page.
 
-    if (line.tryAddElement(measure)) {
-      line.addElement({
-        type: "BarLine",
-        box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, 0, 5 * STAFF_LINE_HEIGHT),
-        strokeSize: LINE_STROKE_WIDTH,
-      });
+    if (line.tryAddElement(measure, { factor: measure.chords.length })) {
+      addBarLine(line);
     } else {
       line.layout();
 
@@ -156,7 +152,7 @@ export function layout(input: notation.Score) {
         });
       } else {
         // TODO popping sucks, better = nested vertical group with "space between" option
-        pageGroup.elements.pop(); // Pop off the last space element so that the last line's bottom coincides with content bottom
+        pageGroup.popElement(); // Pop off the last space element so that the last line's bottom coincides with content bottom
         pageGroup.layout();
 
         score.pages.push({
@@ -166,24 +162,20 @@ export function layout(input: notation.Score) {
           margins: clone(margins),
         });
 
-        pageGroup = new FlexGroup(clone(pageContentBox), "vertical");
+        pageGroup = new FlexGroup({ box: clone(pageContentBox), axis: "vertical" });
       }
 
       line = newLine(contentWidth);
-      line.addElement(measure);
-      line.addElement({
-        type: "BarLine",
-        box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, 0, 5 * STAFF_LINE_HEIGHT),
-        strokeSize: LINE_STROKE_WIDTH,
-      });
+      line.addElement(measure, { factor: measure.chords.length });
+      addBarLine(line);
     }
   }
 
   if (line.elements.length > 0) {
     line.layout();
-    pageGroup.elements.push(line);
+    pageGroup.addElement(line);
   } else {
-    pageGroup.elements.pop();
+    pageGroup.popElement();
   }
 
   if (pageGroup.elements.length > 0) {
@@ -208,6 +200,8 @@ function layOutMeasure(measure: notation.Measure): Measure {
 
   let width = QUARTER_NOTE_WIDTH / 8;
   const height = numStaffLines * STAFF_LINE_HEIGHT;
+
+  // TODO when the measure is stretched with the line's FlexGroup, would be great to have the chords move to (bigger refactor!)
 
   const chords: Chord[] = [];
   for (const chord of measure.chords) {
@@ -252,44 +246,51 @@ function layOutMeasure(measure: notation.Measure): Measure {
 
 function newLine(contentWidth: number) {
   const tabTextSize = (STAFF_LINE_HEIGHT * 4.5) / 3;
-  const line = new FlexGroup<LineElement>(new Box(0, 0, contentWidth, 0), "horizontal", true);
+  const tabWidth = tabTextSize * 2;
+  const line = new FlexGroup<LineElement>({ box: new Box(0, 0, contentWidth, 0), drawStaffLines: true });
 
   addBarLine(line);
 
-  line.addElement({
-    type: "Group",
-    box: new Box(0, STAFF_LINE_HEIGHT, tabTextSize, STAFF_LINE_HEIGHT * 5),
-    elements: [
-      {
-        type: "Text",
-        box: new Box(0, 0, tabTextSize, tabTextSize),
-        align: "center",
-        size: tabTextSize,
-        value: "T",
-      },
-      {
-        type: "Text",
-        box: new Box(0, 1 * tabTextSize, tabTextSize, tabTextSize),
-        align: "center",
-        size: tabTextSize,
-        value: "A",
-      },
-      {
-        type: "Text",
-        box: new Box(0, 2 * tabTextSize, tabTextSize, tabTextSize),
-        align: "center",
-        size: tabTextSize,
-        value: "B",
-      },
-    ],
-  });
+  line.addElement(
+    {
+      type: "Group",
+      box: new Box(0, STAFF_LINE_HEIGHT, tabWidth, STAFF_LINE_HEIGHT * 5),
+      elements: [
+        {
+          type: "Text",
+          box: new Box(0, 0, tabWidth, tabTextSize),
+          align: "center",
+          size: tabTextSize,
+          value: "T",
+        },
+        {
+          type: "Text",
+          box: new Box(0, 1 * tabTextSize, tabWidth, tabTextSize),
+          align: "center",
+          size: tabTextSize,
+          value: "A",
+        },
+        {
+          type: "Text",
+          box: new Box(0, 2 * tabTextSize, tabWidth, tabTextSize),
+          align: "center",
+          size: tabTextSize,
+          value: "B",
+        },
+      ],
+    },
+    { factor: null }
+  );
   return line;
 }
 
 function addBarLine(group: FlexGroup<LineElement>) {
-  group.addElement({
-    type: "BarLine",
-    box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, 0, 5 * STAFF_LINE_HEIGHT),
-    strokeSize: LINE_STROKE_WIDTH,
-  });
+  group.addElement(
+    {
+      type: "BarLine",
+      box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, LINE_STROKE_WIDTH, 5 * STAFF_LINE_HEIGHT),
+      strokeSize: LINE_STROKE_WIDTH,
+    },
+    { factor: null }
+  );
 }
