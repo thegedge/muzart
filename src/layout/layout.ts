@@ -200,9 +200,10 @@ export function layout(input: notation.Score) {
 }
 
 function layOutMeasure(measure: notation.Measure): Measure {
-  const numStaffLines = 6;
+  let numStaffLines = 6;
   if (measure.staveDetails) {
     // TODO get staff details from previous measure, if one not given, so we can get lines
+    numStaffLines = measure.staveDetails[0].lineCount;
   }
 
   let width = QUARTER_NOTE_WIDTH / 8;
@@ -223,6 +224,10 @@ function layOutMeasure(measure: notation.Measure): Measure {
     };
 
     for (const note of notation.notes(chord)) {
+      if (note.tie === "stop") {
+        continue;
+      }
+
       // TODO need to pass around divisions attribute instead of hardcoded 960
       const noteWidth = Math.max(MIN_NOTE_WIDTH, (QUARTER_NOTE_WIDTH * note.duration) / 960);
 

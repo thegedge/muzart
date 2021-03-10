@@ -148,6 +148,9 @@ function note(document: Document, node: Node): Note {
     note.fret = { fret: parseInt(fret), string: parseInt(string) };
   }
 
+  const tie = textQueryMaybe(document, node, "tie/@type");
+  note.tie = tie as Note["tie"];
+
   return note;
 }
 

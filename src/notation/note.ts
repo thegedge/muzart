@@ -15,6 +15,7 @@ export interface Note {
   octave: number;
   duration: number;
   fret?: Fret;
+  tie?: "start" | "stop";
 }
 
 export interface Fret {
