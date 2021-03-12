@@ -1,8 +1,9 @@
 import { clone } from "lodash";
 import * as notation from "../notation";
 import Box from "./Box";
-import { FlexGroup } from "./FlexGroup";
-import { Chord, Inches, LineElement, Margins, Measure, Score } from "./types";
+import { Group } from "./FlexGroup";
+import { Measure, Measure as MeasureLayout } from "./Measure";
+import { Inches, LineElement, Margins, Score } from "./types";
 
 const DEFAULT_PAGE_WIDTH: Inches = 8.5;
 const DEFAULT_PAGE_HEIGHT: Inches = 11;
@@ -14,8 +15,6 @@ const DEFAULT_MARGINS: Margins = {
   bottom: DEFAULT_MARGIN,
 };
 
-const MIN_NOTE_WIDTH = 0.2;
-const QUARTER_NOTE_WIDTH: Inches = 0.5;
 const LINE_MARGIN: Inches = 0.2;
 
 /** The stroke width for any lines */
@@ -46,7 +45,7 @@ export function layout(input: notation.Score) {
   const contentHeight = DEFAULT_PAGE_HEIGHT - 2 * margins.bottom;
   const pageContentBox = new Box(margins.left, margins.top, contentWidth, contentHeight);
 
-  let pageGroup = new FlexGroup<LineElement>({ box: clone(pageContentBox), axis: "vertical" });
+  let pageGroup = new Group<LineElement>({ box: clone(pageContentBox), axis: "vertical" });
 
   // For each measure, if we can fit it on the current line, we do so.
   // If the line will exceed the page height, we break into a new page.
@@ -132,7 +131,7 @@ export function layout(input: notation.Score) {
   //       over the lines and scale the space between them so that that happens. Basically, a flex + flex-col layout.
 
   for (const measureToLayOut of measures) {
-    const measure = layOutMeasure(measureToLayOut);
+    const measure: Measure = new MeasureLayout(measureToLayOut);
     line.box.height = Math.max(line.box.height, measure.box.height);
 
     // Determine if we need to be on a new line.
@@ -140,7 +139,7 @@ export function layout(input: notation.Score) {
     // When "committing" the current line, it may be too large to fit on the current page, in which case we'll also
     // start a new page.
 
-    if (line.tryAddElement(measure, { factor: measure.chords.length })) {
+    if (line.tryAddElement(measure, { factor: measure.elements.length })) {
       addBarLine(line);
     } else {
       line.layout();
@@ -162,11 +161,11 @@ export function layout(input: notation.Score) {
           margins: clone(margins),
         });
 
-        pageGroup = new FlexGroup({ box: clone(pageContentBox), axis: "vertical" });
+        pageGroup = new Group({ box: clone(pageContentBox), axis: "vertical" });
       }
 
       line = newLine(contentWidth);
-      line.addElement(measure, { factor: measure.chords.length });
+      line.addElement(measure, { factor: measure.elements.length });
       addBarLine(line);
     }
   }
@@ -191,63 +190,10 @@ export function layout(input: notation.Score) {
   return score;
 }
 
-function layOutMeasure(measure: notation.Measure): Measure {
-  let numStaffLines = 6;
-  if (measure.staveDetails) {
-    // TODO get staff details from previous measure, if one not given, so we can get lines
-    numStaffLines = measure.staveDetails[0].lineCount;
-  }
-
-  let width = QUARTER_NOTE_WIDTH / 8;
-  const height = numStaffLines * STAFF_LINE_HEIGHT;
-
-  // TODO when the measure is stretched with the line's FlexGroup, would be great to have the chords move to (bigger refactor!)
-
-  const chords: Chord[] = [];
-  for (const chord of measure.chords) {
-    const chordLayout: Chord = {
-      box: new Box(
-        width,
-        0,
-        0,
-        // TODO for regular score, needs to be computed from actual notes
-        STAFF_LINE_HEIGHT * numStaffLines
-      ),
-      chord,
-      notes: [],
-    };
-
-    for (const note of notation.notes(chord)) {
-      if (note.tie === "stop") {
-        continue;
-      }
-
-      // TODO need to pass around divisions attribute instead of hardcoded 960
-      const noteWidth = Math.max(MIN_NOTE_WIDTH, (QUARTER_NOTE_WIDTH * note.duration) / 960);
-
-      chordLayout.box.width = Math.max(chordLayout.box.width, noteWidth);
-      chordLayout.notes.push({
-        box: new Box(0, note.fret ? (note.fret.string - 1) * STAFF_LINE_HEIGHT : 0, noteWidth, STAFF_LINE_HEIGHT),
-        note,
-      });
-    }
-
-    width += chordLayout.box.width;
-    chords.push(chordLayout);
-  }
-
-  return {
-    type: "Measure",
-    box: new Box(0, 0, width, height),
-    chords,
-    measure,
-  };
-}
-
 function newLine(contentWidth: number) {
   const tabTextSize = (STAFF_LINE_HEIGHT * 4.5) / 3;
   const tabWidth = tabTextSize * 2;
-  const line = new FlexGroup<LineElement>({ box: new Box(0, 0, contentWidth, 0), drawStaffLines: true });
+  const line = new Group<LineElement>({ box: new Box(0, 0, contentWidth, 0), drawStaffLines: true });
 
   addBarLine(line);
 
@@ -284,7 +230,7 @@ function newLine(contentWidth: number) {
   return line;
 }
 
-function addBarLine(group: FlexGroup<LineElement>) {
+function addBarLine(group: Group<LineElement>) {
   group.addElement(
     {
       type: "BarLine",

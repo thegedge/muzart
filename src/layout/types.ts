@@ -72,18 +72,20 @@ export interface Text {
 export interface Measure {
   type: "Measure";
   measure: notation.Measure;
-  chords: Chord[];
-  // TODO decorations, like time signatures, clefs, etc
   box: Box;
+  elements: (Chord | Space)[];
+  // TODO decorations, like time signatures, clefs, etc
 }
 
 export interface Chord {
+  type: "Chord";
   chord: notation.Chord;
   notes: Note[];
   box: Box;
 }
 
 export interface Note {
+  type: "Note";
   note: notation.Note;
   box: Box;
 }

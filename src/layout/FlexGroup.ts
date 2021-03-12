@@ -24,9 +24,7 @@ export type FlexGroupConfig = {
 };
 
 // TODO "space between" option
-// TODO elements need to specify if a dimension should stretch or not
-export class FlexGroup<T extends HasBox> {
-  readonly type = "Group";
+export class FlexGroup<T extends HasBox & { layout?(): void }> {
   readonly elements: T[] = [];
   readonly drawStaffLines: boolean = false;
   public box: Box;
@@ -117,8 +115,15 @@ export class FlexGroup<T extends HasBox> {
 
       if (props.factor) {
         (element.box as any)[this.dimensionAttribute] += extraSpace * ((props.factor || 0) / factorsSum);
+        if (element.layout) {
+          element.layout();
+        }
       }
       start += element.box[this.dimensionAttribute];
     }
   }
+}
+
+export class Group<T extends HasBox> extends FlexGroup<T> {
+  readonly type = "Group";
 }

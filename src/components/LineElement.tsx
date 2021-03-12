@@ -33,9 +33,9 @@ export default function LineElementComponent(props: { element: LineElement }) {
     case "BarLine":
       return (
         <line
-          x1={props.element.box.x}
+          x1={props.element.box.centerX}
           y1={props.element.box.y}
-          x2={props.element.box.right}
+          x2={props.element.box.centerX}
           y2={props.element.box.bottom}
           stroke="black"
           strokeWidth={props.element.strokeSize}
