@@ -10,7 +10,7 @@
     "jsx": "react",
     "target": "es2017",
     "lib": ["esnext", "DOM"],
-    // "module": "esnext",
+    "module": "esnext",
     "moduleResolution": "node",
     "esModuleInterop": true,
 
