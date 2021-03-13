@@ -200,7 +200,7 @@ function newLine(contentWidth: number) {
   line.addElement(
     {
       type: "Group",
-      box: new Box(0, STAFF_LINE_HEIGHT, tabWidth, STAFF_LINE_HEIGHT * 5),
+      box: new Box(0, 0.75 * STAFF_LINE_HEIGHT, tabWidth, STAFF_LINE_HEIGHT * 5),
       elements: [
         {
           type: "Text",

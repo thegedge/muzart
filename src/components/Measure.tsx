@@ -33,10 +33,10 @@ export function Note(props: { note: layout.Note }) {
       <rect {...svgPositionProps(note)} width={note.box.height} height={note.box.height} fill="white" />
       <text
         x={note.box.x + 0.5 * note.box.height}
-        y={note.box.y + 0.5 * note.box.height}
-        dominantBaseline="middle"
+        y={note.box.centerY}
+        dominantBaseline="central"
         textAnchor="middle"
-        style={{ fontSize: note.box.height }}
+        style={{ fontSize: note.box.height, lineHeight: note.box.height }}
       >
         {note.note.fret?.fret}
       </text>

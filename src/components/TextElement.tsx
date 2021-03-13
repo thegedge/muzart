@@ -24,7 +24,7 @@ export function TextElement(props: { text: Text }) {
     <text
       x={x}
       y={y}
-      dominantBaseline="middle"
+      dominantBaseline="central"
       textAnchor={anchor}
       style={{ fontSize: props.text.size, lineHeight: props.text.size, ...props.text.style }}
     >
