@@ -41,8 +41,10 @@ function staves(document: Document, node: Node): StaffDetails[] | undefined {
     return;
   }
 
+  const divisions = textQueryMaybe(document, attributesNode, "divisions");
   const staffLines = textQueryMaybe(document, attributesNode, "staff-details/staff-lines");
   const staff: StaffDetails = {
+    divisions: divisions ? parseInt(divisions) : 60,
     clef: clef(document, attributesNode),
     key: key(document, attributesNode),
     tuning: tuning(document, attributesNode),
@@ -115,7 +117,7 @@ function chords(document: Document, node: Node): Chord[] {
   while (item) {
     let chord: Note[] = [];
     while (item) {
-      if (contains(document, item, "pitch")) {
+      if (contains(document, item, "pitch") && contains(document, item, "duration")) {
         chord.push(note(document, item));
       }
 

@@ -8,9 +8,14 @@ import suspenseful from "./suspenseful";
 
 export default function App() {
   const score = suspenseful(
-    fetch("example2.xml")
+    fetch("example.xml")
       .then((response) => response.text())
-      .then((value) => loadMusicXml(value))
+      .then((value) => {
+        const now = performance.now();
+        const score = loadMusicXml(value);
+        console.log(`Time to parse MusicXML: ${performance.now() - now}ms`);
+        return score;
+      })
   );
 
   return (

@@ -2,6 +2,7 @@ import { Note } from ".";
 
 export interface StaffDetails {
   lineCount: number;
+  divisions: number;
   key?: Key;
   clef?: Clef;
   tuning?: Note[];

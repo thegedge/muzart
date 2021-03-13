@@ -37,7 +37,7 @@ export function layout(input: notation.Score) {
   };
 
   // TODO specify part
-  const part = input.parts[0];
+  const part = input.parts[2];
   const measures = part.measures;
 
   const margins = DEFAULT_MARGINS;
@@ -102,20 +102,25 @@ export function layout(input: notation.Score) {
     });
   }
 
-  if (measures[0].staveDetails && measures[0].staveDetails[0]?.tempo) {
-    const height = 1.2 * STAFF_LINE_HEIGHT;
+  let divisions = 960;
+  if (measures[0].staveDetails) {
+    divisions = measures[0].staveDetails[0]?.divisions || 960;
 
-    pageGroup.addElement({
-      type: "Text",
-      box: new Box(2 * height, 10, contentWidth - height, 2 * height),
-      align: "left",
-      size: height,
-      value: `♩ = ${measures[0].staveDetails[0].tempo}`,
-      style: {
-        fontFamily: "serif",
-        fontWeight: 800,
-      },
-    });
+    if (measures[0].staveDetails[0]?.tempo) {
+      const height = 1.2 * STAFF_LINE_HEIGHT;
+
+      pageGroup.addElement({
+        type: "Text",
+        box: new Box(2 * height, 10, contentWidth - height, 2 * height),
+        align: "left",
+        size: height,
+        value: `♩ = ${measures[0].staveDetails[0].tempo}`,
+        style: {
+          fontFamily: "serif",
+          fontWeight: 800,
+        },
+      });
+    }
   }
 
   if (pageGroup.elements.length > 0) {
@@ -131,7 +136,7 @@ export function layout(input: notation.Score) {
   //       over the lines and scale the space between them so that that happens. Basically, a flex + flex-col layout.
 
   for (const measureToLayOut of measures) {
-    const measure: Measure = new MeasureLayout(measureToLayOut);
+    const measure: Measure = new MeasureLayout(measureToLayOut, divisions);
     line.box.height = Math.max(line.box.height, measure.box.height);
 
     // Determine if we need to be on a new line.

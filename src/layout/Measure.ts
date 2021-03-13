@@ -10,7 +10,7 @@ const QUARTER_NOTE_WIDTH: Inches = 0.5;
 export class Measure extends FlexGroup<Chord | Space> {
   readonly type = "Measure";
 
-  constructor(readonly measure: notation.Measure) {
+  constructor(readonly measure: notation.Measure, divisions: number) {
     super({ box: new Box(0, 0, 0, 0), axis: "horizontal" });
 
     let numStaffLines = 6;
@@ -27,7 +27,7 @@ export class Measure extends FlexGroup<Chord | Space> {
     this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: null });
 
     for (const chord of measure.chords) {
-      const chordLayout = layOutChord(chord);
+      const chordLayout = layOutChord(chord, divisions);
       chordLayout.box.x = this.box.width;
       this.box.width += chordLayout.box.width;
       this.addElement(chordLayout, { factor: chordLayout.box.width });
@@ -38,7 +38,7 @@ export class Measure extends FlexGroup<Chord | Space> {
   }
 }
 
-function layOutChord(chord: notation.Chord): Chord {
+function layOutChord(chord: notation.Chord, divisions: number): Chord {
   const chordLayout: Chord = {
     type: "Chord",
     box: new Box(0, 0, 0, 0),
@@ -51,8 +51,7 @@ function layOutChord(chord: notation.Chord): Chord {
       continue;
     }
 
-    // TODO need to pass around divisions attribute instead of hardcoded 960
-    const noteWidth = Math.max(MIN_NOTE_WIDTH, (QUARTER_NOTE_WIDTH * note.duration) / 960);
+    const noteWidth = Math.max(MIN_NOTE_WIDTH, (QUARTER_NOTE_WIDTH * note.duration) / divisions);
     const noteY = note.fret ? (note.fret.string - 1) * STAFF_LINE_HEIGHT : 0;
 
     chordLayout.box.width = Math.max(chordLayout.box.width, noteWidth);
