@@ -3,27 +3,12 @@ import { Suspense } from "react";
 import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Score from "./components/Score";
-import loadMusicXml from "./loaders/musicxml";
-import * as notation from "./notation";
-import suspenseful, { Suspenseful } from "./suspenseful";
+import { determineType, load, ScoreDataType } from "./loaders";
+import { suspenseful } from "./suspenseful";
 
 export default function App() {
-  const loadScore = (text: string) => {
-    const now = performance.now();
-    const score = loadMusicXml(text);
-    console.log(`Time to parse MusicXML: ${performance.now() - now}ms`);
-    setIsLoading(false);
-    return score;
-  };
-
-  const [isLoading, setIsLoading] = React.useState<boolean>(true);
-  const [score, setScore] = React.useState<Suspenseful<notation.Score>>(
-    suspenseful(
-      fetch("example.xml")
-        .then((response) => response.text())
-        .then(loadScore)
-    )
-  );
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [score, setScore] = React.useState(suspenseful(load("example.xml").finally(() => setIsLoading(false))));
 
   return (
     <div
@@ -31,32 +16,35 @@ export default function App() {
       onDrop={(event) => {
         if (!isLoading) {
           event.preventDefault();
+
+          setIsLoading(true);
+
+          let file: File | null = null;
+          let type: ScoreDataType | undefined;
           if (event.dataTransfer.items) {
             for (let i = 0; i < event.dataTransfer.items.length; i++) {
               if (event.dataTransfer.items[i].kind === "file") {
-                const file = event.dataTransfer.items[i].getAsFile();
-                if (
-                  file &&
-                  (file.type == "application/xml" || file.name.endsWith(".xml") || file.name.endsWith(".musicxml"))
-                ) {
-                  setIsLoading(true);
-                  setScore(suspenseful(file.text().then(loadScore)));
-                  break;
+                file = event.dataTransfer.items[i].getAsFile();
+                if (file) {
+                  type = determineType(file);
+                  if (type != ScoreDataType.Unknown) {
+                    break;
+                  }
                 }
               }
             }
           } else {
             for (let i = 0; i < event.dataTransfer.files.length; i++) {
-              const file = event.dataTransfer.files[i];
-              if (
-                file &&
-                (file.type == "application/xml" || file.name.endsWith(".xml") || file.name.endsWith(".musicxml"))
-              ) {
-                setIsLoading(true);
-                setScore(suspenseful(file.text().then(loadScore)));
+              file = event.dataTransfer.files[i];
+              type = determineType(file);
+              if (type != ScoreDataType.Unknown) {
                 break;
               }
             }
+          }
+
+          if (file) {
+            setScore(suspenseful(load(file).finally(() => setIsLoading(false))));
           }
         }
       }}
