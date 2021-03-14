@@ -77,5 +77,9 @@ module.exports = {
   plugins: [
     isDevelopment && new webpack.HotModuleReplacementPlugin(),
     isDevelopment && new ReactRefreshWebpackPlugin(),
+    new webpack.EnvironmentPlugin({
+      "NODE_ENV": "development",
+      "DEFAULT_FILE": null,
+    }),
   ].filter(Boolean),
 };

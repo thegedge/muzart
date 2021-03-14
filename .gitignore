@@ -3,6 +3,9 @@
 /.pnp
 .pnp.js
 
+# Example files
+public/*.gp4
+
 # testing
 /coverage
 

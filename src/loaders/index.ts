@@ -1,5 +1,6 @@
 import { isString } from "lodash";
 import { Score } from "../notation";
+import loadGuitarPro4 from "./guitarpro4";
 import loadMusicXml from "./musicxml";
 
 export async function load(source: File | URL | string, type?: ScoreDataType): Promise<Score | null> {
@@ -16,10 +17,12 @@ export async function load(source: File | URL | string, type?: ScoreDataType): P
 }
 
 export enum ScoreDataType {
+  GuitarPro4 = "Guitar Pro 4",
   MusicXML = "MusicXML",
   Unknown = "Unknown",
 }
 
+// TODO perhaps also support determining the type from the buffer?
 export function determineType(source: File | Response) {
   let filename: string | null | undefined;
   let mimeType: string | null | undefined;
@@ -31,7 +34,9 @@ export function determineType(source: File | Response) {
     mimeType = source.headers.get("Content-Type");
   }
 
-  if (filename?.endsWith(".xml") || filename?.endsWith(".musicxml") || mimeType === "application/xml") {
+  if (filename?.endsWith(".gp4")) {
+    return ScoreDataType.GuitarPro4;
+  } else if (filename?.endsWith(".xml") || filename?.endsWith(".musicxml") || mimeType === "application/xml") {
     return ScoreDataType.MusicXML;
   }
 
@@ -49,6 +54,8 @@ function loadScore(buffer: ArrayBuffer, type: ScoreDataType): Score {
     case ScoreDataType.MusicXML:
       score = loadMusicXml(utf8StringFromBuffer(buffer));
       break;
+    case ScoreDataType.GuitarPro4:
+      score = loadGuitarPro4(buffer);
   }
   console.log(`Time to parse ${type}: ${performance.now() - now}ms`);
   return score;

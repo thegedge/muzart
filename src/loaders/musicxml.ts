@@ -1,7 +1,10 @@
 import { compact, range } from "lodash";
 import { Chord, Clef, ClefSign, Key, Measure, Note, Part, Score, StaffDetails, Step, TimeSignature } from "../notation";
 
-export default function loadMusicXml(source: string): Score {
+// TODO this is pretty slow, so perhaps a SAX-based parser
+// TODO quite incomplete, but I can't find any good MusicXML files with all the guitar tablature elements, or programs that can produce them
+
+export default function load(source: string): Score {
   const parser = new DOMParser();
   const document = parser.parseFromString(source, "application/xml");
   if (document.documentElement.nodeName == "parsererror") {
@@ -147,7 +150,7 @@ function note(document: Document, node: Node): Note {
   const fret = textQueryMaybe(document, node, "notations/technical/fret");
   const string = textQueryMaybe(document, node, "notations/technical/string");
   if (fret && string) {
-    note.fret = { fret: parseInt(fret), string: parseInt(string) };
+    note.placement = { fret: parseInt(fret), string: parseInt(string) };
   }
 
   const tie = textQueryMaybe(document, node, "tie/@type");

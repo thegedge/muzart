@@ -52,7 +52,7 @@ function layOutChord(chord: notation.Chord, divisions: number): Chord {
     }
 
     const noteWidth = Math.max(MIN_NOTE_WIDTH, (QUARTER_NOTE_WIDTH * note.duration) / divisions);
-    const noteY = note.fret ? (note.fret.string - 1) * STAFF_LINE_HEIGHT : 0;
+    const noteY = note.placement ? (note.placement.string - 1) * STAFF_LINE_HEIGHT : 0;
 
     chordLayout.box.width = Math.max(chordLayout.box.width, noteWidth);
     chordLayout.box.height = Math.max(chordLayout.box.height, noteY + STAFF_LINE_HEIGHT);

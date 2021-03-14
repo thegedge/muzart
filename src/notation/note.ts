@@ -14,11 +14,11 @@ export interface Note {
   step: Step;
   octave: number;
   duration: number;
-  fret?: Fret;
+  placement?: Placement;
   tie?: "start" | "stop";
 }
 
-export interface Fret {
+export interface Placement {
   // TODO tab specific, make it a general note, with this being annotations
   fret: number;
   string: number;

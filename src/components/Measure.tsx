@@ -38,7 +38,7 @@ export function Note(props: { note: layout.Note }) {
         textAnchor="middle"
         style={{ fontSize: note.box.height, lineHeight: note.box.height }}
       >
-        {note.note.fret?.fret}
+        {note.note.placement?.fret}
       </text>
     </>
   );

@@ -4,11 +4,18 @@ import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Score from "./components/Score";
 import { determineType, load, ScoreDataType } from "./loaders";
-import { suspenseful } from "./suspenseful";
+import * as notation from "./notation";
+import { Suspenseful, suspenseful } from "./suspenseful";
 
 export default function App() {
   const [isLoading, setIsLoading] = React.useState(true);
-  const [score, setScore] = React.useState(suspenseful(load("example.xml").finally(() => setIsLoading(false))));
+  const [score, setScore] = React.useState<Suspenseful<notation.Score | null>>();
+
+  React.useEffect(() => {
+    if (process.env.DEFAULT_FILE) {
+      setScore(suspenseful(load(process.env.DEFAULT_FILE).finally(() => setIsLoading(false))));
+    }
+  }, []);
 
   return (
     <div

@@ -4,7 +4,7 @@ import { Score } from "../notation";
 import { Suspenseful } from "../suspenseful";
 import Page from "./Page";
 
-export default function Score(props: { score: Score | Suspenseful<Score | null> | null }) {
+export default function Score(props: { score?: Score | Suspenseful<Score | null> | null }) {
   if (props.score == null) {
     return <></>;
   }
