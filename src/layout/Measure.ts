@@ -5,7 +5,7 @@ import { STAFF_LINE_HEIGHT } from "./layout";
 import { Chord, Inches, Space } from "./types";
 
 const MIN_NOTE_WIDTH = 0.2;
-const QUARTER_NOTE_WIDTH: Inches = 0.5;
+const QUARTER_NOTE_WIDTH: Inches = 0.25;
 
 export class Measure extends FlexGroup<Chord | Space> {
   readonly type = "Measure";
@@ -19,7 +19,7 @@ export class Measure extends FlexGroup<Chord | Space> {
       numStaffLines = measure.staveDetails[0].lineCount;
     }
 
-    const spacerWidth = QUARTER_NOTE_WIDTH / 8;
+    const spacerWidth = QUARTER_NOTE_WIDTH / 4;
 
     this.box.width = spacerWidth;
     this.box.height = numStaffLines * STAFF_LINE_HEIGHT;
