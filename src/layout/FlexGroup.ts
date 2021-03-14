@@ -107,14 +107,13 @@ export class FlexGroup<T extends HasBox & { layout?(): void }> {
     const extraSpace = stretch ? this.box[this.dimensionAttribute] - farthest[0].box[this.endAttribute] : 0;
     const factorsSum = sum(stretchable.map((v) => v[1].factor || 0));
 
-    // Casting to any because we know `elements` and `flexProps` have the same length, but `zip` always includes
-    // `T | undefined` in the return type signature :(
+    // Casting to any because we can't assign to box properties this way
     let start = 0;
     for (const [element, props] of stretchable) {
       (element.box as any)[this.startAttribute] = start;
 
       if (props.factor) {
-        (element.box as any)[this.dimensionAttribute] += extraSpace * ((props.factor || 0) / factorsSum);
+        (element.box as any)[this.dimensionAttribute] += extraSpace * (props.factor / factorsSum);
         if (element.layout) {
           element.layout();
         }

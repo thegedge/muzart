@@ -41,8 +41,8 @@ export function layout(input: notation.Score) {
   const measures = part.measures;
 
   const margins = DEFAULT_MARGINS;
-  const contentWidth = DEFAULT_PAGE_WIDTH - 2 * margins.right;
-  const contentHeight = DEFAULT_PAGE_HEIGHT - 2 * margins.bottom;
+  const contentWidth = DEFAULT_PAGE_WIDTH - margins.left - margins.right;
+  const contentHeight = DEFAULT_PAGE_HEIGHT - margins.top - margins.bottom;
   const pageContentBox = new Box(margins.left, margins.top, contentWidth, contentHeight);
 
   let pageGroup = new Group<LineElement>({ box: clone(pageContentBox), axis: "vertical" });

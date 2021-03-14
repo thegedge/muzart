@@ -1,10 +1,11 @@
 import React from "react";
 import * as layout from "../layout";
-import { svgPositionProps, svgPositionTransform } from "./utils";
+import { BoxGroup } from "./BoxGroup";
+import { svgPositionProps } from "./utils";
 
 export function Measure(props: { measure: layout.Measure }) {
   return (
-    <g transform={svgPositionTransform(props.measure)}>
+    <BoxGroup node={props.measure}>
       {props.measure.elements.map((chord) => {
         if (chord.type === "Space") {
           return;
@@ -12,17 +13,17 @@ export function Measure(props: { measure: layout.Measure }) {
 
         return <Chord chord={chord} />;
       })}
-    </g>
+    </BoxGroup>
   );
 }
 
 export function Chord(props: { chord: layout.Chord }) {
   return (
-    <g transform={svgPositionTransform(props.chord)}>
+    <BoxGroup node={props.chord}>
       {props.chord.notes.map((note) => (
         <Note note={note} />
       ))}
-    </g>
+    </BoxGroup>
   );
 }
 

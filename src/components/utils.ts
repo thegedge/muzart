@@ -1,6 +1,6 @@
 import { pick } from "lodash";
 import { CSSProperties, SVGAttributes } from "react";
-import { Boxed, Margins, Positioned, Sized } from "../layout/types";
+import { Boxed, HasBox, Margins, Positioned, Sized } from "../layout/types";
 
 //
 // DOM Props
@@ -31,25 +31,28 @@ export function marginProps(margins: Margins): Partial<CSSProperties> {
 // SVG props
 //
 
-export function svgSizeProps(sized: Sized): Partial<SVGAttributes<SVGElement>> {
-  return { width: `${sized.width}in`, height: `${sized.height}in` };
+export function svgSizeProps(sized: Sized | HasBox): Partial<SVGAttributes<SVGElement>> {
+  if ("box" in sized) {
+    sized = sized.box;
+  }
+  return { width: sized.width, height: sized.height };
 }
 
-export function svgPositionProps(positioned: Positioned | { box: Positioned }): Partial<SVGAttributes<SVGElement>> {
+export function svgPositionProps(positioned: Positioned | HasBox): Partial<SVGAttributes<SVGElement>> {
   if ("box" in positioned) {
     positioned = positioned.box;
   }
   return pick(positioned, "x", "y");
 }
 
-export function svgPositionTransform(positioned: Positioned | { box: Positioned }): string {
+export function svgPositionTransform(positioned: Positioned | HasBox): string {
   if ("box" in positioned) {
     positioned = positioned.box;
   }
   return `translate(${positioned.x}, ${positioned.y})`;
 }
 
-export function svgBoxProps(box: Boxed | { box: Boxed }): Partial<SVGAttributes<SVGElement>> {
+export function svgBoxProps(box: Boxed | HasBox): Partial<SVGAttributes<SVGElement>> {
   if ("box" in box) {
     box = box.box;
   }

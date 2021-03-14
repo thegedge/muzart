@@ -1,15 +1,15 @@
 import { range } from "lodash";
 import React from "react";
 import { LineElement, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../layout";
+import { BoxGroup } from "./BoxGroup";
 import { Measure } from "./Measure";
 import { TextElement } from "./TextElement";
-import { svgPositionTransform } from "./utils";
 
 export default function LineElementComponent(props: { element: LineElement }) {
   switch (props.element.type) {
     case "Group":
       return (
-        <g transform={svgPositionTransform(props.element)}>
+        <BoxGroup node={props.element}>
           {props.element.drawStaffLines &&
             range(6).map((staffLineIndex) => (
               <line
@@ -24,7 +24,7 @@ export default function LineElementComponent(props: { element: LineElement }) {
           {props.element.elements.map((e, index) => (
             <LineElementComponent key={index} element={e} />
           ))}
-        </g>
+        </BoxGroup>
       );
     case "Text":
       return <TextElement text={props.element} />;
