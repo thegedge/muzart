@@ -1,5 +1,18 @@
 import { compact, range } from "lodash";
-import { Chord, Clef, ClefSign, Key, Measure, Note, Part, Score, StaffDetails, Step, TimeSignature } from "../notation";
+import {
+  Chord,
+  Clef,
+  ClefSign,
+  Key,
+  Measure,
+  Note,
+  Part,
+  Pitch,
+  Score,
+  StaffDetails,
+  Step,
+  TimeSignature,
+} from "../notation";
 
 // TODO this is pretty slow, so perhaps a SAX-based parser
 // TODO quite incomplete, but I can't find any good MusicXML files with all the guitar tablature elements, or programs that can produce them
@@ -99,15 +112,14 @@ function key(document: Document, node: Node): Key | undefined {
   }
 }
 
-function tuning(document: Document, node: Node): Note[] | undefined {
+function tuning(document: Document, node: Node): Pitch[] | undefined {
   const staffLines = many(document, node, "staff-details/tuning");
   if (staffLines) {
     // TODO use `line` attribute to order, but for now we assume correct ordering
-    return staffLines.map((line) => ({
-      step: textQuery(document, line, "tuning-step") as Step,
-      octave: parseInt(textQuery(document, line, "tuning-octave")),
-      duration: 1,
-    }));
+    const step = (textQuery(document, node, "tuning-step") as unknown) as Step;
+    const octave = parseInt(textQuery(document, node, "tuning-octave"));
+    const alter = parseInt(textQueryMaybe(document, node, "tuning-alter") || "0");
+    return staffLines.map((_line) => new Pitch(step, octave, alter));
   }
 }
 
@@ -141,9 +153,12 @@ function chords(document: Document, node: Node): Chord[] {
 }
 
 function note(document: Document, node: Node): Note {
+  const step = (textQuery(document, node, "pitch/step") as unknown) as Step;
+  const octave = parseInt(textQuery(document, node, "pitch/octave"));
+  const alter = parseInt(textQueryMaybe(document, node, "pitch/alter") || "0");
+
   const note: Note = {
-    step: textQuery(document, node, "pitch/step") as Step,
-    octave: parseInt(textQuery(document, node, "pitch/octave")),
+    pitch: new Pitch(step, octave, alter),
     duration: parseInt(textQuery(document, node, "duration")),
   };
 

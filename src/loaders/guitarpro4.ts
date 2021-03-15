@@ -1,4 +1,5 @@
-import { Measure, Note, Score, Step } from "../notation";
+import { range } from "lodash";
+import { Measure, Note, Pitch, Score } from "../notation";
 import { BufferCursor, NumberType } from "../util/BufferCursor";
 
 // TODO different versions
@@ -93,9 +94,7 @@ export default function load(source: ArrayBuffer): Score {
   // Track props
   //------------------------------------------------------------------------------------------------
 
-  let numStrings = [];
-
-  for (let track = 0; track < numTracks; ++track) {
+  const trackData = range(numTracks).map(() => {
     const [_blank1, _blank2, _blank3, _blank4, _blank5, _banjoTrack, _twelveStringTrack, _drumsTrack] = bits(
       cursor.nextNumber(NumberType.Uint8)
     );
@@ -103,11 +102,12 @@ export default function load(source: ArrayBuffer): Score {
     const name = cursor.nextLengthPrefixedString(NumberType.Uint8);
     cursor.skip(40 - name.length);
 
-    numStrings.push(cursor.nextNumber(NumberType.Uint32));
-
-    for (let stringIndex = 0; stringIndex < 7; ++stringIndex) {
-      /* const stringTuning = */ cursor.nextNumber(NumberType.Uint32);
-    }
+    const numStrings = cursor.nextNumber(NumberType.Uint32);
+    const stringTuning = range(7)
+      .map(() => {
+        return Pitch.fromInt(cursor.nextNumber(NumberType.Uint32));
+      })
+      .slice(7 - numStrings);
 
     /* const midiPort = */ cursor.nextNumber(NumberType.Uint32);
     /* const midiChannel = */ cursor.nextNumber(NumberType.Uint32);
@@ -120,7 +120,12 @@ export default function load(source: ArrayBuffer): Score {
       measures: [],
       name,
     });
-  }
+
+    return {
+      numStrings,
+      stringTuning,
+    };
+  });
 
   //------------------------------------------------------------------------------------------------
   // Track/measure beats
@@ -134,7 +139,8 @@ export default function load(source: ArrayBuffer): Score {
           {
             // TODO more divisions, but for now 6 to support durations from -2 (whole) to 64th (4)
             divisions: 1 << 6,
-            lineCount: numStrings[trackIndex],
+            lineCount: trackData[trackIndex].numStrings,
+            tuning: trackData[trackIndex].stringTuning,
           },
         ],
       };
@@ -152,12 +158,9 @@ export default function load(source: ArrayBuffer): Score {
           _dotted,
         ] = bits(cursor.nextNumber(NumberType.Uint8));
 
-        let statusT;
         if (hasStatus) {
-          const status = cursor.nextNumber(NumberType.Uint8);
+          /* const status = */ cursor.nextNumber(NumberType.Uint8);
           // TODO empty if 0x00, rest if 0x02
-          if (status == 0x00) statusT = "empty";
-          if (status == 0x02) statusT = "rest";
         }
 
         const duration = cursor.nextNumber(NumberType.Int8);
@@ -248,14 +251,18 @@ export default function load(source: ArrayBuffer): Score {
         let foo;
         const strings = (foo = bits(cursor.nextNumber(NumberType.Uint8))).slice(1);
         const chord = [];
-        for (let string = 0; string < numStrings[trackIndex]; ++string) {
+        for (let string = 0; string < trackData[trackIndex].numStrings; ++string) {
           if (strings[string]) {
             const note = readNote(cursor);
             if (note.duration === 0) {
               note.duration = 1 << Math.max(6, duration + 2);
             }
+
             note.placement ??= { fret: 0, string };
             note.placement.string = string + 1;
+
+            // TODO pitch based on string/fret and track tuning
+
             chord.push(note);
           }
         }
@@ -276,7 +283,7 @@ function readNote(cursor: BufferCursor): Note {
   const [
     hasFingering,
     _isAccentuated,
-    hasNoteType,
+    _hasNoteType,
     hasNoteDynamic,
     hasNoteEffects,
     _isGhostNote,
@@ -356,8 +363,6 @@ function readNote(cursor: BufferCursor): Note {
 
   return {
     duration,
-    octave: 1, // TODO
-    step: Step.C, // TODO
     placement: {
       fret,
       string: 0,

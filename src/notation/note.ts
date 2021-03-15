@@ -1,25 +1,14 @@
 import { isArray } from "lodash";
-
-export enum Step {
-  A = "A",
-  B = "B",
-  C = "C",
-  D = "D",
-  E = "E",
-  F = "F",
-  G = "G",
-}
+import { Pitch } from "./pitch";
 
 export interface Note {
-  step: Step;
-  octave: number;
   duration: number;
+  pitch?: Pitch;
   placement?: Placement;
   tie?: "start" | "stop";
 }
 
 export interface Placement {
-  // TODO tab specific, make it a general note, with this being annotations
   fret: number;
   string: number;
 }
