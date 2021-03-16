@@ -3,7 +3,7 @@ import * as notation from "../notation";
 import Box from "./Box";
 import { Group } from "./FlexGroup";
 import { Measure, Measure as MeasureLayout } from "./Measure";
-import { Inches, LineElement, Margins, Score } from "./types";
+import { Inches, LineElement, Margins, Score, Text } from "./types";
 
 const DEFAULT_PAGE_WIDTH: Inches = 8.5;
 const DEFAULT_PAGE_HEIGHT: Inches = 11;
@@ -15,7 +15,7 @@ const DEFAULT_MARGINS: Margins = {
   bottom: DEFAULT_MARGIN,
 };
 
-const LINE_MARGIN: Inches = 0.2;
+const LINE_MARGIN: Inches = 0.25;
 
 /** The stroke width for any lines */
 export const LINE_STROKE_WIDTH = 0.005;
@@ -76,7 +76,7 @@ export function layout(input: notation.Score) {
 
     pageGroup.addElement({
       type: "Text",
-      box: new Box(0, 0, contentWidth, height),
+      box: new Box(0, 0, contentWidth, 2 * height),
       align: "right",
       size: height,
       value: input.composer,
@@ -87,40 +87,41 @@ export function layout(input: notation.Score) {
   }
 
   if (measures[0].staveDetails && measures[0].staveDetails[0]?.tuning) {
-    // TODO show the actual tuning, but okay using a name if it matches the tuning value
-    const height = 1.2 * STAFF_LINE_HEIGHT;
-
-    pageGroup.addElement({
+    // TODO show alternative name for tuning
+    const textSize = STAFF_LINE_HEIGHT;
+    const details = measures[0].staveDetails[0];
+    const stringNumbers = ["①", "②", "③", "④", "⑤", "⑥", "⑦"].slice(0, details.lineCount).reverse();
+    const texts: Text[] = measures[0].staveDetails[0].tuning.map((pitch, index) => ({
       type: "Text",
-      box: new Box(height, 0, contentWidth - height, height),
+      box: new Box(0, 0, textSize * 5, textSize),
       align: "left",
-      size: height,
-      value: "Standard tuning",
+      size: textSize,
+      value: `${stringNumbers[index]} = ${pitch}`,
       style: {
         fontFamily: "serif",
       },
-    });
+    }));
+
+    const offset = Math.round(texts.length / 2);
+    for (let index = 0; index < offset; ++index) {
+      const elements = [texts[index]];
+      if (offset + index < texts.length) {
+        const text = texts[offset + index];
+        text.box.x = textSize * 5;
+        elements.push(text);
+      }
+
+      pageGroup.addElement({
+        type: "Group",
+        box: new Box(0, 0, textSize * 10, 1.3 * textSize),
+        elements,
+      });
+    }
   }
 
   let divisions = 960;
   if (measures[0].staveDetails) {
-    divisions = measures[0].staveDetails[0]?.divisions || 960;
-
-    if (measures[0].staveDetails[0]?.tempo) {
-      const height = 1.2 * STAFF_LINE_HEIGHT;
-
-      pageGroup.addElement({
-        type: "Text",
-        box: new Box(2 * height, 10, contentWidth - height, 2 * height),
-        align: "left",
-        size: height,
-        value: `♩ = ${measures[0].staveDetails[0].tempo}`,
-        style: {
-          fontFamily: "serif",
-          fontWeight: 800,
-        },
-      });
-    }
+    divisions = measures[0].staveDetails[0]?.divisions ?? 960;
   }
 
   if (pageGroup.elements.length > 0) {
