@@ -107,7 +107,7 @@ export default function load(source: ArrayBuffer): Score {
       .map(() => {
         return Pitch.fromInt(cursor.nextNumber(NumberType.Uint32));
       })
-      .slice(7 - numStrings);
+      .slice(0, numStrings);
 
     /* const midiPort = */ cursor.nextNumber(NumberType.Uint32);
     /* const midiChannel = */ cursor.nextNumber(NumberType.Uint32);
