@@ -16,6 +16,7 @@ export default function Score(props: { score?: Score | Suspenseful<Score | null>
 
   const now = performance.now();
   const scoreLayout = layout(score);
+  console.log({ scoreLayout });
   console.log(`Time to lay out: ${performance.now() - now}ms`);
   return (
     <div className="flex flex-col items-center space-y-4">

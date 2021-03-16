@@ -1,4 +1,5 @@
 import * as notation from "../notation";
+import { Part } from "../notation";
 import Box from "./Box";
 import { FlexGroup } from "./FlexGroup";
 import { STAFF_LINE_HEIGHT } from "./layout";
@@ -10,24 +11,18 @@ const QUARTER_NOTE_WIDTH: Inches = 0.25;
 export class Measure extends FlexGroup<Chord | Space> {
   readonly type = "Measure";
 
-  constructor(readonly measure: notation.Measure, divisions: number) {
+  constructor(readonly part: Part, readonly measure: notation.Measure) {
     super({ box: new Box(0, 0, 0, 0), axis: "horizontal" });
-
-    let numStaffLines = 6;
-    if (measure.staveDetails) {
-      // TODO get staff details from previous measure, if one not given, so we can get lines
-      numStaffLines = measure.staveDetails[0].lineCount;
-    }
 
     const spacerWidth = QUARTER_NOTE_WIDTH / 4;
 
     this.box.width = spacerWidth;
-    this.box.height = numStaffLines * STAFF_LINE_HEIGHT;
+    this.box.height = part.lineCount * STAFF_LINE_HEIGHT;
 
     this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: null });
 
     for (const chord of measure.chords) {
-      const chordLayout = layOutChord(chord, divisions);
+      const chordLayout = layOutChord(chord, part.divisions);
       chordLayout.box.x = this.box.width;
       this.box.width += chordLayout.box.width;
       this.addElement(chordLayout, { factor: chordLayout.box.width });

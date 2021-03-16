@@ -86,12 +86,11 @@ export function layout(input: notation.Score) {
     });
   }
 
-  if (measures[0].staveDetails && measures[0].staveDetails[0]?.tuning) {
+  if (part.instrument && part.instrument.tuning) {
     // TODO show alternative name for tuning
     const textSize = STAFF_LINE_HEIGHT;
-    const details = measures[0].staveDetails[0];
-    const stringNumbers = ["①", "②", "③", "④", "⑤", "⑥", "⑦"].slice(0, details.lineCount).reverse();
-    const texts: Text[] = measures[0].staveDetails[0].tuning.map((pitch, index) => ({
+    const stringNumbers = ["①", "②", "③", "④", "⑤", "⑥", "⑦"].slice(0, part.lineCount).reverse();
+    const texts: Text[] = part.instrument.tuning.map((pitch, index) => ({
       type: "Text",
       box: new Box(0, 0, textSize * 5, textSize),
       align: "left",
@@ -119,11 +118,6 @@ export function layout(input: notation.Score) {
     }
   }
 
-  let divisions = 960;
-  if (measures[0].staveDetails) {
-    divisions = measures[0].staveDetails[0]?.divisions ?? 960;
-  }
-
   if (pageGroup.elements.length > 0) {
     pageGroup.addElement({
       type: "Space",
@@ -137,7 +131,7 @@ export function layout(input: notation.Score) {
   //       over the lines and scale the space between them so that that happens. Basically, a flex + flex-col layout.
 
   for (const measureToLayOut of measures) {
-    const measure: Measure = new MeasureLayout(measureToLayOut, divisions);
+    const measure: Measure = new MeasureLayout(part, measureToLayOut);
     line.box.height = Math.max(line.box.height, measure.box.height);
 
     // Determine if we need to be on a new line.

@@ -1,11 +1,6 @@
-import { Pitch } from "./pitch";
-
 export interface StaffDetails {
-  lineCount: number;
-  divisions: number;
   key?: Key;
   clef?: Clef;
-  tuning?: Pitch[];
   time?: TimeSignature;
   tempo?: number;
 }

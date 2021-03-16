@@ -39,9 +39,27 @@ export default function load(source: string): Score {
 }
 
 function parts(document: Document, node: Node): Part[] {
-  return many(document, node, "part").map((item) => ({
-    measures: measures(document, item),
-  }));
+  return many(document, node, "part").map((item) => {
+    const id = textQueryMaybe(document, item, "@id");
+    const name = textQueryMaybe(document, node, `part-list/score-part[@id='${id}']/part-name`);
+    const divisions = textQueryMaybe(document, item, "//divisions");
+    const staffLines = textQueryMaybe(document, item, "//staff-details/staff-lines");
+
+    const result: Part = {
+      name,
+      divisions: divisions ? parseInt(divisions) : 60,
+      lineCount: parseInt(staffLines || "6"), // TODO default to previous in same staff?
+      measures: measures(document, item),
+    };
+
+    const attributes = single(document, item, "measure[1]/attributes");
+    const maybeTuning = attributes && tuning(document, attributes);
+    if (maybeTuning) {
+      result.instrument = { tuning: maybeTuning };
+    }
+
+    return result;
+  });
 }
 
 function measures(document: Document, node: Node): Measure[] {
@@ -57,15 +75,10 @@ function staves(document: Document, node: Node): StaffDetails[] | undefined {
     return;
   }
 
-  const divisions = textQueryMaybe(document, attributesNode, "divisions");
-  const staffLines = textQueryMaybe(document, attributesNode, "staff-details/staff-lines");
   const staff: StaffDetails = {
-    divisions: divisions ? parseInt(divisions) : 60,
     clef: clef(document, attributesNode),
     key: key(document, attributesNode),
-    tuning: tuning(document, attributesNode),
     time: time(document, attributesNode),
-    lineCount: parseInt(staffLines || "6"), // TODO default to previous in same staff?
     tempo: tempo(document, node),
   };
 
@@ -113,13 +126,15 @@ function key(document: Document, node: Node): Key | undefined {
 }
 
 function tuning(document: Document, node: Node): Pitch[] | undefined {
-  const staffLines = many(document, node, "staff-details/tuning");
-  if (staffLines) {
+  const tuning = many(document, node, "staff-details/staff-tuning");
+  if (tuning) {
     // TODO use `line` attribute to order, but for now we assume correct ordering
-    const step = (textQuery(document, node, "tuning-step") as unknown) as Step;
-    const octave = parseInt(textQuery(document, node, "tuning-octave"));
-    const alter = parseInt(textQueryMaybe(document, node, "tuning-alter") || "0");
-    return staffLines.map((_line) => new Pitch(step, octave, alter));
+    return tuning.map((pitch) => {
+      const step = (textQuery(document, pitch, "tuning-step") as unknown) as Step;
+      const octave = parseInt(textQuery(document, pitch, "tuning-octave"));
+      const alter = parseInt(textQueryMaybe(document, pitch, "tuning-alter") || "0");
+      return new Pitch(step, octave, alter);
+    });
   }
 }
 

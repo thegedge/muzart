@@ -1,4 +1,5 @@
-import { Measure } from ".";
+import { Instrument } from "./instrument";
+import { Measure } from "./measure";
 
 export interface Score {
   title?: string;
@@ -8,5 +9,8 @@ export interface Score {
 
 export interface Part {
   name?: string;
+  instrument?: Instrument;
+  lineCount: number;
+  divisions: number;
   measures: Measure[];
 }

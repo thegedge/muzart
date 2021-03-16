@@ -117,8 +117,14 @@ export default function load(source: ArrayBuffer): Score {
     /* const color = */ cursor.nextNumber(NumberType.Uint32);
 
     score.parts.push({
-      measures: [],
       name,
+      // TODO more divisions, but for now 6 to support durations from -2 (whole) to 64th (4)
+      divisions: 1 << 6,
+      lineCount: numStrings,
+      measures: [],
+      instrument: {
+        tuning: stringTuning,
+      },
     });
 
     return {
@@ -135,14 +141,6 @@ export default function load(source: ArrayBuffer): Score {
     for (let trackIndex = 0; trackIndex < numTracks; ++trackIndex) {
       const measure: Measure = {
         chords: [],
-        staveDetails: [
-          {
-            // TODO more divisions, but for now 6 to support durations from -2 (whole) to 64th (4)
-            divisions: 1 << 6,
-            lineCount: trackData[trackIndex].numStrings,
-            tuning: trackData[trackIndex].stringTuning,
-          },
-        ],
       };
 
       const numBeats = cursor.nextNumber(NumberType.Uint32);
