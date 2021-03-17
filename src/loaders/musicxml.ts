@@ -145,10 +145,10 @@ function chords(document: Document, node: Node): Chord[] {
   const result = document.evaluate("note", node, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
   let item = result.iterateNext();
   while (item) {
-    let chord: Note[] = [];
+    let notes: Note[] = [];
     while (item) {
       if (contains(document, item, "pitch") && contains(document, item, "duration")) {
-        chord.push(note(document, item));
+        notes.push(note(document, item));
       }
 
       item = result.iterateNext();
@@ -157,11 +157,7 @@ function chords(document: Document, node: Node): Chord[] {
       }
     }
 
-    if (chord.length == 1) {
-      chords.push(chord[0]);
-    } else if (chord.length > 1) {
-      chords.push(chord);
-    }
+    chords.push({ notes });
   }
 
   return chords;

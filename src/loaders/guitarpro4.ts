@@ -248,7 +248,7 @@ export default function load(source: ArrayBuffer): Score {
         // Max 7 strings, so git rid of the unused, most-significant bit
         let foo;
         const strings = (foo = bits(cursor.nextNumber(NumberType.Uint8))).slice(1);
-        const chord = [];
+        const notes = [];
         for (let string = 0; string < trackData[trackIndex].numStrings; ++string) {
           if (strings[string]) {
             const note = readNote(cursor);
@@ -261,11 +261,11 @@ export default function load(source: ArrayBuffer): Score {
 
             // TODO pitch based on string/fret and track tuning
 
-            chord.push(note);
+            notes.push(note);
           }
         }
 
-        measure.chords.push(chord);
+        measure.chords.push({ notes });
       }
 
       score.parts[trackIndex].measures.push(measure);

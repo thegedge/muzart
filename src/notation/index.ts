@@ -1,3 +1,4 @@
+export * from "./chord";
 export * from "./instrument";
 export * from "./measure";
 export * from "./note";

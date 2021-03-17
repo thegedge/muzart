@@ -41,7 +41,7 @@ function layOutChord(chord: notation.Chord, divisions: number): Chord {
     notes: [],
   };
 
-  for (const note of notation.notes(chord)) {
+  for (const note of chord.notes) {
     if (note.tie === "stop") {
       continue;
     }
