@@ -4,24 +4,8 @@ import Box from "./Box";
 
 export type Inches = number;
 
-export type Positioned = {
-  x: Inches;
-  y: Inches;
-};
-
-export type Sized = {
-  width: Inches;
-  height: Inches;
-};
-
-export type Boxed = Positioned &
-  Sized & {
-    right: Inches;
-    bottom: Inches;
-  };
-
 export type HasBox = {
-  box: Boxed;
+  box: Box;
 };
 
 export type Margins = {
@@ -36,9 +20,11 @@ export interface Score {
   pages: Page[];
 }
 
-export interface Page extends Sized {
+export interface Page {
   elements: LineElement[];
   margins: Margins;
+  width: Inches;
+  height: Inches;
 }
 
 export type LineElement = Space | Text | Measure | BarLine | Group;

@@ -1,6 +1,6 @@
 import { defaults, isNull, last, maxBy, sum, zip } from "lodash";
 import Box from "./Box";
-import { HasBox } from "./types";
+import { HasBox, LineElement } from "./types";
 
 export type FlexProps = {
   /** If `true`, don't adjust this element during `layout` */
@@ -107,7 +107,7 @@ export class FlexGroup<T extends HasBox & { layout?(): void }> {
     const extraSpace = stretch ? this.box[this.dimensionAttribute] - farthest[0].box[this.endAttribute] : 0;
     const factorsSum = sum(stretchable.map((v) => v[1].factor || 0));
 
-    // Casting to any because we can't assign to box properties this way
+    // Casting to any in here because we can't assign to box properties this way
     let start = 0;
     for (const [element, props] of stretchable) {
       (element.box as any)[this.startAttribute] = start;
@@ -123,6 +123,6 @@ export class FlexGroup<T extends HasBox & { layout?(): void }> {
   }
 }
 
-export class Group<T extends HasBox> extends FlexGroup<T> {
+export class LineElementFlexGroup extends FlexGroup<LineElement> {
   readonly type = "Group";
 }

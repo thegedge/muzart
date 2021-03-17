@@ -1,5 +1,4 @@
 import * as notation from "../notation";
-import { Part } from "../notation";
 import Box from "./Box";
 import { FlexGroup } from "./FlexGroup";
 import { STAFF_LINE_HEIGHT } from "./layout";
@@ -11,7 +10,9 @@ const QUARTER_NOTE_WIDTH: Inches = 0.25;
 export class Measure extends FlexGroup<Chord | Space> {
   readonly type = "Measure";
 
-  constructor(readonly part: Part, readonly measure: notation.Measure) {
+  private chordElements: Chord[] = [];
+
+  constructor(readonly part: notation.Part, readonly measure: notation.Measure) {
     super({ box: new Box(0, 0, 0, 0), axis: "horizontal" });
 
     const spacerWidth = QUARTER_NOTE_WIDTH / 4;
@@ -26,10 +27,16 @@ export class Measure extends FlexGroup<Chord | Space> {
       chordLayout.box.x = this.box.width;
       this.box.width += chordLayout.box.width;
       this.addElement(chordLayout, { factor: chordLayout.box.width });
+      this.chordElements.push(chordLayout);
     }
 
     this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: null });
     this.box.width += spacerWidth;
+  }
+
+  chordX(beat: number): number {
+    const chord = this.chordElements[beat];
+    return chord.box?.x || 0;
   }
 }
 

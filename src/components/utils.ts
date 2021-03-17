@@ -1,20 +1,21 @@
 import { pick } from "lodash";
 import { CSSProperties, SVGAttributes } from "react";
-import { Boxed, HasBox, Margins, Positioned, Sized } from "../layout/types";
+import Box from "../layout/Box";
+import { HasBox, Margins } from "../layout/types";
 
 //
 // DOM Props
 //
 
-export function sizeProps(sized: Sized): Partial<CSSProperties> {
-  return { width: `${sized.width}in`, height: `${sized.height}in` };
+export function sizeProps(box: Box): Partial<CSSProperties> {
+  return { width: `${box.width}in`, height: `${box.height}in` };
 }
 
-export function positionProps(positioned: Positioned): Partial<CSSProperties> {
-  return { top: `${positioned.y}in`, left: `${positioned.x}in` };
+export function positionProps(box: Box): Partial<CSSProperties> {
+  return { top: `${box.y}in`, left: `${box.x}in` };
 }
 
-export function boxProps(box: Boxed): Partial<CSSProperties> {
+export function boxProps(box: Box): Partial<CSSProperties> {
   return Object.assign(sizeProps(box), positionProps(box));
 }
 
@@ -31,28 +32,28 @@ export function marginProps(margins: Margins): Partial<CSSProperties> {
 // SVG props
 //
 
-export function svgSizeProps(sized: Sized | HasBox): Partial<SVGAttributes<SVGElement>> {
-  if ("box" in sized) {
-    sized = sized.box;
+export function svgSizeProps(box: Box | HasBox): Partial<SVGAttributes<SVGElement>> {
+  if ("box" in box) {
+    box = box.box;
   }
-  return { width: sized.width, height: sized.height };
+  return { width: box.width, height: box.height };
 }
 
-export function svgPositionProps(positioned: Positioned | HasBox): Partial<SVGAttributes<SVGElement>> {
-  if ("box" in positioned) {
-    positioned = positioned.box;
+export function svgPositionProps(box: Box | HasBox): Partial<SVGAttributes<SVGElement>> {
+  if ("box" in box) {
+    box = box.box;
   }
-  return pick(positioned, "x", "y");
+  return pick(box, "x", "y");
 }
 
-export function svgPositionTransform(positioned: Positioned | HasBox): string {
-  if ("box" in positioned) {
-    positioned = positioned.box;
+export function svgPositionTransform(box: Box | HasBox): string {
+  if ("box" in box) {
+    box = box.box;
   }
-  return `translate(${positioned.x}, ${positioned.y})`;
+  return `translate(${box.x}, ${box.y})`;
 }
 
-export function svgBoxProps(box: Boxed | HasBox): Partial<SVGAttributes<SVGElement>> {
+export function svgBoxProps(box: Box | HasBox): Partial<SVGAttributes<SVGElement>> {
   if ("box" in box) {
     box = box.box;
   }

@@ -1,9 +1,10 @@
 import { clone } from "lodash";
 import * as notation from "../notation";
 import Box from "./Box";
-import { Group } from "./FlexGroup";
+import { LineElementFlexGroup } from "./FlexGroup";
+import { Line } from "./Line";
 import { Measure, Measure as MeasureLayout } from "./Measure";
-import { Inches, LineElement, Margins, Score, Text } from "./types";
+import { Inches, Margins, Score, Text } from "./types";
 
 const DEFAULT_PAGE_WIDTH: Inches = 8.5;
 const DEFAULT_PAGE_HEIGHT: Inches = 11;
@@ -45,7 +46,7 @@ export function layout(input: notation.Score) {
   const contentHeight = DEFAULT_PAGE_HEIGHT - margins.top - margins.bottom;
   const pageContentBox = new Box(margins.left, margins.top, contentWidth, contentHeight);
 
-  let pageGroup = new Group<LineElement>({ box: clone(pageContentBox), axis: "vertical" });
+  let pageGroup = new LineElementFlexGroup({ box: clone(pageContentBox), axis: "vertical" });
 
   // For each measure, if we can fit it on the current line, we do so.
   // If the line will exceed the page height, we break into a new page.
@@ -161,7 +162,7 @@ export function layout(input: notation.Score) {
           margins: clone(margins),
         });
 
-        pageGroup = new Group({ box: clone(pageContentBox), axis: "vertical" });
+        pageGroup = new LineElementFlexGroup({ box: clone(pageContentBox), axis: "vertical" });
       }
 
       line = newLine(contentWidth);
@@ -193,7 +194,7 @@ export function layout(input: notation.Score) {
 function newLine(contentWidth: number) {
   const tabTextSize = (STAFF_LINE_HEIGHT * 4.5) / 3;
   const tabWidth = tabTextSize * 2;
-  const line = new Group<LineElement>({ box: new Box(0, 0, contentWidth, 0), drawStaffLines: true });
+  const line = new Line(new Box(0, 0, contentWidth, 0));
 
   addBarLine(line);
 
@@ -230,7 +231,7 @@ function newLine(contentWidth: number) {
   return line;
 }
 
-function addBarLine(group: Group<LineElement>) {
+function addBarLine(group: Line) {
   group.addElement(
     {
       type: "BarLine",

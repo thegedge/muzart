@@ -1,9 +1,22 @@
 export default class Box {
   constructor(public x: number, public y: number, public width: number, public height: number) {}
 
+  /**
+   * Create a new box, translated by the given amounts.
+   */
   translate(dx: number, dy: number) {
-    this.x += dx;
-    this.y += dy;
+    return new Box(this.x + dx, this.y + dy, this.width, this.height);
+  }
+
+  /**
+   * Create a new box that includes both this box and the given box.
+   */
+  encompass(box: Box) {
+    const x = Math.min(this.x, box.x);
+    const y = Math.min(this.y, box.y);
+    const r = Math.min(this.right, box.right);
+    const b = Math.min(this.bottom, box.bottom);
+    return new Box(x, y, r - x, b - y);
   }
 
   get right() {
