@@ -7,7 +7,7 @@ export function TextElement(props: { text: Text }) {
   let anchor: string;
   switch (props.text.align) {
     case "center":
-      x = props.text.box.right / 2;
+      x = props.text.box.centerX;
       anchor = "middle";
       break;
     case "right":

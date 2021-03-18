@@ -50,8 +50,8 @@ export class Line {
 
       this.aboveStaffLayout.addElement({
         type: "Text",
-        align: "left",
-        box: new Box(element.box.x, numberSize, element.box.width, numberSize),
+        align: "center",
+        box: new Box(element.box.x - 0.5 * numberSize, numberSize, numberSize, numberSize),
         size: numberSize,
         value: element.measure.number.toString(),
         style: {
@@ -65,7 +65,10 @@ export class Line {
           align: "left",
           box: new Box(element.box.x, -tempoSize * 0.5, element.box.width, tempoSize),
           size: tempoSize,
-          value: `♩ = ${element.measure.staffDetails.tempo.value}`,
+          value: `♩﹦${element.measure.staffDetails.tempo.value}`,
+          style: {
+            fontWeight: "bold",
+          },
         });
       }
     }
