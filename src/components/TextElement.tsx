@@ -21,14 +21,17 @@ export function TextElement(props: { text: Text }) {
   }
 
   return (
-    <text
-      x={x}
-      y={y}
-      dominantBaseline="central"
-      textAnchor={anchor}
-      style={{ fontSize: props.text.size, lineHeight: props.text.size, ...props.text.style }}
-    >
-      {props.text.value}
-    </text>
+    <>
+      {/* <rect {...svgBoxProps(props.text)} stroke="red" fill="none" strokeWidth={0.01} /> */}
+      <text
+        x={x}
+        y={y}
+        dominantBaseline="central"
+        textAnchor={anchor}
+        style={{ fontSize: props.text.size, ...props.text.style }}
+      >
+        {props.text.value}
+      </text>
+    </>
   );
 }

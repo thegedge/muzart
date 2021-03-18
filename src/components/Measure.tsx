@@ -1,14 +1,15 @@
 import React from "react";
 import * as layout from "../layout";
 import { BoxGroup } from "./BoxGroup";
+import LineElementComponent from "./LineElement";
 import { svgPositionProps } from "./utils";
 
 export function Measure(props: { measure: layout.Measure }) {
   return (
     <BoxGroup node={props.measure}>
       {props.measure.elements.map((chord) => {
-        if (chord.type === "Space") {
-          return;
+        if (chord.type !== "Chord") {
+          return <LineElementComponent element={chord} />;
         }
 
         return <Chord chord={chord} />;

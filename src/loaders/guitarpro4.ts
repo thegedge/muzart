@@ -1,5 +1,5 @@
 import { range } from "lodash";
-import { Measure, Note, Pitch, Score } from "../notation";
+import { changed, Measure, Note, Pitch, Score } from "../notation";
 import { BufferCursor, NumberType } from "../util/BufferCursor";
 
 // TODO different versions
@@ -15,7 +15,9 @@ export default function load(source: ArrayBuffer): Score {
 
   const version = cursor.nextLengthPrefixedString();
   cursor.skip(30 - version.length);
+  console.debug({ version });
 
+  console.debug("tab info");
   const tabInformation = {
     title: readInfoString(cursor),
     subtitle: readInfoString(cursor),
@@ -27,16 +29,19 @@ export default function load(source: ArrayBuffer): Score {
     instructions: readInfoString(cursor),
   };
 
+  console.debug("comments");
   readComments(cursor);
 
   /* const tripletFeel = */ cursor.nextNumber(NumberType.Uint8);
 
+  console.debug("lyrics");
   readLyrics(cursor);
 
-  /* const tempo = */ cursor.nextNumber(NumberType.Uint32);
+  let tempo = cursor.nextNumber(NumberType.Uint32);
   /* const key = */ cursor.nextNumber(NumberType.Uint8);
   /* const octave = */ cursor.nextNumber(NumberType.Uint32);
 
+  console.debug("midi channels");
   readMidiChannels(cursor);
 
   const numMeasures = cursor.nextNumber(NumberType.Uint32);
@@ -52,6 +57,8 @@ export default function load(source: ArrayBuffer): Score {
   //------------------------------------------------------------------------------------------------
 
   for (let measure = 0; measure < numMeasures; ++measure) {
+    console.debug({ measureDataIndex: measure });
+
     const [
       _doubleBar,
       hasKeySignature,
@@ -94,7 +101,9 @@ export default function load(source: ArrayBuffer): Score {
   // Track props
   //------------------------------------------------------------------------------------------------
 
-  const trackData = range(numTracks).map(() => {
+  const trackData = range(numTracks).map((index) => {
+    console.debug({ trackDataIndex: index });
+
     const [_blank1, _blank2, _blank3, _blank4, _blank5, _banjoTrack, _twelveStringTrack, _drumsTrack] = bits(
       cursor.nextNumber(NumberType.Uint8)
     );
@@ -141,8 +150,13 @@ export default function load(source: ArrayBuffer): Score {
     for (let trackIndex = 0; trackIndex < numTracks; ++trackIndex) {
       const measure: Measure = {
         chords: [],
+        number: measureIndex + 1,
+        staffDetails: {},
       };
 
+      console.debug({ trackIndex, measureIndex });
+
+      let measureTempo;
       const numBeats = cursor.nextNumber(NumberType.Uint32);
       for (let beat = 0; beat < numBeats; ++beat) {
         const [
@@ -238,6 +252,9 @@ export default function load(source: ArrayBuffer): Score {
           }
           if (tempo !== -1) {
             /* const tempoChangeDuration = */ cursor.nextNumber(NumberType.Uint8);
+            measureTempo = tempo;
+
+            // TODO need to track the beats, if the value isn't 0
           }
 
           const [_blank1, _blank2, _tremoloAll, _phaserAll, _reverbAll, _chorusAll, _panAll, _volumeAll] = bits(
@@ -246,8 +263,7 @@ export default function load(source: ArrayBuffer): Score {
         }
 
         // Max 7 strings, so git rid of the unused, most-significant bit
-        let foo;
-        const strings = (foo = bits(cursor.nextNumber(NumberType.Uint8))).slice(1);
+        const strings = bits(cursor.nextNumber(NumberType.Uint8)).slice(1);
         const notes = [];
         for (let string = 0; string < trackData[trackIndex].numStrings; ++string) {
           if (strings[string]) {
@@ -263,6 +279,12 @@ export default function load(source: ArrayBuffer): Score {
 
             notes.push(note);
           }
+        }
+
+        if (measureIndex === 0) {
+          measure.staffDetails.tempo = { value: measureTempo || tempo, changed: true };
+        } else {
+          measure.staffDetails.tempo = changed(measureTempo, tempo);
         }
 
         measure.chords.push({ notes });

@@ -1,5 +1,5 @@
 import { isString } from "lodash";
-import { Score } from "../notation";
+import { changed, Score } from "../notation";
 import loadGuitarPro4 from "./guitarpro4";
 import loadMusicXml from "./musicxml";
 
@@ -58,6 +58,28 @@ function loadScore(buffer: ArrayBuffer, type: ScoreDataType): Score {
       score = loadGuitarPro4(buffer);
   }
   console.log(`Time to parse ${type}: ${performance.now() - now}ms`);
+
+  return postProcess(score);
+}
+
+function postProcess(score: Score) {
+  // Set the staff details reference on all measures
+  for (const part of score.parts) {
+    let previousDetails;
+    for (const measure of part.measures) {
+      if (measure.staffDetails === undefined) {
+        if (previousDetails) {
+          for (const [key, previousValue] of Object.entries(previousDetails)) {
+            const newValue = (measure.staffDetails as any)[key];
+            (measure.staffDetails as any)[key] = changed(newValue, previousValue);
+          }
+        }
+      } else {
+        previousDetails = measure.staffDetails;
+      }
+    }
+  }
+
   return score;
 }
 

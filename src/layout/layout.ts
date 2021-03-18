@@ -38,7 +38,7 @@ export function layout(input: notation.Score) {
   };
 
   // TODO specify part
-  const part = input.parts[2];
+  const part = input.parts[0];
   const measures = part.measures;
 
   const margins = DEFAULT_MARGINS;
@@ -133,14 +133,13 @@ export function layout(input: notation.Score) {
 
   for (const measureToLayOut of measures) {
     const measure: Measure = new MeasureLayout(part, measureToLayOut);
-    line.box.height = Math.max(line.box.height, measure.box.height);
 
     // Determine if we need to be on a new line.
     //
     // When "committing" the current line, it may be too large to fit on the current page, in which case we'll also
     // start a new page.
 
-    if (line.tryAddElement(measure, { factor: measure.elements.length })) {
+    if (line.tryAddElement(measure, { factor: measureToLayOut.chords.length })) {
       addBarLine(line);
     } else {
       line.layout();
@@ -166,7 +165,7 @@ export function layout(input: notation.Score) {
       }
 
       line = newLine(contentWidth);
-      line.addElement(measure, { factor: measure.elements.length });
+      line.addElement(measure, { factor: measureToLayOut.chords.length });
       addBarLine(line);
     }
   }

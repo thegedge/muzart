@@ -14,8 +14,8 @@ export default class Box {
   encompass(box: Box) {
     const x = Math.min(this.x, box.x);
     const y = Math.min(this.y, box.y);
-    const r = Math.min(this.right, box.right);
-    const b = Math.min(this.bottom, box.bottom);
+    const r = Math.max(this.right, box.right);
+    const b = Math.max(this.bottom, box.bottom);
     return new Box(x, y, r - x, b - y);
   }
 

@@ -1,4 +1,4 @@
-import { clone } from "lodash";
+import { clone, map, max } from "lodash";
 import Box from "./Box";
 import { FlexProps, LineElementFlexGroup } from "./FlexGroup";
 import { NonNegativeGroup } from "./NonNegativeGroup";
@@ -30,5 +30,57 @@ export class Line {
 
   layout() {
     this.staffLayout.layout(true);
+    this.staffLayout.box.height = max(map(this.staffLayout.elements, "box.height"));
+
+    // TODO have to reset everything because layout() could be called multiple times. This sucks though. Some ideas:
+    //   1. Track whether or not the line is dirty, and then reset.
+    //   2. Add the elements to the above/below staff layout once, but move them around.
+    //   3. Constraint-based layouts (measure number is above the staff, anchored to the leftmost chord)
+    this.aboveStaffLayout.reset();
+    this.belowStaffLayout.reset();
+
+    // Add tempos
+    const numberSize = 0.08;
+    const tempoSize = 0.1; // TODO property of this class? Related to staff line height?
+
+    for (const element of this.staffLayout.elements) {
+      if (element.type !== "Measure") {
+        continue;
+      }
+
+      this.aboveStaffLayout.addElement({
+        type: "Text",
+        align: "left",
+        box: new Box(element.box.x, numberSize, element.box.width, numberSize),
+        size: numberSize,
+        value: element.measure.number.toString(),
+        style: {
+          fill: "#888888",
+        },
+      });
+
+      if (element.measure.staffDetails.tempo?.changed) {
+        this.aboveStaffLayout.addElement({
+          type: "Text",
+          align: "left",
+          box: new Box(element.box.x, -tempoSize * 0.5, element.box.width, tempoSize),
+          size: tempoSize,
+          value: `♩ = ${element.measure.staffDetails.tempo.value}`,
+        });
+      }
+    }
+
+    this.aboveStaffLayout.layout();
+    this.belowStaffLayout.layout();
+
+    // Finalize positions
+    let y = 0;
+    for (const element of this.elements) {
+      element.box.y = y;
+      y += element.box.height;
+    }
+
+    this.box.width = max(map(this.elements, "box.width"));
+    this.box.height = y;
   }
 }

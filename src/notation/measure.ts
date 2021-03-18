@@ -2,6 +2,7 @@ import { Chord } from "./chord";
 import { StaffDetails } from "./staff";
 
 export interface Measure {
-  staveDetails?: StaffDetails[];
+  staffDetails: StaffDetails;
+  number: number;
   chords: Chord[];
 }

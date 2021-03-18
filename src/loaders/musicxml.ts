@@ -64,22 +64,29 @@ function parts(document: Document, node: Node): Part[] {
 
 function measures(document: Document, node: Node): Measure[] {
   return many(document, node, "measure").map((item) => ({
-    staveDetails: staves(document, item),
+    staffDetails: staves(document, item)[0],
     chords: chords(document, item),
   }));
 }
 
-function staves(document: Document, node: Node): StaffDetails[] | undefined {
+function staves(document: Document, node: Node): StaffDetails[] {
   const attributesNode = single(document, node, "attributes");
   if (!attributesNode) {
-    return;
+    return [];
   }
 
+  // TODO track old values for these
+  const maybeChanged = <T>(value: T | undefined) => {
+    if (value) {
+      return { value, changed: true };
+    }
+  };
+
   const staff: StaffDetails = {
-    clef: clef(document, attributesNode),
-    key: key(document, attributesNode),
-    time: time(document, attributesNode),
-    tempo: tempo(document, node),
+    clef: maybeChanged(clef(document, attributesNode)),
+    key: maybeChanged(key(document, attributesNode)),
+    time: maybeChanged(time(document, attributesNode)),
+    tempo: maybeChanged(tempo(document, node)),
   };
 
   return [staff];

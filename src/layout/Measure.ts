@@ -31,7 +31,7 @@ export class Measure extends FlexGroup<Chord | Space> {
     }
 
     this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: null });
-    this.box.width += spacerWidth;
+    this.box.width += 11 * spacerWidth;
   }
 
   chordX(beat: number): number {
