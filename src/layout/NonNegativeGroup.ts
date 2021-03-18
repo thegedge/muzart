@@ -14,10 +14,7 @@ export class NonNegativeGroup<T extends HasBox> {
   constructor(public box = new Box(0, 0, 0, 0)) {}
 
   addElement(element: T) {
-    const before = this.box;
     this.box = this.box.encompass(element.box);
-    const after = this.box;
-    console.log({ after, before, add: element.box });
     this.elements.push(element);
   }
 
@@ -40,6 +37,6 @@ export class NonNegativeGroup<T extends HasBox> {
       element.box = element.box.translate(-this.box.x, -this.box.y);
     }
 
-    this.box = this.box.translate(-this.box.x, -this.box.y);
+    this.box = this.box.inverse();
   }
 }

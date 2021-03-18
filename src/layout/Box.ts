@@ -9,6 +9,13 @@ export default class Box {
   }
 
   /**
+   * Create a new box, inverting the translation of this box.
+   */
+  inverse() {
+    return new Box(-this.x, -this.y, this.width, this.height);
+  }
+
+  /**
    * Create a new box that includes both this box and the given box.
    */
   encompass(box: Box) {
