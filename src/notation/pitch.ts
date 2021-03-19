@@ -1,12 +1,22 @@
 export enum Step {
-  A,
-  B,
-  C,
-  D,
-  E,
-  F,
-  G,
+  A = "A",
+  B = "B",
+  C = "C",
+  D = "D",
+  E = "E",
+  F = "F",
+  G = "G",
 }
+
+const SEMITONE_OFFSETS = {
+  [Step.C]: 0,
+  [Step.D]: 2,
+  [Step.E]: 4,
+  [Step.F]: 5,
+  [Step.G]: 7,
+  [Step.A]: 9,
+  [Step.B]: 11,
+};
 
 const PITCHES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
@@ -25,6 +35,22 @@ export class Pitch {
   }
 
   constructor(readonly step: Step, readonly octave: number, readonly alterations = 0) {}
+
+  /**
+   * Return a new note that is this note adjusted by the given number of semitones.
+   */
+  adjust(semitones: number) {
+    return Pitch.fromInt(this.toInt() + semitones);
+  }
+
+  /**
+   * Convert this Pitch to an integer.
+   *
+   * 0 is equivalent to C0, in semitone increments.
+   */
+  toInt() {
+    return this.octave * 8 + SEMITONE_OFFSETS[this.step] + this.alterations;
+  }
 
   toString() {
     let alterations = "";

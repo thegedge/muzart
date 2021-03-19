@@ -1,10 +1,17 @@
 import { Pitch } from "./pitch";
 
-export interface Note {
-  duration: number;
-  pitch?: Pitch;
-  placement?: Placement;
-  tie?: "start" | "stop";
+export type TieType = "start" | "stop";
+export interface NoteOptions {
+  placement: Placement;
+  tie: TieType;
+}
+export class Note {
+  readonly placement?: Placement;
+  readonly tie?: TieType;
+
+  constructor(readonly pitch: Pitch, readonly duration: number, options?: Partial<NoteOptions>) {
+    options && Object.assign(this, options);
+  }
 }
 
 export interface Placement {

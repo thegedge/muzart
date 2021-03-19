@@ -276,8 +276,13 @@ export default function load(source: ArrayBuffer): Score {
             note.placement.string = string + 1;
 
             // TODO pitch based on string/fret and track tuning
+            const pitch = trackData[trackIndex].stringTuning[string].adjust(note.placement.fret);
 
-            notes.push(note);
+            notes.push(
+              new Note(pitch, note.duration, {
+                placement: note.placement,
+              })
+            );
           }
         }
 
@@ -299,7 +304,7 @@ export default function load(source: ArrayBuffer): Score {
   return score;
 }
 
-function readNote(cursor: BufferCursor): Note {
+function readNote(cursor: BufferCursor) {
   const [
     hasFingering,
     _isAccentuated,

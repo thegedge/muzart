@@ -6,6 +6,7 @@ import {
   Key,
   Measure,
   Note,
+  NoteOptions,
   Part,
   Pitch,
   Score,
@@ -63,7 +64,8 @@ function parts(document: Document, node: Node): Part[] {
 }
 
 function measures(document: Document, node: Node): Measure[] {
-  return many(document, node, "measure").map((item) => ({
+  return many(document, node, "measure").map((item, index) => ({
+    number: index + 1,
     staffDetails: staves(document, item)[0],
     chords: chords(document, item),
   }));
@@ -174,22 +176,22 @@ function note(document: Document, node: Node): Note {
   const step = (textQuery(document, node, "pitch/step") as unknown) as Step;
   const octave = parseInt(textQuery(document, node, "pitch/octave"));
   const alter = parseInt(textQueryMaybe(document, node, "pitch/alter") || "0");
+  const pitch = new Pitch(step, octave, alter);
 
-  const note: Note = {
-    pitch: new Pitch(step, octave, alter),
-    duration: parseInt(textQuery(document, node, "duration")),
-  };
+  const duration = parseInt(textQuery(document, node, "duration"));
+
+  const options: Partial<NoteOptions> = {};
 
   const fret = textQueryMaybe(document, node, "notations/technical/fret");
   const string = textQueryMaybe(document, node, "notations/technical/string");
   if (fret && string) {
-    note.placement = { fret: parseInt(fret), string: parseInt(string) };
+    options.placement = { fret: parseInt(fret), string: parseInt(string) };
   }
 
   const tie = textQueryMaybe(document, node, "tie/@type");
-  note.tie = tie as Note["tie"];
+  options.tie = tie as NoteOptions["tie"];
 
-  return note;
+  return new Note(pitch, duration, options);
 }
 
 function single(document: Document, node: Node, query: string): Node | null {
