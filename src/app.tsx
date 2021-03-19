@@ -19,7 +19,7 @@ export default function App() {
 
   return (
     <div
-      className="bg-gray-400 p-24 min-h-screen"
+      className="bg-gray-400 py-16 min-h-screen"
       onDrop={(event) => {
         if (!isLoading) {
           event.preventDefault();

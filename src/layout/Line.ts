@@ -55,6 +55,7 @@ export class Line {
         size: numberSize,
         value: element.measure.number.toString(),
         style: {
+          userSelect: "none",
           fill: "#888888",
         },
       });
@@ -67,6 +68,7 @@ export class Line {
           size: tempoSize,
           value: `♩﹦${element.measure.staffDetails.tempo.value}`,
           style: {
+            userSelect: "none",
             fontWeight: "bold",
           },
         });

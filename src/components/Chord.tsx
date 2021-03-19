@@ -20,6 +20,13 @@ export function Note(props: { note: layout.Note }) {
   }
 
   return (
-    <TextElement {...note} align="center" size={note.box.height} text={note.note.placement.fret.toString()} fill />
+    <TextElement
+      {...note}
+      align="center"
+      size={note.box.height}
+      text={note.note.placement.fret.toString()}
+      style={{ userSelect: "none" }}
+      fill
+    />
   );
 }

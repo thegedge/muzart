@@ -208,6 +208,7 @@ function newLine(contentWidth: number) {
           align: "center",
           size: tabTextSize,
           value: "T",
+          style: { userSelect: "none" },
         },
         {
           type: "Text",
@@ -215,6 +216,7 @@ function newLine(contentWidth: number) {
           align: "center",
           size: tabTextSize,
           value: "A",
+          style: { userSelect: "none" },
         },
         {
           type: "Text",
@@ -222,6 +224,7 @@ function newLine(contentWidth: number) {
           align: "center",
           size: tabTextSize,
           value: "B",
+          style: { userSelect: "none" },
         },
       ],
     },
