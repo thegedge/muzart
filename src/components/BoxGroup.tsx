@@ -10,10 +10,10 @@ const DebugContext = React.createContext<{ enabled: boolean; index: number; colo
 
 const BUCKETS = [0, 225, 90, 180, 315, 135, 45, 270];
 
-export function BoxGroup(props: { node: HasBox & { type?: string }; children: React.ReactNode }) {
+export function BoxGroup(props: { node: HasBox & { type?: string }; debug?: boolean; children: React.ReactNode }) {
   const debug = useContext(DebugContext);
   let debugColor = null;
-  if (debug.enabled) {
+  if (props.debug || debug.enabled) {
     const newColor = () => {
       const bucket = BUCKETS[debug.index % BUCKETS.length];
       const hue = bucket + Math.floor(20 * (Math.random() - 0.5));

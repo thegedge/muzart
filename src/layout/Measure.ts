@@ -46,7 +46,7 @@ function layOutChord(chord: notation.Chord, numStrings: number): Chord | Rest {
   if (chord.rest) {
     return {
       type: "Rest",
-      box: new Box(0, 0, width, numStrings * STAFF_LINE_HEIGHT),
+      box: new Box(0, 2.5 * STAFF_LINE_HEIGHT, width, (numStrings - 2.5) * STAFF_LINE_HEIGHT),
       chord,
     };
   }
