@@ -27,7 +27,7 @@ export default function LineElementComponent(props: { element: LineElement }) {
         </BoxGroup>
       );
     case "Text":
-      return <TextElement text={props.element} />;
+      return <TextElement {...props.element} text={props.element.value} />;
     case "Measure":
       return <Measure measure={props.element} />;
     case "BarLine":

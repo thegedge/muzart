@@ -11,6 +11,5 @@ export interface Part {
   name?: string;
   instrument?: Instrument;
   lineCount: number;
-  divisions: number;
   measures: Measure[];
 }

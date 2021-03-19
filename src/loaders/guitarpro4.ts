@@ -1,5 +1,6 @@
 import { range } from "lodash";
 import { changed, Measure, Note, Pitch, Score } from "../notation";
+import { Duration } from "../notation/duration";
 import { BufferCursor, NumberType } from "../util/BufferCursor";
 
 // TODO different versions
@@ -127,8 +128,6 @@ export default function load(source: ArrayBuffer): Score {
 
     score.parts.push({
       name,
-      // TODO more divisions, but for now 6 to support durations from -2 (whole) to 64th (4)
-      divisions: 1 << 6,
       lineCount: numStrings,
       measures: [],
       instrument: {
@@ -170,12 +169,13 @@ export default function load(source: ArrayBuffer): Score {
           _dotted,
         ] = bits(cursor.nextNumber(NumberType.Uint8));
 
+        let rest = false;
         if (hasStatus) {
-          /* const status = */ cursor.nextNumber(NumberType.Uint8);
-          // TODO empty if 0x00, rest if 0x02
+          const status = cursor.nextNumber(NumberType.Uint8);
+          rest = status == 0x02;
         }
 
-        const duration = cursor.nextNumber(NumberType.Int8);
+        const duration = Duration.fromNumber((1 << (cursor.nextNumber(NumberType.Int8) + 2)) as any);
 
         if (hasTuplet) {
           /* const n = */ cursor.nextNumber(NumberType.Uint32);
@@ -268,10 +268,8 @@ export default function load(source: ArrayBuffer): Score {
         for (let string = 0; string < trackData[trackIndex].numStrings; ++string) {
           if (strings[string]) {
             const note = readNote(cursor);
-            if (note.duration === 0) {
-              note.duration = 1 << Math.max(6, duration + 2);
-            }
 
+            let noteDuration = note.duration === 0 ? duration : Duration.fromNumber(note.duration as any);
             note.placement ??= { fret: 0, string };
             note.placement.string = string + 1;
 
@@ -279,7 +277,7 @@ export default function load(source: ArrayBuffer): Score {
             const pitch = trackData[trackIndex].stringTuning[string].adjust(note.placement.fret);
 
             notes.push(
-              new Note(pitch, note.duration, {
+              new Note(pitch, noteDuration, {
                 placement: note.placement,
               })
             );
@@ -292,7 +290,7 @@ export default function load(source: ArrayBuffer): Score {
           measure.staffDetails.tempo = changed(measureTempo, tempo);
         }
 
-        measure.chords.push({ notes });
+        measure.chords.push({ notes, duration, rest });
       }
 
       score.parts[trackIndex].measures.push(measure);
@@ -326,6 +324,10 @@ function readNote(cursor: BufferCursor) {
   if (hasDuration) {
     const durationType = cursor.nextNumber(NumberType.Int8);
     // -2 = whole note, -1 = half note, ...
+    if (durationType < -2 || durationType > 4) {
+      throw new Error(`unexpected duration: ${durationType}`);
+    }
+
     duration = 1 << (4 - Math.max(4, durationType)); // TODO understand the max duration
     /* const tuplet = */ cursor.nextNumber(NumberType.Uint8);
   }

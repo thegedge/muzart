@@ -1,47 +1,40 @@
+import { clone } from "lodash";
 import React from "react";
 import * as layout from "../layout";
 import { BoxGroup } from "./BoxGroup";
+import { Chord } from "./Chord";
 import LineElementComponent from "./LineElement";
-import { svgPositionProps } from "./utils";
+import { TextElement } from "./TextElement";
 
 export function Measure(props: { measure: layout.Measure }) {
   return (
     <BoxGroup node={props.measure}>
-      {props.measure.elements.map((chord) => {
-        if (chord.type !== "Chord") {
-          return <LineElementComponent element={chord} />;
+      {props.measure.elements.map((element) => {
+        switch (element.type) {
+          case "Chord":
+            return <Chord chord={element} />;
+          case "Rest":
+            let box = clone(element.box);
+            let height = 0.1;
+            let width = height * 2;
+            box.x += (box.width - width) * 0.5;
+            box.y += (box.height - 2 * height) * 0.5;
+            box.width = width;
+            box.height = height;
+            return (
+              <TextElement
+                box={box}
+                align="center"
+                size={height}
+                text="rest"
+                fill
+                style={{ fontWeight: 100, fontStyle: "italic", fill: "#aa5555" }}
+              />
+            );
+          default:
+            return <LineElementComponent element={element} />;
         }
-
-        return <Chord chord={chord} />;
       })}
     </BoxGroup>
-  );
-}
-
-export function Chord(props: { chord: layout.Chord }) {
-  return (
-    <BoxGroup node={props.chord}>
-      {props.chord.notes.map((note) => (
-        <Note note={note} />
-      ))}
-    </BoxGroup>
-  );
-}
-
-export function Note(props: { note: layout.Note }) {
-  const note = props.note;
-  return (
-    <>
-      <rect {...svgPositionProps(note)} width={note.box.height} height={note.box.height} fill="white" />
-      <text
-        x={note.box.x + 0.5 * note.box.height}
-        y={note.box.centerY}
-        dominantBaseline="central"
-        textAnchor="middle"
-        style={{ fontSize: note.box.height, lineHeight: note.box.height }}
-      >
-        {note.note.placement?.fret}
-      </text>
-    </>
   );
 }

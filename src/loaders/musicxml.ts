@@ -14,6 +14,7 @@ import {
   Step,
   TimeSignature,
 } from "../notation";
+import { Duration } from "../notation/duration";
 
 // TODO this is pretty slow, so perhaps a SAX-based parser
 // TODO quite incomplete, but I can't find any good MusicXML files with all the guitar tablature elements, or programs that can produce them
@@ -43,12 +44,10 @@ function parts(document: Document, node: Node): Part[] {
   return many(document, node, "part").map((item) => {
     const id = textQueryMaybe(document, item, "@id");
     const name = textQueryMaybe(document, node, `part-list/score-part[@id='${id}']/part-name`);
-    const divisions = textQueryMaybe(document, item, "//divisions");
     const staffLines = textQueryMaybe(document, item, "//staff-details/staff-lines");
 
     const result: Part = {
       name,
-      divisions: divisions ? parseInt(divisions) : 60,
       lineCount: parseInt(staffLines || "6"), // TODO default to previous in same staff?
       measures: measures(document, item),
     };
@@ -166,7 +165,10 @@ function chords(document: Document, node: Node): Chord[] {
       }
     }
 
-    chords.push({ notes });
+    if (notes.length > 0) {
+      // TODO rest?
+      chords.push({ notes, duration: notes[0].duration, rest: false });
+    }
   }
 
   return chords;
@@ -178,7 +180,8 @@ function note(document: Document, node: Node): Note {
   const alter = parseInt(textQueryMaybe(document, node, "pitch/alter") || "0");
   const pitch = new Pitch(step, octave, alter);
 
-  const duration = parseInt(textQuery(document, node, "duration"));
+  // any so we can typecheck on `Duration.fromString` below, relying on MusicXML's validations to ensure correctness
+  const duration: any = textQuery(document, node, "type");
 
   const options: Partial<NoteOptions> = {};
 
@@ -191,7 +194,7 @@ function note(document: Document, node: Node): Note {
   const tie = textQueryMaybe(document, node, "tie/@type");
   options.tie = tie as NoteOptions["tie"];
 
-  return new Note(pitch, duration, options);
+  return new Note(pitch, Duration.fromString(duration), options);
 }
 
 function single(document: Document, node: Node, query: string): Node | null {

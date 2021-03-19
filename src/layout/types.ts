@@ -59,7 +59,7 @@ export interface Measure {
   type: "Measure";
   measure: notation.Measure;
   box: Box;
-  elements: (Chord | Space)[];
+  elements: (Chord | Rest | Space)[];
   // TODO decorations, like time signatures, clefs, etc
 }
 
@@ -67,6 +67,12 @@ export interface Chord {
   type: "Chord";
   chord: notation.Chord;
   notes: Note[];
+  box: Box;
+}
+
+export interface Rest {
+  type: "Rest";
+  chord: notation.Chord;
   box: Box;
 }
 
