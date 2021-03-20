@@ -11,7 +11,12 @@ const DebugContext = React.createContext<{ enabled: boolean; index: number; colo
 
 const BUCKETS = [0, 225, 90, 180, 315, 135, 45, 270];
 
-export function BoxGroup(props: { node: HasBox & { type?: string }; debug?: boolean; children: React.ReactNode }) {
+export function BoxGroup(props: {
+  node: HasBox & { type?: string };
+  debug?: boolean;
+  scale?: number;
+  children: React.ReactNode;
+}) {
   const debug = useContext(DebugContext);
   let debugColor = null;
   const debugType = props.node.type || "undefined";
@@ -23,8 +28,13 @@ export function BoxGroup(props: { node: HasBox & { type?: string }; debug?: bool
     }
   }
 
+  const transforms = [svgPositionTransform(props.node)];
+  if (props.scale) {
+    transforms.push(`scale(${props.scale})`);
+  }
+
   return (
-    <g transform={svgPositionTransform(props.node)}>
+    <g transform={transforms.join(" ")}>
       {props.children}
       {debugColor && <rect {...svgSizeProps(props.node)} fill="none" stroke={debugColor} strokeWidth={0.01} />}
     </g>
