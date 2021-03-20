@@ -17,6 +17,11 @@ export type Margins = {
 
 export interface Score {
   score: notation.Score;
+  parts: Part[];
+}
+
+export interface Part {
+  part: notation.Part;
   pages: Page[];
 }
 

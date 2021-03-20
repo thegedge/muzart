@@ -17,50 +17,50 @@ export default function App() {
     }
   }, []);
 
-  return (
-    <div
-      className="bg-gray-400 py-4 min-h-screen"
-      onDrop={(event) => {
-        if (!isLoading) {
-          event.preventDefault();
+  const onDrop = React.useCallback((event: React.DragEvent<Element>) => {
+    if (!isLoading) {
+      event.preventDefault();
 
-          setIsLoading(true);
+      setIsLoading(true);
 
-          let file: File | null = null;
-          let type: ScoreDataType | undefined;
-          if (event.dataTransfer.items) {
-            for (let i = 0; i < event.dataTransfer.items.length; i++) {
-              if (event.dataTransfer.items[i].kind === "file") {
-                file = event.dataTransfer.items[i].getAsFile();
-                if (file) {
-                  type = determineType(file);
-                  if (type != ScoreDataType.Unknown) {
-                    break;
-                  }
-                }
-              }
-            }
-          } else {
-            for (let i = 0; i < event.dataTransfer.files.length; i++) {
-              file = event.dataTransfer.files[i];
+      let file: File | null = null;
+      let type: ScoreDataType | undefined;
+      if (event.dataTransfer.items) {
+        for (let i = 0; i < event.dataTransfer.items.length; i++) {
+          if (event.dataTransfer.items[i].kind === "file") {
+            file = event.dataTransfer.items[i].getAsFile();
+            if (file) {
               type = determineType(file);
               if (type != ScoreDataType.Unknown) {
                 break;
               }
             }
           }
-
-          if (file) {
-            setScore(suspenseful(load(file).finally(() => setIsLoading(false))));
+        }
+      } else {
+        for (let i = 0; i < event.dataTransfer.files.length; i++) {
+          file = event.dataTransfer.files[i];
+          type = determineType(file);
+          if (type != ScoreDataType.Unknown) {
+            break;
           }
         }
-      }}
-      onDragOver={(event) => event.preventDefault()}
-    >
+      }
+
+      if (file) {
+        setScore(suspenseful(load(file).finally(() => setIsLoading(false))));
+      }
+    }
+  }, []);
+
+  return (
+    <div className="bg-gray-400 py-4 min-h-screen" onDrop={onDrop} onDragOver={(event) => event.preventDefault()}>
       <Suspense fallback={<h1>Loading...</h1>}>
-        <ErrorBoundary>
-          <Score score={score} />
-        </ErrorBoundary>
+        {score && (
+          <ErrorBoundary>
+            <Score score={score} />
+          </ErrorBoundary>
+        )}
       </Suspense>
     </div>
   );

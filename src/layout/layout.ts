@@ -4,7 +4,7 @@ import Box from "./Box";
 import { LineElementFlexGroup } from "./FlexGroup";
 import { Line } from "./Line";
 import { Measure, Measure as MeasureLayout } from "./Measure";
-import { Inches, Margins, Score, Text } from "./types";
+import { Inches, Margins, Page, Part, Score, Text } from "./types";
 
 const DEFAULT_PAGE_WIDTH: Inches = 8.5;
 const DEFAULT_PAGE_HEIGHT: Inches = 11;
@@ -31,14 +31,16 @@ export const STAFF_LINE_HEIGHT: Inches = 0.1;
  * a series of lines that will be stacked vertically. For example, the first page will often be
  * some lines of text describing the composition (name, artist, etc) followed by many staff lines.
  */
-export function layout(input: notation.Score) {
-  const score: Score = {
-    score: input,
-    pages: [],
+export function layout(score: notation.Score): Score {
+  return {
+    score,
+    parts: score.parts.map((part) => layOutPart(score, part)),
   };
+}
 
-  // TODO specify part
-  const part = input.parts[0];
+// TODO decompose this more, move into other files (e.g., `Line.fromMeasures`)
+
+function layOutPart(score: notation.Score, part: notation.Part): Part {
   const measures = part.measures;
 
   const margins = DEFAULT_MARGINS;
@@ -48,31 +50,22 @@ export function layout(input: notation.Score) {
 
   let pageGroup = new LineElementFlexGroup({ box: clone(pageContentBox), axis: "vertical" });
 
-  // For each measure, if we can fit it on the current line, we do so.
-  // If the line will exceed the page height, we break into a new page.
-  //
-  // TODO: some heuristics to improve the process. Two ideas:
-  //    1. If there's enough room on the line, but the measure would be too large for the page, perhaps it's
-  //       better to start a new line?
-  //    2. Even though we have a desired width for note durations, allow them to be stretched if it produces
-  //       a nicer line.
-
   // Lay out the composition title, composer, etc
-  if (input.title) {
+  if (score.title) {
     const height = 4 * STAFF_LINE_HEIGHT;
     pageGroup.addElement({
       type: "Text",
       box: new Box(0, 0, contentWidth, height),
       align: "center",
       size: height,
-      value: input.title,
+      value: score.title,
       style: {
         fontFamily: "serif",
       },
     });
   }
 
-  if (input.composer) {
+  if (score.composer) {
     const height = 1.5 * STAFF_LINE_HEIGHT;
 
     pageGroup.addElement({
@@ -80,7 +73,7 @@ export function layout(input: notation.Score) {
       box: new Box(0, 0, contentWidth, 2 * height),
       align: "right",
       size: height,
-      value: input.composer,
+      value: score.composer,
       style: {
         fontFamily: "serif",
       },
@@ -126,6 +119,7 @@ export function layout(input: notation.Score) {
     });
   }
 
+  const pages: Page[] = [];
   let line = newLine(contentWidth);
 
   // TODO: Ideally, the bottom of the last line lines up with the bottom of the content box of the page. We should iterate
@@ -154,7 +148,7 @@ export function layout(input: notation.Score) {
         pageGroup.popElement(); // Pop off the last space element so that the last line's bottom coincides with content bottom
         pageGroup.layout();
 
-        score.pages.push({
+        pages.push({
           elements: pageGroup.elements,
           width: DEFAULT_PAGE_WIDTH,
           height: DEFAULT_PAGE_HEIGHT,
@@ -179,7 +173,7 @@ export function layout(input: notation.Score) {
 
   if (pageGroup.elements.length > 0) {
     pageGroup.layout(false);
-    score.pages.push({
+    pages.push({
       elements: pageGroup.elements,
       width: DEFAULT_PAGE_WIDTH,
       height: DEFAULT_PAGE_HEIGHT,
@@ -187,7 +181,7 @@ export function layout(input: notation.Score) {
     });
   }
 
-  return score;
+  return { part, pages };
 }
 
 function newLine(contentWidth: number) {

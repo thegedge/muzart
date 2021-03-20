@@ -4,7 +4,7 @@ import { Score } from "../notation";
 import { Suspenseful } from "../suspenseful";
 import Page from "./Page";
 
-export default function Score(props: { score?: Score | Suspenseful<Score | null> | null }) {
+export default function Score(props: { score: Score | Suspenseful<Score | null>; partIndex?: number }) {
   if (props.score == null) {
     return <></>;
   }
@@ -19,9 +19,10 @@ export default function Score(props: { score?: Score | Suspenseful<Score | null>
   console.log({ scoreLayout });
   console.log(`Time to lay out: ${performance.now() - now}ms`);
 
+  const part = scoreLayout.parts[props.partIndex || 0];
   return (
     <div className="flex flex-row flex-wrap items-center justify-center">
-      {scoreLayout.pages.map((page, index) => (
+      {part.pages.map((page, index) => (
         <Page key={index} page={page} />
       ))}
     </div>
