@@ -18,8 +18,9 @@ export default function Score(props: { score?: Score | Suspenseful<Score | null>
   const scoreLayout = layout(score);
   console.log({ scoreLayout });
   console.log(`Time to lay out: ${performance.now() - now}ms`);
+
   return (
-    <div className="flex flex-col items-center space-y-4">
+    <div className="flex flex-row flex-wrap items-center justify-center">
       {scoreLayout.pages.map((page, index) => (
         <Page key={index} page={page} />
       ))}

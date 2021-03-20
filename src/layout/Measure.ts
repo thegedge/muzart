@@ -5,7 +5,7 @@ import { STAFF_LINE_HEIGHT } from "./layout";
 import { Chord, Inches, Rest, Space } from "./types";
 
 const MIN_NOTE_WIDTH = 0.2;
-const QUARTER_NOTE_WIDTH: Inches = 0.2;
+const QUARTER_NOTE_WIDTH: Inches = 0.25;
 
 export class Measure extends FlexGroup<Chord | Rest | Space> {
   readonly type = "Measure";
@@ -15,12 +15,12 @@ export class Measure extends FlexGroup<Chord | Rest | Space> {
   constructor(readonly part: notation.Part, readonly measure: notation.Measure) {
     super({ box: new Box(0, 0, 0, 0), axis: "horizontal" });
 
-    const spacerWidth = QUARTER_NOTE_WIDTH / 4;
+    const spacerWidth = QUARTER_NOTE_WIDTH / 2;
 
     this.box.width = spacerWidth;
     this.box.height = part.lineCount * STAFF_LINE_HEIGHT;
 
-    this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: null });
+    this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: spacerWidth });
 
     for (const chord of measure.chords) {
       const chordLayout = layOutChord(chord, part.lineCount);
@@ -30,8 +30,8 @@ export class Measure extends FlexGroup<Chord | Rest | Space> {
       this.chordElements.push(chordLayout);
     }
 
-    this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: null });
-    this.box.width += 11 * spacerWidth;
+    this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: spacerWidth });
+    this.box.width += spacerWidth;
   }
 
   chordX(beat: number): number {
