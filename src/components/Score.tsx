@@ -3,6 +3,7 @@ import { layout } from "../layout/layout";
 import { Score } from "../notation";
 import { Suspenseful } from "../suspenseful";
 import Page from "./Page";
+import { Toolbox } from "./Toolbox";
 
 export default function Score(props: { score: Score | Suspenseful<Score | null>; partIndex?: number }) {
   if (props.score == null) {
@@ -19,12 +20,15 @@ export default function Score(props: { score: Score | Suspenseful<Score | null>;
   console.log({ scoreLayout });
   console.log(`Time to lay out: ${performance.now() - now}ms`);
 
-  const part = scoreLayout.parts[props.partIndex || 0];
+  const [part, setPart] = React.useState(scoreLayout.parts[props.partIndex || 0]);
   return (
-    <div className="flex flex-row flex-wrap items-center justify-center">
-      {part.pages.map((page, index) => (
-        <Page key={index} page={page} />
-      ))}
-    </div>
+    <>
+      <Toolbox score={score} onPartChange={(index) => setPart(scoreLayout.parts[index])} />
+      <div className="flex flex-row flex-wrap items-center justify-center">
+        {part.pages.map((page, index) => (
+          <Page key={index} page={page} />
+        ))}
+      </div>
+    </>
   );
 }
