@@ -40,7 +40,6 @@ export class Line {
     this.aboveStaffLayout.reset();
     this.belowStaffLayout.reset();
 
-    // Add tempos
     const numberSize = 0.08;
     const tempoSize = 0.1; // TODO property of this class? Related to staff line height?
 
