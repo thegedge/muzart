@@ -1,8 +1,8 @@
-import { Duration } from "./duration";
 import { Note } from "./note";
+import { NoteValue } from "./note_value";
 
 export interface Chord {
   rest: boolean;
-  duration: Duration;
+  value: NoteValue;
   notes: Note[];
 }

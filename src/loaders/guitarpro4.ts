@@ -1,6 +1,6 @@
 import { range } from "lodash";
 import { changed, Measure, Note, Pitch, Score } from "../notation";
-import { Duration } from "../notation/duration";
+import { NoteValue } from "../notation/note_value";
 import { BufferCursor, NumberType } from "../util/BufferCursor";
 
 // TODO different versions
@@ -175,7 +175,7 @@ export default function load(source: ArrayBuffer): Score {
           rest = status == 0x02;
         }
 
-        const duration = Duration.fromNumber((1 << (cursor.nextNumber(NumberType.Int8) + 2)) as any);
+        const duration = NoteValue.fromNumber((1 << (cursor.nextNumber(NumberType.Int8) + 2)) as any);
 
         if (hasTuplet) {
           /* const n = */ cursor.nextNumber(NumberType.Uint32);
@@ -269,7 +269,7 @@ export default function load(source: ArrayBuffer): Score {
           if (strings[string]) {
             const note = readNote(cursor);
 
-            let noteDuration = note.duration === 0 ? duration : Duration.fromNumber(note.duration as any);
+            let noteDuration = note.duration === 0 ? duration : NoteValue.fromNumber(note.duration as any);
             note.placement ??= { fret: 0, string };
             note.placement.string = string + 1;
 
@@ -290,7 +290,7 @@ export default function load(source: ArrayBuffer): Score {
           measure.staffDetails.tempo = changed(measureTempo, tempo);
         }
 
-        measure.chords.push({ notes, duration, rest });
+        measure.chords.push({ notes, value: duration, rest });
       }
 
       score.parts[trackIndex].measures.push(measure);

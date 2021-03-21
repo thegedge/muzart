@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 import * as notation from "../notation";
-import { Duration } from "../notation/duration";
+import { NoteValue } from "../notation/note_value";
 import Box from "./Box";
 
 export type Inches = number;
@@ -90,7 +90,7 @@ export interface Note {
 
 export interface DurationStem {
   type: "DurationStem";
-  duration: Duration;
+  duration: NoteValue;
   box: Box;
 }
 

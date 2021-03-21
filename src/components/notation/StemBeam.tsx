@@ -1,7 +1,7 @@
 import { range } from "lodash";
 import React from "react";
 import { DurationStem, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../layout";
-import { DurationBase } from "../../notation/duration";
+import { NoteValueName } from "../../notation/note_value";
 
 // TODO quarter height is good for guitar tabs, but typically half for regular scores
 const BEAM_HEIGHT = STAFF_LINE_HEIGHT / 4;
@@ -9,17 +9,17 @@ const STEM_BEAM_COLOR = "#333333";
 
 export function StemBeam(props: { node: DurationStem }) {
   let numBeams = 0;
-  switch (props.node.duration.base) {
-    case DurationBase.Eighth:
+  switch (props.node.duration.name) {
+    case NoteValueName.Eighth:
       numBeams = 1;
       break;
-    case DurationBase.Sixteenth:
+    case NoteValueName.Sixteenth:
       numBeams = 2;
       break;
-    case DurationBase.ThirtySecond:
+    case NoteValueName.ThirtySecond:
       numBeams = 3;
       break;
-    case DurationBase.SixtyFourth:
+    case NoteValueName.SixtyFourth:
       numBeams = 4;
       break;
   }

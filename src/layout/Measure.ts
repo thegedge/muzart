@@ -42,7 +42,7 @@ export class Measure extends FlexGroup<Chord | Rest | Space> {
 }
 
 function layOutChord(chord: notation.Chord, numStrings: number): Chord | Rest {
-  const width = Math.max(MIN_NOTE_WIDTH, QUARTER_NOTE_WIDTH * (4 / chord.duration.toInt()));
+  const width = Math.max(MIN_NOTE_WIDTH, QUARTER_NOTE_WIDTH * (4 / chord.value.toInt()));
 
   if (chord.rest) {
     return {

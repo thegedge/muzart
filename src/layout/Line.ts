@@ -90,7 +90,7 @@ export class Line {
 
             this.belowStaffLayout.addElement({
               type: "DurationStem",
-              duration: measureChild.chord.duration,
+              duration: measureChild.chord.value,
               // TODO Better way to center stem with center of notes in chord?
               box: new Box(staffChild.box.x + offset, STAFF_LINE_HEIGHT, measureChild.box.width, STAFF_LINE_HEIGHT * 2),
             });

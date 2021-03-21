@@ -14,7 +14,7 @@ import {
   Step,
   TimeSignature,
 } from "../notation";
-import { Duration } from "../notation/duration";
+import { NoteValue } from "../notation/note_value";
 
 // TODO this is pretty slow, so perhaps a SAX-based parser
 // TODO quite incomplete, but I can't find any good MusicXML files with all the guitar tablature elements, or programs that can produce them
@@ -167,7 +167,7 @@ function chords(document: Document, node: Node): Chord[] {
 
     if (notes.length > 0) {
       // TODO rest?
-      chords.push({ notes, duration: notes[0].duration, rest: false });
+      chords.push({ notes, value: notes[0].duration, rest: false });
     }
   }
 
@@ -194,7 +194,7 @@ function note(document: Document, node: Node): Note {
   const tie = textQueryMaybe(document, node, "tie/@type");
   options.tie = tie as NoteOptions["tie"];
 
-  return new Note(pitch, Duration.fromString(duration), options);
+  return new Note(pitch, NoteValue.fromString(duration), options);
 }
 
 function single(document: Document, node: Node, query: string): Node | null {

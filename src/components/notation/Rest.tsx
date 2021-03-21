@@ -11,7 +11,7 @@ export function Rest(props: { node: layout.Rest }) {
   return (
     <BoxGroup node={props.node} scale={scale}>
       <g transform={`translate(${props.node.box.width / 2})`}>
-        {React.cloneElement(Icons[props.node.chord.duration.base], { fill: REST_COLOR })}
+        {React.cloneElement(Icons[props.node.chord.value.name], { fill: REST_COLOR })}
       </g>
     </BoxGroup>
   );
