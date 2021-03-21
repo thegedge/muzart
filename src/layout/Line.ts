@@ -82,16 +82,17 @@ export class Line {
         switch (measureChild.type) {
           case "Chord":
           case "Rest": {
+            // TODO need to figure out how to best center in a rest
+            let offset = measureChild.box.x + 0.4 * STAFF_LINE_HEIGHT;
+            if (measureChild.type === "Chord" && measureChild.notes.length > 0) {
+              offset = measureChild.box.x + measureChild.notes[0].box.centerX;
+            }
+
             this.belowStaffLayout.addElement({
               type: "DurationStem",
               duration: measureChild.chord.duration,
               // TODO Better way to center stem with center of notes in chord?
-              box: new Box(
-                staffChild.box.x + measureChild.box.x + 0.4 * STAFF_LINE_HEIGHT,
-                STAFF_LINE_HEIGHT,
-                measureChild.box.width,
-                STAFF_LINE_HEIGHT * 2
-              ),
+              box: new Box(staffChild.box.x + offset, STAFF_LINE_HEIGHT, measureChild.box.width, STAFF_LINE_HEIGHT * 2),
             });
           }
           default: {
