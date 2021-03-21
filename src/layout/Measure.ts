@@ -4,7 +4,7 @@ import { FlexGroup } from "./FlexGroup";
 import { STAFF_LINE_HEIGHT } from "./layout";
 import { Chord, Inches, Rest, Space } from "./types";
 
-const MIN_NOTE_WIDTH = 0.2;
+const MIN_NOTE_WIDTH: Inches = 0.2;
 const QUARTER_NOTE_WIDTH: Inches = 0.25;
 
 export class Measure extends FlexGroup<Chord | Rest | Space> {
@@ -69,7 +69,8 @@ function layOutChord(chord: notation.Chord, numStrings: number): Chord | Rest {
     chordLayout.box.height = Math.max(chordLayout.box.height, noteY + STAFF_LINE_HEIGHT);
     chordLayout.notes.push({
       type: "Note",
-      box: new Box((width - noteWidth) * 0.5, noteY, noteWidth, STAFF_LINE_HEIGHT),
+      // box: new Box((width - noteWidth) * 0.5, noteY, noteWidth, STAFF_LINE_HEIGHT),
+      box: new Box(0, noteY, noteWidth, STAFF_LINE_HEIGHT),
       note,
     });
   }

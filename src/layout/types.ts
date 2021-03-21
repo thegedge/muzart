@@ -1,5 +1,6 @@
 import { CSSProperties } from "react";
 import * as notation from "../notation";
+import { Duration } from "../notation/duration";
 import Box from "./Box";
 
 export type Inches = number;
@@ -32,7 +33,7 @@ export interface Page {
   height: Inches;
 }
 
-export type LineElement = Space | Text | Measure | BarLine | Group;
+export type LineElement = Space | Text | Measure | BarLine | Group | DurationStem;
 
 export interface Group {
   type: "Group";
@@ -84,6 +85,12 @@ export interface Rest {
 export interface Note {
   type: "Note";
   note: notation.Note;
+  box: Box;
+}
+
+export interface DurationStem {
+  type: "DurationStem";
+  duration: Duration;
   box: Box;
 }
 

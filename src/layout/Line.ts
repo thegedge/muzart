@@ -1,21 +1,22 @@
 import { clone, map, max } from "lodash";
 import Box from "./Box";
 import { FlexProps, LineElementFlexGroup } from "./FlexGroup";
+import { STAFF_LINE_HEIGHT } from "./layout";
 import { NonNegativeGroup } from "./NonNegativeGroup";
-import { LineElement } from "./types";
+import { DurationStem, LineElement, Text } from "./types";
 
 export class Line {
   readonly type: "Group" = "Group";
   readonly elements: LineElement[] = [];
 
-  private aboveStaffLayout: NonNegativeGroup<LineElement>;
+  private aboveStaffLayout: NonNegativeGroup<Text>;
   private staffLayout: LineElementFlexGroup;
-  private belowStaffLayout: NonNegativeGroup<LineElement>;
+  private belowStaffLayout: NonNegativeGroup<DurationStem>;
 
   constructor(readonly box: Box) {
-    this.aboveStaffLayout = new NonNegativeGroup<LineElement>();
+    this.aboveStaffLayout = new NonNegativeGroup();
     this.staffLayout = new LineElementFlexGroup({ box: clone(box), drawStaffLines: true }); // TODO eliminate drawStaffLines from here
-    this.belowStaffLayout = new NonNegativeGroup<LineElement>();
+    this.belowStaffLayout = new NonNegativeGroup();
 
     this.elements.push(this.aboveStaffLayout, this.staffLayout, this.belowStaffLayout);
   }
@@ -43,35 +44,61 @@ export class Line {
     const numberSize = 0.08;
     const tempoSize = 0.1; // TODO property of this class? Related to staff line height?
 
-    for (const element of this.staffLayout.elements) {
-      if (element.type !== "Measure") {
+    for (const staffChild of this.staffLayout.elements) {
+      if (staffChild.type !== "Measure") {
         continue;
       }
+
+      //---------------------------------------------------------------------------------------------
 
       this.aboveStaffLayout.addElement({
         type: "Text",
         align: "center",
-        box: new Box(element.box.x - 0.5 * numberSize, numberSize, numberSize, numberSize),
+        box: new Box(staffChild.box.x - 0.5 * numberSize, numberSize, numberSize, numberSize),
         size: numberSize,
-        value: element.measure.number.toString(),
+        value: staffChild.measure.number.toString(),
         style: {
           userSelect: "none",
           fill: "#888888",
         },
       });
 
-      if (element.measure.staffDetails.tempo?.changed) {
+      if (staffChild.measure.staffDetails.tempo?.changed) {
         this.aboveStaffLayout.addElement({
           type: "Text",
           align: "left",
-          box: new Box(element.box.x, -tempoSize * 0.5, element.box.width, tempoSize),
+          box: new Box(staffChild.box.x, -tempoSize * 0.5, staffChild.box.width, tempoSize),
           size: tempoSize,
-          value: `♩﹦${element.measure.staffDetails.tempo.value}`,
+          value: `♩﹦${staffChild.measure.staffDetails.tempo.value}`,
           style: {
             userSelect: "none",
             fontWeight: "bold",
           },
         });
+      }
+
+      //---------------------------------------------------------------------------------------------
+
+      for (const measureChild of staffChild.elements) {
+        switch (measureChild.type) {
+          case "Chord":
+          case "Rest": {
+            this.belowStaffLayout.addElement({
+              type: "DurationStem",
+              duration: measureChild.chord.duration,
+              // TODO Better way to center stem with center of notes in chord?
+              box: new Box(
+                staffChild.box.x + measureChild.box.x + 0.4 * STAFF_LINE_HEIGHT,
+                STAFF_LINE_HEIGHT,
+                measureChild.box.width,
+                STAFF_LINE_HEIGHT * 2
+              ),
+            });
+          }
+          default: {
+            // do nothing
+          }
+        }
       }
     }
 
