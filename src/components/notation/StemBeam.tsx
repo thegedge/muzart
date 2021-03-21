@@ -10,20 +10,17 @@ const STEM_BEAM_COLOR = "#333333";
 export function StemBeam(props: { node: DurationStem }) {
   let numBeams = 0;
   switch (props.node.duration.base) {
-    case DurationBase.Quarter:
+    case DurationBase.Eighth:
       numBeams = 1;
       break;
-    case DurationBase.Eighth:
+    case DurationBase.Sixteenth:
       numBeams = 2;
       break;
-    case DurationBase.Sixteenth:
+    case DurationBase.ThirtySecond:
       numBeams = 3;
       break;
-    case DurationBase.ThirtySecond:
-      numBeams = 4;
-      break;
     case DurationBase.SixtyFourth:
-      numBeams = 5;
+      numBeams = 4;
       break;
   }
 
