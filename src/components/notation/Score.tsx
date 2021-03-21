@@ -1,9 +1,9 @@
 import React from "react";
-import { layout } from "../layout/layout";
-import { Score } from "../notation";
-import { Suspenseful } from "../suspenseful";
-import Page from "./Page";
-import { Toolbox } from "./Toolbox";
+import { layout } from "../../layout/layout";
+import { Score } from "../../notation";
+import { Suspenseful } from "../../suspenseful";
+import Page from "../layout/Page";
+import { Toolbox } from "../ui/Toolbox";
 
 export default function Score(props: { score: Score | Suspenseful<Score | null>; partIndex?: number }) {
   if (props.score == null) {

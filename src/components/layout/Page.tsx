@@ -1,6 +1,6 @@
 import React from "react";
-import { Page } from "../layout";
-import LineElementComponent from "./LineElement";
+import { Page } from "../../layout";
+import LineElementComponent from "../notation/LineElement";
 
 export default function Page(props: { page: Page }) {
   const viewBox = `0 0 ${props.page.width} ${props.page.height}`;

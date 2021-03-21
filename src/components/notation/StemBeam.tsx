@@ -1,7 +1,7 @@
 import { range } from "lodash";
 import React from "react";
-import { DurationStem, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../layout";
-import { DurationBase } from "../notation/duration";
+import { DurationStem, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../layout";
+import { DurationBase } from "../../notation/duration";
 
 // TODO quarter height is good for guitar tabs, but typically half for regular scores
 const BEAM_HEIGHT = STAFF_LINE_HEIGHT / 4;

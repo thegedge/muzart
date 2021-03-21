@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Score } from "../notation";
+import { Score } from "../../notation";
 
 export function Toolbox(props: { score: Score; onPartChange: (index: number) => void }) {
   const onChange = useCallback(

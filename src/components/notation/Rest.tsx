@@ -1,7 +1,7 @@
 import React from "react";
-import * as layout from "../layout";
-import { BoxGroup } from "./BoxGroup";
-import { Icons } from "./icons/rests";
+import * as layout from "../../layout";
+import { Icons } from "../icons/rests";
+import { BoxGroup } from "../layout/BoxGroup";
 
 const REST_COLOR = "#333333";
 

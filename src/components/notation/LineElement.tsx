@@ -1,7 +1,7 @@
 import { range } from "lodash";
 import React from "react";
-import { LineElement, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../layout";
-import { BoxGroup } from "./BoxGroup";
+import { LineElement, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../layout";
+import { BoxGroup } from "../layout/BoxGroup";
 import { Measure } from "./Measure";
 import { StemBeam } from "./StemBeam";
 import { TextElement } from "./TextElement";

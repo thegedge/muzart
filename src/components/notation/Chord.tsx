@@ -1,6 +1,6 @@
 import React from "react";
-import * as layout from "../layout";
-import { BoxGroup } from "./BoxGroup";
+import * as layout from "../../layout";
+import { BoxGroup } from "../layout/BoxGroup";
 import { TextElement } from "./TextElement";
 
 export function Chord(props: { chord: layout.Chord }) {

@@ -1,6 +1,6 @@
 import React, { CSSProperties } from "react";
-import Box from "../layout/Box";
-import { svgBoxProps } from "./utils";
+import Box from "../../layout/Box";
+import { svgBoxProps } from "../utils/svg";
 
 export function TextElement(props: {
   text: string;

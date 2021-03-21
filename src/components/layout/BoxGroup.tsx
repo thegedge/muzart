@@ -1,7 +1,7 @@
 import { isNil } from "lodash";
 import React, { useContext } from "react";
-import { HasBox } from "../layout";
-import { svgPositionTransform, svgSizeProps } from "./utils";
+import { HasBox } from "../../layout";
+import { svgPositionTransform, svgSizeProps } from "../utils/svg";
 
 const DebugContext = React.createContext<{ enabled: boolean; index: number; colorMap: Record<string, string | null> }>({
   enabled: process.env.DEBUG === "1",

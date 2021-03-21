@@ -2,7 +2,7 @@ import * as React from "react";
 import { Suspense } from "react";
 import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
-import Score from "./components/Score";
+import Score from "./components/notation/Score";
 import { determineType, load, ScoreDataType } from "./loaders";
 import * as notation from "./notation";
 import { Suspenseful, suspenseful } from "./suspenseful";
