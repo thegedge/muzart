@@ -6,19 +6,19 @@ import { Measure } from "./Measure";
 import { StemBeam } from "./StemBeam";
 import { TextElement } from "./TextElement";
 
-export default function LineElementComponent(props: { element: LineElement }) {
+export default function LineElementComponent(props: { element: LineElement }): React.ReactElement {
   switch (props.element.type) {
-    case "Group":
-      return <LineGroup node={props.element} />;
-    case "Text":
-      return <TextElement {...props.element} text={props.element.value} />;
-    case "Measure":
-      return <Measure measure={props.element} />;
     case "BarLine":
       return <BarLine node={props.element} />;
     case "DurationStem":
       return <StemBeam node={props.element} />;
-    default:
+    case "Group":
+      return <LineGroup node={props.element} />;
+    case "Measure":
+      return <Measure measure={props.element} />;
+    case "Space":
       return <></>;
+    case "Text":
+      return <TextElement {...props.element} text={props.element.value} />;
   }
 }
