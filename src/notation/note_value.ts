@@ -55,6 +55,8 @@ export class NoteValue {
 
   /**
    * Convert this duration to an integer.
+   *
+   * Whole note is 1, half note is 2, quarter note is 4, and so on.
    */
   toInt(): number {
     switch (this.name) {
@@ -73,5 +75,14 @@ export class NoteValue {
       case NoteValueName.SixtyFourth:
         return 64;
     }
+  }
+
+  /**
+   * Convert this duration to a decimal.
+   *
+   * Whole note is 1, half note is 0.5, quarter note is 0.25, and so on.
+   */
+  toDecimal(): number {
+    return 1.0 / this.toInt();
   }
 }

@@ -6,3 +6,4 @@ export * from "./note_value";
 export * from "./pitch";
 export * from "./score";
 export * from "./staff";
+export * from "./time_signature";

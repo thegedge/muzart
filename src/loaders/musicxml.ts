@@ -115,10 +115,7 @@ function time(document: Document, node: Node): TimeSignature | undefined {
   const beats = textQueryMaybe(document, node, "time/beats");
   const beatType = textQueryMaybe(document, node, "time/beat-type");
   if (beats && beatType) {
-    return {
-      beats: parseInt(beats),
-      beatType: parseInt(beatType),
-    };
+    return new TimeSignature(NoteValue.fromNumber(beatType as any), parseInt(beats));
   }
 }
 
@@ -167,7 +164,7 @@ function chords(document: Document, node: Node): Chord[] {
 
     if (notes.length > 0) {
       // TODO rest?
-      chords.push({ notes, value: notes[0].duration, rest: false });
+      chords.push({ notes, value: notes[0].value, rest: false });
     }
   }
 

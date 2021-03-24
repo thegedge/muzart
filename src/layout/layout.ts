@@ -16,13 +16,13 @@ const DEFAULT_MARGINS: Margins = {
   bottom: DEFAULT_MARGIN,
 };
 
-const LINE_MARGIN: Inches = 0.25;
-
 /** The stroke width for any lines */
 export const LINE_STROKE_WIDTH = 0.005;
 
 /** The height of a single line in a staff (for example, a string for a guitar tablature staff) */
 export const STAFF_LINE_HEIGHT: Inches = 0.1;
+
+const LINE_MARGIN: Inches = 0.25;
 
 /**
  * Return a layout for the given score.

@@ -17,6 +17,7 @@ export default function Score(props: { score: Score | Suspenseful<Score | null>;
 
   const now = performance.now();
   const scoreLayout = layout(score);
+  (window as any).scoreLayout = scoreLayout;
   console.log({ scoreLayout });
   console.log(`Time to lay out: ${performance.now() - now}ms`);
 

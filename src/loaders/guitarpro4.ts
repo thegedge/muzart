@@ -1,5 +1,5 @@
 import { range } from "lodash";
-import { changed, Measure, Note, Pitch, Score } from "../notation";
+import { Measure, Note, Pitch, Score, TimeSignature } from "../notation";
 import { NoteValue } from "../notation/note_value";
 import { BufferCursor, NumberType } from "../util/BufferCursor";
 
@@ -57,8 +57,8 @@ export default function load(source: ArrayBuffer): Score {
   // Measure props
   //------------------------------------------------------------------------------------------------
 
-  for (let measure = 0; measure < numMeasures; ++measure) {
-    console.debug({ measureDataIndex: measure });
+  const measureData = range(numMeasures).map((index) => {
+    console.debug({ measureDataIndex: index });
 
     const [
       _doubleBar,
@@ -71,12 +71,18 @@ export default function load(source: ArrayBuffer): Score {
       hasTimeSignatureNumerator,
     ] = bits(cursor.nextNumber(NumberType.Uint8));
 
+    let numerator, denominator;
     if (hasTimeSignatureNumerator) {
-      /* const numerator = */ cursor.nextNumber(NumberType.Uint8);
+      numerator = cursor.nextNumber(NumberType.Uint8);
     }
 
     if (hasTimeSignatureDenominator) {
-      /* const denominator = */ cursor.nextNumber(NumberType.Uint8);
+      denominator = cursor.nextNumber(NumberType.Uint8);
+    }
+
+    let timeSignature;
+    if (numerator && denominator) {
+      timeSignature = new TimeSignature(NoteValue.fromNumber(denominator as any), numerator);
     }
 
     if (hasEndOfRepeat) {
@@ -96,7 +102,9 @@ export default function load(source: ArrayBuffer): Score {
       /* const alterations = */ cursor.nextNumber(NumberType.Uint8);
       /* const minor = */ cursor.nextNumber(NumberType.Uint8);
     }
-  }
+
+    return { timeSignature };
+  });
 
   //------------------------------------------------------------------------------------------------
   // Track props
@@ -156,6 +164,7 @@ export default function load(source: ArrayBuffer): Score {
       console.debug({ trackIndex, measureIndex });
 
       let measureTempo;
+
       const numBeats = cursor.nextNumber(NumberType.Uint32);
       for (let beat = 0; beat < numBeats; ++beat) {
         const [
@@ -284,10 +293,11 @@ export default function load(source: ArrayBuffer): Score {
           }
         }
 
-        if (measureIndex === 0) {
-          measure.staffDetails.tempo = { value: measureTempo || tempo, changed: true };
-        } else {
-          measure.staffDetails.tempo = changed(measureTempo, tempo);
+        measure.staffDetails.tempo = { value: measureTempo || tempo, changed: true };
+
+        const newTimeSignature = measureData[measureIndex].timeSignature;
+        if (newTimeSignature) {
+          measure.staffDetails.time = { value: newTimeSignature, changed: true };
         }
 
         measure.chords.push({ notes, value: duration, rest });

@@ -1,9 +1,11 @@
-import { clone, map, max } from "lodash";
+import { clone, first, last, map, max } from "lodash";
+import * as notation from "../notation";
+import { NoteValueName } from "../notation";
 import Box from "./Box";
 import { FlexProps, LineElementFlexGroup } from "./FlexGroup";
 import { STAFF_LINE_HEIGHT } from "./layout";
 import { NonNegativeGroup } from "./NonNegativeGroup";
-import { DurationStem, LineElement, Text } from "./types";
+import { Beam, Chord, LineElement, Measure, Rest, Space, Stem, Text } from "./types";
 
 export class Line {
   readonly type: "Group" = "Group";
@@ -11,7 +13,7 @@ export class Line {
 
   private aboveStaffLayout: NonNegativeGroup<Text>;
   private staffLayout: LineElementFlexGroup;
-  private belowStaffLayout: NonNegativeGroup<DurationStem>;
+  private belowStaffLayout: NonNegativeGroup<Stem | Beam>;
 
   constructor(readonly box: Box) {
     this.aboveStaffLayout = new NonNegativeGroup();
@@ -43,8 +45,8 @@ export class Line {
     const numberSize = 0.08;
     const tempoSize = 0.1; // TODO property of this class? Related to staff line height?
 
-    for (const staffChild of this.staffLayout.elements) {
-      if (staffChild.type !== "Measure") {
+    for (const lineChild of this.staffLayout.elements) {
+      if (lineChild.type !== "Measure") {
         continue;
       }
 
@@ -53,22 +55,22 @@ export class Line {
       this.aboveStaffLayout.addElement({
         type: "Text",
         align: "center",
-        box: new Box(staffChild.box.x - 0.5 * numberSize, numberSize, numberSize, numberSize),
+        box: new Box(lineChild.box.x - 0.5 * numberSize, numberSize, numberSize, numberSize),
         size: numberSize,
-        value: staffChild.measure.number.toString(),
+        value: lineChild.measure.number.toString(),
         style: {
           userSelect: "none",
           fill: "#888888",
         },
       });
 
-      if (staffChild.measure.staffDetails.tempo?.changed) {
+      if (lineChild.measure.staffDetails.tempo?.changed) {
         this.aboveStaffLayout.addElement({
           type: "Text",
           align: "left",
-          box: new Box(staffChild.box.x, -tempoSize * 0.5, staffChild.box.width, tempoSize),
+          box: new Box(lineChild.box.x, -tempoSize * 0.5, lineChild.box.width, tempoSize),
           size: tempoSize,
-          value: `♩﹦${staffChild.measure.staffDetails.tempo.value}`,
+          value: `♩﹦${lineChild.measure.staffDetails.tempo.value}`,
           style: {
             userSelect: "none",
             fontWeight: "bold",
@@ -78,28 +80,7 @@ export class Line {
 
       //---------------------------------------------------------------------------------------------
 
-      for (const measureChild of staffChild.elements) {
-        switch (measureChild.type) {
-          case "Chord":
-          case "Rest": {
-            // TODO need to figure out how to best center in a rest
-            let offset = measureChild.box.x + 0.4 * STAFF_LINE_HEIGHT;
-            if (measureChild.type === "Chord" && measureChild.notes.length > 0) {
-              offset = measureChild.box.x + measureChild.notes[0].box.centerX;
-            }
-
-            this.belowStaffLayout.addElement({
-              type: "DurationStem",
-              duration: measureChild.chord.value,
-              // TODO Better way to center stem with center of notes in chord?
-              box: new Box(staffChild.box.x + offset, STAFF_LINE_HEIGHT, measureChild.box.width, STAFF_LINE_HEIGHT * 2),
-            });
-          }
-          default: {
-            // do nothing
-          }
-        }
-      }
+      this.stemAndBeam(lineChild);
     }
 
     this.aboveStaffLayout.layout();
@@ -114,5 +95,136 @@ export class Line {
 
     this.box.width = max(map(this.elements, "box.width"));
     this.box.height = y;
+  }
+
+  private stemAndBeam(measureElement: Measure) {
+    const beats = this.groupElementsOnBeat(measureElement.measure, measureElement.elements);
+
+    const offset = (element: Chord | Rest) => {
+      if (element.type === "Chord" && element.notes.length > 0) {
+        return element.box.x + element.notes[0].box.centerX;
+      }
+      // TODO need to figure out how to best center in a rest
+      return element.box.x + 0.4 * STAFF_LINE_HEIGHT;
+    };
+
+    const numBeams = (element: Chord | Rest) => {
+      switch (element.chord.value.name) {
+        case NoteValueName.Whole:
+          return 0;
+        case NoteValueName.Half:
+          return 0;
+        case NoteValueName.Quarter:
+          return 0;
+        case NoteValueName.Eighth:
+          return 1;
+        case NoteValueName.Sixteenth:
+          return 2;
+        case NoteValueName.ThirtySecond:
+          return 3;
+        case NoteValueName.SixtyFourth:
+          return 4;
+      }
+    };
+
+    const BEAM_HEIGHT = STAFF_LINE_HEIGHT / 4;
+
+    for (const beat of beats) {
+      const firstElement = first(beat);
+      const lastElement = last(beat);
+      if (!firstElement || !lastElement) {
+        continue;
+      }
+
+      if (firstElement?.chord.value.name === NoteValueName.Whole) {
+        continue;
+      }
+
+      // Lay out the stems
+
+      for (const beatElement of beat) {
+        if (beatElement.type !== "Chord") {
+          continue;
+        }
+
+        // Half notes have a shorter stem on tablature
+        const y = beatElement.chord.value.toInt() <= 2 ? STAFF_LINE_HEIGHT * 2 : STAFF_LINE_HEIGHT;
+        const bottom = STAFF_LINE_HEIGHT * 3;
+
+        this.belowStaffLayout.addElement({
+          type: "Stem",
+          box: new Box(measureElement.box.x + offset(beatElement), y, beatElement.box.width, bottom - y),
+        });
+      }
+
+      // Lay out the beams
+
+      if (firstElement === lastElement) {
+        const left = measureElement.box.x + offset(firstElement);
+        const intVal = firstElement.chord.value.toInt();
+        if (intVal > 4) {
+          this.belowStaffLayout.addElement({
+            type: "Beam",
+            box: new Box(left, STAFF_LINE_HEIGHT * 3 - BEAM_HEIGHT, 2 * BEAM_HEIGHT, BEAM_HEIGHT),
+          });
+        }
+      } else {
+        let left = measureElement.box.x + offset(firstElement);
+        let right = measureElement.box.x + offset(lastElement);
+        this.belowStaffLayout.addElement({
+          type: "Beam",
+          box: new Box(left, STAFF_LINE_HEIGHT * 3 - BEAM_HEIGHT, right - left, BEAM_HEIGHT),
+        });
+      }
+    }
+  }
+
+  private groupElementsOnBeat(measure: notation.Measure, elements: (Chord | Rest | Space)[]) {
+    let beatAmount = 0.25; // TODO What do default to? Currently assuming quarter beat, hence 0.25.
+    const timeBeat = measure.staffDetails.time?.value?.toBeat();
+    if (timeBeat) {
+      if (timeBeat.count == 12) {
+        console.log(timeBeat.value.name);
+      }
+      beatAmount = timeBeat.value.toDecimal() * timeBeat.count;
+    }
+
+    const beatElements = [];
+    let currentBeatElements = [];
+    let currentAmount = beatAmount;
+    for (const measureChild of elements) {
+      if (measureChild.type !== "Chord") {
+        continue;
+      }
+
+      const amount = measureChild.chord.value.toDecimal();
+      currentAmount -= amount;
+
+      if (currentAmount < 0) {
+        while (currentAmount < 0) {
+          currentAmount += beatAmount;
+        }
+
+        if (currentBeatElements.length === 0) {
+          beatElements.push([measureChild]);
+          continue;
+        }
+
+        beatElements.push(currentBeatElements);
+        currentBeatElements = [];
+      }
+
+      currentBeatElements.push(measureChild);
+    }
+
+    if (currentBeatElements.length > 0) {
+      beatElements.push(currentBeatElements);
+    }
+
+    if (measure.number == 2) {
+      console.log(beatElements);
+    }
+
+    return beatElements;
   }
 }

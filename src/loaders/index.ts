@@ -1,5 +1,5 @@
-import { isString } from "lodash";
-import { changed, Score } from "../notation";
+import { isString, mapValues, pickBy } from "lodash";
+import { Changeable, changed, Score, StaffDetails } from "../notation";
 import loadGuitarPro4 from "./guitarpro4";
 import loadMusicXml from "./musicxml";
 
@@ -62,21 +62,32 @@ function loadScore(buffer: ArrayBuffer, type: ScoreDataType): Score {
   return postProcess(score);
 }
 
+type ChangeableValueType<T> = T extends Changeable<infer V> ? V : never;
+type StaffDetailValues = {
+  [Property in keyof StaffDetails]: ChangeableValueType<NonNullable<StaffDetails[Property]>>;
+};
+
 function postProcess(score: Score) {
   // Set the staff details reference on all measures
   for (const part of score.parts) {
-    let previousDetails;
+    let previousDetails: StaffDetailValues = {
+      key: undefined,
+      time: undefined,
+      clef: undefined,
+      tempo: undefined,
+    };
+
     for (const measure of part.measures) {
-      if (measure.staffDetails === undefined) {
-        if (previousDetails) {
-          for (const [key, previousValue] of Object.entries(previousDetails)) {
-            const newValue = (measure.staffDetails as any)[key];
-            (measure.staffDetails as any)[key] = changed(newValue, previousValue);
-          }
+      for (const [key, previousValue] of Object.entries(previousDetails)) {
+        if (!previousValue) {
+          continue;
         }
-      } else {
-        previousDetails = measure.staffDetails;
+
+        const newValue = (measure.staffDetails as any)[key];
+        (measure.staffDetails as any)[key] = changed(newValue?.value, previousValue);
       }
+
+      Object.assign(previousDetails, mapValues(pickBy(measure.staffDetails), "value"));
     }
   }
 

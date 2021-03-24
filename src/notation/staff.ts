@@ -1,3 +1,5 @@
+import { TimeSignature } from "./time_signature";
+
 export interface Changeable<T> {
   value: T;
   changed: boolean;
@@ -39,8 +41,3 @@ export interface Clef {
 }
 
 export type ClefSign = "G" | "F" | "C" | "percussion" | "TAB" | "jianpu" | "none";
-
-export interface TimeSignature {
-  beats: number;
-  beatType: number;
-}
