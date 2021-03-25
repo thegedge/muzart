@@ -1,28 +1,18 @@
 import { clone } from "lodash";
 import * as notation from "../notation";
 import Box from "./Box";
+import {
+  DEFAULT_MARGINS,
+  DEFAULT_PAGE_HEIGHT,
+  DEFAULT_PAGE_WIDTH,
+  LINE_MARGIN,
+  LINE_STROKE_WIDTH,
+  STAFF_LINE_HEIGHT,
+} from "./constants";
 import { LineElementFlexGroup } from "./FlexGroup";
 import { Line } from "./Line";
 import { Measure, Measure as MeasureLayout } from "./Measure";
-import { Inches, Margins, Page, Part, Score, Text } from "./types";
-
-const DEFAULT_PAGE_WIDTH: Inches = 8.5;
-const DEFAULT_PAGE_HEIGHT: Inches = 11;
-const DEFAULT_MARGIN: Inches = 0.5;
-const DEFAULT_MARGINS: Margins = {
-  left: DEFAULT_MARGIN,
-  right: DEFAULT_MARGIN,
-  top: DEFAULT_MARGIN,
-  bottom: DEFAULT_MARGIN,
-};
-
-/** The stroke width for any lines */
-export const LINE_STROKE_WIDTH = 0.005;
-
-/** The height of a single line in a staff (for example, a string for a guitar tablature staff) */
-export const STAFF_LINE_HEIGHT: Inches = 0.1;
-
-const LINE_MARGIN: Inches = 0.25;
+import { Page, Part, Score, Text } from "./types";
 
 /**
  * Return a layout for the given score.

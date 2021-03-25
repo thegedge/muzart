@@ -2,8 +2,8 @@ import { clone, first, last, map, max } from "lodash";
 import * as notation from "../notation";
 import { NoteValueName } from "../notation";
 import Box from "./Box";
+import { BEAM_HEIGHT, STAFF_LINE_HEIGHT } from "./constants";
 import { FlexProps, LineElementFlexGroup } from "./FlexGroup";
-import { STAFF_LINE_HEIGHT } from "./layout";
 import { NonNegativeGroup } from "./NonNegativeGroup";
 import { Beam, Chord, LineElement, Measure, Rest, Space, Stem, Text } from "./types";
 
@@ -100,39 +100,9 @@ export class Line {
   private stemAndBeam(measureElement: Measure) {
     const beats = this.groupElementsOnBeat(measureElement.measure, measureElement.elements);
 
-    const offset = (element: Chord | Rest) => {
-      if (element.type === "Chord" && element.notes.length > 0) {
-        return element.box.x + element.notes[0].box.centerX;
-      }
-      // TODO need to figure out how to best center in a rest
-      return element.box.x + 0.4 * STAFF_LINE_HEIGHT;
-    };
-
-    const numBeams = (element: Chord | Rest) => {
-      switch (element.chord.value.name) {
-        case NoteValueName.Whole:
-          return 0;
-        case NoteValueName.Half:
-          return 0;
-        case NoteValueName.Quarter:
-          return 0;
-        case NoteValueName.Eighth:
-          return 1;
-        case NoteValueName.Sixteenth:
-          return 2;
-        case NoteValueName.ThirtySecond:
-          return 3;
-        case NoteValueName.SixtyFourth:
-          return 4;
-      }
-    };
-
-    const BEAM_HEIGHT = STAFF_LINE_HEIGHT / 4;
-
     for (const beat of beats) {
       const firstElement = first(beat);
-      const lastElement = last(beat);
-      if (!firstElement || !lastElement) {
+      if (!firstElement) {
         continue;
       }
 
@@ -153,14 +123,15 @@ export class Line {
 
         this.belowStaffLayout.addElement({
           type: "Stem",
-          box: new Box(measureElement.box.x + offset(beatElement), y, beatElement.box.width, bottom - y),
+          box: new Box(measureElement.box.x + this.elementOffset(beatElement), y, beatElement.box.width, bottom - y),
         });
       }
 
       // Lay out the beams
 
+      const lastElement = last(beat);
       if (firstElement === lastElement) {
-        const left = measureElement.box.x + offset(firstElement);
+        const left = measureElement.box.x + this.elementOffset(firstElement);
         const intVal = firstElement.chord.value.toInt();
         if (intVal > 4) {
           this.belowStaffLayout.addElement({
@@ -169,14 +140,45 @@ export class Line {
           });
         }
       } else {
-        let left = measureElement.box.x + offset(firstElement);
-        let right = measureElement.box.x + offset(lastElement);
-        this.belowStaffLayout.addElement({
-          type: "Beam",
-          box: new Box(left, STAFF_LINE_HEIGHT * 3 - BEAM_HEIGHT, right - left, BEAM_HEIGHT),
-        });
+        this.layOutBeams(measureElement.box, beat);
       }
     }
+  }
+
+  private numBeams(element: Chord | Rest) {
+    switch (element.chord.value.name) {
+      case NoteValueName.Whole:
+        return 0;
+      case NoteValueName.Half:
+        return 0;
+      case NoteValueName.Quarter:
+        return 0;
+      case NoteValueName.Eighth:
+        return 1;
+      case NoteValueName.Sixteenth:
+        return 2;
+      case NoteValueName.ThirtySecond:
+        return 3;
+      case NoteValueName.SixtyFourth:
+        return 4;
+    }
+  }
+
+  private elementOffset(element: Chord | Rest) {
+    if (element.type === "Chord" && element.notes.length > 0) {
+      return element.box.x + element.notes[0].box.centerX;
+    }
+    // TODO need to figure out how to best center in a rest
+    return element.box.x + 0.4 * STAFF_LINE_HEIGHT;
+  }
+
+  private layOutBeams(measureBox: Box, beat: (Chord | Rest)[]) {
+    const left = measureBox.x + this.elementOffset(beat[0]);
+    const right = measureBox.x + this.elementOffset(beat[beat.length - 1]);
+    this.belowStaffLayout.addElement({
+      type: "Beam",
+      box: new Box(left, STAFF_LINE_HEIGHT * 3 - BEAM_HEIGHT, right - left, BEAM_HEIGHT),
+    });
   }
 
   private groupElementsOnBeat(measure: notation.Measure, elements: (Chord | Rest | Space)[]) {
@@ -200,14 +202,15 @@ export class Line {
       const amount = measureChild.chord.value.toDecimal();
       currentAmount -= amount;
 
+      // If there's no more the beat can give...
       if (currentAmount < 0) {
         while (currentAmount < 0) {
           currentAmount += beatAmount;
         }
 
+        // If the note is bigger than a beat, make it its own beat
         if (currentBeatElements.length === 0) {
-          beatElements.push([measureChild]);
-          continue;
+          currentBeatElements.push(measureChild);
         }
 
         beatElements.push(currentBeatElements);
@@ -219,10 +222,6 @@ export class Line {
 
     if (currentBeatElements.length > 0) {
       beatElements.push(currentBeatElements);
-    }
-
-    if (measure.number == 2) {
-      console.log(beatElements);
     }
 
     return beatElements;
