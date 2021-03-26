@@ -58,3 +58,36 @@ export function numCharsToRepresent(v: number): number {
 
   return num;
 }
+
+/**
+ * Find runs of elements in a bigger list.
+ *
+ * @param values the list of value sto find runs in
+ * @param partOfRun a function that determines if a given element should be part of a run
+ *
+ * @returns a list of `[start, end]` tuples for all the runs in the given list
+ *
+ * @example
+ * runs([0, 1, 2, 4, 3, 5, 7, 1, 4, 14], (v) => v % 2 == 0) == [[0, 0], [2, 3], [8, 9]]
+ */
+export function runs<T>(values: Iterable<T>, partOfRun: (v: T) => boolean): [number, number][] {
+  const runs: [number, number][] = [];
+  let start: number | null = null;
+  let index = 0;
+  for (const v of values) {
+    if (partOfRun(v)) {
+      start ??= index;
+    } else if (start !== null) {
+      runs.push([start, index - 1]);
+      start = null;
+    }
+
+    ++index;
+  }
+
+  if (start !== null) {
+    runs.push([start, index - 1]);
+  }
+
+  return runs;
+}
