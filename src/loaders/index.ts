@@ -3,17 +3,15 @@ import { Changeable, changed, Score, StaffDetails } from "../notation";
 import loadGuitarPro4 from "./guitarpro4";
 import loadMusicXml from "./musicxml";
 
-export async function load(source: File | URL | string, type?: ScoreDataType): Promise<Score | null> {
+export async function load(source: File | URL | string, type?: ScoreDataType): Promise<Score> {
   if (isString(source) || "hostname" in source) {
     const response = await fetch(source.toString());
     const buffer = await response.arrayBuffer();
     return loadScore(buffer, type ?? determineType(response));
-  } else if ("type" in source) {
+  } else {
     const buffer = await source.arrayBuffer();
     return loadScore(buffer, type ?? determineType(source));
   }
-
-  return null;
 }
 
 export enum ScoreDataType {

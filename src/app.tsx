@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Suspense } from "react";
+import { Suspense, useCallback } from "react";
 import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Score from "./components/notation/Score";
@@ -9,7 +9,7 @@ import { Suspenseful, suspenseful } from "./suspenseful";
 
 export default function App() {
   const [isLoading, setIsLoading] = React.useState(true);
-  const [score, setScore] = React.useState<Suspenseful<notation.Score | null>>();
+  const [score, setScore] = React.useState<Suspenseful<notation.Score>>();
 
   React.useEffect(() => {
     if (process.env.DEFAULT_FILE) {
@@ -17,7 +17,7 @@ export default function App() {
     }
   }, []);
 
-  const onDrop = React.useCallback((event: React.DragEvent<Element>) => {
+  const onDrop = useCallback((event: React.DragEvent<Element>) => {
     if (!isLoading) {
       event.preventDefault();
 
