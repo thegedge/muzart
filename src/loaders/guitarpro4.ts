@@ -291,6 +291,8 @@ export default function load(source: ArrayBuffer): Score {
             notes.push(
               new Note(pitch, noteDuration, {
                 placement: note.placement,
+                deadNote: note.deadNote || undefined,
+                tie: note.tie ? "stop" : undefined, // TODO would be good to trace back to the starting point
               })
             );
           }
@@ -327,11 +329,10 @@ function readNote(cursor: BufferCursor) {
     hasDuration,
   ] = bits(cursor.nextNumber(NumberType.Uint8));
 
-  /* const variant = */ cursor.nextNumber(NumberType.Uint8);
-
-  // if (hasNoteType) {
-  //   /* const type = */ cursor.nextNumber(NumberType.Uint16);
-  // }
+  // 1 = normal note
+  // 2 = tie (link with previous)
+  // 3 = dead note
+  const variant = cursor.nextNumber(NumberType.Uint8);
 
   let duration = 0;
   if (hasDuration) {
@@ -403,6 +404,8 @@ function readNote(cursor: BufferCursor) {
 
   return {
     duration,
+    deadNote: variant === 3,
+    tie: variant === 2,
     placement: {
       fret,
       string: 0,

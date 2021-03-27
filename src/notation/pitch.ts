@@ -37,14 +37,14 @@ export class Pitch {
   constructor(readonly step: Step, readonly octave: number, readonly alterations = 0) {}
 
   /**
-   * Return a new note that is this note adjusted by the given number of semitones.
+   * Return a new pitch that is this note adjusted by the given number of semitones.
    */
   adjust(semitones: number) {
     return Pitch.fromInt(this.toInt() + semitones);
   }
 
   /**
-   * Convert this Pitch to an integer.
+   * Convert this pitch to an integer.
    *
    * 0 is equivalent to C0, in semitone increments.
    */

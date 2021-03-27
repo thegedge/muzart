@@ -63,10 +63,6 @@ function layOutChord(chord: notation.Chord, numStrings: number): Chord | Rest {
   const maxNoteChars = maxMap(chord.notes, (note) => numCharsToRepresent(note.placement?.fret || 0)) || 1;
   const noteWidth = STAFF_LINE_HEIGHT * (0.5 + 0.3 * maxNoteChars);
   for (const note of chord.notes) {
-    if (note.tie === "stop") {
-      continue;
-    }
-
     const noteY = note.placement ? (note.placement.string - 1) * STAFF_LINE_HEIGHT : 0;
 
     chordLayout.box.height = Math.max(chordLayout.box.height, noteY + STAFF_LINE_HEIGHT);

@@ -1,5 +1,7 @@
 import React, { CSSProperties } from "react";
+import { LINE_STROKE_WIDTH } from "../../layout";
 import Box from "../../layout/Box";
+import { useDebugColorFor } from "../utils/DebugContext";
 import { svgBoxProps } from "../utils/svg";
 
 export function TextElement(props: {
@@ -28,9 +30,13 @@ export function TextElement(props: {
       break;
   }
 
+  const debugColor = useDebugColorFor("TextElement");
+
   return (
     <>
-      {/* <rect {...svgBoxProps(props.box)} stroke="red" fill="none" strokeWidth={0.01} /> */}
+      {debugColor && (
+        <rect {...svgBoxProps(props.box)} stroke={debugColor} fill="none" strokeWidth={LINE_STROKE_WIDTH} />
+      )}
       {props.fill && <rect {...svgBoxProps(props.box)} fill="white" />}
       <text x={x} y={y} dominantBaseline="central" textAnchor={anchor} style={{ fontSize: props.size, ...props.style }}>
         {props.text}
