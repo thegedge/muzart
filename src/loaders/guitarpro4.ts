@@ -175,7 +175,7 @@ export default function load(source: ArrayBuffer): Score {
           hasEffects,
           hasText,
           hasChordDiagram,
-          _dotted,
+          dotted,
         ] = bits(cursor.nextNumber(NumberType.Uint8));
 
         let rest = false;
@@ -184,7 +184,10 @@ export default function load(source: ArrayBuffer): Score {
           rest = status == 0x02;
         }
 
-        const duration = NoteValue.fromNumber((1 << (cursor.nextNumber(NumberType.Int8) + 2)) as any);
+        let duration = NoteValue.fromNumber((1 << (cursor.nextNumber(NumberType.Int8) + 2)) as any);
+        if (dotted) {
+          duration = duration.dot();
+        }
 
         if (hasTuplet) {
           /* const n = */ cursor.nextNumber(NumberType.Uint32);

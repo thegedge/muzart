@@ -32,7 +32,7 @@ export interface Page {
   height: Inches;
 }
 
-export type LineElement = Space | Text | Measure | BarLine | Group | Stem | Beam;
+export type LineElement = Space | Text | Measure | BarLine | Group | Stem | Beam | Dot;
 
 export interface Group {
   type: "Group";
@@ -94,6 +94,11 @@ export interface Stem {
 
 export interface Beam {
   type: "Beam";
+  box: Box;
+}
+
+export interface Dot {
+  type: "Dot";
   box: Box;
 }
 

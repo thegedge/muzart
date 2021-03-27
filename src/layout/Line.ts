@@ -2,10 +2,10 @@ import { clone, first, map, max } from "lodash";
 import * as notation from "../notation";
 import { NoteValueName } from "../notation";
 import Box from "./Box";
-import { BEAM_HEIGHT, STAFF_LINE_HEIGHT } from "./constants";
+import { BEAM_HEIGHT, DOT_SIZE, STAFF_LINE_HEIGHT } from "./constants";
 import { FlexProps, LineElementFlexGroup } from "./FlexGroup";
 import { NonNegativeGroup } from "./NonNegativeGroup";
-import { Beam, Chord, LineElement, Measure, Rest, Space, Stem, Text } from "./types";
+import { Beam, Chord, Dot, LineElement, Measure, Rest, Space, Stem, Text } from "./types";
 import { runs } from "./utils";
 
 export class Line {
@@ -14,7 +14,7 @@ export class Line {
 
   private aboveStaffLayout: NonNegativeGroup<Text>;
   private staffLayout: LineElementFlexGroup;
-  private belowStaffLayout: NonNegativeGroup<Stem | Beam>;
+  private belowStaffLayout: NonNegativeGroup<Stem | Beam | Dot>;
 
   constructor(readonly box: Box) {
     this.aboveStaffLayout = new NonNegativeGroup();
@@ -108,15 +108,16 @@ export class Line {
 
       this.layOutStems(measureElement.box, beat);
       this.layOutBeams(measureElement.box, beat);
+      this.layOutDots(measureElement.box, beat);
     }
   }
 
   private numBeams(element: Chord | Rest) {
     switch (element.chord.value.name) {
       case NoteValueName.Whole:
-        return 0;
+        return -2;
       case NoteValueName.Half:
-        return 0;
+        return -1;
       case NoteValueName.Quarter:
         return 0;
       case NoteValueName.Eighth:
@@ -145,7 +146,7 @@ export class Line {
       }
 
       // Half notes have a shorter stem on tablature
-      const y = beatElement.chord.value.toInt() <= 2 ? STAFF_LINE_HEIGHT * 2 : STAFF_LINE_HEIGHT;
+      const y = this.numBeams(beatElement) < 0 ? STAFF_LINE_HEIGHT * 2 : STAFF_LINE_HEIGHT;
       const bottom = STAFF_LINE_HEIGHT * 3;
 
       this.belowStaffLayout.addElement({
@@ -155,7 +156,31 @@ export class Line {
     }
   }
 
+  private layOutDots(measureBox: Box, beatElements: (Chord | Rest)[]) {
+    for (const beatElement of beatElements) {
+      if (beatElement.chord.value.ndots > 0) {
+        // TODO more dots
+        // TODO rests have dot next to them
+
+        // const y = STAFF_LINE_HEIGHT * 3 - BEAM_HEIGHT - (1.5 * BEAM_HEIGHT * this.numBeams(beatElement)) - BEAM_HEIGHT;
+        let y = STAFF_LINE_HEIGHT * 3 - DOT_SIZE;
+        const numBeams = this.numBeams(beatElement);
+        if (numBeams > 0) {
+          y -= BEAM_HEIGHT * this.numBeams(beatElement);
+          y -= 0.5 * BEAM_HEIGHT * (this.numBeams(beatElement) - 1);
+        }
+
+        this.belowStaffLayout.addElement({
+          type: "Dot",
+          box: new Box(measureBox.x + this.elementOffset(beatElement), y, DOT_SIZE, DOT_SIZE),
+        });
+      }
+    }
+  }
+
   private layOutBeams(measureBox: Box, beatElements: (Chord | Rest)[]) {
+    // TODO draw dots
+
     let y = STAFF_LINE_HEIGHT * 3 - BEAM_HEIGHT;
     const beamCounts = beatElements.map((element) => this.numBeams(element));
     while (true) {

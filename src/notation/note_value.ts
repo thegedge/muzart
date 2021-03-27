@@ -1,3 +1,5 @@
+import { clamp } from "lodash";
+
 export enum NoteValueName {
   Whole = "whole",
   Half = "half",
@@ -51,30 +53,19 @@ export class NoteValue {
     }
   }
 
-  constructor(readonly name: NoteValueName) {}
+  readonly ndots: number = 0;
+
+  constructor(readonly name: NoteValueName, ndots = 0) {
+    this.ndots = clamp(ndots, 0, 3);
+  }
 
   /**
-   * Convert this duration to an integer.
+   * Construct a dotted version of this note value.
    *
-   * Whole note is 1, half note is 2, quarter note is 4, and so on.
+   * @returns a new `NoteValue` instance that has one more dot than this one
    */
-  toInt(): number {
-    switch (this.name) {
-      case NoteValueName.Whole:
-        return 1;
-      case NoteValueName.Half:
-        return 2;
-      case NoteValueName.Quarter:
-        return 4;
-      case NoteValueName.Eighth:
-        return 8;
-      case NoteValueName.Sixteenth:
-        return 16;
-      case NoteValueName.ThirtySecond:
-        return 32;
-      case NoteValueName.SixtyFourth:
-        return 64;
-    }
+  dot() {
+    return new NoteValue(this.name, this.ndots + 1);
   }
 
   /**
@@ -83,6 +74,40 @@ export class NoteValue {
    * Whole note is 1, half note is 0.5, quarter note is 0.25, and so on.
    */
   toDecimal(): number {
-    return 1.0 / this.toInt();
+    let denominator = 0;
+    switch (this.name) {
+      case NoteValueName.Whole:
+        denominator = 1;
+        break;
+      case NoteValueName.Half:
+        denominator = 2;
+        break;
+      case NoteValueName.Quarter:
+        denominator = 4;
+        break;
+      case NoteValueName.Eighth:
+        denominator = 8;
+        break;
+      case NoteValueName.Sixteenth:
+        denominator = 16;
+        break;
+      case NoteValueName.ThirtySecond:
+        denominator = 32;
+        break;
+      case NoteValueName.SixtyFourth:
+        denominator = 64;
+        break;
+    }
+
+    // `1/2 + 1/2^2 .. 1/2^n = 1 - 1/2^n`
+    //
+    // ```
+    // denominator + denominator / 2 + denominator / 4 + ... + denominator / 2^ndots`
+    // = denominator * (1 + 1/2 + 1/4 + ... + 1/2^ndots)
+    // = denominator * (1 + 1 - 1/2^ndots)
+    // = denominator * (2 - 1 / (1 << ndots))
+    // ```
+
+    return (2 - 1 / (1 << this.ndots)) / denominator;
   }
 }

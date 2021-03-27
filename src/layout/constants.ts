@@ -20,3 +20,4 @@ export const STAFF_LINE_HEIGHT: Inches = 0.1;
 export const LINE_MARGIN: Inches = 0.25;
 
 export const BEAM_HEIGHT = STAFF_LINE_HEIGHT / 4;
+export const DOT_SIZE = 2 * BEAM_HEIGHT;

@@ -2,6 +2,7 @@ import React from "react";
 import { LineElement } from "../../layout";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
+import { Dot } from "./Dot";
 import { LineGroup } from "./LineGroup";
 import { Measure } from "./Measure";
 import { Stem } from "./Stem";
@@ -25,5 +26,7 @@ export default function LineElementComponent(props: { element: LineElement }): R
       return <Stem node={props.element} />;
     case "Text":
       return <TextElement {...props.element} text={props.element.value} />;
+    case "Dot":
+      return <Dot node={props.element} />;
   }
 }

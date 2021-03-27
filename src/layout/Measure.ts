@@ -42,7 +42,8 @@ export class Measure extends FlexGroup<Chord | Rest | Space> {
 }
 
 function layOutChord(chord: notation.Chord, numStrings: number): Chord | Rest {
-  const width = Math.max(MIN_NOTE_WIDTH, QUARTER_NOTE_WIDTH * (4 / chord.value.toInt()));
+  // TODO this 3 is kind of arbitrary, make it configurable?
+  const width = Math.max(MIN_NOTE_WIDTH, QUARTER_NOTE_WIDTH * (3 * chord.value.toDecimal()));
 
   if (chord.rest) {
     return {
