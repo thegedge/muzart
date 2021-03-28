@@ -291,6 +291,7 @@ export default function load(source: ArrayBuffer): Score {
             notes.push(
               new Note(pitch, noteDuration, {
                 placement: note.placement,
+                ghost: note.ghost || undefined,
                 deadNote: note.deadNote || undefined,
                 tie: note.tie ? "stop" : undefined, // TODO would be good to trace back to the starting point
               })
@@ -324,7 +325,7 @@ function readNote(cursor: BufferCursor) {
     _hasNoteType,
     hasNoteDynamic,
     hasNoteEffects,
-    _isGhostNote,
+    isGhostNote,
     _isDottedNote,
     hasDuration,
   ] = bits(cursor.nextNumber(NumberType.Uint8));
@@ -406,6 +407,7 @@ function readNote(cursor: BufferCursor) {
     duration,
     deadNote: variant === 3,
     tie: variant === 2,
+    ghost: isGhostNote,
     placement: {
       fret,
       string: 0,

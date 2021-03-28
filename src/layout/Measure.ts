@@ -3,7 +3,7 @@ import Box from "./Box";
 import { STAFF_LINE_HEIGHT } from "./constants";
 import { FlexGroup } from "./FlexGroup";
 import { Chord, Inches, Rest, Space } from "./types";
-import { maxMap, numCharsToRepresent } from "./utils";
+import { maxMap } from "./utils";
 
 const MIN_NOTE_WIDTH: Inches = 0.2;
 const QUARTER_NOTE_WIDTH: Inches = 0.25;
@@ -60,7 +60,7 @@ function layOutChord(chord: notation.Chord, numStrings: number): Chord | Rest {
     notes: [],
   };
 
-  const maxNoteChars = maxMap(chord.notes, (note) => numCharsToRepresent(note.placement?.fret || 0)) || 1;
+  const maxNoteChars = maxMap(chord.notes, (note) => note.toString().length) || 1;
   const noteWidth = STAFF_LINE_HEIGHT * (0.5 + 0.3 * maxNoteChars);
   for (const note of chord.notes) {
     const noteY = note.placement ? (note.placement.string - 1) * STAFF_LINE_HEIGHT : 0;
