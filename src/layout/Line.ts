@@ -102,9 +102,9 @@ export class Line {
         continue;
       }
 
-      if (firstElement?.chord.value.name === NoteValueName.Whole) {
-        continue;
-      }
+      // if (firstElement?.chord.value.name === NoteValueName.Whole) {
+      // continue;
+      // }
 
       this.layOutStems(measureElement.box, beat);
       this.layOutBeams(measureElement.box, beat);
@@ -142,6 +142,10 @@ export class Line {
   private layOutStems(measureBox: Box, beatElements: (Chord | Rest)[]) {
     for (const beatElement of beatElements) {
       if (beatElement.type !== "Chord") {
+        continue;
+      }
+
+      if (beatElement?.chord.value.name === NoteValueName.Whole) {
         continue;
       }
 
