@@ -2,8 +2,10 @@ import { clone, first, map, max } from "lodash";
 import * as notation from "../../notation";
 import { NoteValueName } from "../../notation";
 import { BEAM_HEIGHT, DOT_SIZE, STAFF_LINE_HEIGHT } from "../constants";
+import { AnchoredGroup } from "../groups/AnchoredGroup";
 import { FlexProps, LineElementFlexGroup } from "../groups/FlexGroup";
 import { NonNegativeGroup } from "../groups/NonNegativeGroup";
+import { StackedGroup } from "../groups/StackedGroup";
 import { Beam, Chord, Dot, LineElement, Measure, Rest, Space, Stem, Text } from "../types";
 import { runs } from "../utils";
 import Box from "../utils/Box";
@@ -12,12 +14,12 @@ export class Line {
   readonly type: "Group" = "Group";
   readonly elements: LineElement[] = [];
 
-  private aboveStaffLayout: NonNegativeGroup<Text>;
+  private aboveStaffLayout: AnchoredGroup<StackedGroup<Text>, Measure | Chord>;
   private staffLayout: LineElementFlexGroup;
   private belowStaffLayout: NonNegativeGroup<Stem | Beam | Dot>;
 
   constructor(readonly box: Box) {
-    this.aboveStaffLayout = new NonNegativeGroup();
+    this.aboveStaffLayout = new AnchoredGroup();
     this.staffLayout = new LineElementFlexGroup({ box: clone(box), drawStaffLines: true }); // TODO eliminate drawStaffLines from here
     this.belowStaffLayout = new NonNegativeGroup();
 
@@ -51,23 +53,13 @@ export class Line {
         continue;
       }
 
-      this.aboveStaffLayout.addElement({
-        type: "Text",
-        align: "center",
-        box: new Box(lineChild.box.x - 0.5 * numberSize, numberSize, numberSize, numberSize),
-        size: numberSize,
-        value: lineChild.measure.number.toString(),
-        style: {
-          userSelect: "none",
-          fill: "#888888",
-        },
-      });
+      const group = new StackedGroup<Text>(0.25 * tempoSize);
 
       if (lineChild.measure.staffDetails.tempo?.changed) {
-        this.aboveStaffLayout.addElement({
+        group.addElement({
           type: "Text",
           align: "left",
-          box: new Box(lineChild.box.x, -tempoSize * 0.5, lineChild.box.width, tempoSize),
+          box: new Box(0, 0, lineChild.box.width, tempoSize),
           size: tempoSize,
           value: `♩﹦${lineChild.measure.staffDetails.tempo.value}`,
           style: {
@@ -77,6 +69,19 @@ export class Line {
         });
       }
 
+      group.addElement({
+        type: "Text",
+        align: "center",
+        box: new Box(-0.5 * numberSize, 0, numberSize, numberSize),
+        size: numberSize,
+        value: lineChild.measure.number.toString(),
+        style: {
+          userSelect: "none",
+          fill: "#888888",
+        },
+      });
+
+      this.aboveStaffLayout.addElement(group, lineChild);
       this.stemAndBeam(lineChild);
     }
 
