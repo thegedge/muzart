@@ -72,7 +72,7 @@ export class Line {
       group.addElement({
         type: "Text",
         align: "center",
-        box: new Box(-0.5 * numberSize, 0, numberSize, numberSize),
+        box: new Box(-0.5 * numberSize, STAFF_LINE_HEIGHT * 0.25, numberSize, numberSize),
         size: numberSize,
         value: lineChild.measure.number.toString(),
         style: {
