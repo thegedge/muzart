@@ -1,12 +1,12 @@
 import { clone, first, map, max } from "lodash";
-import * as notation from "../notation";
-import { NoteValueName } from "../notation";
-import Box from "./Box";
-import { BEAM_HEIGHT, DOT_SIZE, STAFF_LINE_HEIGHT } from "./constants";
-import { FlexProps, LineElementFlexGroup } from "./FlexGroup";
-import { NonNegativeGroup } from "./NonNegativeGroup";
-import { Beam, Chord, Dot, LineElement, Measure, Rest, Space, Stem, Text } from "./types";
-import { runs } from "./utils";
+import * as notation from "../../notation";
+import { NoteValueName } from "../../notation";
+import { BEAM_HEIGHT, DOT_SIZE, STAFF_LINE_HEIGHT } from "../constants";
+import { FlexProps, LineElementFlexGroup } from "../groups/FlexGroup";
+import { NonNegativeGroup } from "../groups/NonNegativeGroup";
+import { Beam, Chord, Dot, LineElement, Measure, Rest, Space, Stem, Text } from "../types";
+import { runs } from "../utils";
+import Box from "../utils/Box";
 
 export class Line {
   readonly type: "Group" = "Group";

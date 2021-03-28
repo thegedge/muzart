@@ -1,6 +1,5 @@
 import { clone } from "lodash";
 import * as notation from "../notation";
-import Box from "./Box";
 import {
   DEFAULT_MARGINS,
   DEFAULT_PAGE_HEIGHT,
@@ -9,10 +8,11 @@ import {
   LINE_STROKE_WIDTH,
   STAFF_LINE_HEIGHT,
 } from "./constants";
-import { LineElementFlexGroup } from "./FlexGroup";
-import { Line } from "./Line";
-import { Measure, Measure as MeasureLayout } from "./Measure";
+import { Line } from "./elements/Line";
+import { Measure, Measure as MeasureLayout } from "./elements/Measure";
+import { LineElementFlexGroup } from "./groups/FlexGroup";
 import { Page, Part, Score, Text } from "./types";
+import Box from "./utils/Box";
 
 /**
  * Return a layout for the given score.

@@ -1,6 +1,7 @@
 import { defaults, isNull, last, maxBy, sum, zip } from "lodash";
-import Box from "./Box";
-import { HasBox, LineElement } from "./types";
+import { HasBox, LineElement } from "../types";
+import Box from "../utils/Box";
+import { MaybeLayout } from "./types";
 
 export type FlexProps = {
   /** If `true`, don't adjust this element during `layout` */
@@ -23,8 +24,15 @@ export type FlexGroupConfig = {
   drawStaffLines?: boolean;
 };
 
-// TODO "space between" option
-export class FlexGroup<T extends HasBox & { layout?(): void }> {
+/**
+ * A group that lays out objects along an axis.
+ *
+ * If, after laying out the child elements, there is still space left in the box of this group, distribute that space to all
+ * elements that can be stretched (flex props with a non-null factor and not fixed).
+ */
+export class FlexGroup<T extends MaybeLayout<HasBox>> {
+  // TODO "space between" option
+
   readonly elements: T[] = [];
   readonly drawStaffLines: boolean = false;
   public box: Box;

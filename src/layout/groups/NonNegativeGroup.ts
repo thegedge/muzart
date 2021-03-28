@@ -1,12 +1,13 @@
-import Box from "./Box";
-import { HasBox } from "./types";
+import { HasBox } from "../types";
+import Box from "../utils/Box";
+import { MaybeLayout } from "./types";
 
 /**
  * A group that lays out its elements such that all x/y coordinates are non-negative.
  *
  * This is achieved by offsetting all elements by the top-left (x,y) corner of the bounding box of all elements.
  */
-export class NonNegativeGroup<T extends HasBox> {
+export class NonNegativeGroup<T extends MaybeLayout<HasBox>> {
   readonly type: "Group" = "Group";
 
   public elements: T[] = [];
@@ -34,6 +35,10 @@ export class NonNegativeGroup<T extends HasBox> {
     }
 
     for (const element of this.elements) {
+      if (element.layout) {
+        element.layout();
+      }
+
       element.box = element.box.translate(-this.box.x, -this.box.y);
     }
 

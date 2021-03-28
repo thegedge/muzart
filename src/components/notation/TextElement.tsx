@@ -1,6 +1,6 @@
 import React, { CSSProperties } from "react";
 import { LINE_STROKE_WIDTH } from "../../layout";
-import Box from "../../layout/Box";
+import Box from "../../layout/utils/Box";
 import { useDebugColorFor } from "../utils/DebugContext";
 import { svgBoxProps } from "../utils/svg";
 

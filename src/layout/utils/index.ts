@@ -1,3 +1,5 @@
+export * from "./Box";
+
 /**
  * Compute the max of a collection after being mapped by a function.
  *
