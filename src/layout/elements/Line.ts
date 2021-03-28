@@ -107,10 +107,6 @@ export class Line {
         continue;
       }
 
-      // if (firstElement?.chord.value.name === NoteValueName.Whole) {
-      // continue;
-      // }
-
       this.layOutStems(measureElement.box, beat);
       this.layOutBeams(measureElement.box, beat);
       this.layOutDots(measureElement.box, beat);
@@ -143,6 +139,9 @@ export class Line {
     // TODO need to figure out how to best center in a rest
     return element.box.x + 0.4 * STAFF_LINE_HEIGHT;
   }
+
+  // TODO there's a lot of "behavioural coupling" between these methods. For example, `layOutBeams` is aware of how tall
+  //      stems are, and similarly for `layOutDots`.
 
   private layOutStems(measureBox: Box, beatElements: (Chord | Rest)[]) {
     for (const beatElement of beatElements) {
