@@ -43,31 +43,37 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   // Lay out the composition title, composer, etc
   if (score.title) {
     const height = 4 * STAFF_LINE_HEIGHT;
-    pageGroup.addElement({
-      type: "Text",
-      box: new Box(0, 0, contentWidth, height),
-      align: "center",
-      size: height,
-      value: score.title,
-      style: {
-        fontFamily: "serif",
+    pageGroup.addElement(
+      {
+        type: "Text",
+        box: new Box(0, 0, contentWidth, height),
+        align: "center",
+        size: height,
+        value: score.title,
+        style: {
+          fontFamily: "serif",
+        },
       },
-    });
+      { factor: 0 }
+    );
   }
 
   if (score.composer) {
     const height = 1.5 * STAFF_LINE_HEIGHT;
 
-    pageGroup.addElement({
-      type: "Text",
-      box: new Box(0, 0, contentWidth, 2 * height),
-      align: "right",
-      size: height,
-      value: score.composer,
-      style: {
-        fontFamily: "serif",
+    pageGroup.addElement(
+      {
+        type: "Text",
+        box: new Box(0, 0, contentWidth, 2 * height),
+        align: "right",
+        size: height,
+        value: score.composer,
+        style: {
+          fontFamily: "serif",
+        },
       },
-    });
+      { factor: 0 }
+    );
   }
 
   if (part.instrument && part.instrument.tuning) {
@@ -94,19 +100,25 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
         elements.push(text);
       }
 
-      pageGroup.addElement({
-        type: "Group",
-        box: new Box(0, 0, textSize * 10, 1.3 * textSize),
-        elements,
-      });
+      pageGroup.addElement(
+        {
+          type: "Group",
+          box: new Box(0, 0, textSize * 10, 1.3 * textSize),
+          elements,
+        },
+        { factor: 0 }
+      );
     }
   }
 
   if (pageGroup.elements.length > 0) {
-    pageGroup.addElement({
-      type: "Space",
-      box: new Box(0, 0, LINE_MARGIN, LINE_MARGIN),
-    });
+    pageGroup.addElement(
+      {
+        type: "Space",
+        box: new Box(0, 0, LINE_MARGIN, LINE_MARGIN),
+      },
+      { factor: 0 }
+    );
   }
 
   const pages: Page[] = [];
