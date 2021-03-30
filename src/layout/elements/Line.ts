@@ -1,4 +1,4 @@
-import { clone, first, map, max } from "lodash";
+import { clone, find, first, map, max } from "lodash";
 import * as notation from "../../notation";
 import { NoteValueName } from "../../notation";
 import { BEAM_HEIGHT, DOT_SIZE, STAFF_LINE_HEIGHT } from "../constants";
@@ -82,6 +82,7 @@ export class Line {
       });
 
       this.aboveStaffLayout.addElement(group, lineChild);
+      this.addAboveStaffDecorations(lineChild);
       this.stemAndBeam(lineChild);
     }
 
@@ -97,6 +98,31 @@ export class Line {
 
     this.box.width = max(map(this.elements, "box.width"));
     this.box.height = y;
+  }
+
+  private addAboveStaffDecorations(measureElement: Measure) {
+    const textSize = 0.8 * STAFF_LINE_HEIGHT;
+    for (const element of measureElement.elements) {
+      if (element.type !== "Chord") {
+        continue;
+      }
+
+      const group = new StackedGroup<Text>();
+      const harmonicNote = find(element.chord.notes, "harmonic");
+      if (harmonicNote) {
+        // TODO need to size text better
+        group.addElement({
+          type: "Text",
+          box: new Box(element.box.x, -0.5 * textSize, textSize * 2, textSize),
+          size: textSize,
+          value: harmonicNote.harmonicString,
+          style: {
+            fill: "#888888",
+          },
+        });
+      }
+      this.aboveStaffLayout.addElement(group, measureElement);
+    }
   }
 
   private stemAndBeam(measureElement: Measure) {

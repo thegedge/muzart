@@ -7,14 +7,14 @@ export function TextElement(props: {
   text: string;
   size: number;
   box: Box;
-  align: "left" | "center" | "right";
+  align?: "left" | "center" | "right";
   fill?: boolean;
   style?: CSSProperties;
 }) {
   let x = 0;
   let y = props.box.centerY;
   let anchor: string;
-  switch (props.align) {
+  switch (props.align || "left") {
     case "center":
       x = props.box.centerX;
       anchor = "middle";

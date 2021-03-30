@@ -61,7 +61,7 @@ export interface Text {
   type: "Text";
   value: string;
   size: Inches;
-  align: Alignment;
+  align?: Alignment;
   box: Box;
   style?: CSSProperties;
 }

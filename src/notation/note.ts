@@ -1,25 +1,67 @@
-import { pick, pickBy } from "lodash";
+import { pickBy } from "lodash";
 import { NoteValue } from "./note_value";
 import { Pitch } from "./pitch";
 
 export type TieType = "start" | "stop";
 
+export enum HarmonicStyle {
+  Natural = "natural",
+  ArtificialPlus5 = "artificial+5",
+  ArtificialPlus7 = "artificial+7",
+  ArtificialPlus12 = "artificial+12",
+  Tapped = "tapped",
+  Pitch = "pitch",
+  Semi = "semi",
+}
+
 export interface NoteOptions {
-  placement: Placement;
-  deadNote: boolean;
-  tie: TieType;
-  ghost: boolean;
+  pitch: Pitch;
+  value: NoteValue;
+  placement?: Placement;
+  deadNote?: boolean;
+  tie?: TieType;
+  ghost?: boolean;
+  harmonic?: HarmonicStyle;
 }
 
 export class Note {
+  readonly pitch!: Pitch;
+  readonly value!: NoteValue;
   readonly placement?: Placement;
   readonly tie?: TieType;
   readonly deadNote?: boolean;
   readonly ghost?: boolean;
+  readonly harmonic?: HarmonicStyle;
 
-  constructor(readonly pitch: Pitch, readonly value: NoteValue, options?: Partial<NoteOptions>) {
-    // The `pickBy` call here will filter out keys that have null/undefined values
-    options && Object.assign(this, pickBy(pick(options, "placement", "deadNote", "tie", "ghost")));
+  constructor(options: NoteOptions) {
+    Object.assign(
+      this,
+      pickBy(options, (value, key) => value && key in this)
+    );
+  }
+
+  get harmonicString() {
+    if (!this.harmonic) {
+      return "";
+    }
+
+    // TODO verify all of these make sense
+    switch (this.harmonic) {
+      case HarmonicStyle.Natural:
+        return "N.H.";
+      case HarmonicStyle.ArtificialPlus5:
+        return "A.H.";
+      case HarmonicStyle.ArtificialPlus7:
+        return "A.H.";
+      case HarmonicStyle.ArtificialPlus12:
+        return "A.H.";
+      case HarmonicStyle.Tapped:
+        return "T.H.";
+      case HarmonicStyle.Pitch:
+        return "P.H.";
+      case HarmonicStyle.Semi:
+        return "S.H.";
+    }
   }
 
   toString() {
