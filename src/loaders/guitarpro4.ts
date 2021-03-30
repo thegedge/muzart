@@ -1,5 +1,5 @@
 import { range } from "lodash";
-import { HarmonicStyle, Measure, Note, NoteOptions, Pitch, Score, TimeSignature } from "../notation";
+import { AccentStyle, HarmonicStyle, Measure, Note, NoteOptions, Pitch, Score, TimeSignature } from "../notation";
 import { NoteValue } from "../notation/note_value";
 import { BufferCursor, NumberType } from "../util/BufferCursor";
 
@@ -308,7 +308,7 @@ export default function load(source: ArrayBuffer): Score {
 function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: NoteValue): NoteOptions {
   const [
     hasFingering,
-    _isAccentuated,
+    isAccentuated,
     _hasNoteType,
     hasNoteDynamic,
     hasNoteEffects,
@@ -425,6 +425,7 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
     tie: variant === 2 ? "stop" : undefined,
     ghost: isGhostNote,
     harmonic,
+    accent: isAccentuated ? AccentStyle.Accentuated : undefined,
     placement: {
       fret,
       string: 0,

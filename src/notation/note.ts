@@ -14,6 +14,11 @@ export enum HarmonicStyle {
   Semi = "semi",
 }
 
+export enum AccentStyle {
+  Accentuated = "accentuated",
+  Marcato = "marcato",
+}
+
 export interface NoteOptions {
   pitch: Pitch;
   value: NoteValue;
@@ -22,6 +27,7 @@ export interface NoteOptions {
   tie?: TieType;
   ghost?: boolean;
   harmonic?: HarmonicStyle;
+  accent?: AccentStyle;
 }
 
 export class Note {
@@ -32,6 +38,7 @@ export class Note {
   readonly deadNote?: boolean;
   readonly ghost?: boolean;
   readonly harmonic?: HarmonicStyle;
+  readonly accent?: AccentStyle;
 
   constructor(options: NoteOptions) {
     Object.assign(

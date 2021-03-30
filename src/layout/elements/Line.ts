@@ -1,6 +1,6 @@
 import { clone, find, first, map, max } from "lodash";
 import * as notation from "../../notation";
-import { NoteValueName } from "../../notation";
+import { AccentStyle, NoteValueName } from "../../notation";
 import { BEAM_HEIGHT, DOT_SIZE, STAFF_LINE_HEIGHT } from "../constants";
 import { AnchoredGroup } from "../groups/AnchoredGroup";
 import { FlexProps, LineElementFlexGroup } from "../groups/FlexGroup";
@@ -101,26 +101,48 @@ export class Line {
   }
 
   private addAboveStaffDecorations(measureElement: Measure) {
-    const textSize = 0.8 * STAFF_LINE_HEIGHT;
+    const baseSize = 0.8 * STAFF_LINE_HEIGHT;
     for (const element of measureElement.elements) {
       if (element.type !== "Chord") {
         continue;
       }
 
       const group = new StackedGroup<Text>();
+
       const harmonicNote = find(element.chord.notes, "harmonic");
       if (harmonicNote) {
-        // TODO need to size text better
         group.addElement({
           type: "Text",
-          box: new Box(element.box.x, -0.5 * textSize, textSize * 2, textSize),
-          size: textSize,
+          box: new Box(element.box.x, -0.5 * baseSize, baseSize * 2, baseSize),
+          size: baseSize,
           value: harmonicNote.harmonicString,
           style: {
             fill: "#888888",
           },
         });
       }
+
+      const accentuatedNote = find(element.chord.notes, "accent");
+      if (accentuatedNote && accentuatedNote.accent) {
+        let accentString;
+        switch (accentuatedNote.accent) {
+          case AccentStyle.Accentuated:
+            accentString = "𝆓";
+            break;
+          case AccentStyle.Marcato:
+            accentString = "᭴";
+            break;
+        }
+
+        const accentSize = baseSize * 1.5;
+        group.addElement({
+          type: "Text",
+          box: new Box(element.box.x, -0.5 * baseSize, accentSize, accentSize),
+          size: accentSize,
+          value: accentString,
+        });
+      }
+
       this.aboveStaffLayout.addElement(group, measureElement);
     }
   }

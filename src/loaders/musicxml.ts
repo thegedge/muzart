@@ -180,7 +180,10 @@ function note(document: Document, node: Node): Note {
   // any so we can typecheck on `Duration.fromString` below, relying on MusicXML's validations to ensure correctness
   const duration: any = textQuery(document, node, "type");
 
-  const options: Partial<NoteOptions> = {};
+  const options: NoteOptions = {
+    pitch,
+    value: NoteValue.fromString(duration),
+  };
 
   const fret = textQueryMaybe(document, node, "notations/technical/fret");
   const string = textQueryMaybe(document, node, "notations/technical/string");
@@ -191,7 +194,7 @@ function note(document: Document, node: Node): Note {
   const tie = textQueryMaybe(document, node, "tie/@type");
   options.tie = tie as NoteOptions["tie"];
 
-  return new Note(pitch, NoteValue.fromString(duration), options);
+  return new Note(options);
 }
 
 function single(document: Document, node: Node, query: string): Node | null {
