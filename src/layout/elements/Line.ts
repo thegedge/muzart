@@ -122,6 +122,19 @@ export class Line {
         });
       }
 
+      const palmMuteNote = find(element.chord.notes, "palmMute");
+      if (palmMuteNote) {
+        group.addElement({
+          type: "Text",
+          box: new Box(element.box.x, -0.5 * baseSize, baseSize * 2, baseSize),
+          size: baseSize,
+          value: "P.M.",
+          style: {
+            fill: "#888888",
+          },
+        });
+      }
+
       const accentuatedNote = find(element.chord.notes, "accent");
       if (accentuatedNote && accentuatedNote.accent) {
         let accentString;
@@ -142,6 +155,24 @@ export class Line {
           value: accentString,
         });
       }
+
+      /* TODO This draws too many things
+      
+      const dynamicNote = find(element.chord.notes, "dynamic");
+      if (dynamicNote && dynamicNote.dynamic) {
+        group.addElement({
+          type: "Text",
+          box: new Box(element.box.x, -0.5 * baseSize, baseSize, baseSize),
+          size: baseSize,
+          value: dynamicNote.dynamic,
+          style: {
+            fontFamily: "Georgia",
+            fontStyle: "italic",
+            fontWeight: 600,
+          },
+        });
+      }
+      */
 
       this.aboveStaffLayout.addElement(group, measureElement);
     }

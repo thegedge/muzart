@@ -1,5 +1,15 @@
 import { range } from "lodash";
-import { AccentStyle, HarmonicStyle, Measure, Note, NoteOptions, Pitch, Score, TimeSignature } from "../notation";
+import {
+  AccentStyle,
+  HarmonicStyle,
+  Measure,
+  Note,
+  NoteDynamic,
+  NoteOptions,
+  Pitch,
+  Score,
+  TimeSignature,
+} from "../notation";
 import { NoteValue } from "../notation/note_value";
 import { BufferCursor, NumberType } from "../util/BufferCursor";
 
@@ -305,7 +315,7 @@ export default function load(source: ArrayBuffer): Score {
   return score;
 }
 
-function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: NoteValue): NoteOptions {
+function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: NoteValue) {
   const [
     hasFingering,
     isAccentuated,
@@ -334,18 +344,62 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
     /* const tuplet = */ cursor.nextNumber(NumberType.Uint8);
   }
 
+  let dynamic;
   if (hasNoteDynamic) {
-    /* const dynamic = */ cursor.nextNumber(NumberType.Uint8);
+    const dynamicValue = cursor.nextNumber(NumberType.Uint8);
+    switch (dynamicValue) {
+      case 1:
+        dynamic = NoteDynamic.Pianississimo;
+        break;
+      case 2:
+        dynamic = NoteDynamic.Pianissimo;
+        break;
+      case 3:
+        dynamic = NoteDynamic.Piano;
+        break;
+      case 4:
+        dynamic = NoteDynamic.MezzoPiano;
+        break;
+      case 5:
+        dynamic = NoteDynamic.MezzoForte;
+        break;
+      case 6:
+        dynamic = NoteDynamic.Forte;
+        break;
+      case 7:
+        dynamic = NoteDynamic.Fortissimo;
+        break;
+      case 8:
+        dynamic = NoteDynamic.Fortississimo;
+        break;
+      default:
+        console.warn(`Unknown dynamic value: ${dynamicValue}`);
+        break;
+    }
   }
 
   const fret = cursor.nextNumber(NumberType.Uint8);
+
+  // options initialized here because pitch/value have to be defined
+  const options: NoteOptions = {
+    pitch: stringTuning.adjust(fret),
+    value: duration == 0 ? defaultNoteValue : NoteValue.fromNumber(duration as any),
+    deadNote: variant === 3,
+    tie: variant === 2 ? "stop" : undefined,
+    ghost: isGhostNote,
+    accent: isAccentuated ? AccentStyle.Accentuated : undefined,
+    dynamic,
+    placement: {
+      fret,
+      string: 0,
+    },
+  };
 
   if (hasFingering) {
     /* const leftHandFingering = */ cursor.nextNumber(NumberType.Uint8);
     /* const rightHandFingering = */ cursor.nextNumber(NumberType.Uint8);
   }
 
-  let harmonic: HarmonicStyle | undefined;
   if (hasNoteEffects) {
     const [_blank1, _blank2, _blank3, hasGraceNote, _letRing, _hasSlide_v3, _isHammerOnPullOff, hasBend] = bits(
       cursor.nextNumber(NumberType.Uint8)
@@ -358,9 +412,12 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
       hasHarmonics,
       hasSlide,
       hasTremoloPicking,
-      _palmMute,
-      _staccato,
+      isPalmMute,
+      isStaccato,
     ] = bits(cursor.nextNumber(NumberType.Uint8));
+
+    options.palmMute = isPalmMute;
+    options.staccato = isStaccato;
 
     if (hasBend) {
       /* const bend = */ readBend(cursor);
@@ -387,25 +444,25 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
         case 0:
           break;
         case 1:
-          harmonic = HarmonicStyle.Natural;
+          options.harmonic = HarmonicStyle.Natural;
           break;
         case 3:
-          harmonic = HarmonicStyle.Tapped;
+          options.harmonic = HarmonicStyle.Tapped;
           break;
         case 4:
-          harmonic = HarmonicStyle.Pitch;
+          options.harmonic = HarmonicStyle.Pitch;
           break;
         case 5:
-          harmonic = HarmonicStyle.Semi;
+          options.harmonic = HarmonicStyle.Semi;
           break;
         case 15:
-          harmonic = HarmonicStyle.ArtificialPlus5;
+          options.harmonic = HarmonicStyle.ArtificialPlus5;
           break;
         case 17:
-          harmonic = HarmonicStyle.ArtificialPlus7;
+          options.harmonic = HarmonicStyle.ArtificialPlus7;
           break;
         case 22:
-          harmonic = HarmonicStyle.ArtificialPlus12;
+          options.harmonic = HarmonicStyle.ArtificialPlus12;
           break;
         default:
           console.warn(`Unknown harmonic style: ${harmonicStyle}`);
@@ -418,19 +475,7 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
     }
   }
 
-  return {
-    pitch: stringTuning.adjust(fret),
-    value: duration == 0 ? defaultNoteValue : NoteValue.fromNumber(duration as any),
-    deadNote: variant === 3,
-    tie: variant === 2 ? "stop" : undefined,
-    ghost: isGhostNote,
-    harmonic,
-    accent: isAccentuated ? AccentStyle.Accentuated : undefined,
-    placement: {
-      fret,
-      string: 0,
-    },
-  };
+  return options;
 }
 
 function readChordDiagram(cursor: BufferCursor) {

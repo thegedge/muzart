@@ -19,6 +19,17 @@ export enum AccentStyle {
   Marcato = "marcato",
 }
 
+export enum NoteDynamic {
+  Pianississimo = "ppp",
+  Pianissimo = "pp",
+  Piano = "p",
+  MezzoPiano = "mp",
+  MezzoForte = "mf",
+  Forte = "f",
+  Fortissimo = "ff",
+  Fortississimo = "fff",
+}
+
 export interface NoteOptions {
   pitch: Pitch;
   value: NoteValue;
@@ -28,6 +39,9 @@ export interface NoteOptions {
   ghost?: boolean;
   harmonic?: HarmonicStyle;
   accent?: AccentStyle;
+  palmMute?: boolean;
+  staccato?: boolean;
+  dynamic?: NoteDynamic;
 }
 
 export class Note {
@@ -39,6 +53,9 @@ export class Note {
   readonly ghost?: boolean;
   readonly harmonic?: HarmonicStyle;
   readonly accent?: AccentStyle;
+  readonly palmMute?: boolean;
+  readonly staccato?: boolean;
+  readonly dynamic?: NoteDynamic;
 
   constructor(options: NoteOptions) {
     Object.assign(
