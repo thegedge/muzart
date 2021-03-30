@@ -207,8 +207,9 @@ export default function load(source: ArrayBuffer): Score {
           /* const diagram = */ readChordDiagram(cursor);
         }
 
+        let text;
         if (hasText) {
-          /* const text = */ cursor.nextLengthPrefixedString(NumberType.Uint32);
+          text = cursor.nextLengthPrefixedString(NumberType.Uint32);
         }
 
         if (hasEffects) {
@@ -303,7 +304,7 @@ export default function load(source: ArrayBuffer): Score {
           measure.staffDetails.time = { value: newTimeSignature, changed: true };
         }
 
-        measure.chords.push({ notes, value: duration, rest });
+        measure.chords.push({ notes, text, value: duration, rest });
       }
 
       score.parts[trackIndex].measures.push(measure);

@@ -174,6 +174,16 @@ export class Line {
       }
       */
 
+      if (element.chord.text) {
+        // TODO baseSize isn't an appropriate width, but we have no way to measure text :(
+        group.addElement({
+          type: "Text",
+          box: new Box(element.box.x, -0.5 * baseSize, baseSize, baseSize),
+          size: baseSize,
+          value: element.chord.text,
+        });
+      }
+
       this.aboveStaffLayout.addElement(group, measureElement);
     }
   }
