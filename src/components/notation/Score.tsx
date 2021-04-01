@@ -1,13 +1,12 @@
 import { assign } from "lodash";
-import React, { useState } from "react";
-import { layout } from "../../layout/layout";
-import { Score } from "../../notation";
+import React, { useEffect, useState } from "react";
+import * as layout from "../../layout";
 import { Suspenseful } from "../../suspenseful";
 import Page from "../layout/Page";
 import { Toolbox } from "../ui/Toolbox";
 import { DebugContext, DebugContextData } from "../utils/DebugContext";
 
-export default function Score(props: { score: Score | Suspenseful<Score>; partIndex?: number }) {
+export default function Score(props: { score: layout.Score | Suspenseful<layout.Score>; partIndex?: number }) {
   if (props.score == null) {
     return <></>;
   }
@@ -17,24 +16,22 @@ export default function Score(props: { score: Score | Suspenseful<Score>; partIn
     return <></>;
   }
 
-  const now = performance.now();
-  const scoreLayout = layout(score);
-  (window as any).scoreLayout = scoreLayout;
-  console.log({ scoreLayout });
-  console.log(`Time to lay out: ${performance.now() - now}ms`);
-
   const [debugData, setDebugData] = useState<DebugContextData>({
     enabled: false,
     index: 0,
     colorMap: {},
   });
 
-  const [part, setPart] = useState(scoreLayout.parts[props.partIndex || 0]);
+  const [part, setPart] = useState(score.parts[props.partIndex || 0]);
+  useEffect(() => {
+    setPart(score.parts[props.partIndex || 0]);
+  }, [score, props.partIndex]);
+
   return (
     <>
       <Toolbox
-        score={score}
-        onPartChange={(index) => setPart(scoreLayout.parts[index])}
+        score={score.score}
+        onPartChange={(index) => setPart(score.parts[index])}
         onDebugToggled={(v) => {
           const value = assign({}, debugData, { enabled: v });
           console.log(value);

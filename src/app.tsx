@@ -1,18 +1,18 @@
 import * as React from "react";
-import { Suspense, useCallback } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Score from "./components/notation/Score";
+import * as layout from "./layout";
 import { determineType, load, ScoreDataType } from "./loaders";
-import * as notation from "./notation";
 import { Suspenseful, suspenseful } from "./suspenseful";
 
 export default function App() {
-  const [score, setScore] = React.useState<Suspenseful<notation.Score>>();
+  const [score, setScore] = useState<Suspenseful<layout.Score>>();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (process.env.DEFAULT_FILE) {
-      setScore(suspenseful(load(process.env.DEFAULT_FILE)));
+      setScore(loadScore(process.env.DEFAULT_FILE));
     }
   }, []);
 
@@ -44,7 +44,7 @@ export default function App() {
     }
 
     if (file) {
-      setScore(suspenseful(load(file)));
+      setScore(loadScore(file));
     }
   }, []);
 
@@ -58,5 +58,16 @@ export default function App() {
         )}
       </Suspense>
     </div>
+  );
+}
+
+function loadScore(source: string | File | URL) {
+  return suspenseful(
+    load(source).then((score) => {
+      const start = performance.now();
+      const scoreLayout = layout.layout(score);
+      console.log(`Time to lay out full score: ${performance.now() - start}ms`);
+      return scoreLayout;
+    })
   );
 }
