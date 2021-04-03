@@ -1,4 +1,4 @@
-import { range } from "lodash";
+import { padStart, range } from "lodash";
 import {
   AccentStyle,
   HarmonicStyle,
@@ -103,9 +103,14 @@ export default function load(source: ArrayBuffer): Score {
       /* const alternateEnding = */ cursor.nextNumber(NumberType.Uint8);
     }
 
+    let marker;
     if (hasMarker) {
-      /* const name = */ cursor.nextLengthPrefixedString(NumberType.Uint32);
-      /* const color = */ cursor.nextNumber(NumberType.Uint32);
+      const name = cursor.nextLengthPrefixedString(NumberType.Uint32);
+      const color = readColor(cursor);
+      marker = {
+        text: name,
+        color,
+      };
     }
 
     if (hasKeySignature) {
@@ -113,7 +118,7 @@ export default function load(source: ArrayBuffer): Score {
       /* const minor = */ cursor.nextNumber(NumberType.Uint8);
     }
 
-    return { timeSignature };
+    return { marker, timeSignature };
   });
 
   //------------------------------------------------------------------------------------------------
@@ -165,13 +170,14 @@ export default function load(source: ArrayBuffer): Score {
 
   for (let measureIndex = 0; measureIndex < numMeasures; ++measureIndex) {
     for (let trackIndex = 0; trackIndex < numTracks; ++trackIndex) {
+      console.debug({ trackIndex, measureIndex });
+
       const measure: Measure = {
         chords: [],
         number: measureIndex + 1,
+        marker: measureData[measureIndex].marker,
         staffDetails: {},
       };
-
-      console.debug({ trackIndex, measureIndex });
 
       let measureTempo;
 
@@ -608,6 +614,15 @@ function readBend(cursor: BufferCursor) {
     /* const verticalPosition = */ cursor.nextNumber(NumberType.Uint32);
     /* const vibrato = */ cursor.nextNumber(NumberType.Uint8);
   }
+}
+
+function readColor(cursor: BufferCursor): string {
+  const _ = cursor.nextNumber(NumberType.Uint8);
+  const b = cursor.nextNumber(NumberType.Uint8);
+  const g = cursor.nextNumber(NumberType.Uint8);
+  const r = cursor.nextNumber(NumberType.Uint8);
+  const c = padStart(((r << 16) | (g << 8) | b).toString(16), 6, "0");
+  return `#${c}`;
 }
 
 function readInfoString(cursor: BufferCursor): string {

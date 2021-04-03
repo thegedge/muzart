@@ -14,7 +14,7 @@ export class Line {
   readonly type: "Group" = "Group";
   readonly elements: LineElement[] = [];
 
-  private aboveStaffLayout: AnchoredGroup<StackedGroup<Text>, Measure | Chord>;
+  private aboveStaffLayout: AnchoredGroup<StackedGroup<Text | Space>, Measure | Chord>;
   private staffLayout: LineElementFlexGroup;
   private belowStaffLayout: NonNegativeGroup<Stem | Beam | Dot>;
 
@@ -59,7 +59,7 @@ export class Line {
         group.addElement({
           type: "Text",
           align: "left",
-          box: new Box(0, 0, lineChild.box.width, tempoSize),
+          box: new Box(0, 0, lineChild.box.width, 2 * tempoSize),
           size: tempoSize,
           value: `♩﹦${lineChild.measure.staffDetails.tempo.value}`,
           style: {
@@ -101,68 +101,97 @@ export class Line {
   }
 
   private addAboveStaffDecorations(measureElement: Measure) {
+    let first = true;
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
     for (const element of measureElement.elements) {
-      if (element.type !== "Chord") {
-        continue;
+      const group = new StackedGroup<Text | Space>(0.5 * baseSize);
+
+      if (element.type !== "Space") {
+        if (first) {
+          if (measureElement.measure.marker) {
+            group.addElement({
+              type: "Text",
+              box: new Box(element.box.x, 0, baseSize, baseSize),
+              size: baseSize,
+              value: measureElement.measure.marker.text,
+              style: {
+                fontWeight: "bold",
+                fill: measureElement.measure.marker.color,
+              },
+            });
+          }
+          first = false;
+        }
       }
 
-      const group = new StackedGroup<Text>();
-
-      const harmonicNote = find(element.chord.notes, "harmonic");
-      if (harmonicNote) {
-        group.addElement({
-          type: "Text",
-          box: new Box(element.box.x, -0.5 * baseSize, baseSize * 2, baseSize),
-          size: baseSize,
-          value: harmonicNote.harmonicString,
-          style: {
-            fill: "#888888",
-          },
-        });
-      }
-
-      const palmMuteNote = find(element.chord.notes, "palmMute");
-      if (palmMuteNote) {
-        group.addElement({
-          type: "Text",
-          box: new Box(element.box.x, -0.5 * baseSize, baseSize * 2, baseSize),
-          size: baseSize,
-          value: "P.M.",
-          style: {
-            fill: "#888888",
-          },
-        });
-      }
-
-      const accentuatedNote = find(element.chord.notes, "accent");
-      if (accentuatedNote && accentuatedNote.accent) {
-        let accentString;
-        switch (accentuatedNote.accent) {
-          case AccentStyle.Accentuated:
-            accentString = "𝆓";
-            break;
-          case AccentStyle.Marcato:
-            accentString = "᭴";
-            break;
+      if (element.type === "Chord") {
+        if (element.chord.text) {
+          // TODO baseSize isn't an appropriate width, but we have no way to measure text :(
+          group.addElement({
+            type: "Text",
+            box: new Box(element.box.x, 0, baseSize, baseSize),
+            size: baseSize,
+            value: element.chord.text,
+            style: {
+              fontStyle: "italic",
+            },
+          });
         }
 
-        const accentSize = baseSize * 1.5;
-        group.addElement({
-          type: "Text",
-          box: new Box(element.box.x, -0.5 * baseSize, accentSize, accentSize),
-          size: accentSize,
-          value: accentString,
-        });
-      }
+        const harmonicNote = find(element.chord.notes, "harmonic");
+        if (harmonicNote) {
+          group.addElement({
+            type: "Text",
+            box: new Box(element.box.x, 0, baseSize, baseSize),
+            size: baseSize,
+            value: harmonicNote.harmonicString,
+            style: {
+              fill: "#888888",
+            },
+          });
+        }
 
-      /* TODO This draws too many things
+        const palmMuteNote = find(element.chord.notes, "palmMute");
+        if (palmMuteNote) {
+          group.addElement({
+            type: "Text",
+            box: new Box(element.box.x, 0, baseSize, baseSize),
+            size: baseSize,
+            value: "P.M.",
+            style: {
+              fill: "#888888",
+            },
+          });
+        }
+
+        const accentuatedNote = find(element.chord.notes, "accent");
+        if (accentuatedNote && accentuatedNote.accent) {
+          let accentString;
+          switch (accentuatedNote.accent) {
+            case AccentStyle.Accentuated:
+              accentString = "𝆓";
+              break;
+            case AccentStyle.Marcato:
+              accentString = "᭴";
+              break;
+          }
+
+          const accentSize = baseSize * 1.5;
+          group.addElement({
+            type: "Text",
+            box: new Box(element.box.x, 0, accentSize, accentSize),
+            size: accentSize,
+            value: accentString,
+          });
+        }
+
+        /* TODO This draws too many things
       
       const dynamicNote = find(element.chord.notes, "dynamic");
       if (dynamicNote && dynamicNote.dynamic) {
         group.addElement({
           type: "Text",
-          box: new Box(element.box.x, -0.5 * baseSize, baseSize, baseSize),
+          box: new Box(element.box.x, 0, baseSize, baseSize),
           size: baseSize,
           value: dynamicNote.dynamic,
           style: {
@@ -173,18 +202,18 @@ export class Line {
         });
       }
       */
-
-      if (element.chord.text) {
-        // TODO baseSize isn't an appropriate width, but we have no way to measure text :(
-        group.addElement({
-          type: "Text",
-          box: new Box(element.box.x, -0.5 * baseSize, baseSize, baseSize),
-          size: baseSize,
-          value: element.chord.text,
-        });
       }
 
-      this.aboveStaffLayout.addElement(group, measureElement);
+      if (group.elements.length > 0) {
+        // The spacing of the stacked group is between elements, but we would also like some at the bottom
+        // to separate it from the measure. This zero-height spacer will give us that padding at the end.
+        group.addElement({
+          type: "Space",
+          box: new Box(0, 0, 0, 0),
+        });
+
+        this.aboveStaffLayout.addElement(group, measureElement);
+      }
     }
   }
 
