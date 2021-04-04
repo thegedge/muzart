@@ -8,7 +8,7 @@ export function TextElement(props: {
   size: number;
   box: Box;
   align?: "left" | "center" | "right";
-  fill?: boolean;
+  fill?: boolean | string;
   style?: CSSProperties;
 }) {
   let x = 0;
@@ -33,7 +33,7 @@ export function TextElement(props: {
   return (
     <>
       {debugParams && <rect {...svgBoxProps(props.box)} {...debugParams} />}
-      {props.fill && <rect {...svgBoxProps(props.box)} fill="white" />}
+      {props.fill && <rect {...svgBoxProps(props.box)} fill={props.fill === true ? "white" : props.fill} />}
       <text x={x} y={y} dominantBaseline="central" textAnchor={anchor} style={{ fontSize: props.size, ...props.style }}>
         {props.text}
       </text>

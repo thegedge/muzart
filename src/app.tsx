@@ -3,6 +3,7 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Score from "./components/notation/Score";
+import { PlaybackContext } from "./components/utils/PlaybackContext";
 import * as layout from "./layout";
 import { determineType, load, ScoreDataType } from "./loaders";
 import { Suspenseful, suspenseful } from "./suspenseful";
@@ -49,15 +50,17 @@ export default function App() {
   }, []);
 
   return (
-    <div className="bg-gray-400 py-4 min-h-screen" onDrop={onDrop} onDragOver={(event) => event.preventDefault()}>
-      <Suspense fallback={<h1>Loading...</h1>}>
-        {score && (
-          <ErrorBoundary>
-            <Score score={score} />
-          </ErrorBoundary>
-        )}
-      </Suspense>
-    </div>
+    <PlaybackContext>
+      <div className="bg-gray-400 py-4 min-h-screen" onDrop={onDrop} onDragOver={(event) => event.preventDefault()}>
+        <Suspense fallback={<h1>Loading...</h1>}>
+          {score && (
+            <ErrorBoundary>
+              <Score score={score} />
+            </ErrorBoundary>
+          )}
+        </Suspense>
+      </div>
+    </PlaybackContext>
   );
 }
 

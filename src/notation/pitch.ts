@@ -29,7 +29,7 @@ export class Pitch {
    */
   static fromInt(value: number) {
     const stepIndex = value % PITCHES.length;
-    const octave = (value - stepIndex) / PITCHES.length;
+    const octave = Math.floor(value / PITCHES.length);
     const pitch = PITCHES[stepIndex];
     return new Pitch((pitch[0] as unknown) as Step, octave, pitch.length - 1);
   }
@@ -49,15 +49,15 @@ export class Pitch {
    * 0 is equivalent to C0, in semitone increments.
    */
   toInt() {
-    return this.octave * 8 + SEMITONE_OFFSETS[this.step] + this.alterations;
+    return this.octave * 12 + SEMITONE_OFFSETS[this.step] + this.alterations;
   }
 
-  toString() {
+  toString(fancy?: boolean) {
     let alterations = "";
     if (this.alterations > 0) {
-      alterations = "♯".repeat(this.alterations);
+      alterations = (fancy ? "♯" : "#").repeat(this.alterations);
     } else if (this.alterations < 0) {
-      alterations = "♭".repeat(-this.alterations);
+      alterations = (fancy ? "♭" : "b").repeat(-this.alterations);
     }
     return `${this.step}${alterations}${this.octave}`;
   }
