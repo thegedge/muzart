@@ -13,6 +13,7 @@ export function LineGroup(props: { node: layout.Group }) {
       {props.node.drawStaffLines &&
         range(6).map((staffLineIndex) => (
           <line
+            key={staffLineIndex}
             x1={0}
             y1={(staffLineIndex + 0.5) * STAFF_LINE_HEIGHT}
             x2={props.node.box.width}

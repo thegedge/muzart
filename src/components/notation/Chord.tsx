@@ -6,8 +6,8 @@ import { Note } from "./Note";
 export function Chord(props: { chord: layout.Chord }) {
   return (
     <BoxGroup node={props.chord}>
-      {props.chord.notes.map((note) => (
-        <Note note={note} />
+      {props.chord.notes.map((note, index) => (
+        <Note key={index} note={note} />
       ))}
     </BoxGroup>
   );
