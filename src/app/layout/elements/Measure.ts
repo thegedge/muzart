@@ -1,4 +1,4 @@
-import * as notation from "../../notation";
+import * as notation from "../../../notation";
 import { STAFF_LINE_HEIGHT } from "../constants";
 import { FlexGroup } from "../groups/FlexGroup";
 import { Chord, Inches, Rest, Space } from "../types";

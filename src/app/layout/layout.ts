@@ -1,5 +1,5 @@
 import { clone } from "lodash";
-import * as notation from "../notation";
+import * as notation from "../../notation";
 import {
   DEFAULT_MARGINS,
   DEFAULT_PAGE_HEIGHT,

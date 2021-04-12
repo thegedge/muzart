@@ -11,7 +11,7 @@ import {
   TimeSignature,
 } from "../notation";
 import { NoteValue } from "../notation/note_value";
-import { BufferCursor, NumberType } from "../util/BufferCursor";
+import { BufferCursor, NumberType } from "./util/BufferCursor";
 
 // TODO different versions
 

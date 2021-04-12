@@ -1,6 +1,6 @@
 import { clone, find, first, map, max } from "lodash";
-import * as notation from "../../notation";
-import { AccentStyle, NoteValueName } from "../../notation";
+import * as notation from "../../../notation";
+import { AccentStyle, NoteValueName } from "../../../notation";
 import { BEAM_HEIGHT, DOT_SIZE, STAFF_LINE_HEIGHT } from "../constants";
 import { AnchoredGroup } from "../groups/AnchoredGroup";
 import { FlexProps, LineElementFlexGroup } from "../groups/FlexGroup";

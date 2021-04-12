@@ -8,11 +8,11 @@ module.exports = {
   mode: isDevelopment ? "development" : "production",
 
   entry: {
-    main: "./src/index.tsx",
+    main: "./src/app/index.tsx",
   },
 
   output: {
-    filename: "bundle.js",
+    filename: "[name].bundle.js",
     path: path.resolve(__dirname, "public"),
   },
 

@@ -1,10 +1,11 @@
 import { assign } from "lodash";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import * as layout from "../../layout";
 import { Suspenseful } from "../../suspenseful";
 import Page from "../layout/Page";
 import { Toolbox } from "../ui/Toolbox";
 import { DebugContext, DebugContextData } from "../utils/DebugContext";
+import { usePlayback } from "../utils/PlaybackContext";
 
 export default function Score(props: { score: layout.Score | Suspenseful<layout.Score>; partIndex?: number }) {
   if (props.score == null) {
@@ -16,16 +17,36 @@ export default function Score(props: { score: layout.Score | Suspenseful<layout.
     return <></>;
   }
 
+  // TODO || 2 for sweet child o mine, but eventually make it 0
+  const [part, setPart] = useState(score.parts[props.partIndex || 2]);
+  useEffect(() => {
+    setPart(score.parts[props.partIndex || 2]);
+  }, [score, props.partIndex]);
+
+  const playback = usePlayback();
+  const onKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === " ") {
+        event.preventDefault();
+        event.stopPropagation();
+        playback.togglePlay(part.part);
+      }
+    },
+    [part]
+  );
+
+  useEffect(() => {
+    playback.stop();
+
+    // TODO find a way to not have to do this, perhaps some hotkeys library
+    document.body.onkeypress = onKeyPress;
+  }, [part]);
+
   const [debugData, setDebugData] = useState<DebugContextData>({
     enabled: false,
     index: 0,
     colorMap: {},
   });
-
-  const [part, setPart] = useState(score.parts[props.partIndex || 0]);
-  useEffect(() => {
-    setPart(score.parts[props.partIndex || 0]);
-  }, [score, props.partIndex]);
 
   return (
     <>
@@ -34,7 +55,6 @@ export default function Score(props: { score: layout.Score | Suspenseful<layout.
         onPartChange={(index) => setPart(score.parts[index])}
         onDebugToggled={(v) => {
           const value = assign({}, debugData, { enabled: v });
-          console.log(value);
           setDebugData(value);
         }}
       />

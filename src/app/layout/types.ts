@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import * as notation from "../notation";
+import * as notation from "../../notation";
 import Box from "./utils/Box";
 
 export type Inches = number;
