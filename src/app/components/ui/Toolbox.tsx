@@ -1,17 +1,15 @@
+import { clone } from "lodash";
 import React, { useCallback } from "react";
 import { Score } from "../../../notation";
+import { useSelection } from "../utils/SelectionContext";
 
-export function Toolbox(props: {
-  score: Score;
-  onPartChange: (index: number) => void;
-  onDebugToggled: (value: boolean) => void;
-}) {
-  const onPartChange = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      props.onPartChange(event.target.selectedIndex);
-    },
-    [props.onPartChange]
-  );
+export function Toolbox(props: { score: Score; onDebugToggled: (value: boolean) => void }) {
+  const { indices, setSelection } = useSelection();
+
+  const onPartChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
+    indices.part = event.target.selectedIndex;
+    setSelection(clone(indices));
+  }, []);
 
   const onDebugToggled = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
