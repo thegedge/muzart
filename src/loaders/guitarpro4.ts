@@ -392,7 +392,7 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
     pitch: stringTuning.adjust(fret),
     value: duration == 0 ? defaultNoteValue : NoteValue.fromNumber(duration as any),
     deadNote: variant === 3,
-    tie: variant === 2 ? "stop" : undefined,
+    tie: variant === 2 ? { type: "stop" } : undefined,
     ghost: isGhostNote,
     accent: isAccentuated ? AccentStyle.Accentuated : undefined,
     dynamic,

@@ -1,8 +1,9 @@
 import { pickBy } from "lodash";
+import { Chord } from "./chord";
 import { NoteValue } from "./note_value";
 import { Pitch } from "./pitch";
 
-export type TieType = "start" | "stop";
+export type TieType = "start" | "stop" | "middle";
 
 export enum HarmonicStyle {
   Natural = "natural",
@@ -30,12 +31,20 @@ export enum NoteDynamic {
   Fortississimo = "fff",
 }
 
+export interface Tie {
+  type: TieType;
+  previous?: Note;
+  previousChord?: Chord;
+  next?: Note;
+  nextChord?: Chord;
+}
+
 export interface NoteOptions {
   pitch: Pitch;
   value: NoteValue;
   placement?: Placement;
   deadNote?: boolean;
-  tie?: TieType;
+  tie?: Tie;
   ghost?: boolean;
   harmonic?: HarmonicStyle;
   accent?: AccentStyle;
@@ -48,7 +57,7 @@ export class Note {
   readonly pitch!: Pitch;
   readonly value!: NoteValue;
   readonly placement?: Placement;
-  readonly tie?: TieType;
+  public tie?: Tie;
   readonly deadNote?: boolean;
   readonly ghost?: boolean;
   readonly harmonic?: HarmonicStyle;
@@ -92,7 +101,7 @@ export class Note {
     let text;
     if (this.deadNote) {
       text = "x";
-    } else if (this.tie === "stop") {
+    } else if (this.tie?.type === "stop") {
       text = ".";
     } else if (this.placement) {
       text = this.placement.fret.toString();

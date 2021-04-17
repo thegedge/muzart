@@ -110,7 +110,7 @@ export class PlaybackController {
   playChord(chord: Chord) {
     const seconds = noteValueToSeconds(chord.value);
     if (!chord.rest) {
-      const notes = chord.notes.filter((note) => note.tie !== "stop");
+      const notes = chord.notes.filter((note) => !note.tie || note.tie.type === "start");
       if (notes.length > 0) {
         this.instrument.triggerAttackRelease(
           notes.map((note) => note.pitch.toString()),

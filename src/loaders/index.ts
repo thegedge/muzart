@@ -1,5 +1,5 @@
-import { isString, mapValues, pickBy } from "lodash";
-import { Changeable, changed, Score, StaffDetails } from "../notation";
+import { isString, mapValues, pickBy, range } from "lodash";
+import { Changeable, changed, Chord, Note, Score, StaffDetails } from "../notation";
 import loadGuitarPro4 from "./guitarpro4";
 import loadMusicXml from "./musicxml";
 
@@ -66,6 +66,12 @@ type StaffDetailValues = {
 };
 
 function postProcess(score: Score) {
+  propagateStaffDetails(score);
+  linkTiedNotes(score);
+  return score;
+}
+
+function propagateStaffDetails(score: Score): void {
   // Set the staff details reference on all measures
   for (const part of score.parts) {
     let previousDetails: StaffDetailValues = {
@@ -88,8 +94,60 @@ function postProcess(score: Score) {
       Object.assign(previousDetails, mapValues(pickBy(measure.staffDetails), "value"));
     }
   }
+}
 
-  return score;
+function linkTiedNotes(score: Score): void {
+  for (const part of score.parts) {
+    // TODO copy + reverse is not the most performant way to iterate in reverse
+    const trackedNotes: (Note | undefined)[] = range(part.lineCount).map(() => undefined);
+    const trackedChords: (Chord | undefined)[] = range(part.lineCount).map(() => undefined);
+
+    for (const measure of Array.from(part.measures).reverse()) {
+      for (const chord of Array.from(measure.chords).reverse()) {
+        for (const note of chord.notes) {
+          // TODO General scores don't have a placement, so need to track note pitch
+          if (!note.placement) {
+            continue;
+          }
+
+          const trackedNote = trackedNotes[note.placement.string];
+          const trackedChord = trackedChords[note.placement.string];
+
+          if (note.tie?.type === "stop") {
+            if (trackedNote) {
+              note.tie = {
+                type: "middle",
+                next: trackedNote,
+                nextChord: trackedChord,
+              };
+
+              if (trackedNote.tie) {
+                trackedNote.tie.previous = note;
+                trackedNote.tie.previousChord = chord;
+              }
+            }
+
+            trackedNotes[note.placement.string] = note;
+            trackedChords[note.placement.string] = chord;
+          } else if (trackedNote) {
+            note.tie = {
+              type: "start",
+              next: trackedNote,
+              nextChord: trackedChord,
+            };
+
+            if (trackedNote.tie) {
+              trackedNote.tie.previous = note;
+              trackedNote.tie.previousChord = chord;
+            }
+
+            trackedNotes[note.placement.string] = undefined;
+            trackedChords[note.placement.string] = undefined;
+          }
+        }
+      }
+    }
+  }
 }
 
 function utf8StringFromBuffer(buffer: ArrayBuffer): string {
