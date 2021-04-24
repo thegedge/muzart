@@ -53,7 +53,7 @@ export default function App() {
   return (
     <SelectionContext>
       <PlaybackContext>
-        <div className="bg-gray-400 py-4 min-h-screen" onDrop={onDrop} onDragOver={(event) => event.preventDefault()}>
+        <div className="bg-gray-400 min-h-screen" onDrop={onDrop} onDragOver={(event) => event.preventDefault()}>
           <Suspense fallback={<h1>Loading...</h1>}>
             {score && (
               <ErrorBoundary>

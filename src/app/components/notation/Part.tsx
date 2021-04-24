@@ -2,12 +2,35 @@ import React from "react";
 import { Part } from "../../layout";
 import Page from "../layout/Page";
 
+const PAGE_MARGIN = 0.25;
+
 export function Part(props: { part: Part }) {
+  let width = 0;
+  let height = PAGE_MARGIN;
+  const pages = props.part.pages.map((page, index) => {
+    const pageElement = (
+      <g key={index} transform={`translate(${PAGE_MARGIN} ${height})`}>
+        <Page page={page} />
+      </g>
+    );
+
+    width = Math.max(width, page.width);
+    height += PAGE_MARGIN + page.height;
+
+    return pageElement;
+  });
+
+  width += 2 * PAGE_MARGIN;
+
+  const viewBox = `0 0 ${width} ${height}`;
+  const style = {
+    width: `${width * 10}rem`,
+    height: `${height * 10}rem`,
+  };
+
   return (
-    <div className="flex flex-row flex-wrap items-center justify-center">
-      {props.part.pages.map((page, index) => (
-        <Page key={index} page={page} />
-      ))}
-    </div>
+    <svg className="m-auto" style={style} viewBox={viewBox}>
+      {pages}
+    </svg>
   );
 }
