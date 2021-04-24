@@ -1,6 +1,6 @@
 import * as notation from "../../../notation";
 import { STAFF_LINE_HEIGHT } from "../constants";
-import { FlexGroup } from "../groups/FlexGroup";
+import { FlexGroup } from "../layouts/FlexGroup";
 import { Chord, Inches, Rest, Space } from "../types";
 import { maxMap } from "../utils";
 import Box from "../utils/Box";

@@ -2,10 +2,10 @@ import { clone, find, first, map, max } from "lodash";
 import * as notation from "../../../notation";
 import { AccentStyle, NoteValueName } from "../../../notation";
 import { BEAM_HEIGHT, DOT_SIZE, STAFF_LINE_HEIGHT } from "../constants";
-import { AnchoredGroup } from "../groups/AnchoredGroup";
-import { FlexProps, LineElementFlexGroup } from "../groups/FlexGroup";
-import { NonNegativeGroup } from "../groups/NonNegativeGroup";
-import { StackedGroup } from "../groups/StackedGroup";
+import { AnchoredGroup } from "../layouts/AnchoredGroup";
+import { FlexProps, LineElementFlexGroup } from "../layouts/FlexGroup";
+import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
+import { StackedGroup } from "../layouts/StackedGroup";
 import { Arc, Beam, Chord, Dot, LineElement, Measure, Rest, Space, Stem, Text } from "../types";
 import { runs } from "../utils";
 import Box from "../utils/Box";
@@ -338,7 +338,7 @@ export class Line {
   private layOutDots(measureBox: Box, beatElements: (Chord | Rest)[]) {
     for (const beatElement of beatElements) {
       if (beatElement.chord.value.ndots > 0) {
-        // TODO more dots
+        // TODO more than one dot
         // TODO rests have dot next to them
 
         // const y = STAFF_LINE_HEIGHT * 3 - BEAM_HEIGHT - (1.5 * BEAM_HEIGHT * this.numBeams(beatElement)) - BEAM_HEIGHT;

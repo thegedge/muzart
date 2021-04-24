@@ -10,7 +10,7 @@ import {
 } from "./constants";
 import { Line } from "./elements/Line";
 import { Measure, Measure as MeasureLayout } from "./elements/Measure";
-import { LineElementFlexGroup } from "./groups/FlexGroup";
+import { LineElementFlexGroup } from "./layouts/FlexGroup";
 import { Page, Part, Score, Text } from "./types";
 import Box from "./utils/Box";
 
