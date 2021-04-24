@@ -1,5 +1,5 @@
 import React from "react";
-import { Part } from "../../layout";
+import { LINE_STROKE_WIDTH, Part } from "../../layout";
 import Page from "../layout/Page";
 
 const PAGE_MARGIN = 0.25;
@@ -30,6 +30,16 @@ export function Part(props: { part: Part }) {
 
   return (
     <svg className="m-auto" style={style} viewBox={viewBox}>
+      <defs>
+        <filter id="pageShadow">
+          <feDropShadow
+            dx={LINE_STROKE_WIDTH * 0}
+            dy={LINE_STROKE_WIDTH * 0}
+            stdDeviation={LINE_STROKE_WIDTH * 10}
+            floodOpacity="0.25"
+          />
+        </filter>
+      </defs>
       {pages}
     </svg>
   );
