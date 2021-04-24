@@ -6,7 +6,7 @@ import { AnchoredGroup } from "../groups/AnchoredGroup";
 import { FlexProps, LineElementFlexGroup } from "../groups/FlexGroup";
 import { NonNegativeGroup } from "../groups/NonNegativeGroup";
 import { StackedGroup } from "../groups/StackedGroup";
-import { Beam, Chord, Dot, LineElement, Measure, Rest, Space, Stem, Text } from "../types";
+import { Arc, Beam, Chord, Dot, LineElement, Measure, Rest, Space, Stem, Text } from "../types";
 import { runs } from "../utils";
 import Box from "../utils/Box";
 
@@ -18,12 +18,17 @@ export class Line {
   private staffLayout: LineElementFlexGroup;
   private belowStaffLayout: NonNegativeGroup<Stem | Beam | Dot>;
 
+  // TODO better
+  private arcs: AnchoredGroup<Arc, Measure | Chord>;
+
   constructor(readonly box: Box) {
+    this.arcs = new AnchoredGroup();
+
     this.aboveStaffLayout = new AnchoredGroup();
     this.staffLayout = new LineElementFlexGroup({ box: clone(box), drawStaffLines: true }); // TODO eliminate drawStaffLines from here
     this.belowStaffLayout = new NonNegativeGroup();
 
-    this.elements.push(this.aboveStaffLayout, this.staffLayout, this.belowStaffLayout);
+    this.elements.push(this.aboveStaffLayout, this.staffLayout, this.belowStaffLayout, this.arcs);
   }
 
   addElement(element: LineElement, flexProps?: Partial<FlexProps>) {
@@ -37,6 +42,54 @@ export class Line {
   layout() {
     this.staffLayout.layout(true);
     this.staffLayout.box.height = max(map(this.staffLayout.elements, "box.height"));
+
+    // TODO move elsewhere
+    this.arcs.reset();
+    this.arcs.box = this.staffLayout.box;
+    for (const lineChild of this.staffLayout.elements) {
+      if (lineChild.type !== "Measure") {
+        continue;
+      }
+
+      for (const measureChild of lineChild.elements) {
+        if (measureChild.type !== "Chord") {
+          continue;
+        }
+
+        for (const note of measureChild.chord.notes) {
+          if (note.tie?.type === "start") {
+            let chord: Chord | undefined;
+            for (const measureChild of lineChild.elements) {
+              if (measureChild.type !== "Chord") {
+                continue;
+              }
+
+              if (measureChild.chord === note.tie.nextChord) {
+                chord = measureChild;
+                break;
+              }
+            }
+
+            if (chord) {
+              const offset = 0.03;
+              this.arcs.addElement(
+                {
+                  type: "Arc",
+                  box: new Box(
+                    lineChild.box.x + measureChild.box.x + 0.05 + offset,
+                    lineChild.box.y + measureChild.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
+                    chord.box.x - measureChild.box.x - offset,
+                    STAFF_LINE_HEIGHT * 0.5
+                  ),
+                  orientation: "below",
+                },
+                null
+              );
+            }
+          }
+        }
+      }
+    }
 
     // TODO have to reset everything because layout() could be called multiple times. This sucks though. Some ideas:
     //   1. Track whether or not the line is dirty, and then reset.
@@ -91,7 +144,7 @@ export class Line {
 
     // Finalize positions
     let y = 0;
-    for (const element of this.elements) {
+    for (const element of this.elements.slice(0, -1)) {
       element.box.y = y;
       y += element.box.height;
     }

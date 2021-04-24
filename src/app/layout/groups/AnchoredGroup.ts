@@ -24,7 +24,7 @@ export class AnchoredGroup<T extends MaybeLayout<HasBox>, AnchorT extends HasBox
    * @param element the element to be laid out
    * @param anchor the element to anchor to
    */
-  addElement(element: T, anchor: AnchorT) {
+  addElement(element: T, anchor: AnchorT | null | undefined) {
     // TODO if no anchor, instead of wrapping, just use the element as is
 
     this.elements.push({

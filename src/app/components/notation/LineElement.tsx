@@ -1,5 +1,6 @@
 import React from "react";
 import { LineElement } from "../../layout";
+import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
 import { Dot } from "./Dot";
@@ -11,6 +12,8 @@ import { WrappedElement } from "./WrappedElement";
 
 export default function LineElementComponent(props: { element: LineElement }): React.ReactElement {
   switch (props.element.type) {
+    case "Arc":
+      return <Arc element={props.element} />;
     case "BarLine":
       return <BarLine node={props.element} />;
     case "Beam":

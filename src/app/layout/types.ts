@@ -32,12 +32,18 @@ export interface Page {
   height: Inches;
 }
 
-export type LineElement = Space | Text | Measure | BarLine | Group | Stem | Beam | Dot | Wrapped<LineElement>;
+export type LineElement = Space | Text | Measure | Arc | BarLine | Group | Stem | Beam | Dot | Wrapped<LineElement>;
 
 export interface Wrapped<T extends HasBox> {
   type: "Wrapped";
   element: T;
   box: Box;
+}
+
+export interface Arc {
+  type: "Arc";
+  box: Box;
+  orientation: "above" | "below";
 }
 
 export interface Group {

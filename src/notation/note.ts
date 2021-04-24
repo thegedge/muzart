@@ -102,7 +102,7 @@ export class Note {
     if (this.deadNote) {
       text = "x";
     } else if (this.tie?.type === "stop") {
-      text = ".";
+      text = "";
     } else if (this.placement) {
       text = this.placement.fret.toString();
     } else {
