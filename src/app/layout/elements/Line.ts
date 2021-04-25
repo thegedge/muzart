@@ -79,6 +79,7 @@ export class Line {
   private addAboveStaffDecorations(rightEdges: number[], measureElement: Measure) {
     const numberSize = 0.08;
     const tempoSize = 0.1; // TODO property of this class? Related to staff line height?
+    const baseSize = 0.8 * STAFF_LINE_HEIGHT;
 
     let columnIndex = rightEdges.length;
 
@@ -121,8 +122,25 @@ export class Line {
       }
     );
 
-    let first = true;
-    const baseSize = 0.8 * STAFF_LINE_HEIGHT;
+    if (measureElement.measure.marker) {
+      this.aboveStaffLayout.addElement(
+        {
+          type: "Text",
+          box: new Box(0, 0, baseSize, baseSize),
+          size: baseSize,
+          value: measureElement.measure.marker.text,
+          style: {
+            fontWeight: "bold",
+            fill: measureElement.measure.marker.color,
+          },
+        },
+        {
+          startColumn: columnIndex + 1,
+          endColumn: columnIndex + 2,
+        }
+      );
+    }
+
     for (const element of measureElement.elements) {
       columnIndex += 1;
       rightEdges.push(measureElement.box.x + element.box.x);
@@ -135,26 +153,6 @@ export class Line {
         startColumn: columnIndex,
         endColumn: columnIndex,
       };
-
-      if (first) {
-        if (measureElement.measure.marker) {
-          this.aboveStaffLayout.addElement(
-            {
-              type: "Text",
-              box: new Box(0, 0, baseSize, baseSize),
-              size: baseSize,
-              value: measureElement.measure.marker.text,
-              style: {
-                fontWeight: "bold",
-                fill: measureElement.measure.marker.color,
-              },
-            },
-            constraint
-          );
-        }
-
-        first = false;
-      }
 
       if (element.type === "Chord") {
         if (element.chord.text) {
