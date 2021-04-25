@@ -13,6 +13,7 @@ module.exports = {
 
   output: {
     filename: "[name].bundle.js",
+    sourceMapFilename: "[name].js.map",
     path: path.resolve(__dirname, "public"),
   },
 
@@ -30,8 +31,15 @@ module.exports = {
     port: 3001,
   },
 
+  devtool: isDevelopment ? "eval-source-map" : undefined,
+
   module: {
     rules: [
+      {
+        test: /\.js$/,
+        enforce: "pre",
+        use: ["source-map-loader"],
+      },
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
