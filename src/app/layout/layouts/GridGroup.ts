@@ -80,19 +80,6 @@ export class GridGroup<T extends MaybeLayout<HasBox>> {
     });
     const rows = [newRow()];
 
-    // Lay out the bottom row first, so that they take over cells in the first row
-    for (const [element, constraint] of mustBeBottomRow) {
-      element.box.x = this.edges[constraint.startColumn];
-      element.box.width = this.edges[constraint.endColumn + 1] - element.box.x;
-
-      if (element.layout) {
-        element.layout();
-      }
-
-      rows[0].columns.fill(true, constraint.startColumn, constraint.endColumn + 1);
-      rows[0].elements.push(element);
-    }
-
     // Now, lay out everything else
     for (const [element, constraint] of everythingElse) {
       element.box.x = this.edges[constraint.startColumn];
@@ -114,6 +101,22 @@ export class GridGroup<T extends MaybeLayout<HasBox>> {
 
       row.columns.fill(true, constraint.startColumn, constraint.endColumn + 1);
       row.elements.push(element);
+    }
+
+    if (mustBeBottomRow.length > 0) {
+      rows.unshift(newRow());
+
+      for (const [element, constraint] of mustBeBottomRow) {
+        element.box.x = this.edges[constraint.startColumn];
+        element.box.width = this.edges[constraint.endColumn + 1] - element.box.x;
+
+        if (element.layout) {
+          element.layout();
+        }
+
+        rows[0].columns.fill(true, constraint.startColumn, constraint.endColumn + 1);
+        rows[0].elements.push(element);
+      }
     }
 
     return rows.reverse();
