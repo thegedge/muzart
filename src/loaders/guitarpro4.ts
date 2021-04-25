@@ -26,9 +26,9 @@ export default function load(source: ArrayBuffer): Score {
 
   const version = cursor.nextLengthPrefixedString();
   cursor.skip(30 - version.length);
-  console.debug({ version });
+  // console.debug({ version });
 
-  console.debug("tab info");
+  // console.debug("tab info");
   const tabInformation = {
     title: readInfoString(cursor),
     subtitle: readInfoString(cursor),
@@ -40,19 +40,19 @@ export default function load(source: ArrayBuffer): Score {
     instructions: readInfoString(cursor),
   };
 
-  console.debug("comments");
+  // console.debug("comments");
   readComments(cursor);
 
   /* const tripletFeel = */ cursor.nextNumber(NumberType.Uint8);
 
-  console.debug("lyrics");
+  // console.debug("lyrics");
   readLyrics(cursor);
 
   let tempo = cursor.nextNumber(NumberType.Uint32);
   /* const key = */ cursor.nextNumber(NumberType.Uint8);
   /* const octave = */ cursor.nextNumber(NumberType.Uint32);
 
-  console.debug("midi channels");
+  // console.debug("midi channels");
   readMidiChannels(cursor);
 
   const numMeasures = cursor.nextNumber(NumberType.Uint32);
@@ -68,7 +68,7 @@ export default function load(source: ArrayBuffer): Score {
   //------------------------------------------------------------------------------------------------
 
   const measureData = range(numMeasures).map((index) => {
-    console.debug({ measureDataIndex: index });
+    // console.debug({ measureDataIndex: index });
 
     const [
       _doubleBar,
@@ -126,7 +126,7 @@ export default function load(source: ArrayBuffer): Score {
   //------------------------------------------------------------------------------------------------
 
   const trackData = range(numTracks).map((index) => {
-    console.debug({ trackDataIndex: index });
+    // console.debug({ trackDataIndex: index });
 
     const [_blank1, _blank2, _blank3, _blank4, _blank5, _banjoTrack, _twelveStringTrack, _drumsTrack] = bits(
       cursor.nextNumber(NumberType.Uint8)
@@ -170,7 +170,7 @@ export default function load(source: ArrayBuffer): Score {
 
   for (let measureIndex = 0; measureIndex < numMeasures; ++measureIndex) {
     for (let trackIndex = 0; trackIndex < numTracks; ++trackIndex) {
-      console.debug({ trackIndex, measureIndex });
+      // console.debug({ trackIndex, measureIndex });
 
       const measure: Measure = {
         chords: [],
