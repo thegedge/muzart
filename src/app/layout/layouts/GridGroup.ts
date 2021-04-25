@@ -46,66 +46,76 @@ export class GridGroup<T extends MaybeLayout<HasBox>> {
    * TBD
    */
   layout() {
+    // Adjust y positions of all elements, based on the row they're in
+    let y = 0;
+    const rows = this.determineRows();
+    for (const row of rows) {
+      let maxHeight = 0;
+      for (const element of row.elements) {
+        element.box.y = y;
+        maxHeight = Math.max(maxHeight, element.box.height);
+      }
+
+      y += maxHeight + this.spacing;
+    }
+
+    this.box.x = 0;
+    this.box.y = 0;
+    this.box.width = last(this.edges) || 0;
+    this.box.height = y - this.spacing;
+  }
+
+  private determineRows() {
     // TODO validate indices in constraints against `this.edges.length`
+    // TODO a lot of this could be determined when adding a new element, instead of on demand
 
     const zipped = zip(this.elements, this.constraints) as [T, Constraint][];
     const [mustBeBottomRow, everythingElse] = partition(zipped, ([_, constraint]) => {
       return constraint.mustBeBottomRow;
     });
 
-    const newRow = (y: number) => ({
+    const newRow = () => ({
       columns: range(this.edges.length).map(() => false),
-      y,
-      height: 0,
+      elements: [] as T[],
     });
+    const rows = [newRow()];
 
-    const rows = [newRow(0)];
-
-    let y = 0;
-    for (const [element, constraint] of everythingElse) {
-      const x = this.edges[constraint.startColumn];
-      element.box.width = this.edges[constraint.endColumn + 1] - x;
+    // Lay out the bottom row first, so that they take over cells in the first row
+    for (const [element, constraint] of mustBeBottomRow) {
+      element.box.x = this.edges[constraint.startColumn];
+      element.box.width = this.edges[constraint.endColumn + 1] - element.box.x;
 
       if (element.layout) {
         element.layout();
       }
 
-      // Figure out if we need a new row
+      rows[0].columns.fill(true, constraint.startColumn, constraint.endColumn + 1);
+      rows[0].elements.push(element);
+    }
+
+    // Now, lay out everything else
+    for (const [element, constraint] of everythingElse) {
+      element.box.x = this.edges[constraint.startColumn];
+      element.box.width = this.edges[constraint.endColumn + 1] - element.box.x;
+
+      if (element.layout) {
+        element.layout();
+      }
+
+      // If the span of cells we need don't exist, create a new row
       let row = find(rows, (row) => {
         return !some(row.columns.slice(constraint.startColumn, constraint.endColumn + 1));
       });
 
       if (!row) {
-        y += last(rows)!.height + this.spacing; // TODO maxHeight of last row
-        row = newRow(y);
+        row = newRow();
+        rows.push(row);
       }
 
       row.columns.fill(true, constraint.startColumn, constraint.endColumn + 1);
-      row.height = Math.max(row.height, element.box.height);
-
-      element.box.x = x;
-      element.box.y = row.y;
+      row.elements.push(element);
     }
 
-    y += last(rows)!.height + this.spacing;
-
-    let maxBottomRowHeight = 0;
-    for (const [element, constraint] of mustBeBottomRow) {
-      const x = this.edges[constraint.startColumn];
-      element.box.width = this.edges[constraint.endColumn + 1] - x;
-
-      if (element.layout) {
-        element.layout();
-      }
-
-      element.box.x = x;
-      element.box.y = y;
-      maxBottomRowHeight = Math.max(maxBottomRowHeight, element.box.height);
-    }
-
-    this.box.x = 0;
-    this.box.y = 0;
-    this.box.width = last(this.edges) || 0;
-    this.box.height = y + maxBottomRowHeight;
+    return rows.reverse();
   }
 }
