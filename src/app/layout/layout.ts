@@ -140,12 +140,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     } else {
       line.layout();
 
-      if (pageGroup.tryAddElement(line)) {
-        pageGroup.addElement({
-          type: "Space",
-          box: new Box(0, 0, LINE_MARGIN, LINE_MARGIN),
-        });
-      } else {
+      if (!pageGroup.tryAddElement(line)) {
         // TODO popping sucks, better = nested vertical group with "space between" option
         pageGroup.popElement(); // Pop off the last space element so that the last line's bottom coincides with content bottom
         pageGroup.layout();
@@ -158,7 +153,13 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
         });
 
         pageGroup = new LineElementFlexGroup({ box: clone(pageContentBox), axis: "vertical" });
+        pageGroup.addElement(line);
       }
+
+      pageGroup.addElement({
+        type: "Space",
+        box: new Box(0, 0, LINE_MARGIN, LINE_MARGIN),
+      });
 
       line = newLine(contentWidth);
       line.addElement(measure, { factor: measureToLayOut.chords.length });
