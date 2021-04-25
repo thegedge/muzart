@@ -122,24 +122,7 @@ export class Line {
       }
     );
 
-    if (measureElement.measure.marker) {
-      this.aboveStaffLayout.addElement(
-        {
-          type: "Text",
-          box: new Box(0, 0, baseSize, baseSize),
-          size: baseSize,
-          value: measureElement.measure.marker.text,
-          style: {
-            fontWeight: "bold",
-            fill: measureElement.measure.marker.color,
-          },
-        },
-        {
-          startColumn: columnIndex + 1,
-          endColumn: columnIndex + 2,
-        }
-      );
-    }
+    const markerColumn = columnIndex + 1;
 
     for (const element of measureElement.elements) {
       columnIndex += 1;
@@ -227,6 +210,25 @@ export class Line {
           );
         }
       }
+    }
+
+    if (measureElement.measure.marker) {
+      this.aboveStaffLayout.addElement(
+        {
+          type: "Text",
+          box: new Box(0, 0, baseSize, baseSize),
+          size: baseSize,
+          value: measureElement.measure.marker.text,
+          style: {
+            fontWeight: "bold",
+            fill: measureElement.measure.marker.color,
+          },
+        },
+        {
+          startColumn: markerColumn,
+          endColumn: markerColumn + 1,
+        }
+      );
     }
   }
 
