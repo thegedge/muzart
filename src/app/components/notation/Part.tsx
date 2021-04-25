@@ -2,7 +2,8 @@ import React from "react";
 import { LINE_STROKE_WIDTH, Part } from "../../layout";
 import Page from "../layout/Page";
 
-const PAGE_MARGIN = 0.25;
+const PAGE_MARGIN = 0.5;
+const BASE_SCALE = 8;
 
 export function Part(props: { part: Part }) {
   let width = 0;
@@ -24,8 +25,8 @@ export function Part(props: { part: Part }) {
 
   const viewBox = `0 0 ${width} ${height}`;
   const style = {
-    width: `${width * 10}rem`,
-    height: `${height * 10}rem`,
+    width: `${width * BASE_SCALE}rem`,
+    height: `${height * BASE_SCALE}rem`,
   };
 
   return (

@@ -4,8 +4,8 @@ import { AccentStyle, NoteValueName } from "../../../notation";
 import { BEAM_HEIGHT, DOT_SIZE, STAFF_LINE_HEIGHT } from "../constants";
 import { AnchoredGroup } from "../layouts/AnchoredGroup";
 import { FlexProps, LineElementFlexGroup } from "../layouts/FlexGroup";
+import { Constraint as GridConstraint, GridGroup } from "../layouts/GridGroup";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
-import { StackedGroup } from "../layouts/StackedGroup";
 import { Arc, Beam, Chord, Dot, LineElement, Measure, Rest, Space, Stem, Text } from "../types";
 import { runs } from "../utils";
 import Box from "../utils/Box";
@@ -14,17 +14,17 @@ export class Line {
   readonly type: "Group" = "Group";
   readonly elements: LineElement[] = [];
 
-  private aboveStaffLayout: AnchoredGroup<StackedGroup<Text | Space>, Measure | Chord>;
+  private aboveStaffLayout: GridGroup<Text | Space>;
   private staffLayout: LineElementFlexGroup;
   private belowStaffLayout: NonNegativeGroup<Stem | Beam | Dot>;
 
-  // TODO better
+  // TODO find a better place for this
   private arcs: AnchoredGroup<Arc, Measure | Chord>;
 
   constructor(readonly box: Box) {
     this.arcs = new AnchoredGroup();
 
-    this.aboveStaffLayout = new AnchoredGroup();
+    this.aboveStaffLayout = new GridGroup(STAFF_LINE_HEIGHT * 0.25);
     this.staffLayout = new LineElementFlexGroup({ box: clone(box), drawStaffLines: true }); // TODO eliminate drawStaffLines from here
     this.belowStaffLayout = new NonNegativeGroup();
 
@@ -43,54 +43,6 @@ export class Line {
     this.staffLayout.layout(true);
     this.staffLayout.box.height = max(map(this.staffLayout.elements, "box.height"));
 
-    // TODO move elsewhere
-    this.arcs.reset();
-    this.arcs.box = this.staffLayout.box;
-    for (const lineChild of this.staffLayout.elements) {
-      if (lineChild.type !== "Measure") {
-        continue;
-      }
-
-      for (const measureChild of lineChild.elements) {
-        if (measureChild.type !== "Chord") {
-          continue;
-        }
-
-        for (const note of measureChild.chord.notes) {
-          if (note.tie?.type === "start") {
-            let chord: Chord | undefined;
-            for (const measureChild of lineChild.elements) {
-              if (measureChild.type !== "Chord") {
-                continue;
-              }
-
-              if (measureChild.chord === note.tie.nextChord) {
-                chord = measureChild;
-                break;
-              }
-            }
-
-            if (chord) {
-              const offset = 0.03;
-              this.arcs.addElement(
-                {
-                  type: "Arc",
-                  box: new Box(
-                    lineChild.box.x + measureChild.box.x + 0.05 + offset,
-                    lineChild.box.y + measureChild.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
-                    chord.box.x - measureChild.box.x - offset,
-                    STAFF_LINE_HEIGHT * 0.5
-                  ),
-                  orientation: "below",
-                },
-                null
-              );
-            }
-          }
-        }
-      }
-    }
-
     // TODO have to reset everything because layout() could be called multiple times. This sucks though. Some ideas:
     //   1. Track whether or not the line is dirty, and then reset.
     //   2. Add the elements to the above/below staff layout once, but move them around.
@@ -98,49 +50,20 @@ export class Line {
     this.aboveStaffLayout.reset();
     this.belowStaffLayout.reset();
 
-    const numberSize = 0.08;
-    const tempoSize = 0.1; // TODO property of this class? Related to staff line height?
-
+    const rightEdges: number[] = [];
     for (const lineChild of this.staffLayout.elements) {
       if (lineChild.type !== "Measure") {
         continue;
       }
 
-      const group = new StackedGroup<Text>(0.25 * tempoSize);
-
-      if (lineChild.measure.staffDetails.tempo?.changed) {
-        group.addElement({
-          type: "Text",
-          align: "left",
-          box: new Box(0, 0, lineChild.box.width, 2 * tempoSize),
-          size: tempoSize,
-          value: `♩﹦${lineChild.measure.staffDetails.tempo.value}`,
-          style: {
-            userSelect: "none",
-            fontWeight: "bold",
-          },
-        });
-      }
-
-      group.addElement({
-        type: "Text",
-        align: "center",
-        box: new Box(-0.5 * numberSize, STAFF_LINE_HEIGHT * 0.25, numberSize, numberSize),
-        size: numberSize,
-        value: lineChild.measure.number.toString(),
-        style: {
-          userSelect: "none",
-          fill: "#888888",
-        },
-      });
-
-      this.aboveStaffLayout.addElement(group, lineChild);
-      this.addAboveStaffDecorations(lineChild);
+      this.addAboveStaffDecorations(rightEdges, lineChild);
       this.stemAndBeam(lineChild);
     }
 
+    this.aboveStaffLayout.setRightEdges(rightEdges);
     this.aboveStaffLayout.layout();
     this.belowStaffLayout.layout();
+    this.layOutArcs();
 
     // Finalize positions
     let y = 0;
@@ -153,68 +76,133 @@ export class Line {
     this.box.height = y;
   }
 
-  private addAboveStaffDecorations(measureElement: Measure) {
+  private addAboveStaffDecorations(rightEdges: number[], measureElement: Measure) {
+    const numberSize = 0.08;
+    const tempoSize = 0.1; // TODO property of this class? Related to staff line height?
+
+    let columnIndex = rightEdges.length;
+
+    if (measureElement.measure.staffDetails.tempo?.changed) {
+      this.aboveStaffLayout.addElement(
+        {
+          type: "Text",
+          align: "left",
+          box: new Box(0, 0, measureElement.box.width, 2 * tempoSize),
+          size: tempoSize,
+          value: `♩﹦${measureElement.measure.staffDetails.tempo.value}`,
+          style: {
+            userSelect: "none",
+            fontWeight: "bold",
+          },
+        },
+        {
+          startColumn: columnIndex,
+          endColumn: columnIndex + 1,
+        }
+      );
+    }
+
+    this.aboveStaffLayout.addElement(
+      {
+        type: "Text",
+        align: "center",
+        box: new Box(0, 0, numberSize, numberSize),
+        size: numberSize,
+        value: measureElement.measure.number.toString(),
+        style: {
+          userSelect: "none",
+          fill: "#888888",
+        },
+      },
+      {
+        mustBeBottomRow: true,
+        startColumn: columnIndex,
+        endColumn: columnIndex + (rightEdges.length == 0 ? 0 : 1),
+      }
+    );
+
     let first = true;
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
     for (const element of measureElement.elements) {
-      const group = new StackedGroup<Text | Space>(0.5 * baseSize);
+      columnIndex += 1;
+      rightEdges.push(measureElement.box.x + element.box.x);
 
-      if (element.type !== "Space") {
-        if (first) {
-          if (measureElement.measure.marker) {
-            group.addElement({
+      if (element.type !== "Chord") {
+        continue;
+      }
+
+      const constraint: GridConstraint = {
+        startColumn: columnIndex,
+        endColumn: columnIndex,
+      };
+
+      if (first) {
+        if (measureElement.measure.marker) {
+          this.aboveStaffLayout.addElement(
+            {
               type: "Text",
-              box: new Box(element.box.x, 0, baseSize, baseSize),
+              box: new Box(0, 0, baseSize, baseSize),
               size: baseSize,
               value: measureElement.measure.marker.text,
               style: {
                 fontWeight: "bold",
                 fill: measureElement.measure.marker.color,
               },
-            });
-          }
-          first = false;
+            },
+            constraint
+          );
         }
+
+        first = false;
       }
 
       if (element.type === "Chord") {
         if (element.chord.text) {
           // TODO baseSize isn't an appropriate width, but we have no way to measure text :(
-          group.addElement({
-            type: "Text",
-            box: new Box(element.box.x, 0, baseSize, baseSize),
-            size: baseSize,
-            value: element.chord.text,
-            style: {
-              fontStyle: "italic",
+          this.aboveStaffLayout.addElement(
+            {
+              type: "Text",
+              box: new Box(0, 0, baseSize, baseSize),
+              size: baseSize,
+              value: element.chord.text,
+              style: {
+                fontStyle: "italic",
+              },
             },
-          });
+            constraint
+          );
         }
 
         const harmonicNote = find(element.chord.notes, "harmonic");
         if (harmonicNote) {
-          group.addElement({
-            type: "Text",
-            box: new Box(element.box.x, 0, baseSize, baseSize),
-            size: baseSize,
-            value: harmonicNote.harmonicString,
-            style: {
-              fill: "#888888",
+          this.aboveStaffLayout.addElement(
+            {
+              type: "Text",
+              box: new Box(0, 0, baseSize, baseSize),
+              size: baseSize,
+              value: harmonicNote.harmonicString,
+              style: {
+                fill: "#888888",
+              },
             },
-          });
+            constraint
+          );
         }
 
         const palmMuteNote = find(element.chord.notes, "palmMute");
         if (palmMuteNote) {
-          group.addElement({
-            type: "Text",
-            box: new Box(element.box.x, 0, baseSize, baseSize),
-            size: baseSize,
-            value: "P.M.",
-            style: {
-              fill: "#888888",
+          this.aboveStaffLayout.addElement(
+            {
+              type: "Text",
+              box: new Box(0, 0, baseSize, baseSize),
+              size: baseSize,
+              value: "P.M.",
+              style: {
+                fill: "#888888",
+              },
             },
-          });
+            constraint
+          );
         }
 
         const accentuatedNote = find(element.chord.notes, "accent");
@@ -230,42 +218,16 @@ export class Line {
           }
 
           const accentSize = baseSize * 1.5;
-          group.addElement({
-            type: "Text",
-            box: new Box(element.box.x, 0, accentSize, accentSize),
-            size: accentSize,
-            value: accentString,
-          });
+          this.aboveStaffLayout.addElement(
+            {
+              type: "Text",
+              box: new Box(element.box.x, 0, accentSize, accentSize),
+              size: accentSize,
+              value: accentString,
+            },
+            constraint
+          );
         }
-
-        /* TODO This draws too many things
-      
-      const dynamicNote = find(element.chord.notes, "dynamic");
-      if (dynamicNote && dynamicNote.dynamic) {
-        group.addElement({
-          type: "Text",
-          box: new Box(element.box.x, 0, baseSize, baseSize),
-          size: baseSize,
-          value: dynamicNote.dynamic,
-          style: {
-            fontFamily: "Georgia",
-            fontStyle: "italic",
-            fontWeight: 600,
-          },
-        });
-      }
-      */
-      }
-
-      if (group.elements.length > 0) {
-        // The spacing of the stacked group is between elements, but we would also like some at the bottom
-        // to separate it from the measure. This zero-height spacer will give us that padding at the end.
-        group.addElement({
-          type: "Space",
-          box: new Box(0, 0, 0, 0),
-        });
-
-        this.aboveStaffLayout.addElement(group, measureElement);
       }
     }
   }
@@ -313,6 +275,55 @@ export class Line {
 
   // TODO there's a lot of "behavioural coupling" between these methods. For example, `layOutBeams` is aware of how tall
   //      stems are, and similarly for `layOutDots`.
+
+  private layOutArcs() {
+    this.arcs.reset();
+    this.arcs.box = this.staffLayout.box;
+    for (const lineChild of this.staffLayout.elements) {
+      if (lineChild.type !== "Measure") {
+        continue;
+      }
+
+      for (const measureChild of lineChild.elements) {
+        if (measureChild.type !== "Chord") {
+          continue;
+        }
+
+        for (const note of measureChild.chord.notes) {
+          if (note.tie?.type === "start") {
+            let chord: Chord | undefined;
+            for (const measureChild of lineChild.elements) {
+              if (measureChild.type !== "Chord") {
+                continue;
+              }
+
+              if (measureChild.chord === note.tie.nextChord) {
+                chord = measureChild;
+                break;
+              }
+            }
+
+            if (chord) {
+              const offset = 0.03;
+              this.arcs.addElement(
+                {
+                  type: "Arc",
+                  box: new Box(
+                    lineChild.box.x + measureChild.box.x + 0.05 + offset,
+                    lineChild.box.y + measureChild.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
+                    chord.box.x - measureChild.box.x - offset,
+                    STAFF_LINE_HEIGHT * 0.5
+                  ),
+                  orientation: "below",
+                },
+                null
+              );
+            }
+          }
+        }
+      }
+    }
+  }
 
   private layOutStems(measureBox: Box, beatElements: (Chord | Rest)[]) {
     for (const beatElement of beatElements) {
