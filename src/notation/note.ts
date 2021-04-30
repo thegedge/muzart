@@ -101,7 +101,7 @@ export class Note {
     let text;
     if (this.deadNote) {
       text = "x";
-    } else if (this.tie?.type === "stop") {
+    } else if (this.tie && this.tie.previous) {
       text = "";
     } else if (this.placement) {
       text = this.placement.fret.toString();

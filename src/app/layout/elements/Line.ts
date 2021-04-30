@@ -279,50 +279,86 @@ export class Line {
   private layOutArcs() {
     this.arcs.reset();
     this.arcs.box = this.staffLayout.box;
-    for (const lineChild of this.staffLayout.elements) {
-      if (lineChild.type !== "Measure") {
-        continue;
+
+    const chords = this.staffLayout.elements.flatMap((measure) => {
+      if (measure.type !== "Measure") {
+        return [];
       }
 
-      for (const measureChild of lineChild.elements) {
-        if (measureChild.type !== "Chord") {
-          continue;
+      const chords: Chord[] = [];
+      for (const measureChild of measure.elements) {
+        if (measureChild.type === "Chord") {
+          chords.push(measureChild);
+        }
+      }
+
+      return chords.map((chord) => ({
+        chord,
+        measure,
+      }));
+    });
+
+    chords.forEach(({ chord, measure }, index) => {
+      for (const note of chord.chord.notes) {
+        // If the very first chord in the line has a tie, create an arc to show that
+        if (note.tie?.previous && index === 0) {
+          this.arcs.addElement(
+            {
+              type: "Arc",
+              box: new Box(
+                measure.box.x,
+                measure.box.y + chord.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
+                0.16,
+                STAFF_LINE_HEIGHT * 0.5
+              ),
+              orientation: "below",
+            },
+            null
+          );
         }
 
-        for (const note of measureChild.chord.notes) {
-          if (note.tie?.type === "start") {
-            let chord: Chord | undefined;
-            for (const measureChild of lineChild.elements) {
-              if (measureChild.type !== "Chord") {
-                continue;
-              }
-
-              if (measureChild.chord === note.tie.nextChord) {
-                chord = measureChild;
-                break;
-              }
-            }
-
-            if (chord) {
-              const offset = 0.03;
-              this.arcs.addElement(
-                {
-                  type: "Arc",
-                  box: new Box(
-                    lineChild.box.x + measureChild.box.x + 0.05 + offset,
-                    lineChild.box.y + measureChild.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
-                    chord.box.x - measureChild.box.x - offset,
-                    STAFF_LINE_HEIGHT * 0.5
-                  ),
-                  orientation: "below",
-                },
-                null
-              );
+        if (note.tie?.nextChord) {
+          // Find the chord
+          let tieEnd: { chord: Chord; measure: Measure } | undefined;
+          for (let endIndex = index + 1; endIndex < chords.length; ++endIndex) {
+            if (chords[endIndex].chord.chord == note.tie.nextChord) {
+              tieEnd = chords[endIndex];
+              break;
             }
           }
+
+          const offset = 0.08;
+
+          let x;
+          if (note.tie.type == "start") {
+            x = measure.box.x + chord.box.x + offset;
+          } else {
+            x = measure.box.x + chord.box.x + offset - 0.05;
+          }
+
+          let width = 0;
+          if (tieEnd) {
+            width = tieEnd.chord.box.x + tieEnd.measure.box.x - x + offset - 0.03;
+          } else {
+            width = this.staffLayout.box.right - measure.box.x - chord.box.x - offset - 0.03;
+          }
+
+          this.arcs.addElement(
+            {
+              type: "Arc",
+              box: new Box(
+                x,
+                measure.box.y + chord.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
+                width,
+                STAFF_LINE_HEIGHT * 0.5
+              ),
+              orientation: "below",
+            },
+            null
+          );
         }
       }
-    }
+    });
   }
 
   private layOutStems(measureBox: Box, beatElements: (Chord | Rest)[]) {
