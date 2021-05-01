@@ -15,8 +15,8 @@ export function DashedLineText(props: { element: DashedLineText }) {
         <line
           x1={Math.min(textWidth, props.element.box.width)}
           x2={props.element.box.width}
-          y1={props.element.box.centerY}
-          y2={props.element.box.centerY}
+          y1={props.element.box.height * 0.5}
+          y2={props.element.box.height * 0.5}
           stroke="#333333"
           strokeWidth={LINE_STROKE_WIDTH}
           strokeDasharray={`${12 * LINE_STROKE_WIDTH} ${4 * LINE_STROKE_WIDTH}`}
