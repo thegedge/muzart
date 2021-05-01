@@ -82,26 +82,7 @@ export class Line {
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
 
     let columnIndex = rightEdges.length;
-
-    if (measureElement.measure.staffDetails.tempo?.changed) {
-      this.aboveStaffLayout.addElement(
-        {
-          type: "Text",
-          align: "left",
-          box: new Box(0, 0, measureElement.box.width, 2 * tempoSize),
-          size: tempoSize,
-          value: `♩﹦${measureElement.measure.staffDetails.tempo.value}`,
-          style: {
-            userSelect: "none",
-            fontWeight: "bold",
-          },
-        },
-        {
-          startColumn: columnIndex,
-          endColumn: columnIndex + 1,
-        }
-      );
-    }
+    const startColumn = columnIndex;
 
     this.aboveStaffLayout.addElement(
       {
@@ -121,8 +102,6 @@ export class Line {
         endColumn: columnIndex + (rightEdges.length == 0 ? 0 : 1),
       }
     );
-
-    const markerColumn = columnIndex + 1;
 
     for (const element of measureElement.elements) {
       columnIndex += 1;
@@ -225,8 +204,28 @@ export class Line {
           },
         },
         {
-          startColumn: markerColumn,
-          endColumn: markerColumn + 1,
+          startColumn: startColumn + 1,
+          endColumn: startColumn + 2,
+        }
+      );
+    }
+
+    if (measureElement.measure.staffDetails.tempo?.changed) {
+      this.aboveStaffLayout.addElement(
+        {
+          type: "Text",
+          align: "left",
+          box: new Box(0, 0, measureElement.box.width, 2 * tempoSize),
+          size: tempoSize,
+          value: `♩﹦${measureElement.measure.staffDetails.tempo.value}`,
+          style: {
+            userSelect: "none",
+            fontWeight: "bold",
+          },
+        },
+        {
+          startColumn: startColumn,
+          endColumn: startColumn + 1,
         }
       );
     }
