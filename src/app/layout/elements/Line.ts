@@ -1,4 +1,4 @@
-import { clone, find, first, isNumber, isUndefined, map, max } from "lodash";
+import { clone, find, first, isNumber, isUndefined, map, max, some } from "lodash";
 import * as notation from "../../../notation";
 import { AccentStyle, NoteValueName } from "../../../notation";
 import { BEAM_HEIGHT, DOT_SIZE, STAFF_LINE_HEIGHT } from "../constants";
@@ -60,7 +60,18 @@ export class Line {
       this.stemAndBeam(lineChild);
     }
 
-    this.addAboveStaffDecorations();
+    // TODO figure out some place for this (size of palm mute text)
+    const baseSize = 0.8 * STAFF_LINE_HEIGHT;
+
+    this.addAboveStaffDecorations(
+      (chord: notation.Chord) => some(chord.notes, "palmMute"),
+      () => ({
+        type: "DashedLineText",
+        box: new Box(0, 0, baseSize, baseSize),
+        size: baseSize,
+        value: "P.M.",
+      })
+    );
 
     this.aboveStaffLayout.setRightEdges(rightEdges);
     this.aboveStaffLayout.layout();
@@ -78,9 +89,10 @@ export class Line {
     this.box.height = y;
   }
 
-  private addAboveStaffDecorations() {
-    const baseSize = 0.8 * STAFF_LINE_HEIGHT;
-
+  private addAboveStaffDecorations(
+    predicate: (chord: notation.Chord) => boolean,
+    elementGenerator: () => Text | DashedLineText | Space
+  ) {
     let index = 0;
     let startIndex: number | undefined;
     let endIndex = 0;
@@ -95,30 +107,16 @@ export class Line {
           continue;
         }
 
-        const palmMuteNote = find(measureElement.chord.notes, "palmMute");
-        if (palmMuteNote) {
+        const isPredicateTruthy = predicate(measureElement.chord);
+        if (isPredicateTruthy) {
           if (isUndefined(startIndex)) {
             startIndex = index;
           }
         } else if (isNumber(startIndex)) {
-          const constraint: GridConstraint = {
+          this.aboveStaffLayout.addElement(elementGenerator(), {
             startColumn: startIndex,
             endColumn: endIndex,
-          };
-
-          this.aboveStaffLayout.addElement(
-            {
-              type: "DashedLineText",
-              box: new Box(0, 0, baseSize, baseSize),
-              size: baseSize,
-              value: "P.M.",
-              // style: {
-              //   fill: "#888888",
-              // },
-            },
-            constraint
-          );
-
+          });
           startIndex = undefined;
         }
 
@@ -127,23 +125,10 @@ export class Line {
     }
 
     if (isNumber(startIndex)) {
-      const constraint: GridConstraint = {
+      this.aboveStaffLayout.addElement(elementGenerator(), {
         startColumn: startIndex,
         endColumn: endIndex,
-      };
-
-      this.aboveStaffLayout.addElement(
-        {
-          type: "DashedLineText",
-          box: new Box(0, 0, baseSize, baseSize),
-          size: baseSize,
-          value: "P.M.",
-          // style: {
-          //   fill: "#888888",
-          // },
-        },
-        constraint
-      );
+      });
     }
   }
 
