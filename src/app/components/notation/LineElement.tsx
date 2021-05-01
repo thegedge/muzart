@@ -3,6 +3,7 @@ import { LineElement } from "../../layout";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
+import { DashedLineText } from "./DashedLineText";
 import { Dot } from "./Dot";
 import { LineGroup } from "./LineGroup";
 import { Measure } from "./Measure";
@@ -18,6 +19,8 @@ export default function LineElementComponent(props: { element: LineElement }): R
       return <BarLine node={props.element} />;
     case "Beam":
       return <Beam node={props.element} />;
+    case "DashedLineText":
+      return <DashedLineText element={props.element} />;
     case "Dot":
       return <Dot node={props.element} />;
     case "Group":

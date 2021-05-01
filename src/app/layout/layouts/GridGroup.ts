@@ -4,8 +4,13 @@ import Box from "../utils/Box";
 import { MaybeLayout } from "./types";
 
 export interface Constraint {
+  /** Column must be in the bottom row of the grid group */
   mustBeBottomRow?: boolean;
+
+  /** Start column consumed by this element */
   startColumn: number;
+
+  /** End column consumed by this element (inclusive) */
   endColumn: number;
 }
 

@@ -1,4 +1,4 @@
-import { clone, find, first, map, max } from "lodash";
+import { clone, find, first, isNumber, isUndefined, map, max } from "lodash";
 import * as notation from "../../../notation";
 import { AccentStyle, NoteValueName } from "../../../notation";
 import { BEAM_HEIGHT, DOT_SIZE, STAFF_LINE_HEIGHT } from "../constants";
@@ -6,7 +6,7 @@ import { AnchoredGroup } from "../layouts/AnchoredGroup";
 import { FlexProps, LineElementFlexGroup } from "../layouts/FlexGroup";
 import { Constraint as GridConstraint, GridGroup } from "../layouts/GridGroup";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
-import { Arc, Beam, Chord, Dot, LineElement, Measure, Rest, Space, Stem, Text } from "../types";
+import { Arc, Beam, Chord, DashedLineText, Dot, LineElement, Measure, Rest, Space, Stem, Text } from "../types";
 import { runs } from "../utils";
 import Box from "../utils/Box";
 
@@ -14,7 +14,7 @@ export class Line {
   readonly type: "Group" = "Group";
   readonly elements: LineElement[] = [];
 
-  private aboveStaffLayout: GridGroup<Text | Space>;
+  private aboveStaffLayout: GridGroup<Text | DashedLineText | Space>;
   private staffLayout: LineElementFlexGroup;
   private belowStaffLayout: NonNegativeGroup<Stem | Beam | Dot>;
 
@@ -56,9 +56,11 @@ export class Line {
         continue;
       }
 
-      this.addAboveStaffDecorations(rightEdges, lineChild);
+      this.addAboveStaffDecorationsForMeasure(rightEdges, lineChild);
       this.stemAndBeam(lineChild);
     }
+
+    this.addAboveStaffDecorations();
 
     this.aboveStaffLayout.setRightEdges(rightEdges);
     this.aboveStaffLayout.layout();
@@ -76,7 +78,76 @@ export class Line {
     this.box.height = y;
   }
 
-  private addAboveStaffDecorations(rightEdges: number[], measureElement: Measure) {
+  private addAboveStaffDecorations() {
+    const baseSize = 0.8 * STAFF_LINE_HEIGHT;
+
+    let index = 0;
+    let startIndex: number | undefined;
+    let endIndex = 0;
+    for (const lineElement of this.staffLayout.elements) {
+      if (lineElement.type !== "Measure") {
+        continue;
+      }
+
+      for (const measureElement of lineElement.elements) {
+        index += 1;
+        if (measureElement.type !== "Chord") {
+          continue;
+        }
+
+        const palmMuteNote = find(measureElement.chord.notes, "palmMute");
+        if (palmMuteNote) {
+          if (isUndefined(startIndex)) {
+            startIndex = index;
+          }
+        } else if (isNumber(startIndex)) {
+          const constraint: GridConstraint = {
+            startColumn: startIndex,
+            endColumn: endIndex,
+          };
+
+          this.aboveStaffLayout.addElement(
+            {
+              type: "DashedLineText",
+              box: new Box(0, 0, baseSize, baseSize),
+              size: baseSize,
+              value: "P.M.",
+              // style: {
+              //   fill: "#888888",
+              // },
+            },
+            constraint
+          );
+
+          startIndex = undefined;
+        }
+
+        endIndex = index;
+      }
+    }
+
+    if (isNumber(startIndex)) {
+      const constraint: GridConstraint = {
+        startColumn: startIndex,
+        endColumn: endIndex,
+      };
+
+      this.aboveStaffLayout.addElement(
+        {
+          type: "DashedLineText",
+          box: new Box(0, 0, baseSize, baseSize),
+          size: baseSize,
+          value: "P.M.",
+          // style: {
+          //   fill: "#888888",
+          // },
+        },
+        constraint
+      );
+    }
+  }
+
+  private addAboveStaffDecorationsForMeasure(rightEdges: number[], measureElement: Measure) {
     const numberSize = 0.08;
     const tempoSize = 0.1; // TODO property of this class? Related to staff line height?
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
@@ -141,22 +212,6 @@ export class Line {
               box: new Box(0, 0, baseSize, baseSize),
               size: baseSize,
               value: harmonicNote.harmonicString,
-              style: {
-                fill: "#888888",
-              },
-            },
-            constraint
-          );
-        }
-
-        const palmMuteNote = find(element.chord.notes, "palmMute");
-        if (palmMuteNote) {
-          this.aboveStaffLayout.addElement(
-            {
-              type: "Text",
-              box: new Box(0, 0, baseSize, baseSize),
-              size: baseSize,
-              value: "P.M.",
               style: {
                 fill: "#888888",
               },
@@ -275,11 +330,8 @@ export class Line {
   // TODO there's a lot of "behavioural coupling" between these methods. For example, `layOutBeams` is aware of how tall
   //      stems are, and similarly for `layOutDots`.
 
-  private layOutArcs() {
-    this.arcs.reset();
-    this.arcs.box = this.staffLayout.box;
-
-    const chords = this.staffLayout.elements.flatMap((measure) => {
+  private chordElements() {
+    return this.staffLayout.elements.flatMap((measure) => {
       if (measure.type !== "Measure") {
         return [];
       }
@@ -296,7 +348,13 @@ export class Line {
         measure,
       }));
     });
+  }
 
+  private layOutArcs() {
+    this.arcs.reset();
+    this.arcs.box = this.staffLayout.box;
+
+    const chords = this.chordElements();
     chords.forEach(({ chord, measure }, index) => {
       for (const note of chord.chord.notes) {
         // If the very first chord in the line has a tie, create an arc to show that

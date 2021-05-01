@@ -3,6 +3,8 @@ import * as notation from "../../notation";
 import Box from "./utils/Box";
 
 export type Inches = number;
+export type Alignment = "left" | "center" | "right";
+export type VerticalOrientation = "above" | "below";
 
 export type HasBox = {
   box: Box;
@@ -32,7 +34,18 @@ export interface Page {
   height: Inches;
 }
 
-export type LineElement = Space | Text | Measure | Arc | BarLine | Group | Stem | Beam | Dot | Wrapped<LineElement>;
+export type LineElement =
+  | Arc
+  | BarLine
+  | Beam
+  | DashedLineText
+  | Dot
+  | Group
+  | Measure
+  | Space
+  | Stem
+  | Text
+  | Wrapped<LineElement>;
 
 export interface Wrapped<T extends HasBox> {
   type: "Wrapped";
@@ -43,7 +56,7 @@ export interface Wrapped<T extends HasBox> {
 export interface Arc {
   type: "Arc";
   box: Box;
-  orientation: "above" | "below";
+  orientation: VerticalOrientation;
 }
 
 export interface Group {
@@ -63,6 +76,7 @@ export interface BarLine {
   strokeSize: number;
   box: Box;
 }
+
 export interface Text {
   type: "Text";
   value: string;
@@ -70,6 +84,13 @@ export interface Text {
   align?: Alignment;
   box: Box;
   style?: CSSProperties;
+}
+
+export interface DashedLineText {
+  type: "DashedLineText";
+  value: string;
+  size: Inches;
+  box: Box;
 }
 
 export interface Measure {
@@ -114,4 +135,8 @@ export interface Dot {
   box: Box;
 }
 
-export type Alignment = "left" | "center" | "right";
+export interface Tuplet {
+  type: "Tuplet";
+  box: Box;
+  orientation: VerticalOrientation;
+}
