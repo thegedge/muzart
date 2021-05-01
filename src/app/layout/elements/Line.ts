@@ -73,6 +73,18 @@ export class Line {
       })
     );
 
+    this.addAboveStaffDecorations<string>(
+      (chord: notation.Chord) => {
+        return find(chord.notes, "harmonic")?.harmonicString;
+      },
+      (harmonicString: string) => ({
+        type: "DashedLineText",
+        box: new Box(0, 0, baseSize, baseSize),
+        size: baseSize,
+        value: harmonicString,
+      })
+    );
+
     this.aboveStaffLayout.setRightEdges(rightEdges);
     this.aboveStaffLayout.layout();
     this.belowStaffLayout.layout();
@@ -89,43 +101,34 @@ export class Line {
     this.box.height = y;
   }
 
-  private addAboveStaffDecorations(
-    predicate: (chord: notation.Chord) => boolean,
-    elementGenerator: () => Text | DashedLineText | Space
+  private addAboveStaffDecorations<T>(
+    predicate: (chord: notation.Chord) => T extends undefined ? never : T | undefined,
+    elementGenerator: (value: T) => Text | DashedLineText | Space
   ) {
-    let index = 0;
+    let predicateValue: T | undefined;
     let startIndex: number | undefined;
     let endIndex = 0;
-    for (const lineElement of this.staffLayout.elements) {
-      if (lineElement.type !== "Measure") {
-        continue;
+    this.chordElements().forEach(({ chordIndex, chord }) => {
+      const newPredicateValue = predicate(chord.chord);
+      if (newPredicateValue) {
+        if (isUndefined(startIndex)) {
+          startIndex = chordIndex;
+          predicateValue = newPredicateValue;
+        }
+      } else if (isNumber(startIndex)) {
+        this.aboveStaffLayout.addElement(elementGenerator(predicateValue!), {
+          startColumn: startIndex,
+          endColumn: endIndex,
+        });
+        startIndex = undefined;
+        predicateValue = undefined;
       }
 
-      for (const measureElement of lineElement.elements) {
-        index += 1;
-        if (measureElement.type !== "Chord") {
-          continue;
-        }
-
-        const isPredicateTruthy = predicate(measureElement.chord);
-        if (isPredicateTruthy) {
-          if (isUndefined(startIndex)) {
-            startIndex = index;
-          }
-        } else if (isNumber(startIndex)) {
-          this.aboveStaffLayout.addElement(elementGenerator(), {
-            startColumn: startIndex,
-            endColumn: endIndex,
-          });
-          startIndex = undefined;
-        }
-
-        endIndex = index;
-      }
-    }
+      endIndex = chordIndex;
+    });
 
     if (isNumber(startIndex)) {
-      this.aboveStaffLayout.addElement(elementGenerator(), {
+      this.aboveStaffLayout.addElement(elementGenerator(predicateValue!), {
         startColumn: startIndex,
         endColumn: endIndex,
       });
@@ -183,22 +186,6 @@ export class Line {
               value: element.chord.text,
               style: {
                 fontStyle: "italic",
-              },
-            },
-            constraint
-          );
-        }
-
-        const harmonicNote = find(element.chord.notes, "harmonic");
-        if (harmonicNote) {
-          this.aboveStaffLayout.addElement(
-            {
-              type: "Text",
-              box: new Box(0, 0, baseSize, baseSize),
-              size: baseSize,
-              value: harmonicNote.harmonicString,
-              style: {
-                fill: "#888888",
               },
             },
             constraint
@@ -316,22 +303,24 @@ export class Line {
   //      stems are, and similarly for `layOutDots`.
 
   private chordElements() {
+    let chordIndex = 0;
     return this.staffLayout.elements.flatMap((measure) => {
       if (measure.type !== "Measure") {
         return [];
       }
 
-      const chords: Chord[] = [];
+      const chords = [];
       for (const measureChild of measure.elements) {
+        chordIndex += 1;
         if (measureChild.type === "Chord") {
-          chords.push(measureChild);
+          chords.push({
+            chordIndex,
+            chord: measureChild,
+            measure,
+          });
         }
       }
-
-      return chords.map((chord) => ({
-        chord,
-        measure,
-      }));
+      return chords;
     });
   }
 
