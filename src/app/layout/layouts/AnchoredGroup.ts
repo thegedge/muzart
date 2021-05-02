@@ -1,6 +1,7 @@
 import { zip } from "lodash";
 import { HasBox, Wrapped } from "../types";
 import Box from "../utils/Box";
+import { Group } from "./Group";
 import { MaybeLayout } from "./types";
 
 /**
@@ -8,13 +9,9 @@ import { MaybeLayout } from "./types";
  *
  * **Note**: Currently anchors only to the top-left corner of the anchor element.
  */
-export class AnchoredGroup<T extends MaybeLayout<HasBox>, AnchorT extends HasBox> {
-  readonly type: "Group" = "Group";
+export class AnchoredGroup<T extends MaybeLayout<HasBox>, AnchorT extends HasBox> extends Group<Wrapped<T>> {
   readonly align = "end";
-  public elements: Wrapped<T>[] = [];
   public anchors: (AnchorT | null | undefined)[] = [];
-
-  constructor(public box = new Box(0, 0, 0, 0)) {}
 
   /**
    * Add an element that positions itself to another, known as "anchoring".
@@ -36,9 +33,8 @@ export class AnchoredGroup<T extends MaybeLayout<HasBox>, AnchorT extends HasBox
   }
 
   reset() {
+    super.reset();
     this.anchors = [];
-    this.elements = [];
-    this.box = new Box(0, 0, 0, 0);
   }
 
   /**

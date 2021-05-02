@@ -1,19 +1,17 @@
-import { clone, find, first, isNumber, isUndefined, map, max, some } from "lodash";
+import { clone, find, first, groupBy, isNumber, isUndefined, map, max, some } from "lodash";
 import * as notation from "../../../notation";
 import { AccentStyle, NoteValueName } from "../../../notation";
 import { BEAM_HEIGHT, DOT_SIZE, STAFF_LINE_HEIGHT } from "../constants";
 import { AnchoredGroup } from "../layouts/AnchoredGroup";
 import { FlexProps, LineElementFlexGroup } from "../layouts/FlexGroup";
 import { Constraint as GridConstraint, GridGroup } from "../layouts/GridGroup";
+import { Group } from "../layouts/Group";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
 import { Arc, Beam, Chord, DashedLineText, Dot, LineElement, Measure, Rest, Space, Stem, Text } from "../types";
-import { runs } from "../utils";
+import { minMap, runs } from "../utils";
 import Box from "../utils/Box";
 
-export class Line {
-  readonly type: "Group" = "Group";
-  readonly elements: LineElement[] = [];
-
+export class Line extends Group<LineElement> {
   private aboveStaffLayout: GridGroup<Text | DashedLineText | Space>;
   private staffLayout: LineElementFlexGroup;
   private belowStaffLayout: NonNegativeGroup<Stem | Beam | Dot>;
@@ -21,7 +19,9 @@ export class Line {
   // TODO find a better place for this
   private arcs: AnchoredGroup<Arc, Measure | Chord>;
 
-  constructor(readonly box: Box) {
+  constructor(box: Box) {
+    super(box);
+
     this.arcs = new AnchoredGroup();
 
     this.aboveStaffLayout = new GridGroup(STAFF_LINE_HEIGHT * 0.25);
@@ -42,53 +42,14 @@ export class Line {
   layout() {
     this.staffLayout.layout(true);
     this.staffLayout.box.height = max(map(this.staffLayout.elements, "box.height"));
+    this.layOutArcs();
 
-    // TODO have to reset everything because layout() could be called multiple times. This sucks though. Some ideas:
+    // TODO have to reset everything in these two functions because layout() could be called multiple times. Some ideas to avoid this:
     //   1. Track whether or not the line is dirty, and then reset.
     //   2. Add the elements to the above/below staff layout once, but move them around.
     //   3. Constraint-based layouts (measure number is above the staff, anchored to the leftmost chord)
-    this.aboveStaffLayout.reset();
-    this.belowStaffLayout.reset();
-
-    const rightEdges: number[] = [];
-    for (const lineChild of this.staffLayout.elements) {
-      if (lineChild.type !== "Measure") {
-        continue;
-      }
-
-      this.addAboveStaffDecorationsForMeasure(rightEdges, lineChild);
-      this.stemAndBeam(lineChild);
-    }
-
-    // TODO figure out some place for this (size of palm mute text)
-    const baseSize = 0.8 * STAFF_LINE_HEIGHT;
-
-    this.addAboveStaffDecorations(
-      (chord: notation.Chord) => some(chord.notes, "palmMute"),
-      () => ({
-        type: "DashedLineText",
-        box: new Box(0, 0, baseSize, baseSize),
-        size: baseSize,
-        value: "P.M.",
-      })
-    );
-
-    this.addAboveStaffDecorations<string>(
-      (chord: notation.Chord) => {
-        return find(chord.notes, "harmonic")?.harmonicString;
-      },
-      (harmonicString: string) => ({
-        type: "DashedLineText",
-        box: new Box(0, 0, baseSize, baseSize),
-        size: baseSize,
-        value: harmonicString,
-      })
-    );
-
-    this.aboveStaffLayout.setRightEdges(rightEdges);
-    this.aboveStaffLayout.layout();
-    this.belowStaffLayout.layout();
-    this.layOutArcs();
+    this.addAboveStaffElements();
+    this.addBelowStaffElements();
 
     // Finalize positions
     let y = 0;
@@ -101,18 +62,73 @@ export class Line {
     this.box.height = y;
   }
 
-  private addAboveStaffDecorations<T>(
+  private addBelowStaffElements() {
+    this.belowStaffLayout.reset();
+    for (const lineChild of this.staffLayout.elements) {
+      if (lineChild.type !== "Measure") {
+        continue;
+      }
+      this.stemAndBeam(lineChild);
+    }
+    this.belowStaffLayout.layout();
+  }
+
+  private addAboveStaffElements() {
+    this.aboveStaffLayout.reset();
+
+    // TODO figure out some place for this (size of palm mute text)
+    const baseSize = 0.8 * STAFF_LINE_HEIGHT;
+
+    this.addInterMeasureStaffDecorations(
+      (chord: notation.Chord) => some(chord.notes, "palmMute"),
+      () => ({
+        type: "DashedLineText",
+        box: new Box(0, 0, baseSize, baseSize),
+        size: baseSize,
+        value: "P.M.",
+      })
+    );
+
+    this.addInterMeasureStaffDecorations<string>(
+      (chord: notation.Chord) => {
+        return find(chord.notes, "harmonic")?.harmonicString;
+      },
+      (harmonicString: string) => ({
+        type: "DashedLineText",
+        box: new Box(0, 0, baseSize, baseSize),
+        size: baseSize,
+        value: harmonicString,
+      })
+    );
+
+    this.addIntraMeasureAboveStaffDecorations();
+
+    const leftEdges = this.gridLayoutElements().map(({ element, measure }) =>
+      measure && element ? measure.box.x + element.box.x : 0
+    );
+    this.aboveStaffLayout.setLeftEdges(leftEdges);
+    this.aboveStaffLayout.layout();
+  }
+
+  private addInterMeasureStaffDecorations<T>(
     predicate: (chord: notation.Chord) => T extends undefined ? never : T | undefined,
     elementGenerator: (value: T) => Text | DashedLineText | Space
   ) {
+    // TODO the endColumn goes to the end of the chord box, but we probably only want it to go to the end of part of the chord
+    //      box that contains the notes, not including the spacing at the right.
+
     let predicateValue: T | undefined;
     let startIndex: number | undefined;
     let endIndex = 0;
-    this.chordElements().forEach(({ chordIndex, chord }) => {
-      const newPredicateValue = predicate(chord.chord);
+    this.gridLayoutElements().forEach(({ element }, index) => {
+      if (!element || element.type !== "Chord") {
+        return;
+      }
+
+      const newPredicateValue = predicate(element.chord);
       if (newPredicateValue) {
         if (isUndefined(startIndex)) {
-          startIndex = chordIndex;
+          startIndex = index;
           predicateValue = newPredicateValue;
         }
       } else if (isNumber(startIndex)) {
@@ -124,7 +140,7 @@ export class Line {
         predicateValue = undefined;
       }
 
-      endIndex = chordIndex;
+      endIndex = index;
     });
 
     if (isNumber(startIndex)) {
@@ -135,47 +151,55 @@ export class Line {
     }
   }
 
-  private addAboveStaffDecorationsForMeasure(rightEdges: number[], measureElement: Measure) {
+  private addIntraMeasureAboveStaffDecorations() {
     const numberSize = 0.08;
-    const tempoSize = 0.1; // TODO property of this class? Related to staff line height?
+    const tempoSize = 0.12; // TODO property of this class? Related to staff line height?
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
 
-    let columnIndex = rightEdges.length;
-    const startColumn = columnIndex;
-
-    this.aboveStaffLayout.addElement(
-      {
-        type: "Text",
-        align: "center",
-        box: new Box(0, 0, numberSize, numberSize),
-        size: numberSize,
-        value: measureElement.measure.number.toString(),
-        style: {
-          userSelect: "none",
-          fill: "#888888",
-        },
-      },
-      {
-        mustBeBottomRow: true,
-        startColumn: columnIndex,
-        endColumn: columnIndex + (rightEdges.length == 0 ? 0 : 1),
-      }
+    const elementsByMeasure = groupBy(
+      this.gridLayoutElements().map(({ element, measure }, index) => ({ element, measure, index })),
+      "measure.measure.number"
     );
 
-    for (const element of measureElement.elements) {
-      columnIndex += 1;
-      rightEdges.push(measureElement.box.x + element.box.x);
-
-      if (element.type !== "Chord") {
+    let firstMeasure = true;
+    for (const measureElements of Object.values(elementsByMeasure)) {
+      const measureStartColumn = minMap(measureElements, ({ index }) => index) || 0;
+      const measureElement = measureElements[0].measure;
+      if (!measureElement) {
         continue;
       }
 
-      const constraint: GridConstraint = {
-        startColumn: columnIndex,
-        endColumn: columnIndex,
-      };
+      const measure = measureElement.measure;
 
-      if (element.type === "Chord") {
+      this.aboveStaffLayout.addElement(
+        {
+          type: "Text",
+          align: "center",
+          box: new Box(0, 0, numberSize, numberSize),
+          size: numberSize,
+          value: measure.number.toString(),
+          style: {
+            userSelect: "none",
+            fill: "#888888",
+          },
+        },
+        {
+          mustBeBottomRow: true,
+          startColumn: Math.max(0, measureStartColumn - 1),
+          endColumn: Math.max(0, measureStartColumn - (firstMeasure ? 1 : 0)),
+        }
+      );
+
+      for (const { element, index } of measureElements) {
+        if (!element || element.type !== "Chord") {
+          continue;
+        }
+
+        const constraint: GridConstraint = {
+          startColumn: index,
+          endColumn: index,
+        };
+
         if (element.chord.text) {
           // TODO baseSize isn't an appropriate width, but we have no way to measure text :(
           this.aboveStaffLayout.addElement(
@@ -216,45 +240,47 @@ export class Line {
           );
         }
       }
-    }
 
-    if (measureElement.measure.marker) {
-      this.aboveStaffLayout.addElement(
-        {
-          type: "Text",
-          box: new Box(0, 0, baseSize, baseSize),
-          size: baseSize,
-          value: measureElement.measure.marker.text,
-          style: {
-            fontWeight: "bold",
-            fill: measureElement.measure.marker.color,
+      if (measure.staffDetails.tempo?.changed) {
+        this.aboveStaffLayout.addElement(
+          {
+            type: "Text",
+            align: "left",
+            box: new Box(0, 0, 0, tempoSize),
+            size: tempoSize,
+            value: `♩﹦${measure.staffDetails.tempo.value}`,
+            style: {
+              userSelect: "none",
+              fontWeight: "bold",
+            },
           },
-        },
-        {
-          startColumn: startColumn + 1,
-          endColumn: startColumn + 2,
-        }
-      );
-    }
+          {
+            startColumn: Math.max(0, measureStartColumn - 1),
+            endColumn: measureStartColumn + 100,
+          }
+        );
 
-    if (measureElement.measure.staffDetails.tempo?.changed) {
-      this.aboveStaffLayout.addElement(
-        {
-          type: "Text",
-          align: "left",
-          box: new Box(0, 0, measureElement.box.width, 2 * tempoSize),
-          size: tempoSize,
-          value: `♩﹦${measureElement.measure.staffDetails.tempo.value}`,
-          style: {
-            userSelect: "none",
-            fontWeight: "bold",
-          },
-        },
-        {
-          startColumn: startColumn,
-          endColumn: startColumn + 1,
+        if (measure.marker) {
+          this.aboveStaffLayout.addElement(
+            {
+              type: "Text",
+              box: new Box(0, 0, 0, baseSize),
+              size: baseSize,
+              value: measure.marker.text,
+              style: {
+                fontWeight: "bold",
+                fill: measure.marker.color,
+              },
+            },
+            {
+              startColumn: measureStartColumn,
+              endColumn: measureStartColumn + 1,
+            }
+          );
         }
-      );
+      }
+
+      firstMeasure = false;
     }
   }
 
@@ -302,35 +328,38 @@ export class Line {
   // TODO there's a lot of "behavioural coupling" between these methods. For example, `layOutBeams` is aware of how tall
   //      stems are, and similarly for `layOutDots`.
 
-  private chordElements() {
-    let chordIndex = 0;
-    return this.staffLayout.elements.flatMap((measure) => {
+  /**
+   * Get the elements that influence the grid layout used for above staff decorations.
+   */
+  private gridLayoutElements() {
+    const elements: { element?: Chord | Space | Rest; measure?: Measure }[] = [{}];
+    for (const measure of this.staffLayout.elements) {
       if (measure.type !== "Measure") {
-        return [];
+        continue;
       }
 
-      const chords = [];
       for (const measureChild of measure.elements) {
-        chordIndex += 1;
-        if (measureChild.type === "Chord") {
-          chords.push({
-            chordIndex,
-            chord: measureChild,
-            measure,
-          });
-        }
+        elements.push({
+          element: measureChild,
+          measure,
+        });
       }
-      return chords;
-    });
+    }
+    return elements;
   }
 
   private layOutArcs() {
     this.arcs.reset();
-    this.arcs.box = this.staffLayout.box;
+    this.arcs.box = clone(this.staffLayout.box);
 
-    const chords = this.chordElements();
-    chords.forEach(({ chord, measure }, index) => {
-      for (const note of chord.chord.notes) {
+    // TODO unfortunate to have to do this `as`, but we want to make the `forEach` function below simpler by only considering chords
+    const chords = this.gridLayoutElements().filter(({ element }) => element && element.type === "Chord") as {
+      element: Chord;
+      measure: Measure;
+    }[];
+
+    chords.forEach(({ element, measure }, index) => {
+      for (const note of element.chord.notes) {
         // If the very first chord in the line has a tie, create an arc to show that
         if (note.tie?.previous && index === 0) {
           this.arcs.addElement(
@@ -338,7 +367,7 @@ export class Line {
               type: "Arc",
               box: new Box(
                 measure.box.x,
-                measure.box.y + chord.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
+                measure.box.y + element.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
                 0.16,
                 STAFF_LINE_HEIGHT * 0.5
               ),
@@ -350,9 +379,9 @@ export class Line {
 
         if (note.tie?.nextChord) {
           // Find the chord
-          let tieEnd: { chord: Chord; measure: Measure } | undefined;
+          let tieEnd: { element: Chord; measure: Measure } | undefined;
           for (let endIndex = index + 1; endIndex < chords.length; ++endIndex) {
-            if (chords[endIndex].chord.chord == note.tie.nextChord) {
+            if (chords[endIndex].element.chord == note.tie.nextChord) {
               tieEnd = chords[endIndex];
               break;
             }
@@ -362,16 +391,16 @@ export class Line {
 
           let x;
           if (note.tie.type == "start") {
-            x = measure.box.x + chord.box.x + offset;
+            x = measure.box.x + element.box.x + offset;
           } else {
-            x = measure.box.x + chord.box.x + offset - 0.05;
+            x = measure.box.x + element.box.x + offset - 0.05;
           }
 
           let width = 0;
           if (tieEnd) {
-            width = tieEnd.chord.box.x + tieEnd.measure.box.x - x + offset - 0.03;
+            width = tieEnd.element.box.x + tieEnd.measure.box.x - x + offset - 0.03;
           } else {
-            width = this.staffLayout.box.right - measure.box.x - chord.box.x - offset - 0.03;
+            width = this.staffLayout.box.right - measure.box.x - element.box.x - offset - 0.03;
           }
 
           this.arcs.addElement(
@@ -379,7 +408,7 @@ export class Line {
               type: "Arc",
               box: new Box(
                 x,
-                measure.box.y + chord.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
+                measure.box.y + element.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
                 width,
                 STAFF_LINE_HEIGHT * 0.5
               ),

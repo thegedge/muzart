@@ -227,6 +227,7 @@ function newLine(contentWidth: number) {
     },
     { factor: null }
   );
+
   return line;
 }
 

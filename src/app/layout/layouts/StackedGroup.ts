@@ -1,15 +1,15 @@
 import { HasBox, Wrapped } from "../types";
 import Box from "../utils/Box";
+import { Group } from "./Group";
 import { MaybeLayout } from "./types";
 
 /**
  * A group that stacks its elements vertically.
  */
-export class StackedGroup<T extends MaybeLayout<HasBox>> {
-  readonly type: "Group" = "Group";
-  readonly elements: Wrapped<T>[] = [];
-
-  constructor(readonly spacing = 0, readonly box = new Box(0, 0, 0, 0)) {}
+export class StackedGroup<T extends MaybeLayout<HasBox>> extends Group<Wrapped<T>> {
+  constructor(readonly spacing = 0, box = new Box(0, 0, 0, 0)) {
+    super(box);
+  }
 
   /**
    * Add an element that positions itself to another, known as "anchoring".
@@ -28,9 +28,7 @@ export class StackedGroup<T extends MaybeLayout<HasBox>> {
   }
 
   reset() {
-    this.elements.splice(0);
-    this.box.width = 0;
-    this.box.height = 0;
+    super.reset();
   }
 
   /**

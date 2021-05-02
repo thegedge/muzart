@@ -1,6 +1,42 @@
 export * from "./Box";
 
 /**
+ * Compute the min of a collection after being mapped by a function.
+ *
+ * This is roughly equivalent to the following lodash options:
+ *
+ * ```js
+ * min(map(collection, mapper))
+ * mapper(minBy(collection, mapper))
+ * ```
+ *
+ * The first creates an intermediate array, which is undesirable for performance.
+ * The second is better, but requires the mapper to deal with `undefined`, and will map the max value twice.
+ *
+ * @param collection
+ * @param mapper a mapping function
+ * @param lessThan an optional comparator that checks if the first arg is less than the second
+ *
+ * @returns `undefined` if the array is empty, otherwise the max value in the
+ */
+export function minMap<T, MinT>(
+  collection: Iterable<T>,
+  mapper: (v: T) => MinT,
+  lessThan: (a: MinT, b: MinT) => boolean = (a, b) => a < b
+): MinT | undefined {
+  let minValue: MinT | undefined;
+  for (const v of collection) {
+    const value = mapper(v);
+    if (minValue === undefined) {
+      minValue = value;
+    } else if (lessThan(value, minValue)) {
+      minValue = value;
+    }
+  }
+  return minValue;
+}
+
+/**
  * Compute the max of a collection after being mapped by a function.
  *
  * This is roughly equivalent to the following lodash options:

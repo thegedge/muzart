@@ -1,6 +1,6 @@
-import { find, last, partition, range, some, zip } from "lodash";
+import { every, find, last, partition, range, zip } from "lodash";
 import { HasBox } from "../types";
-import Box from "../utils/Box";
+import { Group } from "./Group";
 import { MaybeLayout } from "./types";
 
 export interface Constraint {
@@ -17,15 +17,13 @@ export interface Constraint {
 /**
  * TBD
  */
-export class GridGroup<T extends MaybeLayout<HasBox>> {
-  readonly type: "Group" = "Group";
-
-  public box = new Box(0, 0, 0, 0);
-  public elements: T[] = [];
+export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
   private constraints: Constraint[] = [];
   private edges: number[] = [];
 
-  constructor(private spacing = 0) {}
+  constructor(private spacing = 0) {
+    super();
+  }
 
   addElement(element: T, constraint: Constraint) {
     this.elements.push(element);
@@ -33,18 +31,17 @@ export class GridGroup<T extends MaybeLayout<HasBox>> {
   }
 
   reset() {
-    this.elements = [];
+    super.reset();
     this.constraints = [];
-    this.box = new Box(0, 0, 0, 0);
   }
 
   /**
-   * Set the x positions of the right edge for each cell in the grid.
+   * Set the x positions of the left edge for each cell in the grid.
    *
    * @param edges edge positions
    */
-  setRightEdges(edges: number[]) {
-    this.edges = [0].concat(edges);
+  setLeftEdges(edges: number[]) {
+    this.edges = Array.from(edges);
   }
 
   /**
@@ -80,12 +77,12 @@ export class GridGroup<T extends MaybeLayout<HasBox>> {
     });
 
     const newRow = () => ({
-      columns: range(this.edges.length).map(() => false),
+      columnAvailability: range(this.edges.length).map(() => true),
       elements: [] as T[],
     });
     const rows = [newRow()];
 
-    // Now, lay out everything else
+    // Lay out everything that isn't the bottom row
     for (const [element, constraint] of everythingElse) {
       element.box.x = this.edges[constraint.startColumn];
       element.box.width = this.edges[constraint.endColumn + 1] - element.box.x;
@@ -96,7 +93,7 @@ export class GridGroup<T extends MaybeLayout<HasBox>> {
 
       // If the span of cells we need don't exist, create a new row
       let row = find(rows, (row) => {
-        return !some(row.columns.slice(constraint.startColumn, constraint.endColumn + 1));
+        return every(row.columnAvailability.slice(constraint.startColumn, constraint.endColumn + 1));
       });
 
       if (!row) {
@@ -104,10 +101,11 @@ export class GridGroup<T extends MaybeLayout<HasBox>> {
         rows.push(row);
       }
 
-      row.columns.fill(true, constraint.startColumn, constraint.endColumn + 1);
+      row.columnAvailability.fill(false, constraint.startColumn, constraint.endColumn + 1);
       row.elements.push(element);
     }
 
+    // Now the forced bottom row, if we have anything in it
     if (mustBeBottomRow.length > 0) {
       rows.unshift(newRow());
 
@@ -119,7 +117,7 @@ export class GridGroup<T extends MaybeLayout<HasBox>> {
           element.layout();
         }
 
-        rows[0].columns.fill(true, constraint.startColumn, constraint.endColumn + 1);
+        rows[0].columnAvailability.fill(false, constraint.startColumn, constraint.endColumn + 1);
         rows[0].elements.push(element);
       }
     }
