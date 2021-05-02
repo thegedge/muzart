@@ -1,13 +1,6 @@
 import { clone } from "lodash";
 import * as notation from "../../notation";
-import {
-  DEFAULT_MARGINS,
-  DEFAULT_PAGE_HEIGHT,
-  DEFAULT_PAGE_WIDTH,
-  LINE_MARGIN,
-  LINE_STROKE_WIDTH,
-  STAFF_LINE_HEIGHT,
-} from "./constants";
+import { DEFAULT_MARGINS, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH, LINE_MARGIN, STAFF_LINE_HEIGHT } from "./constants";
 import { Line } from "./elements/Line";
 import { Measure, Measure as MeasureLayout } from "./elements/Measure";
 import { LineElementFlexGroup } from "./layouts/FlexGroup";
@@ -122,7 +115,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   }
 
   const pages: Page[] = [];
-  let line = newLine(contentWidth);
+  let line = new Line(new Box(0, 0, contentWidth, 0));
 
   // TODO: Ideally, the bottom of the last line lines up with the bottom of the content box of the page. We should iterate
   //       over the lines and scale the space between them so that that happens. Basically, a flex + flex-col layout.
@@ -136,7 +129,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     // start a new page.
 
     if (line.tryAddElement(measure, { factor: measureToLayOut.chords.length })) {
-      addBarLine(line);
+      line.addBarLine();
     } else {
       line.layout();
 
@@ -161,9 +154,9 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
         box: new Box(0, 0, LINE_MARGIN, LINE_MARGIN),
       });
 
-      line = newLine(contentWidth);
+      line = new Line(new Box(0, 0, contentWidth, 0));
       line.addElement(measure, { factor: measureToLayOut.chords.length });
-      addBarLine(line);
+      line.addBarLine();
     }
   }
 
@@ -185,59 +178,4 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   }
 
   return { part, pages };
-}
-
-function newLine(contentWidth: number) {
-  const tabTextSize = (STAFF_LINE_HEIGHT * 4.5) / 3;
-  const tabWidth = tabTextSize * 2;
-  const line = new Line(new Box(0, 0, contentWidth, 0));
-
-  addBarLine(line);
-
-  line.addElement(
-    {
-      type: "Group",
-      box: new Box(0, 0.75 * STAFF_LINE_HEIGHT, tabWidth, STAFF_LINE_HEIGHT * 5),
-      elements: [
-        {
-          type: "Text",
-          box: new Box(0, 0, tabWidth, tabTextSize),
-          align: "center",
-          size: tabTextSize,
-          value: "T",
-          style: { userSelect: "none" },
-        },
-        {
-          type: "Text",
-          box: new Box(0, 1 * tabTextSize, tabWidth, tabTextSize),
-          align: "center",
-          size: tabTextSize,
-          value: "A",
-          style: { userSelect: "none" },
-        },
-        {
-          type: "Text",
-          box: new Box(0, 2 * tabTextSize, tabWidth, tabTextSize),
-          align: "center",
-          size: tabTextSize,
-          value: "B",
-          style: { userSelect: "none" },
-        },
-      ],
-    },
-    { factor: null }
-  );
-
-  return line;
-}
-
-function addBarLine(group: Line) {
-  group.addElement(
-    {
-      type: "BarLine",
-      box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, LINE_STROKE_WIDTH, 5 * STAFF_LINE_HEIGHT),
-      strokeSize: LINE_STROKE_WIDTH,
-    },
-    { factor: null }
-  );
 }

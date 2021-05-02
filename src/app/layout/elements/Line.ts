@@ -1,7 +1,7 @@
 import { clone, find, first, groupBy, isNumber, isUndefined, map, max, some } from "lodash";
 import * as notation from "../../../notation";
 import { AccentStyle, NoteValueName } from "../../../notation";
-import { BEAM_HEIGHT, DOT_SIZE, STAFF_LINE_HEIGHT } from "../constants";
+import { BEAM_HEIGHT, DOT_SIZE, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../constants";
 import { AnchoredGroup } from "../layouts/AnchoredGroup";
 import { FlexProps, LineElementFlexGroup } from "../layouts/FlexGroup";
 import { Constraint as GridConstraint, GridGroup } from "../layouts/GridGroup";
@@ -28,7 +28,60 @@ export class Line extends Group<LineElement> {
     this.staffLayout = new LineElementFlexGroup({ box: clone(box), drawStaffLines: true }); // TODO eliminate drawStaffLines from here
     this.belowStaffLayout = new NonNegativeGroup();
 
+    this.addInitialElements();
+  }
+
+  addBarLine() {
+    this.addElement(
+      {
+        type: "BarLine",
+        box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, LINE_STROKE_WIDTH, 5 * STAFF_LINE_HEIGHT),
+        strokeSize: LINE_STROKE_WIDTH,
+      },
+      { factor: null }
+    );
+  }
+
+  private addInitialElements() {
     this.elements.push(this.aboveStaffLayout, this.staffLayout, this.belowStaffLayout, this.arcs);
+
+    this.addBarLine();
+
+    const tabTextSize = (STAFF_LINE_HEIGHT * 4.5) / 3;
+    const tabWidth = tabTextSize * 2;
+    this.addElement(
+      {
+        type: "Group",
+        box: new Box(0, 0.75 * STAFF_LINE_HEIGHT, tabWidth, STAFF_LINE_HEIGHT * 5),
+        elements: [
+          {
+            type: "Text",
+            box: new Box(0, 0, tabWidth, tabTextSize),
+            align: "center",
+            size: tabTextSize,
+            value: "T",
+            style: { userSelect: "none" },
+          },
+          {
+            type: "Text",
+            box: new Box(0, 1 * tabTextSize, tabWidth, tabTextSize),
+            align: "center",
+            size: tabTextSize,
+            value: "A",
+            style: { userSelect: "none" },
+          },
+          {
+            type: "Text",
+            box: new Box(0, 2 * tabTextSize, tabWidth, tabTextSize),
+            align: "center",
+            size: tabTextSize,
+            value: "B",
+            style: { userSelect: "none" },
+          },
+        ],
+      },
+      { factor: null }
+    );
   }
 
   addElement(element: LineElement, flexProps?: Partial<FlexProps>) {
