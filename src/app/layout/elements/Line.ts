@@ -206,7 +206,7 @@ export class Line extends Group<LineElement> {
 
   private addIntraMeasureAboveStaffDecorations() {
     const numberSize = 0.08;
-    const tempoSize = 0.12; // TODO property of this class? Related to staff line height?
+    const tempoSize = 0.1;
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
 
     const elementsByMeasure = groupBy(
