@@ -1,5 +1,6 @@
 import React from "react";
 import { LineElement } from "../../layout";
+import { BoxGroup } from "../layout/BoxGroup";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
@@ -28,7 +29,7 @@ export default function LineElementComponent(props: { element: LineElement }): R
     case "Measure":
       return <Measure measure={props.element} />;
     case "Space":
-      return <></>;
+      return <BoxGroup node={props.element} />;
     case "Stem":
       return <Stem node={props.element} />;
     case "Text":

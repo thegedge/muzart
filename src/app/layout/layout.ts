@@ -104,16 +104,6 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     }
   }
 
-  if (pageGroup.elements.length > 0) {
-    pageGroup.addElement(
-      {
-        type: "Space",
-        box: new Box(0, 0, LINE_MARGIN, LINE_MARGIN),
-      },
-      { factor: 0 }
-    );
-  }
-
   const pages: Page[] = [];
   let line = new Line(new Box(0, 0, contentWidth, 0));
 
@@ -133,9 +123,16 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     } else {
       line.layout();
 
-      if (!pageGroup.tryAddElement(line)) {
-        // TODO popping sucks, better = nested vertical group with "space between" option
-        pageGroup.popElement(); // Pop off the last space element so that the last line's bottom coincides with content bottom
+      // TODO "min space between" in flex group
+      if (pageGroup.elements.length > 0) {
+        pageGroup.addElement({
+          type: "Space",
+          box: new Box(0, 0, LINE_MARGIN, LINE_MARGIN),
+        });
+      }
+
+      if (!pageGroup.tryAddElement(line, { factor: null })) {
+        pageGroup.popElement(); // remove spacer we just added above
         pageGroup.layout();
 
         pages.push({
@@ -148,11 +145,6 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
         pageGroup = new LineElementFlexGroup({ box: clone(pageContentBox), axis: "vertical" });
         pageGroup.addElement(line);
       }
-
-      pageGroup.addElement({
-        type: "Space",
-        box: new Box(0, 0, LINE_MARGIN, LINE_MARGIN),
-      });
 
       line = new Line(new Box(0, 0, contentWidth, 0));
       line.addElement(measure, { factor: measureToLayOut.chords.length });
