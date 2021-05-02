@@ -136,8 +136,8 @@ export class Line extends Group<LineElement> {
 
     this.addInterMeasureStaffDecorations(
       (chord: notation.Chord) => some(chord.notes, "palmMute"),
-      () => ({
-        type: "DashedLineText",
+      (_hasPalmMute: boolean, amount: number) => ({
+        type: amount > 1 ? "DashedLineText" : "Text",
         box: new Box(0, 0, baseSize, baseSize),
         size: baseSize,
         value: "P.M.",
@@ -148,8 +148,8 @@ export class Line extends Group<LineElement> {
       (chord: notation.Chord) => {
         return find(chord.notes, "harmonic")?.harmonicString;
       },
-      (harmonicString: string) => ({
-        type: "DashedLineText",
+      (harmonicString: string, amount: number) => ({
+        type: amount > 1 ? "DashedLineText" : "Text",
         box: new Box(0, 0, baseSize, baseSize),
         size: baseSize,
         value: harmonicString,
@@ -165,7 +165,7 @@ export class Line extends Group<LineElement> {
 
   private addInterMeasureStaffDecorations<T>(
     predicate: (chord: notation.Chord) => T | undefined,
-    elementGenerator: (value: T) => Text | DashedLineText | Space
+    elementGenerator: (value: T, amount: number) => Text | DashedLineText | Space
   ) {
     // TODO the endColumn goes to the end of the chord box, but we probably only want it to go to the end of part of the chord
     //      box that contains the notes, not including the spacing at the right.
@@ -173,6 +173,7 @@ export class Line extends Group<LineElement> {
     let predicateValue: T | undefined;
     let startIndex: number | undefined;
     let endIndex = 0;
+    let amount = 0;
     this.gridLayoutElements().forEach(({ element }, index) => {
       if (element.type !== "Chord") {
         return;
@@ -183,21 +184,25 @@ export class Line extends Group<LineElement> {
         if (isUndefined(startIndex)) {
           startIndex = index + 1;
           predicateValue = newPredicateValue;
+        } else {
+          amount += 1;
         }
       } else if (isNumber(startIndex)) {
-        this.aboveStaffLayout.addElement(elementGenerator(predicateValue!), {
+        this.aboveStaffLayout.addElement(elementGenerator(predicateValue!, amount), {
           startColumn: startIndex,
           endColumn: endIndex,
         });
+
         startIndex = undefined;
         predicateValue = undefined;
+        amount = 0;
       }
 
       endIndex = index + 1;
     });
 
     if (isNumber(startIndex)) {
-      this.aboveStaffLayout.addElement(elementGenerator(predicateValue!), {
+      this.aboveStaffLayout.addElement(elementGenerator(predicateValue!, amount), {
         startColumn: startIndex,
         endColumn: endIndex,
       });
