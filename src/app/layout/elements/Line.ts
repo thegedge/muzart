@@ -28,7 +28,7 @@ export class Line extends Group<LineElement> {
     this.staffLayout = new LineElementFlexGroup({ box: clone(box), drawStaffLines: true }); // TODO eliminate drawStaffLines from here
     this.belowStaffLayout = new NonNegativeGroup();
 
-    this.addInitialElements();
+    this.initializeElements();
   }
 
   addBarLine() {
@@ -42,8 +42,8 @@ export class Line extends Group<LineElement> {
     );
   }
 
-  private addInitialElements() {
-    this.elements.push(this.aboveStaffLayout, this.staffLayout, this.belowStaffLayout, this.arcs);
+  private initializeElements() {
+    this.elements = [this.aboveStaffLayout, this.staffLayout, this.belowStaffLayout, this.arcs];
 
     this.addBarLine();
 
@@ -404,7 +404,7 @@ export class Line extends Group<LineElement> {
     this.arcs.box = clone(this.staffLayout.box);
 
     // TODO unfortunate to have to do this `as`, but we want to make the `forEach` function below simpler by only considering chords
-    const chords = this.gridLayoutElements().filter(({ element }) => element && element.type === "Chord") as {
+    const chords = this.gridLayoutElements().filter(({ element }) => element.type === "Chord") as {
       element: Chord;
       measure: Measure;
     }[];

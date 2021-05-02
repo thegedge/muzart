@@ -30,9 +30,80 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   const contentWidth = DEFAULT_PAGE_WIDTH - margins.left - margins.right;
   const contentHeight = DEFAULT_PAGE_HEIGHT - margins.top - margins.bottom;
   const pageContentBox = new Box(margins.left, margins.top, contentWidth, contentHeight);
+  const pages: Page[] = [];
 
   let pageGroup = new LineElementFlexGroup({ box: clone(pageContentBox), axis: "vertical" });
+  layOutPartHeader(pageGroup, score, part, contentWidth);
 
+  let line = new Line(new Box(0, 0, contentWidth, 0));
+  for (const measureToLayOut of measures) {
+    const measure: Measure = new MeasureLayout(part, measureToLayOut);
+
+    // Determine if we need to be on a new line.
+    //
+    // When "committing" the current line, it may be too large to fit on the current page, in which case we'll also
+    // start a new page.
+
+    if (line.tryAddElement(measure, { factor: measureToLayOut.chords.length })) {
+      line.addBarLine();
+    } else {
+      line.layout();
+
+      // TODO "min space between" in flex group
+      if (pageGroup.elements.length > 0) {
+        pageGroup.addElement({
+          type: "Space",
+          box: new Box(0, 0, LINE_MARGIN, LINE_MARGIN),
+        });
+      }
+
+      if (!pageGroup.tryAddElement(line, { factor: null })) {
+        pageGroup.popElement(); // remove spacer we just added above
+        pageGroup.layout();
+
+        pages.push({
+          elements: pageGroup.elements,
+          width: DEFAULT_PAGE_WIDTH,
+          height: DEFAULT_PAGE_HEIGHT,
+          margins: clone(margins),
+        });
+
+        pageGroup = new LineElementFlexGroup({ box: clone(pageContentBox), axis: "vertical" });
+        pageGroup.addElement(line);
+      }
+
+      line = new Line(new Box(0, 0, contentWidth, 0));
+      line.addElement(measure, { factor: measureToLayOut.chords.length });
+      line.addBarLine();
+    }
+  }
+
+  if (line.elements.length > 0) {
+    line.layout();
+    pageGroup.addElement(line);
+  } else {
+    pageGroup.popElement();
+  }
+
+  if (pageGroup.elements.length > 0) {
+    pageGroup.layout(false);
+    pages.push({
+      elements: pageGroup.elements,
+      width: DEFAULT_PAGE_WIDTH,
+      height: DEFAULT_PAGE_HEIGHT,
+      margins: clone(margins),
+    });
+  }
+
+  return { part, pages };
+}
+
+function layOutPartHeader(
+  pageGroup: LineElementFlexGroup,
+  score: notation.Score,
+  part: notation.Part,
+  contentWidth: number
+) {
   // Lay out the composition title, composer, etc
   if (score.title) {
     const height = 4 * STAFF_LINE_HEIGHT;
@@ -103,71 +174,4 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
       );
     }
   }
-
-  const pages: Page[] = [];
-  let line = new Line(new Box(0, 0, contentWidth, 0));
-
-  // TODO: Ideally, the bottom of the last line lines up with the bottom of the content box of the page. We should iterate
-  //       over the lines and scale the space between them so that that happens. Basically, a flex + flex-col layout.
-
-  for (const measureToLayOut of measures) {
-    const measure: Measure = new MeasureLayout(part, measureToLayOut);
-
-    // Determine if we need to be on a new line.
-    //
-    // When "committing" the current line, it may be too large to fit on the current page, in which case we'll also
-    // start a new page.
-
-    if (line.tryAddElement(measure, { factor: measureToLayOut.chords.length })) {
-      line.addBarLine();
-    } else {
-      line.layout();
-
-      // TODO "min space between" in flex group
-      if (pageGroup.elements.length > 0) {
-        pageGroup.addElement({
-          type: "Space",
-          box: new Box(0, 0, LINE_MARGIN, LINE_MARGIN),
-        });
-      }
-
-      if (!pageGroup.tryAddElement(line, { factor: null })) {
-        pageGroup.popElement(); // remove spacer we just added above
-        pageGroup.layout();
-
-        pages.push({
-          elements: pageGroup.elements,
-          width: DEFAULT_PAGE_WIDTH,
-          height: DEFAULT_PAGE_HEIGHT,
-          margins: clone(margins),
-        });
-
-        pageGroup = new LineElementFlexGroup({ box: clone(pageContentBox), axis: "vertical" });
-        pageGroup.addElement(line);
-      }
-
-      line = new Line(new Box(0, 0, contentWidth, 0));
-      line.addElement(measure, { factor: measureToLayOut.chords.length });
-      line.addBarLine();
-    }
-  }
-
-  if (line.elements.length > 0) {
-    line.layout();
-    pageGroup.addElement(line);
-  } else {
-    pageGroup.popElement();
-  }
-
-  if (pageGroup.elements.length > 0) {
-    pageGroup.layout(false);
-    pages.push({
-      elements: pageGroup.elements,
-      width: DEFAULT_PAGE_WIDTH,
-      height: DEFAULT_PAGE_HEIGHT,
-      margins: clone(margins),
-    });
-  }
-
-  return { part, pages };
 }
