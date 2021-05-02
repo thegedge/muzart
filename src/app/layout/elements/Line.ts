@@ -103,15 +103,13 @@ export class Line extends Group<LineElement> {
 
     this.addIntraMeasureAboveStaffDecorations();
 
-    const leftEdges = this.gridLayoutElements().map(({ element, measure }) =>
-      measure && element ? measure.box.x + element.box.x : 0
-    );
-    this.aboveStaffLayout.setLeftEdges(leftEdges);
+    const edges = this.gridLayoutElements().map(({ element, measure }) => measure.box.x + element.box.x);
+    this.aboveStaffLayout.setRightEdges(edges);
     this.aboveStaffLayout.layout();
   }
 
   private addInterMeasureStaffDecorations<T>(
-    predicate: (chord: notation.Chord) => T extends undefined ? never : T | undefined,
+    predicate: (chord: notation.Chord) => T | undefined,
     elementGenerator: (value: T) => Text | DashedLineText | Space
   ) {
     // TODO the endColumn goes to the end of the chord box, but we probably only want it to go to the end of part of the chord
@@ -121,14 +119,14 @@ export class Line extends Group<LineElement> {
     let startIndex: number | undefined;
     let endIndex = 0;
     this.gridLayoutElements().forEach(({ element }, index) => {
-      if (!element || element.type !== "Chord") {
+      if (element.type !== "Chord") {
         return;
       }
 
       const newPredicateValue = predicate(element.chord);
       if (newPredicateValue) {
         if (isUndefined(startIndex)) {
-          startIndex = index;
+          startIndex = index + 1;
           predicateValue = newPredicateValue;
         }
       } else if (isNumber(startIndex)) {
@@ -140,7 +138,7 @@ export class Line extends Group<LineElement> {
         predicateValue = undefined;
       }
 
-      endIndex = index;
+      endIndex = index + 1;
     });
 
     if (isNumber(startIndex)) {
@@ -163,18 +161,13 @@ export class Line extends Group<LineElement> {
 
     let firstMeasure = true;
     for (const measureElements of Object.values(elementsByMeasure)) {
-      const measureStartColumn = minMap(measureElements, ({ index }) => index) || 0;
-      const measureElement = measureElements[0].measure;
-      if (!measureElement) {
-        continue;
-      }
-
-      const measure = measureElement.measure;
+      const measureStartColumn = minMap(measureElements, ({ index }) => index + 1) ?? 0;
+      const measure = measureElements[0].measure.measure;
 
       this.aboveStaffLayout.addElement(
         {
           type: "Text",
-          align: "center",
+          align: firstMeasure ? "left" : "center",
           box: new Box(0, 0, numberSize, numberSize),
           size: numberSize,
           value: measure.number.toString(),
@@ -185,19 +178,19 @@ export class Line extends Group<LineElement> {
         },
         {
           mustBeBottomRow: true,
-          startColumn: Math.max(0, measureStartColumn - 1),
-          endColumn: Math.max(0, measureStartColumn - (firstMeasure ? 1 : 0)),
+          startColumn: measureStartColumn - 1,
+          endColumn: measureStartColumn,
         }
       );
 
       for (const { element, index } of measureElements) {
-        if (!element || element.type !== "Chord") {
+        if (element.type !== "Chord") {
           continue;
         }
 
         const constraint: GridConstraint = {
-          startColumn: index,
-          endColumn: index,
+          startColumn: index + 1,
+          endColumn: index + 1,
         };
 
         if (element.chord.text) {
@@ -255,8 +248,8 @@ export class Line extends Group<LineElement> {
             },
           },
           {
-            startColumn: Math.max(0, measureStartColumn - 1),
-            endColumn: measureStartColumn + 100,
+            startColumn: measureStartColumn,
+            endColumn: measureStartColumn + 1,
           }
         );
 
@@ -330,9 +323,12 @@ export class Line extends Group<LineElement> {
 
   /**
    * Get the elements that influence the grid layout used for above staff decorations.
+   *
+   * Note that these establish the right edges of the columns. That means that the column in the grid group that corresponds
+   * to the element in the array we return is actually one more than the index of that element.
    */
   private gridLayoutElements() {
-    const elements: { element?: Chord | Space | Rest; measure?: Measure }[] = [{}];
+    const elements = [];
     for (const measure of this.staffLayout.elements) {
       if (measure.type !== "Measure") {
         continue;

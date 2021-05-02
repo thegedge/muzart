@@ -1,4 +1,4 @@
-import { every, find, last, partition, range, zip } from "lodash";
+import { every, find, partition, sum, zip } from "lodash";
 import { HasBox } from "../types";
 import { Group } from "./Group";
 import { MaybeLayout } from "./types";
@@ -19,7 +19,8 @@ export interface Constraint {
  */
 export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
   private constraints: Constraint[] = [];
-  private edges: number[] = [];
+  private widths: ReadonlyArray<number> = [];
+  private leftEdges: ReadonlyArray<number> = [];
 
   constructor(private spacing = 0) {
     super();
@@ -36,12 +37,37 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
   }
 
   /**
-   * Set the x positions of the left edge for each cell in the grid.
+   * Set up the columns by specifying the widths of each.
    *
-   * @param edges edge positions
+   * @param widths column widths array
    */
-  setLeftEdges(edges: number[]) {
-    this.edges = Array.from(edges);
+  setColumnWidths(widths: ReadonlyArray<number>) {
+    this.widths = widths;
+
+    let previousX = 0;
+    this.leftEdges = widths.map((width) => {
+      const x = previousX;
+      previousX += width;
+      return x;
+    });
+  }
+
+  /**
+   * Set up the columns by specifying the right edges of each.
+   *
+   * @param edges edges array
+   */
+  setRightEdges(edges: ReadonlyArray<number>) {
+    const leftEdges = edges.slice(0, -1);
+    leftEdges.unshift(0);
+    this.leftEdges = leftEdges;
+
+    let prevX = 0;
+    this.widths = edges.map((x) => {
+      const width = x - prevX;
+      prevX = x;
+      return width;
+    });
   }
 
   /**
@@ -63,7 +89,7 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
 
     this.box.x = 0;
     this.box.y = 0;
-    this.box.width = last(this.edges) || 0;
+    this.box.width = sum(this.widths);
     this.box.height = y - this.spacing;
   }
 
@@ -77,15 +103,15 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
     });
 
     const newRow = () => ({
-      columnAvailability: range(this.edges.length).map(() => true),
+      columnAvailability: new Array(this.widths.length).fill(true),
       elements: [] as T[],
     });
     const rows = [newRow()];
 
     // Lay out everything that isn't the bottom row
     for (const [element, constraint] of everythingElse) {
-      element.box.x = this.edges[constraint.startColumn];
-      element.box.width = this.edges[constraint.endColumn + 1] - element.box.x;
+      element.box.x = this.leftEdges[constraint.startColumn];
+      element.box.width = this.leftEdges[constraint.endColumn + 1] - element.box.x;
 
       if (element.layout) {
         element.layout();
@@ -110,14 +136,13 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
       rows.unshift(newRow());
 
       for (const [element, constraint] of mustBeBottomRow) {
-        element.box.x = this.edges[constraint.startColumn];
-        element.box.width = this.edges[constraint.endColumn + 1] - element.box.x;
+        element.box.x = this.leftEdges[constraint.startColumn];
+        element.box.width = this.leftEdges[constraint.endColumn + 1] - element.box.x;
 
         if (element.layout) {
           element.layout();
         }
 
-        rows[0].columnAvailability.fill(false, constraint.startColumn, constraint.endColumn + 1);
         rows[0].elements.push(element);
       }
     }
