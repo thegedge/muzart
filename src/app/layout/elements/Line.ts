@@ -111,6 +111,8 @@ export class Line extends Group<LineElement> {
       y += element.box.height;
     }
 
+    this.arcs.box.y = this.staffLayout.box.y;
+
     this.box.width = max(map(this.elements, "box.width"));
     this.box.height = y;
   }
