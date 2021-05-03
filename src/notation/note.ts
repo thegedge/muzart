@@ -45,6 +45,7 @@ export interface NoteOptions {
   placement?: Placement;
   deadNote?: boolean;
   tie?: Tie;
+  letRing?: boolean;
   ghost?: boolean;
   harmonic?: HarmonicStyle;
   accent?: AccentStyle;
@@ -58,6 +59,7 @@ export class Note {
   readonly value!: NoteValue;
   readonly placement?: Placement;
   public tie?: Tie;
+  readonly letRing?: boolean;
   readonly deadNote?: boolean;
   readonly ghost?: boolean;
   readonly harmonic?: HarmonicStyle;

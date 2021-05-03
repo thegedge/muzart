@@ -408,7 +408,7 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
   }
 
   if (hasNoteEffects) {
-    const [_blank1, _blank2, _blank3, hasGraceNote, _letRing, _hasSlide_v3, _isHammerOnPullOff, hasBend] = bits(
+    const [_blank1, _blank2, _blank3, hasGraceNote, letRing, _hasSlide_v3, _isHammerOnPullOff, hasBend] = bits(
       cursor.nextNumber(NumberType.Uint8)
     );
 
@@ -423,6 +423,7 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
       isStaccato,
     ] = bits(cursor.nextNumber(NumberType.Uint8));
 
+    options.letRing = letRing;
     options.palmMute = isPalmMute;
     options.staccato = isStaccato;
 

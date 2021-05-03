@@ -144,7 +144,7 @@ export class Line extends Group<LineElement> {
       })
     );
 
-    this.addInterMeasureStaffDecorations<string>(
+    this.addInterMeasureStaffDecorations(
       (chord: notation.Chord) => {
         return find(chord.notes, "harmonic")?.harmonicString;
       },
@@ -153,6 +153,16 @@ export class Line extends Group<LineElement> {
         box: new Box(0, 0, baseSize, baseSize),
         size: baseSize,
         value: harmonicString,
+      })
+    );
+
+    this.addInterMeasureStaffDecorations(
+      (chord: notation.Chord) => some(chord.notes, "letRing"),
+      (_letRing: boolean, amount: number) => ({
+        type: amount > 1 ? "DashedLineText" : "Text",
+        box: new Box(0, 0, baseSize, baseSize),
+        size: baseSize,
+        value: "let ring",
       })
     );
 
@@ -378,9 +388,6 @@ export class Line extends Group<LineElement> {
     return element.box.x + 0.4 * STAFF_LINE_HEIGHT;
   }
 
-  // TODO there's a lot of "behavioural coupling" between these methods. For example, `layOutBeams` is aware of how tall
-  //      stems are, and similarly for `layOutDots`.
-
   /**
    * Get the elements that influence the grid layout used for above staff decorations.
    *
@@ -476,6 +483,9 @@ export class Line extends Group<LineElement> {
       }
     });
   }
+
+  // TODO there's a lot of "behavioural coupling" between these methods. For example, `layOutBeams` is aware of how tall
+  //      stems are, and similarly for `layOutDots`.
 
   private layOutStems(measureBox: Box, beatElements: (Chord | Rest)[]) {
     for (const beatElement of beatElements) {
