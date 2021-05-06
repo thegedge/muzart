@@ -6,7 +6,7 @@ import { svgPositionTransform, svgSizeProps } from "../utils/svg";
 export function BoxGroup(props: {
   node: HasBox & { type?: string };
   scale?: number;
-  forceDebug?: true;
+  forceDebug?: boolean;
   children?: React.ReactNode;
 }) {
   const debugParams = useDebugRectParams(props.node.type, props.forceDebug);

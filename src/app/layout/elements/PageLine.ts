@@ -61,7 +61,7 @@ export class PageLine extends Group<LineElement> {
 
     tabGroup.addElement({
       type: "Space",
-      box: new Box(0, 0, 1, 1),
+      box: new Box(0, 0, tabWidth, LINE_STROKE_WIDTH),
     });
 
     tabGroup.addElement(
@@ -102,7 +102,7 @@ export class PageLine extends Group<LineElement> {
 
     tabGroup.addElement({
       type: "Space",
-      box: new Box(0, 0, 1, 1),
+      box: new Box(0, 0, tabWidth, LINE_STROKE_WIDTH),
     });
 
     // Num staff lines doesn't change, so we can do this once and call it a day

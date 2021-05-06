@@ -1,4 +1,4 @@
-import { defaults, isNull, last, maxBy, sum, zip } from "lodash";
+import { defaults, isNull, last, sum, zip } from "lodash";
 import { HasBox } from "../types";
 import Box from "../utils/Box";
 import { MaybeLayout } from "./types";
@@ -37,9 +37,9 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
   private defaultFlexProps: FlexProps;
   private flexProps: FlexProps[] = [];
 
-  private startAttribute: ("x" | "y") & keyof T["box"];
-  private endAttribute: ("right" | "bottom") & keyof T["box"];
-  private dimensionAttribute: ("width" | "height") & keyof T["box"];
+  private startAttribute: "x" | "y";
+  private endAttribute: "right" | "bottom";
+  private dimensionAttribute: "width" | "height";
 
   constructor(config: FlexGroupConfig) {
     const { defaultFlexProps, axis } = defaults(config, { axis: "horizontal" });
@@ -72,8 +72,7 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
         return false;
       }
 
-      // TODO figure out how to make TypeScript happy here without the `as any`
-      (element.box as any)[this.startAttribute] = lastElement.box[this.endAttribute];
+      element.box[this.startAttribute] = lastElement.box[this.endAttribute];
     }
 
     this.elements.push(element);
@@ -84,7 +83,7 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
   addElement(element: T, flexProps?: Partial<FlexProps>) {
     const lastElement = last(this.elements);
     if (lastElement) {
-      (element.box as any)[this.startAttribute] = lastElement.box[this.endAttribute];
+      element.box[this.startAttribute] = lastElement.box[this.endAttribute];
     }
     this.elements.push(element);
     this.flexProps.push(defaults({}, flexProps, this.defaultFlexProps));
@@ -103,25 +102,32 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
   public layout(stretch = true) {
     const zipped = zip(this.elements, this.flexProps) as [T, FlexProps][];
     const stretchable = zipped.filter((v) => !isNull(v[1].fixed));
-    const farthest = maxBy(stretchable, `[0].box.${this.endAttribute}`);
-    if (!farthest) {
-      return;
-    }
 
-    const extraSpace = stretch ? this.box[this.dimensionAttribute] - farthest[0].box[this.endAttribute] : 0;
-    const factorsSum = sum(stretchable.map((v) => v[1].factor || 0));
+    let factorsSum = 1;
+    let extraSpace = 0;
+    if (stretch && stretchable.length > 0) {
+      factorsSum = sum(stretchable.map((v) => v[1].factor || 0));
+      if (factorsSum == 0) {
+        factorsSum = 1;
+      }
+
+      const lastElement = last(this.elements);
+      if (lastElement) {
+        extraSpace = Math.max(0, this.box[this.dimensionAttribute] - lastElement.box[this.endAttribute]);
+      }
+    }
 
     // Casting to any in here because we can't assign to box properties this way
     let start = 0;
     for (const [element, props] of stretchable) {
-      (element.box as any)[this.startAttribute] = start;
-
+      element.box[this.startAttribute] = start;
       if (props.factor) {
-        (element.box as any)[this.dimensionAttribute] += extraSpace * (props.factor / factorsSum);
+        element.box[this.dimensionAttribute] += extraSpace * (props.factor / factorsSum);
         if (element.layout) {
           element.layout();
         }
       }
+
       start += element.box[this.dimensionAttribute];
     }
   }
