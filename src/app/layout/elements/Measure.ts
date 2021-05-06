@@ -1,4 +1,5 @@
 import * as notation from "../../../notation";
+import { NoteValue } from "../../../notation";
 import { STAFF_LINE_HEIGHT } from "../constants";
 import { FlexGroup } from "../layouts/FlexGroup";
 import { Chord, Inches, Rest, Space } from "../types";
@@ -11,8 +12,6 @@ const QUARTER_NOTE_WIDTH: Inches = 0.25;
 export class Measure extends FlexGroup<Chord | Rest | Space> {
   readonly type = "Measure";
 
-  private chordElements: (Chord | Rest)[] = [];
-
   constructor(readonly part: notation.Part, readonly measure: notation.Measure) {
     super({ box: new Box(0, 0, 0, 0), axis: "horizontal" });
 
@@ -23,45 +22,46 @@ export class Measure extends FlexGroup<Chord | Rest | Space> {
 
     this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: spacerWidth });
 
+    // TODO if just one rest, lay out differently (centered?)
+
     for (const chord of measure.chords) {
-      const chordLayout = layOutChord(chord, part.lineCount);
-      chordLayout.box.x = this.box.width;
-      this.box.width += chordLayout.box.width;
-      this.addElement(chordLayout, { factor: chordLayout.box.width });
-      this.chordElements.push(chordLayout);
+      const width = widthForValue(chord.value);
+      if (chord.rest) {
+        this.addElement({
+          type: "Rest",
+          box: new Box(0, 2.5 * STAFF_LINE_HEIGHT, width, (part.lineCount - 2.5) * STAFF_LINE_HEIGHT),
+          chord,
+        });
+      } else {
+        const chordLayout = layOutChord(chord);
+        this.addElement(chordLayout, { factor: null });
+        this.box.width += chordLayout.box.width;
+      }
+
+      this.addElement({ type: "Space", box: new Box(0, 0, width, 1) }, { factor: width });
+      this.box.width += width;
     }
 
     this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: spacerWidth });
     this.box.width += spacerWidth;
   }
-
-  chordX(beat: number): number {
-    const chord = this.chordElements[beat];
-    return chord.box?.x || 0;
-  }
 }
 
-function layOutChord(chord: notation.Chord, numStrings: number): Chord | Rest {
+function widthForValue(value: NoteValue) {
   // TODO this 3 is kind of arbitrary, make it configurable?
-  const width = Math.max(MIN_NOTE_WIDTH, QUARTER_NOTE_WIDTH * (3 * chord.value.toDecimal()));
+  return Math.max(MIN_NOTE_WIDTH, QUARTER_NOTE_WIDTH * (3 * value.toDecimal()));
+}
 
-  if (chord.rest) {
-    return {
-      type: "Rest",
-      box: new Box(0, 2.5 * STAFF_LINE_HEIGHT, width, (numStrings - 2.5) * STAFF_LINE_HEIGHT),
-      chord,
-    };
-  }
-
+function layOutChord(chord: notation.Chord): Chord | Rest {
+  const maxNoteChars = maxMap(chord.notes, (note) => note.toString().length) || 1;
+  const noteWidth = STAFF_LINE_HEIGHT * (0.5 + 0.3 * maxNoteChars);
   const chordLayout: Chord = {
     type: "Chord",
-    box: new Box(0, 0, width, STAFF_LINE_HEIGHT),
+    box: new Box(0, 0, noteWidth, STAFF_LINE_HEIGHT),
     chord,
     notes: [],
   };
 
-  const maxNoteChars = maxMap(chord.notes, (note) => note.toString().length) || 1;
-  const noteWidth = STAFF_LINE_HEIGHT * (0.5 + 0.3 * maxNoteChars);
   for (const note of chord.notes) {
     const noteY = note.placement ? (note.placement.string - 1) * STAFF_LINE_HEIGHT : 0;
 
