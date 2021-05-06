@@ -1,10 +1,10 @@
 import { clone } from "lodash";
 import * as notation from "../../notation";
 import { DEFAULT_MARGINS, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH, LINE_MARGIN, STAFF_LINE_HEIGHT } from "./constants";
-import { Line } from "./elements/Line";
 import { Measure, Measure as MeasureLayout } from "./elements/Measure";
-import { LineElementFlexGroup } from "./layouts/FlexGroup";
-import { Page, Part, Score, Text } from "./types";
+import { PageLine } from "./elements/PageLine";
+import { FlexGroupElement } from "./layouts/FlexGroup";
+import { Page, PageElement, Part, Score, Text } from "./types";
 import Box from "./utils/Box";
 
 /**
@@ -31,10 +31,10 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   const pageContentBox = new Box(margins.left, margins.top, contentWidth, contentHeight);
   const pages: Page[] = [];
 
-  let pageGroup = new LineElementFlexGroup({ box: clone(pageContentBox), axis: "vertical" });
+  let pageGroup = new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical" });
   layOutPartHeader(pageGroup, score, part, contentWidth);
 
-  let line = new Line(new Box(0, 0, contentWidth, 0), part.lineCount);
+  let line = new PageLine(new Box(0, 0, contentWidth, 0), part.lineCount);
   for (const measureToLayOut of measures) {
     const measure: Measure = new MeasureLayout(part, measureToLayOut);
 
@@ -67,11 +67,11 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
           margins: clone(margins),
         });
 
-        pageGroup = new LineElementFlexGroup({ box: clone(pageContentBox), axis: "vertical" });
+        pageGroup = new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical" });
         pageGroup.addElement(line);
       }
 
-      line = new Line(new Box(0, 0, contentWidth, 0), part.lineCount);
+      line = new PageLine(new Box(0, 0, contentWidth, 0), part.lineCount);
       line.addElement(measure, { factor: measureToLayOut.chords.length });
       line.addBarLine();
     }
@@ -98,7 +98,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
 }
 
 function layOutPartHeader(
-  pageGroup: LineElementFlexGroup,
+  pageGroup: FlexGroupElement<PageElement>,
   score: notation.Score,
   part: notation.Part,
   contentWidth: number

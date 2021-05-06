@@ -1,12 +1,12 @@
 import React from "react";
 import { LineElement, Wrapped } from "../../layout";
 import { svgPositionTransform } from "../utils/svg";
-import LineElementComponent from "./LineElement";
+import ScoreElement from "./ScoreElement";
 
 export function WrappedElement(props: { node: Wrapped<LineElement> }) {
   return (
     <g transform={svgPositionTransform(props.node)}>
-      <LineElementComponent element={props.node.element} />
+      <ScoreElement element={props.node.element} />
     </g>
   );
 }

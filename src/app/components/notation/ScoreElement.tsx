@@ -1,18 +1,17 @@
 import React from "react";
-import { LineElement } from "../../layout";
+import { LineElement, LINE_STROKE_WIDTH, PageElement } from "../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
 import { DashedLineText } from "./DashedLineText";
 import { Dot } from "./Dot";
-import { LineGroup } from "./LineGroup";
 import { Measure } from "./Measure";
 import { Stem } from "./Stem";
 import { TextElement } from "./TextElement";
 import { WrappedElement } from "./WrappedElement";
 
-export default function LineElementComponent(props: { element: LineElement }): React.ReactElement {
+export default function ScoreElement(props: { element: PageElement | LineElement }): React.ReactElement {
   switch (props.element.type) {
     case "Arc":
       return <Arc element={props.element} />;
@@ -25,7 +24,24 @@ export default function LineElementComponent(props: { element: LineElement }): R
     case "Dot":
       return <Dot node={props.element} />;
     case "Group":
-      return <LineGroup node={props.element} />;
+      return (
+        <BoxGroup node={props.element}>
+          {props.element.elements.map((e, index) => (
+            <ScoreElement key={index} element={e} />
+          ))}
+        </BoxGroup>
+      );
+    case "Line":
+      return (
+        <line
+          x1={props.element.box.x}
+          y1={props.element.box.y}
+          x2={props.element.box.right}
+          y2={props.element.box.bottom}
+          strokeWidth={LINE_STROKE_WIDTH}
+          stroke={props.element.color}
+        />
+      );
     case "Measure":
       return <Measure measure={props.element} />;
     case "Space":

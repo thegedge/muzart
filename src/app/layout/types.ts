@@ -27,8 +27,10 @@ export interface Part {
   pages: Page[];
 }
 
+export type PageElement = Space | Text | Group;
+
 export interface Page {
-  elements: LineElement[];
+  elements: PageElement[];
   margins: Margins;
   width: Inches;
   height: Inches;
@@ -41,6 +43,7 @@ export type LineElement =
   | DashedLineText
   | Dot
   | Group
+  | Line
   | Measure
   | Space
   | Stem
@@ -63,9 +66,12 @@ export interface Group {
   type: "Group";
   elements: LineElement[];
   box: Box;
+}
 
-  // TODO make line a special thing, so that we don't need this here
-  numStaffLines?: number;
+export interface Line {
+  type: "Line";
+  box: Box;
+  color: string;
 }
 
 export interface Space {

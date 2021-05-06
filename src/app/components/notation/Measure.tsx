@@ -2,8 +2,8 @@ import React from "react";
 import * as layout from "../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 import { Chord } from "./Chord";
-import LineElementComponent from "./LineElement";
 import { Rest } from "./Rest";
+import ScoreElement from "./ScoreElement";
 
 export function Measure(props: { measure: layout.Measure }) {
   // TODO index keys aren't super useful here, once we support editing
@@ -16,7 +16,7 @@ export function Measure(props: { measure: layout.Measure }) {
           case "Rest":
             return <Rest key={index} node={element} />;
           default:
-            return <LineElementComponent key={index} element={element} />;
+            return <ScoreElement key={index} element={element} />;
         }
       })}
     </BoxGroup>

@@ -1,5 +1,5 @@
 import { defaults, isNull, last, maxBy, sum, zip } from "lodash";
-import { HasBox, LineElement } from "../types";
+import { HasBox } from "../types";
 import Box from "../utils/Box";
 import { MaybeLayout } from "./types";
 
@@ -19,9 +19,6 @@ export type FlexGroupConfig = {
   box?: Box;
   defaultFlexProps?: Partial<FlexProps>;
   axis?: "vertical" | "horizontal";
-
-  /** If set, and the the axis is "horizontal", renderers should draw the given number of staff lines */
-  numStaffLines?: number;
 };
 
 /**
@@ -34,7 +31,7 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
   // TODO "space between" option
 
   readonly elements: T[] = [];
-  readonly numStaffLines?: number;
+
   public box: Box;
 
   private defaultFlexProps: FlexProps;
@@ -45,7 +42,7 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
   private dimensionAttribute: ("width" | "height") & keyof T["box"];
 
   constructor(config: FlexGroupConfig) {
-    const { defaultFlexProps, axis, numStaffLines } = defaults(config, { axis: "horizontal" });
+    const { defaultFlexProps, axis } = defaults(config, { axis: "horizontal" });
 
     this.box = config.box || new Box(0, 0, 0, 0);
     this.defaultFlexProps = defaults(defaultFlexProps, { factor: 1, fixed: false });
@@ -57,7 +54,6 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
       this.startAttribute = "x";
       this.endAttribute = "right";
       this.dimensionAttribute = "width";
-      this.numStaffLines = numStaffLines;
     }
   }
 
@@ -104,7 +100,7 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
    *
    * @param stretch if `true`, stretch relevant elements to fit the layout
    */
-  public layout(stretch: boolean = true) {
+  public layout(stretch = true) {
     const zipped = zip(this.elements, this.flexProps) as [T, FlexProps][];
     const stretchable = zipped.filter((v) => !isNull(v[1].fixed));
     const farthest = maxBy(stretchable, `[0].box.${this.endAttribute}`);
@@ -131,6 +127,6 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
   }
 }
 
-export class LineElementFlexGroup extends FlexGroup<LineElement> {
+export class FlexGroupElement<T extends MaybeLayout<HasBox>> extends FlexGroup<T> {
   readonly type = "Group";
 }

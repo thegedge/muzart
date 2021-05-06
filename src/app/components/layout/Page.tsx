@@ -1,6 +1,6 @@
 import React from "react";
 import { Page } from "../../layout";
-import LineElementComponent from "../notation/LineElement";
+import ScoreElement from "../notation/ScoreElement";
 
 export default function Page(props: { page: Page }) {
   return (
@@ -8,7 +8,7 @@ export default function Page(props: { page: Page }) {
       <rect width={props.page.width} height={props.page.height} fill="#ffffff" style={{ filter: "url(#pageShadow)" }} />
       <g transform={`translate(${props.page.margins.left} ${props.page.margins.top})`}>
         {props.page.elements.map((e, index) => (
-          <LineElementComponent key={index} element={e} />
+          <ScoreElement key={index} element={e} />
         ))}
       </g>
     </>

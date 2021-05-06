@@ -1,31 +1,33 @@
-import { clone, find, first, groupBy, isNumber, isUndefined, map, max, some } from "lodash";
+import { clone, find, first, groupBy, isNumber, isUndefined, map, max, range, some } from "lodash";
 import * as notation from "../../../notation";
 import { AccentStyle, NoteValueName } from "../../../notation";
 import { BEAM_HEIGHT, DOT_SIZE, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../constants";
 import { AnchoredGroup } from "../layouts/AnchoredGroup";
-import { FlexProps, LineElementFlexGroup } from "../layouts/FlexGroup";
+import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
 import { Constraint as GridConstraint, GridGroup } from "../layouts/GridGroup";
 import { Group } from "../layouts/Group";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
-import { Arc, Beam, Chord, DashedLineText, Dot, LineElement, Measure, Rest, Space, Stem, Text } from "../types";
+import { Arc, Beam, Chord, DashedLineText, Dot, Line, LineElement, Measure, Rest, Space, Stem, Text } from "../types";
 import { minMap, runs } from "../utils";
 import Box from "../utils/Box";
 
-export class Line extends Group<LineElement> {
+export class PageLine extends Group<LineElement> {
   private aboveStaffLayout: GridGroup<Text | DashedLineText | Space>;
-  private staffLayout: LineElementFlexGroup;
+  private staffLayout: FlexGroupElement<LineElement>;
   private belowStaffLayout: NonNegativeGroup<Stem | Beam | Dot>;
 
   // TODO find a better place for this
   private arcs: AnchoredGroup<Arc, Measure | Chord>;
 
-  constructor(box: Box, numStaffLines = 6) {
+  private staffLines: Line[] = [];
+
+  constructor(box: Box, private numStaffLines = 6) {
     super(box);
 
     this.arcs = new AnchoredGroup();
 
     this.aboveStaffLayout = new GridGroup(STAFF_LINE_HEIGHT * 0.25);
-    this.staffLayout = new LineElementFlexGroup({ box: clone(box), numStaffLines });
+    this.staffLayout = new FlexGroupElement<LineElement>({ box: clone(box) });
     this.belowStaffLayout = new NonNegativeGroup();
 
     this.initializeElements();
@@ -39,7 +41,7 @@ export class Line extends Group<LineElement> {
           0,
           0.5 * STAFF_LINE_HEIGHT,
           LINE_STROKE_WIDTH,
-          ((this.staffLayout.numStaffLines || 6) - 1) * STAFF_LINE_HEIGHT
+          ((this.numStaffLines || 6) - 1) * STAFF_LINE_HEIGHT
         ),
         strokeSize: LINE_STROKE_WIDTH,
       },
@@ -48,15 +50,12 @@ export class Line extends Group<LineElement> {
   }
 
   private initializeElements() {
-    this.elements = [this.aboveStaffLayout, this.staffLayout, this.belowStaffLayout, this.arcs];
-
     this.addBarLine();
 
-    const numStaffLines = this.staffLayout.numStaffLines || 6;
-    const tabTextSize = 0.25 * numStaffLines * STAFF_LINE_HEIGHT;
+    const tabTextSize = 0.25 * this.numStaffLines * STAFF_LINE_HEIGHT;
     const tabWidth = 3 * STAFF_LINE_HEIGHT;
-    const tabGroup = new LineElementFlexGroup({
-      box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, tabWidth, STAFF_LINE_HEIGHT * (numStaffLines - 1)),
+    const tabGroup = new FlexGroupElement<Text | Space>({
+      box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, tabWidth, STAFF_LINE_HEIGHT * (this.numStaffLines - 1)),
       axis: "vertical",
     });
 
@@ -110,6 +109,19 @@ export class Line extends Group<LineElement> {
     tabGroup.layout();
 
     this.addElement(tabGroup, { factor: null });
+
+    this.staffLines = range(this.numStaffLines).map((_index) => ({
+      type: "Line",
+      box: new Box(0, 0, 0, 0),
+      color: "#555555",
+    }));
+
+    this.elements = (this.staffLines as LineElement[]).concat([
+      this.aboveStaffLayout,
+      this.staffLayout,
+      this.belowStaffLayout,
+      this.arcs,
+    ]);
   }
 
   addElement(element: LineElement, flexProps?: Partial<FlexProps>) {
@@ -121,7 +133,7 @@ export class Line extends Group<LineElement> {
   }
 
   layout() {
-    this.staffLayout.layout(true);
+    this.staffLayout.layout();
     this.staffLayout.box.height = max(map(this.staffLayout.elements, "box.height"));
     this.layOutArcs();
 
@@ -133,16 +145,17 @@ export class Line extends Group<LineElement> {
     this.addBelowStaffElements();
 
     // Finalize positions
-    let y = 0;
-    for (const element of this.elements.slice(0, -1)) {
-      element.box.y = y;
-      y += element.box.height;
-    }
-
+    this.staffLayout.box.y = this.aboveStaffLayout.box.bottom;
+    this.belowStaffLayout.box.y = this.staffLayout.box.bottom;
     this.arcs.box.y = this.staffLayout.box.y;
 
+    this.staffLines.forEach((line, index) => {
+      line.box.width = this.box.width;
+      line.box.y = this.staffLayout.box.y + (index + 0.5) * STAFF_LINE_HEIGHT;
+    });
+
     this.box.width = max(map(this.elements, "box.width"));
-    this.box.height = y;
+    this.box.height = this.belowStaffLayout.box.bottom;
   }
 
   private addBelowStaffElements() {

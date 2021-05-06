@@ -3,7 +3,7 @@ import Box from "../utils/Box";
 import { MaybeLayout } from "./types";
 
 export abstract class Group<T extends MaybeLayout<HasBox>> {
-  readonly type: "Group" = "Group";
+  readonly type = "Group";
 
   public elements: T[] = [];
 
