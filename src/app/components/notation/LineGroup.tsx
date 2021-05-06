@@ -10,8 +10,8 @@ const STAFF_LINE_COLOR = "#555555";
 export function LineGroup(props: { node: layout.Group }) {
   return (
     <BoxGroup node={props.node}>
-      {props.node.drawStaffLines &&
-        range(6).map((staffLineIndex) => (
+      {props.node.numStaffLines &&
+        range(props.node.numStaffLines).map((staffLineIndex) => (
           <line
             key={staffLineIndex}
             x1={0}

@@ -20,8 +20,8 @@ export type FlexGroupConfig = {
   defaultFlexProps?: Partial<FlexProps>;
   axis?: "vertical" | "horizontal";
 
-  /** If true, and the the axis is "horizontal", renderers should draw staff lines */
-  drawStaffLines?: boolean;
+  /** If set, and the the axis is "horizontal", renderers should draw the given number of staff lines */
+  numStaffLines?: number;
 };
 
 /**
@@ -34,7 +34,7 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
   // TODO "space between" option
 
   readonly elements: T[] = [];
-  readonly drawStaffLines: boolean = false;
+  readonly numStaffLines?: number;
   public box: Box;
 
   private defaultFlexProps: FlexProps;
@@ -45,7 +45,7 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
   private dimensionAttribute: ("width" | "height") & keyof T["box"];
 
   constructor(config: FlexGroupConfig) {
-    const { defaultFlexProps, axis, drawStaffLines } = defaults(config, { axis: "horizontal" });
+    const { defaultFlexProps, axis, numStaffLines } = defaults(config, { axis: "horizontal" });
 
     this.box = config.box || new Box(0, 0, 0, 0);
     this.defaultFlexProps = defaults(defaultFlexProps, { factor: 1, fixed: false });
@@ -57,7 +57,7 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
       this.startAttribute = "x";
       this.endAttribute = "right";
       this.dimensionAttribute = "width";
-      this.drawStaffLines = !!drawStaffLines;
+      this.numStaffLines = numStaffLines;
     }
   }
 

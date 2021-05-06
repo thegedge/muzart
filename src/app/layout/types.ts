@@ -63,7 +63,9 @@ export interface Group {
   type: "Group";
   elements: LineElement[];
   box: Box;
-  drawStaffLines?: boolean; // TODO :( find a better way
+
+  // TODO make line a special thing, so that we don't need this here
+  numStaffLines?: number;
 }
 
 export interface Space {

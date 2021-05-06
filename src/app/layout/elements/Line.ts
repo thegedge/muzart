@@ -19,13 +19,13 @@ export class Line extends Group<LineElement> {
   // TODO find a better place for this
   private arcs: AnchoredGroup<Arc, Measure | Chord>;
 
-  constructor(box: Box) {
+  constructor(box: Box, numStaffLines = 6) {
     super(box);
 
     this.arcs = new AnchoredGroup();
 
     this.aboveStaffLayout = new GridGroup(STAFF_LINE_HEIGHT * 0.25);
-    this.staffLayout = new LineElementFlexGroup({ box: clone(box), drawStaffLines: true }); // TODO eliminate drawStaffLines from here
+    this.staffLayout = new LineElementFlexGroup({ box: clone(box), numStaffLines });
     this.belowStaffLayout = new NonNegativeGroup();
 
     this.initializeElements();
@@ -35,7 +35,12 @@ export class Line extends Group<LineElement> {
     this.addElement(
       {
         type: "BarLine",
-        box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, LINE_STROKE_WIDTH, 5 * STAFF_LINE_HEIGHT),
+        box: new Box(
+          0,
+          0.5 * STAFF_LINE_HEIGHT,
+          LINE_STROKE_WIDTH,
+          ((this.staffLayout.numStaffLines || 6) - 1) * STAFF_LINE_HEIGHT
+        ),
         strokeSize: LINE_STROKE_WIDTH,
       },
       { factor: null }
@@ -47,41 +52,64 @@ export class Line extends Group<LineElement> {
 
     this.addBarLine();
 
-    const tabTextSize = (STAFF_LINE_HEIGHT * 4.5) / 3;
-    const tabWidth = tabTextSize * 2;
-    this.addElement(
+    const numStaffLines = this.staffLayout.numStaffLines || 6;
+    const tabTextSize = 0.25 * numStaffLines * STAFF_LINE_HEIGHT;
+    const tabWidth = 3 * STAFF_LINE_HEIGHT;
+    const tabGroup = new LineElementFlexGroup({
+      box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, tabWidth, STAFF_LINE_HEIGHT * (numStaffLines - 1)),
+      axis: "vertical",
+    });
+
+    tabGroup.addElement({
+      type: "Space",
+      box: new Box(0, 0, 1, 1),
+    });
+
+    tabGroup.addElement(
       {
-        type: "Group",
-        box: new Box(0, 0.75 * STAFF_LINE_HEIGHT, tabWidth, STAFF_LINE_HEIGHT * 5),
-        elements: [
-          {
-            type: "Text",
-            box: new Box(0, 0, tabWidth, tabTextSize),
-            align: "center",
-            size: tabTextSize,
-            value: "T",
-            style: { userSelect: "none" },
-          },
-          {
-            type: "Text",
-            box: new Box(0, 1 * tabTextSize, tabWidth, tabTextSize),
-            align: "center",
-            size: tabTextSize,
-            value: "A",
-            style: { userSelect: "none" },
-          },
-          {
-            type: "Text",
-            box: new Box(0, 2 * tabTextSize, tabWidth, tabTextSize),
-            align: "center",
-            size: tabTextSize,
-            value: "B",
-            style: { userSelect: "none" },
-          },
-        ],
+        type: "Text",
+        box: new Box(0, 0, tabWidth, tabTextSize),
+        align: "center",
+        size: tabTextSize,
+        value: "T",
+        style: { userSelect: "none" },
       },
       { factor: null }
     );
+
+    tabGroup.addElement(
+      {
+        type: "Text",
+        box: new Box(0, 0, tabWidth, tabTextSize),
+        align: "center",
+        size: tabTextSize,
+        value: "A",
+        style: { userSelect: "none" },
+      },
+      { factor: null }
+    );
+
+    tabGroup.addElement(
+      {
+        type: "Text",
+        box: new Box(0, 0, tabWidth, tabTextSize),
+        align: "center",
+        size: tabTextSize,
+        value: "B",
+        style: { userSelect: "none" },
+      },
+      { factor: null }
+    );
+
+    tabGroup.addElement({
+      type: "Space",
+      box: new Box(0, 0, 1, 1),
+    });
+
+    // Num staff lines doesn't change, so we can do this once and call it a day
+    tabGroup.layout();
+
+    this.addElement(tabGroup, { factor: null });
   }
 
   addElement(element: LineElement, flexProps?: Partial<FlexProps>) {

@@ -25,7 +25,6 @@ export function layout(score: notation.Score): Score {
 
 function layOutPart(score: notation.Score, part: notation.Part): Part {
   const measures = part.measures;
-
   const margins = DEFAULT_MARGINS;
   const contentWidth = DEFAULT_PAGE_WIDTH - margins.left - margins.right;
   const contentHeight = DEFAULT_PAGE_HEIGHT - margins.top - margins.bottom;
@@ -35,7 +34,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   let pageGroup = new LineElementFlexGroup({ box: clone(pageContentBox), axis: "vertical" });
   layOutPartHeader(pageGroup, score, part, contentWidth);
 
-  let line = new Line(new Box(0, 0, contentWidth, 0));
+  let line = new Line(new Box(0, 0, contentWidth, 0), part.lineCount);
   for (const measureToLayOut of measures) {
     const measure: Measure = new MeasureLayout(part, measureToLayOut);
 
@@ -72,7 +71,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
         pageGroup.addElement(line);
       }
 
-      line = new Line(new Box(0, 0, contentWidth, 0));
+      line = new Line(new Box(0, 0, contentWidth, 0), part.lineCount);
       line.addElement(measure, { factor: measureToLayOut.chords.length });
       line.addBarLine();
     }
