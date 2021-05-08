@@ -28,17 +28,16 @@ export class Measure extends FlexGroup<Chord | Rest | Space> {
       if (chord.rest) {
         this.addElement({
           type: "Rest",
-          box: new Box(0, 2.5 * STAFF_LINE_HEIGHT, width, (part.lineCount - 2.5) * STAFF_LINE_HEIGHT),
+          box: new Box(0, 0, width, part.lineCount * STAFF_LINE_HEIGHT),
           chord,
         });
+        this.box.width += width;
       } else {
         const chordLayout = layOutChord(chord);
         this.addElement(chordLayout, { factor: null });
-        this.box.width += chordLayout.box.width;
+        this.addElement({ type: "Space", box: new Box(0, 0, width, 1) }, { factor: width });
+        this.box.width += chordLayout.box.width + width;
       }
-
-      this.addElement({ type: "Space", box: new Box(0, 0, width, 1) }, { factor: width });
-      this.box.width += width;
     }
 
     this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: null });
