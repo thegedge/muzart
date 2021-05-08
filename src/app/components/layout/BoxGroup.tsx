@@ -1,7 +1,7 @@
 import React from "react";
 import { HasBox } from "../../layout";
 import { useDebugRectParams } from "../utils/DebugContext";
-import { svgPositionTransform, svgSizeProps } from "../utils/svg";
+import { svgBoxProps, svgPositionTransform } from "../utils/svg";
 
 export function BoxGroup(props: {
   node: HasBox & { type?: string };
@@ -16,9 +16,9 @@ export function BoxGroup(props: {
   }
 
   return (
-    <g transform={transforms.join(" ")}>
-      {props.children}
-      {debugParams && <rect {...svgSizeProps(props.node)} {...debugParams} />}
-    </g>
+    <>
+      <g transform={transforms.join(" ")}>{props.children}</g>
+      {debugParams && <rect {...svgBoxProps(props.node)} {...debugParams} />}
+    </>
   );
 }
