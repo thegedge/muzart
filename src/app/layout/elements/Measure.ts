@@ -16,11 +16,10 @@ export class Measure extends FlexGroup<Chord | Rest | Space> {
     super({ box: new Box(0, 0, 0, 0), axis: "horizontal" });
 
     const spacerWidth = QUARTER_NOTE_WIDTH / 2;
-
-    this.box.width = spacerWidth;
     this.box.height = part.lineCount * STAFF_LINE_HEIGHT;
 
-    this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: spacerWidth });
+    this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: null });
+    this.box.width += spacerWidth;
 
     // TODO if just one rest, lay out differently (centered?)
 
@@ -42,7 +41,7 @@ export class Measure extends FlexGroup<Chord | Rest | Space> {
       this.box.width += width;
     }
 
-    this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: spacerWidth });
+    this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: null });
     this.box.width += spacerWidth;
   }
 }
