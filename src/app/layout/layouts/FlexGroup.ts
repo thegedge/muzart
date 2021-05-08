@@ -113,7 +113,7 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
 
       const lastElement = last(this.elements);
       if (lastElement) {
-        extraSpace = Math.max(0, this.box[this.dimensionAttribute] - lastElement.box[this.endAttribute]);
+        extraSpace = this.box[this.dimensionAttribute] - lastElement.box[this.endAttribute];
       }
     }
 
