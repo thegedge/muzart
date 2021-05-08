@@ -414,7 +414,7 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
 
     const [
       _blank2_1,
-      _leftHandVibrato,
+      leftHandVibrato,
       hasTrill,
       hasHarmonics,
       hasSlide,
@@ -426,6 +426,7 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
     options.letRing = letRing;
     options.palmMute = isPalmMute;
     options.staccato = isStaccato;
+    options.vibrato = leftHandVibrato;
 
     if (hasBend) {
       /* const bend = */ readBend(cursor);

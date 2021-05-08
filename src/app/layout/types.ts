@@ -48,6 +48,7 @@ export type LineElement =
   | Space
   | Stem
   | Text
+  | Vibrato
   | Wrapped<LineElement>;
 
 export interface Wrapped<T extends HasBox> {
@@ -76,6 +77,11 @@ export interface Line {
 
 export interface Space {
   type: "Space";
+  box: Box;
+}
+
+export interface Vibrato {
+  type: "Vibrato";
   box: Box;
 }
 

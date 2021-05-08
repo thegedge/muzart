@@ -7,14 +7,14 @@ import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
 import { Constraint as GridConstraint, GridGroup } from "../layouts/GridGroup";
 import { Group } from "../layouts/Group";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
-import { Arc, Beam, Chord, DashedLineText, Dot, Line, LineElement, Measure, Rest, Space, Stem, Text } from "../types";
+import { Arc, Chord, Line, LineElement, Measure, Rest, Space, Text } from "../types";
 import { minMap, runs } from "../utils";
 import Box from "../utils/Box";
 
 export class PageLine extends Group<LineElement> {
-  private aboveStaffLayout: GridGroup<Text | DashedLineText | Space>;
+  private aboveStaffLayout: GridGroup<LineElement>;
   private staffLayout: FlexGroupElement<LineElement>;
-  private belowStaffLayout: NonNegativeGroup<Stem | Beam | Dot>;
+  private belowStaffLayout: NonNegativeGroup<LineElement>;
 
   // TODO find a better place for this
   private arcs: AnchoredGroup<Arc, Measure | Chord>;
@@ -179,7 +179,7 @@ export class PageLine extends Group<LineElement> {
       (chord: notation.Chord) => some(chord.notes, "palmMute"),
       (_hasPalmMute: boolean, amount: number) => ({
         type: amount > 1 ? "DashedLineText" : "Text",
-        box: new Box(0, 0, baseSize, baseSize),
+        box: new Box(0, 0, 0, baseSize),
         size: baseSize,
         value: "P.M.",
       })
@@ -191,7 +191,7 @@ export class PageLine extends Group<LineElement> {
       },
       (harmonicString: string, amount: number) => ({
         type: amount > 1 ? "DashedLineText" : "Text",
-        box: new Box(0, 0, baseSize, baseSize),
+        box: new Box(0, 0, 0, baseSize),
         size: baseSize,
         value: harmonicString,
       })
@@ -201,10 +201,19 @@ export class PageLine extends Group<LineElement> {
       (chord: notation.Chord) => some(chord.notes, "letRing"),
       (_letRing: boolean, amount: number) => ({
         type: amount > 1 ? "DashedLineText" : "Text",
-        box: new Box(0, 0, baseSize, baseSize),
+        box: new Box(0, 0, 0, baseSize),
         size: baseSize,
         value: "let ring",
       })
+    );
+
+    this.addInterMeasureStaffDecorations(
+      (chord: notation.Chord) => some(chord.notes, "vibrato"),
+      (_vibrato: boolean, _amount: number) => ({
+        type: "Vibrato",
+        box: new Box(0, 0, 0, baseSize),
+      }),
+      true
     );
 
     this.addIntraMeasureAboveStaffDecorations();
@@ -216,7 +225,8 @@ export class PageLine extends Group<LineElement> {
 
   private addInterMeasureStaffDecorations<T>(
     predicate: (chord: notation.Chord) => T | undefined,
-    elementGenerator: (value: T, amount: number) => Text | DashedLineText | Space
+    elementGenerator: (value: T, amount: number) => LineElement,
+    includeChordSpacer = false
   ) {
     // TODO the endColumn goes to the end of the chord box, but we probably only want it to go to the end of part of the chord
     //      box that contains the notes, not including the spacing at the right.
@@ -249,7 +259,7 @@ export class PageLine extends Group<LineElement> {
         amount = 0;
       }
 
-      endIndex = index + 1;
+      endIndex = index + (includeChordSpacer ? 2 : 1);
     });
 
     if (isNumber(startIndex)) {

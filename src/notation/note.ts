@@ -43,6 +43,7 @@ export interface NoteOptions {
   pitch: Pitch;
   value: NoteValue;
   placement?: Placement;
+  vibrato?: boolean;
   deadNote?: boolean;
   tie?: Tie;
   letRing?: boolean;
@@ -59,6 +60,7 @@ export class Note {
   readonly value!: NoteValue;
   readonly placement?: Placement;
   public tie?: Tie;
+  readonly vibrato?: boolean;
   readonly letRing?: boolean;
   readonly deadNote?: boolean;
   readonly ghost?: boolean;

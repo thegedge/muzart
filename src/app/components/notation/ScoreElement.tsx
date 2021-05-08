@@ -9,6 +9,7 @@ import { Dot } from "./Dot";
 import { Measure } from "./Measure";
 import { Stem } from "./Stem";
 import { TextElement } from "./TextElement";
+import { Vibrato } from "./Vibrato";
 import { WrappedElement } from "./WrappedElement";
 
 export default function ScoreElement(props: { element: PageElement | LineElement }): React.ReactElement {
@@ -50,6 +51,8 @@ export default function ScoreElement(props: { element: PageElement | LineElement
       return <Stem node={props.element} />;
     case "Text":
       return <TextElement {...props.element} text={props.element.value} />;
+    case "Vibrato":
+      return <Vibrato node={props.element} />;
     case "Wrapped":
       return <WrappedElement node={props.element} />;
   }
