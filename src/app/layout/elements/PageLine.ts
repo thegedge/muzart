@@ -482,7 +482,6 @@ export class PageLine extends Group<LineElement> {
         }
 
         if (note.tie?.nextChord) {
-          // Find the chord
           let tieEnd: { element: Chord; measure: Measure } | undefined;
           for (let endIndex = index + 1; endIndex < chords.length; ++endIndex) {
             if (chords[endIndex].element.chord == note.tie.nextChord) {
@@ -491,20 +490,12 @@ export class PageLine extends Group<LineElement> {
             }
           }
 
-          const offset = 0.08;
-
-          let x;
-          if (note.tie.type == "start") {
-            x = measure.box.x + element.box.x + offset;
-          } else {
-            x = measure.box.x + element.box.x + offset - 0.05;
-          }
-
-          let width = 0;
+          const x = measure.box.x + element.box.centerX;
+          let width;
           if (tieEnd) {
-            width = tieEnd.element.box.x + tieEnd.measure.box.x - x + offset - 0.03;
+            width = tieEnd.measure.box.x + tieEnd.element.box.centerX - x;
           } else {
-            width = this.staffLayout.box.right - measure.box.x - element.box.x - offset - 0.03;
+            width = this.staffLayout.box.right - x;
           }
 
           this.arcs.addElement(
