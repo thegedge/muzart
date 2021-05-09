@@ -50,6 +50,8 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
       previousX += width;
       return x;
     });
+
+    this.box.width = sum(this.widths);
   }
 
   /**
@@ -66,8 +68,10 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
     this.widths = edges.map((x) => {
       const width = x - prevX;
       prevX = x;
-      return width;
+      return Math.max(0, width);
     });
+
+    this.box.width = sum(this.widths);
   }
 
   /**
@@ -89,7 +93,6 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
 
     this.box.x = 0;
     this.box.y = 0;
-    this.box.width = sum(this.widths);
     this.box.height = y - this.spacing;
   }
 
@@ -110,8 +113,9 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
 
     // Lay out everything that isn't the bottom row
     for (const [element, constraint] of everythingElse) {
+      const right = this.leftEdges[constraint.endColumn + 1] ?? this.box.width;
       element.box.x = this.leftEdges[constraint.startColumn];
-      element.box.width = this.leftEdges[constraint.endColumn + 1] - element.box.x;
+      element.box.width = right - element.box.x;
 
       if (element.layout) {
         element.layout();
@@ -136,8 +140,9 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
       rows.unshift(newRow());
 
       for (const [element, constraint] of mustBeBottomRow) {
+        const right = this.leftEdges[constraint.endColumn + 1] ?? this.box.width;
         element.box.x = this.leftEdges[constraint.startColumn];
-        element.box.width = this.leftEdges[constraint.endColumn + 1] - element.box.x;
+        element.box.width = right - element.box.x;
 
         if (element.layout) {
           element.layout();
