@@ -1,4 +1,3 @@
-import { pickBy } from "lodash";
 import { Chord } from "./chord";
 import { NoteValue } from "./note_value";
 import { Pitch } from "./pitch";
@@ -82,27 +81,62 @@ export interface NoteOptions {
 }
 
 export class Note {
-  readonly pitch!: Pitch;
-  readonly value!: NoteValue;
-  readonly placement?: Placement;
+  constructor(readonly options: NoteOptions) {}
 
-  public tie?: Tie;
-  readonly bend?: Bend;
-  readonly vibrato?: boolean;
-  readonly letRing?: boolean;
-  readonly deadNote?: boolean;
-  readonly ghost?: boolean;
-  readonly harmonic?: HarmonicStyle;
-  readonly accent?: AccentStyle;
-  readonly palmMute?: boolean;
-  readonly staccato?: boolean;
-  readonly dynamic?: NoteDynamic;
+  get pitch() {
+    return this.options.pitch;
+  }
 
-  constructor(options: NoteOptions) {
-    Object.assign(
-      this,
-      pickBy(options, (value, key) => value && key in this)
-    );
+  get value() {
+    return this.options.value;
+  }
+
+  get placement() {
+    return this.options.placement;
+  }
+
+  get tie() {
+    return this.options.tie;
+  }
+
+  get bend() {
+    return this.options.bend;
+  }
+
+  get vibrato() {
+    return this.get("vibrato");
+  }
+
+  get letRing() {
+    return this.get("letRing");
+  }
+
+  get deadNote() {
+    return this.options.deadNote;
+  }
+
+  get ghost() {
+    return this.get("ghost");
+  }
+
+  get harmonic() {
+    return this.get("harmonic");
+  }
+
+  get accent() {
+    return this.get("accent");
+  }
+
+  get palmMute() {
+    return this.options.palmMute;
+  }
+
+  get staccato() {
+    return this.options.staccato;
+  }
+
+  get dynamic() {
+    return this.get("dynamic");
   }
 
   get harmonicString() {
@@ -146,6 +180,23 @@ export class Note {
     }
 
     return text;
+  }
+
+  /**
+   * Get an options attribute for this note.
+   *
+   * If the attribute isn't defined, and this note is a middle/end tie, try the note it is
+   * linked to to see if it has the attribute.
+   */
+  private get<K extends keyof NoteOptions>(property: K): NoteOptions[K] | undefined {
+    const v = this.options[property];
+    if (v) {
+      return v;
+    }
+
+    if (this.options.tie?.previous) {
+      return this.options.tie.previous[property];
+    }
   }
 }
 

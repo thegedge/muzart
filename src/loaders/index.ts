@@ -115,7 +115,7 @@ function linkTiedNotes(score: Score): void {
 
           if (note.tie?.type === "stop") {
             if (trackedNote) {
-              note.tie = {
+              note.options.tie = {
                 type: "middle",
                 next: trackedNote,
                 nextChord: trackedChord,
@@ -130,7 +130,7 @@ function linkTiedNotes(score: Score): void {
             trackedNotes[note.placement.string] = note;
             trackedChords[note.placement.string] = chord;
           } else if (trackedNote) {
-            note.tie = {
+            note.options.tie = {
               type: "start",
               next: trackedNote,
               nextChord: trackedChord,
