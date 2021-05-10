@@ -68,7 +68,7 @@ export class PageLine extends Group<LineElement> {
       {
         type: "Text",
         box: new Box(0, 0, tabWidth, tabTextSize),
-        align: "center",
+        halign: "middle",
         size: tabTextSize,
         value: "T",
         style: { userSelect: "none" },
@@ -80,7 +80,7 @@ export class PageLine extends Group<LineElement> {
       {
         type: "Text",
         box: new Box(0, 0, tabWidth, tabTextSize),
-        align: "center",
+        halign: "middle",
         size: tabTextSize,
         value: "A",
         style: { userSelect: "none" },
@@ -92,7 +92,7 @@ export class PageLine extends Group<LineElement> {
       {
         type: "Text",
         box: new Box(0, 0, tabWidth, tabTextSize),
-        align: "center",
+        halign: "middle",
         size: tabTextSize,
         value: "B",
         style: { userSelect: "none" },
@@ -135,6 +135,7 @@ export class PageLine extends Group<LineElement> {
   layout() {
     this.staffLayout.layout();
     this.staffLayout.box.height = max(map(this.staffLayout.elements, "box.height"));
+
     this.layOutArcs();
 
     // TODO have to reset everything in these two functions because layout() could be called multiple times. Some ideas to avoid this:
@@ -171,6 +172,7 @@ export class PageLine extends Group<LineElement> {
 
   private addAboveStaffElements() {
     this.aboveStaffLayout.reset();
+    this.layOutBends();
 
     // TODO figure out some place for this (size of palm mute text)
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
@@ -235,7 +237,7 @@ export class PageLine extends Group<LineElement> {
     let startIndex: number | undefined;
     let endIndex = 0;
     let amount = 0;
-    this.gridLayoutElements().forEach(({ element }, index) => {
+    this.gridLayoutElements().forEach(({ element, measure }, index) => {
       if (element.type !== "Chord") {
         return;
       }
@@ -288,7 +290,8 @@ export class PageLine extends Group<LineElement> {
       this.aboveStaffLayout.addElement(
         {
           type: "Text",
-          align: firstMeasure ? "left" : "center",
+          halign: firstMeasure ? "start" : "middle",
+          valign: "end",
           box: new Box(0, 0, numberSize, numberSize),
           size: numberSize,
           value: measure.number.toString(),
@@ -359,7 +362,6 @@ export class PageLine extends Group<LineElement> {
         this.aboveStaffLayout.addElement(
           {
             type: "Text",
-            align: "left",
             box: new Box(0, 0, 0, tempoSize),
             size: tempoSize,
             value: `♩﹦${measure.staffDetails.tempo.value}`,
@@ -460,6 +462,33 @@ export class PageLine extends Group<LineElement> {
       }
     }
     return elements;
+  }
+
+  private layOutBends() {
+    this.gridLayoutElements().forEach(({ element, measure }, index) => {
+      if (element.type !== "Chord" || !element.chord) {
+        return;
+      }
+
+      for (const note of element.chord.notes) {
+        if (note.bend) {
+          this.aboveStaffLayout.addElement(
+            {
+              type: "Bend",
+              box: new Box(0, 0, 0, 2.5 * STAFF_LINE_HEIGHT),
+              bend: note.bend,
+              descent: ((note.placement?.string || 1) - 0.5) * STAFF_LINE_HEIGHT,
+            },
+            {
+              startColumn: index + 1,
+              // TODO if a note tie, should go to the end
+              endColumn: index + 2,
+              mustBeBottomRow: true,
+            }
+          );
+        }
+      }
+    });
   }
 
   private layOutArcs() {

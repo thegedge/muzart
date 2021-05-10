@@ -31,6 +31,30 @@ export enum NoteDynamic {
   Fortississimo = "fff",
 }
 
+export enum BendType {
+  // Regular
+  Bend = "Bend",
+  BendRelease = "Bend and Release",
+  BendReleaseBend = "Bend and Release and Bend",
+  Prebend = "Prebend",
+  PrebendRelease = "Prebend and Release",
+
+  // Tremolo bar
+  Dip = "Dip",
+  Dive = "Dive",
+  ReleaseUp = "Release (up)",
+  InvertedDip = "Inverted Dip",
+  Return = "Return",
+  ReleaseDown = "Release (down)",
+}
+
+export interface Bend {
+  type: BendType;
+
+  /** The overall amplitude of the bend, measured in tones (i.e., 1 is a full bend, 0.5 is a half bend) */
+  amplitude: number;
+}
+
 export interface Tie {
   type: TieType;
   previous?: Note;
@@ -43,6 +67,8 @@ export interface NoteOptions {
   pitch: Pitch;
   value: NoteValue;
   placement?: Placement;
+
+  bend?: Bend;
   vibrato?: boolean;
   deadNote?: boolean;
   tie?: Tie;
@@ -59,7 +85,9 @@ export class Note {
   readonly pitch!: Pitch;
   readonly value!: NoteValue;
   readonly placement?: Placement;
+
   public tie?: Tie;
+  readonly bend?: Bend;
   readonly vibrato?: boolean;
   readonly letRing?: boolean;
   readonly deadNote?: boolean;

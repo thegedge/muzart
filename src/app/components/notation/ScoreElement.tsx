@@ -4,6 +4,7 @@ import { BoxGroup } from "../layout/BoxGroup";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
+import { Bend } from "./Bend";
 import { DashedLineText } from "./DashedLineText";
 import { Dot } from "./Dot";
 import { Measure } from "./Measure";
@@ -18,6 +19,8 @@ export default function ScoreElement(props: { element: PageElement | LineElement
       return <Arc element={props.element} />;
     case "BarLine":
       return <BarLine node={props.element} />;
+    case "Bend":
+      return <Bend node={props.element} />;
     case "Beam":
       return <Beam node={props.element} />;
     case "DashedLineText":
@@ -34,14 +37,17 @@ export default function ScoreElement(props: { element: PageElement | LineElement
       );
     case "Line":
       return (
-        <line
-          x1={props.element.box.x}
-          y1={props.element.box.y}
-          x2={props.element.box.right}
-          y2={props.element.box.bottom}
-          strokeWidth={LINE_STROKE_WIDTH}
-          stroke={props.element.color}
-        />
+        <>
+          <BoxGroup node={props.element} forceDebug />
+          <line
+            x1={props.element.box.x}
+            y1={props.element.box.y}
+            x2={props.element.box.right}
+            y2={props.element.box.bottom}
+            strokeWidth={LINE_STROKE_WIDTH}
+            stroke={props.element.color}
+          />
+        </>
       );
     case "Measure":
       return <Measure measure={props.element} />;

@@ -84,8 +84,13 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
     for (const row of rows) {
       let maxHeight = 0;
       for (const element of row.elements) {
-        element.box.y = y;
         maxHeight = Math.max(maxHeight, element.box.height);
+      }
+
+      for (const element of row.elements) {
+        // TODO it may be preferable to not size the element to the row, but to align it within the row (i.e., like valign)
+        element.box.y = y;
+        element.box.height = maxHeight;
       }
 
       y += maxHeight + this.spacing;

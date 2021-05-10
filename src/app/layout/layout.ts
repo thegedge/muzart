@@ -110,7 +110,7 @@ function layOutPartHeader(
       {
         type: "Text",
         box: new Box(0, 0, contentWidth, height),
-        align: "center",
+        halign: "middle",
         size: height,
         value: score.title,
         style: {
@@ -128,7 +128,7 @@ function layOutPartHeader(
       {
         type: "Text",
         box: new Box(0, 0, contentWidth, 2 * height),
-        align: "right",
+        halign: "end",
         size: height,
         value: score.composer,
         style: {
@@ -146,7 +146,6 @@ function layOutPartHeader(
     const texts: Text[] = part.instrument.tuning.map((pitch, index) => ({
       type: "Text",
       box: new Box(0, 0, textSize * 5, textSize),
-      align: "left",
       size: textSize,
       value: `${stringNumbers[index]} = ${pitch}`,
       style: {

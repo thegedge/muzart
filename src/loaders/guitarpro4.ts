@@ -1,6 +1,8 @@
 import { padStart, range } from "lodash";
 import {
   AccentStyle,
+  Bend,
+  BendType,
   HarmonicStyle,
   Measure,
   Note,
@@ -429,7 +431,7 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
     options.vibrato = leftHandVibrato;
 
     if (hasBend) {
-      /* const bend = */ readBend(cursor);
+      options.bend = readBend(cursor);
     }
 
     if (hasGraceNote) {
@@ -607,15 +609,68 @@ function readMidiChannels(cursor: BufferCursor) {
   }
 }
 
-function readBend(cursor: BufferCursor) {
-  /* const type = */ cursor.nextNumber(NumberType.Uint8);
-  /* const amplitude = */ cursor.nextNumber(NumberType.Uint32);
+function readBend(cursor: BufferCursor): Bend {
+  let type: BendType;
+  const bendTypeValue = cursor.nextNumber(NumberType.Uint8);
+  switch (bendTypeValue) {
+    case 0:
+    // None?
+    case 1:
+      type = BendType.Bend;
+      break;
+    case 2:
+      type = BendType.BendRelease;
+      break;
+    case 3:
+      type = BendType.BendReleaseBend;
+      break;
+    case 4:
+      type = BendType.Prebend;
+      break;
+    case 5:
+      type = BendType.PrebendRelease;
+      break;
+    case 6:
+      type = BendType.Dip;
+      break;
+    case 7:
+      type = BendType.Dive;
+      break;
+    case 8:
+      type = BendType.ReleaseUp;
+      break;
+    case 9:
+      type = BendType.InvertedDip;
+      break;
+    case 10:
+      type = BendType.Return;
+      break;
+    case 11:
+      type = BendType.ReleaseDown;
+      break;
+    default:
+      throw new Error(`Unknown bend type value: ${bendTypeValue}`);
+  }
+
+  const amplitude = cursor.nextNumber(NumberType.Uint32) / 100.0;
+
+  // TODO use these
   const numPoints = cursor.nextNumber(NumberType.Uint32);
   for (let point = 0; point < numPoints; ++point) {
+    // Time relative from the previous point; between 0 and 60, in sixtieths of the note duration.
     /* const absoluteTimePosition = */ cursor.nextNumber(NumberType.Uint32);
+
+    // Same as amplitude above
     /* const verticalPosition = */ cursor.nextNumber(NumberType.Uint32);
+
+    // 0 = none, 1 = fast, 2 = average, 3 = slow
     /* const vibrato = */ cursor.nextNumber(NumberType.Uint8);
   }
+
+  return {
+    type,
+    amplitude,
+  };
 }
 
 function readColor(cursor: BufferCursor): string {

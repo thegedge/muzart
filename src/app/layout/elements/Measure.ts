@@ -24,8 +24,8 @@ export class Measure extends FlexGroup<Chord | Rest | Space> {
     // TODO if just one rest, lay out differently (centered?)
 
     for (const chord of measure.chords) {
-      const width = widthForValue(chord.value);
       if (chord.rest) {
+        const width = widthForValue(chord.value);
         this.addElement({
           type: "Rest",
           box: new Box(0, 0, width, part.lineCount * STAFF_LINE_HEIGHT),
@@ -33,6 +33,8 @@ export class Measure extends FlexGroup<Chord | Rest | Space> {
         });
         this.box.width += width;
       } else {
+        const hasBend = chord.notes.some((n) => !!n.bend);
+        const width = widthForValue(chord.value) * (hasBend ? 2 : 1);
         const chordLayout = layOutChord(chord);
         this.addElement(chordLayout, { factor: null });
         this.addElement({ type: "Space", box: new Box(0, 0, width, 1) }, { factor: width });

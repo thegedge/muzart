@@ -3,7 +3,7 @@ import * as notation from "../../notation";
 import Box from "./utils/Box";
 
 export type Inches = number;
-export type Alignment = "left" | "center" | "right";
+export type Alignment = "start" | "middle" | "end";
 export type VerticalOrientation = "above" | "below";
 
 export type HasBox = {
@@ -40,6 +40,7 @@ export type LineElement =
   | Arc
   | BarLine
   | Beam
+  | Bend
   | DashedLineText
   | Dot
   | Group
@@ -61,6 +62,20 @@ export interface Arc {
   type: "Arc";
   box: Box;
   orientation: VerticalOrientation;
+}
+
+export interface Bend {
+  type: "Bend";
+  box: Box;
+  bend: notation.Bend;
+
+  /**
+   * How far below the box's bottom edge the bend should go to reach the note.
+   *
+   * This is only necessary if this element is not sized to reach the bend note, which is the case right now
+   * because we make it part of the `GridGroup` used for above staff things.
+   */
+  descent: number;
 }
 
 export interface Group {
@@ -95,7 +110,8 @@ export interface Text {
   type: "Text";
   value: string;
   size: Inches;
-  align?: Alignment;
+  halign?: Alignment;
+  valign?: Alignment;
   box: Box;
   style?: CSSProperties;
 }

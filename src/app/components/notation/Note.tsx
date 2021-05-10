@@ -19,7 +19,7 @@ export function Note(props: { note: layout.Note }) {
     <g {...svgBoxProps(props.note)} onClick={playNote}>
       <TextElement
         {...props.note}
-        align="center"
+        halign="middle"
         size={props.note.box.height}
         text={text}
         style={{ userSelect: "none" }}

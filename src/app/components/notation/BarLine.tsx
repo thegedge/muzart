@@ -8,7 +8,7 @@ export function BarLine(props: { node: layout.BarLine }) {
       y1={props.node.box.y}
       x2={props.node.box.centerX}
       y2={props.node.box.bottom}
-      stroke="black"
+      stroke="#000000"
       strokeWidth={props.node.strokeSize}
     />
   );
