@@ -8,6 +8,7 @@ import { Bend } from "./Bend";
 import { DashedLineText } from "./DashedLineText";
 import { Dot } from "./Dot";
 import { Measure } from "./Measure";
+import { Slide } from "./Slide";
 import { Stem } from "./Stem";
 import { TextElement } from "./TextElement";
 import { Vibrato } from "./Vibrato";
@@ -51,6 +52,8 @@ export default function ScoreElement(props: { element: PageElement | LineElement
       );
     case "Measure":
       return <Measure measure={props.element} />;
+    case "Slide":
+      return <Slide node={props.element} />;
     case "Space":
       return <BoxGroup node={props.element} />;
     case "Stem":

@@ -20,6 +20,7 @@ export function Note(props: { note: layout.Note }) {
       <TextElement
         {...props.note}
         halign="middle"
+        valign="middle"
         size={props.note.box.height}
         text={text}
         style={{ userSelect: "none" }}

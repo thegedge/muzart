@@ -10,6 +10,7 @@ import {
   NoteOptions,
   Pitch,
   Score,
+  SlideType,
   TimeSignature,
 } from "../notation";
 import { NoteValue } from "../notation/note_value";
@@ -446,7 +447,42 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
     }
 
     if (hasSlide) {
-      /* const slideStyle = */ cursor.nextNumber(NumberType.Uint8);
+      const slideStyle = cursor.nextNumber(NumberType.Int8);
+
+      let type, upwards;
+      switch (slideStyle) {
+        case -2:
+          type = SlideType.SlideIntoFromAbove;
+          upwards = false;
+          break;
+        case -1:
+          type = SlideType.SlideIntoFromBelow;
+          upwards = true;
+          break;
+        case 0:
+          // no slide
+          break;
+        case 1:
+          type = SlideType.ShiftSlide;
+          upwards = true; // will be figured out in postprocess
+          break;
+        case 2:
+          type = SlideType.LegatoSlide;
+          upwards = true; // will be figured out in postprocess
+          break;
+        case 3:
+          type = SlideType.SlideOutDownwards;
+          upwards = false;
+          break;
+        case 4:
+          type = SlideType.SlideOutUpwards;
+          upwards = true;
+          break;
+      }
+
+      if (type) {
+        options.slide = { type, upwards: !!upwards };
+      }
     }
 
     if (hasHarmonics) {

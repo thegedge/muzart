@@ -46,6 +46,7 @@ export type LineElement =
   | Group
   | Line
   | Measure
+  | Slide
   | Space
   | Stem
   | Text
@@ -148,6 +149,12 @@ export interface Note {
   type: "Note";
   note: notation.Note;
   box: Box;
+}
+
+export interface Slide {
+  type: "Slide";
+  box: Box;
+  upwards: boolean;
 }
 
 export interface Stem {

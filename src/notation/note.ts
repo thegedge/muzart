@@ -47,6 +47,23 @@ export enum BendType {
   ReleaseDown = "Release (down)",
 }
 
+export enum SlideType {
+  SlideIntoFromAbove = "Slide into from above",
+  SlideIntoFromBelow = "Slide into from below",
+  // TODO need to post process to figure out if we're sliding up or down for these two
+  ShiftSlide = "Shift slide",
+  LegatoSlide = "Legato slide",
+  SlideOutDownwards = "Slide out of downwards",
+  SlideOutUpwards = "Slide out of upwards",
+}
+
+export interface Slide {
+  type: SlideType;
+
+  /** If true, slide moves upwards. Downwards, otherwise. */
+  upwards: boolean;
+}
+
 export interface Bend {
   type: BendType;
 
@@ -68,6 +85,7 @@ export interface NoteOptions {
   placement?: Placement;
 
   bend?: Bend;
+  slide?: Slide;
   vibrato?: boolean;
   deadNote?: boolean;
   tie?: Tie;
@@ -101,6 +119,10 @@ export class Note {
 
   get bend() {
     return this.options.bend;
+  }
+
+  get slide() {
+    return this.options.slide;
   }
 
   get vibrato() {

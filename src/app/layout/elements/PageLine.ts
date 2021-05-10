@@ -7,7 +7,7 @@ import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
 import { Constraint as GridConstraint, GridGroup } from "../layouts/GridGroup";
 import { Group } from "../layouts/Group";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
-import { Arc, Chord, Line, LineElement, Measure, Rest, Space, Text } from "../types";
+import { Chord, Line, LineElement, Measure, Rest, Space, Text } from "../types";
 import { minMap, runs } from "../utils";
 import Box from "../utils/Box";
 
@@ -16,15 +16,15 @@ export class PageLine extends Group<LineElement> {
   private staffLayout: FlexGroupElement<LineElement>;
   private belowStaffLayout: NonNegativeGroup<LineElement>;
 
-  // TODO find a better place for this
-  private arcs: AnchoredGroup<Arc, Measure | Chord>;
+  // TODO find a better place for these
+  private staffOverlay: AnchoredGroup<LineElement, Measure | Chord>;
 
   private staffLines: Line[] = [];
 
   constructor(box: Box, private numStaffLines = 6) {
     super(box);
 
-    this.arcs = new AnchoredGroup();
+    this.staffOverlay = new AnchoredGroup();
 
     this.aboveStaffLayout = new GridGroup(STAFF_LINE_HEIGHT * 0.25);
     this.staffLayout = new FlexGroupElement<LineElement>({ box: clone(box) });
@@ -113,14 +113,14 @@ export class PageLine extends Group<LineElement> {
     this.staffLines = range(this.numStaffLines).map((_index) => ({
       type: "Line",
       box: new Box(0, 0, 0, 0),
-      color: "#555555",
+      color: "#888888",
     }));
 
     this.elements = (this.staffLines as LineElement[]).concat([
       this.aboveStaffLayout,
       this.staffLayout,
       this.belowStaffLayout,
-      this.arcs,
+      this.staffOverlay,
     ]);
   }
 
@@ -136,7 +136,7 @@ export class PageLine extends Group<LineElement> {
     this.staffLayout.layout();
     this.staffLayout.box.height = max(map(this.staffLayout.elements, "box.height"));
 
-    this.layOutArcs();
+    this.layOutStaffOverlay();
 
     // TODO have to reset everything in these two functions because layout() could be called multiple times. Some ideas to avoid this:
     //   1. Track whether or not the line is dirty, and then reset.
@@ -148,7 +148,7 @@ export class PageLine extends Group<LineElement> {
     // Finalize positions
     this.staffLayout.box.y = this.aboveStaffLayout.box.bottom;
     this.belowStaffLayout.box.y = this.staffLayout.box.bottom;
-    this.arcs.box.y = this.staffLayout.box.y;
+    this.staffOverlay.box.y = this.staffLayout.box.y;
 
     this.staffLines.forEach((line, index) => {
       line.box.width = this.box.width;
@@ -469,7 +469,7 @@ export class PageLine extends Group<LineElement> {
   }
 
   private layOutBends() {
-    this.gridLayoutElements().forEach(({ element, measure }, index) => {
+    this.gridLayoutElements().forEach(({ element }, index) => {
       if (element.type !== "Chord" || !element.chord) {
         return;
       }
@@ -495,10 +495,61 @@ export class PageLine extends Group<LineElement> {
     });
   }
 
-  private layOutArcs() {
-    this.arcs.reset();
-    this.arcs.box = clone(this.staffLayout.box);
+  private layOutStaffOverlay() {
+    this.staffOverlay.reset();
+    this.staffOverlay.box = clone(this.staffLayout.box);
+    this.layOutArcs();
+    this.layOutSlides();
+  }
 
+  private layOutSlides() {
+    const yoffset = LINE_STROKE_WIDTH * 3;
+    const gridLayoutElements = this.gridLayoutElements();
+    gridLayoutElements.forEach(({ element, measure }, index) => {
+      if (element.type !== "Chord" || !element.chord) {
+        return;
+      }
+
+      for (const note of element.chord.notes) {
+        if (note.slide) {
+          let x, w;
+          switch (note.slide.type) {
+            case notation.SlideType.ShiftSlide:
+            case notation.SlideType.LegatoSlide:
+              x = measure.box.x + element.box.right;
+              // TODO this doesn't deal with crossing barlines
+              w = gridLayoutElements[index + 1].element.box.width;
+              break;
+            case notation.SlideType.SlideIntoFromAbove:
+            case notation.SlideType.SlideIntoFromBelow:
+              w = STAFF_LINE_HEIGHT;
+              x = measure.box.x + element.box.x - w;
+              break;
+            case notation.SlideType.SlideOutDownwards:
+            case notation.SlideType.SlideOutUpwards:
+              x = measure.box.x + element.box.right;
+              w = STAFF_LINE_HEIGHT;
+              break;
+          }
+
+          this.staffOverlay.addElement(
+            {
+              type: "Slide",
+              box: new Box(
+                x,
+                measure.box.y + element.box.y + STAFF_LINE_HEIGHT * ((note.placement?.string || 1) - 1) + yoffset,
+                w,
+                STAFF_LINE_HEIGHT - 2 * yoffset
+              ),
+              upwards: note.slide.upwards,
+            },
+            null
+          );
+        }
+      }
+    });
+  }
+  private layOutArcs() {
     // TODO unfortunate to have to do this `as`, but we want to make the `forEach` function below simpler by only considering chords
     const chords = this.gridLayoutElements().filter(({ element }) => element.type === "Chord") as {
       element: Chord;
@@ -509,7 +560,7 @@ export class PageLine extends Group<LineElement> {
       for (const note of element.chord.notes) {
         // If the very first chord in the line has a tie, create an arc to show that
         if (note.tie?.previous && index === 0) {
-          this.arcs.addElement(
+          this.staffOverlay.addElement(
             {
               type: "Arc",
               box: new Box(
@@ -541,7 +592,7 @@ export class PageLine extends Group<LineElement> {
             width = this.staffLayout.box.right - x;
           }
 
-          this.arcs.addElement(
+          this.staffOverlay.addElement(
             {
               type: "Arc",
               box: new Box(
