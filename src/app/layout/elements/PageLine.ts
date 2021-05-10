@@ -238,11 +238,15 @@ export class PageLine extends Group<LineElement> {
     let endIndex = 0;
     let amount = 0;
     this.gridLayoutElements().forEach(({ element, measure }, index) => {
-      if (element.type !== "Chord") {
+      if (element.type === "Space") {
         return;
       }
 
-      const newPredicateValue = predicate(element.chord);
+      let newPredicateValue;
+      if (element.type === "Chord") {
+        newPredicateValue = predicate(element.chord);
+      }
+
       if (newPredicateValue) {
         if (isUndefined(startIndex)) {
           startIndex = index + 1;
