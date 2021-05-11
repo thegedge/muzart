@@ -1,6 +1,8 @@
 const path = require("path");
-const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const webpack = require("webpack");
+
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -8,7 +10,11 @@ module.exports = {
   mode: isDevelopment ? "development" : "production",
 
   entry: {
-    main: "./src/app/index.tsx",
+    main: {
+      import: "./src/app/index.tsx",
+      dependOn: "deps",
+    },
+    deps: ["lodash", "react", "react-dom", "tone"],
   },
 
   output: {
@@ -33,12 +39,16 @@ module.exports = {
 
   devtool: isDevelopment ? "eval-source-map" : undefined,
 
+  optimization: {
+    runtimeChunk: "single",
+  },
+
   module: {
     rules: [
       {
         test: /\.js$/,
         enforce: "pre",
-        use: ["source-map-loader"],
+        use: ["source-map-loader"].filter(Boolean),
       },
       {
         test: /\.tsx?$/,
@@ -63,7 +73,6 @@ module.exports = {
           "css-loader",
           {
             loader: "postcss-loader",
-
             options: {
               postcssOptions: {
                 plugins: [
@@ -85,6 +94,9 @@ module.exports = {
   plugins: [
     isDevelopment && new webpack.HotModuleReplacementPlugin(),
     isDevelopment && new ReactRefreshWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      template: "src/app/index.html",
+    }),
     new webpack.EnvironmentPlugin({
       NODE_ENV: isDevelopment ? "development" : "production",
       DEFAULT_FILE: null,

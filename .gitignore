@@ -3,15 +3,9 @@
 /.pnp
 .pnp.js
 
-# Example files
-public/example*
-
 # testing
 /coverage
 
 # production
 /build
-
-# build files
-public/*.bundle.js*
-public/*.hot*
+/public
