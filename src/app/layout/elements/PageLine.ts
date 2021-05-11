@@ -4,7 +4,7 @@ import { AccentStyle, NoteValueName } from "../../../notation";
 import { BEAM_HEIGHT, DOT_SIZE, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../constants";
 import { AnchoredGroup } from "../layouts/AnchoredGroup";
 import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
-import { Constraint as GridConstraint, GridGroup } from "../layouts/GridGroup";
+import { GridGroup } from "../layouts/GridGroup";
 import { Group } from "../layouts/Group";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
 import { Chord, Line, LineElement, Measure, Rest, Space, Text } from "../types";
@@ -184,7 +184,10 @@ export class PageLine extends Group<LineElement> {
         box: new Box(0, 0, 0, baseSize),
         size: baseSize,
         value: "P.M.",
-      })
+      }),
+      {
+        group: "dashies",
+      }
     );
 
     this.addInterMeasureStaffDecorations(
@@ -196,7 +199,10 @@ export class PageLine extends Group<LineElement> {
         box: new Box(0, 0, 0, baseSize),
         size: baseSize,
         value: harmonicString,
-      })
+      }),
+      {
+        group: "dashies",
+      }
     );
 
     this.addInterMeasureStaffDecorations(
@@ -206,7 +212,10 @@ export class PageLine extends Group<LineElement> {
         box: new Box(0, 0, 0, baseSize),
         size: baseSize,
         value: "let ring",
-      })
+      }),
+      {
+        group: "dashies",
+      }
     );
 
     this.addInterMeasureStaffDecorations(
@@ -215,7 +224,10 @@ export class PageLine extends Group<LineElement> {
         type: "Vibrato",
         box: new Box(0, 0, 0, baseSize),
       }),
-      true
+      {
+        group: "vibrato",
+        includeChordSpacer: true,
+      }
     );
 
     this.addIntraMeasureAboveStaffDecorations();
@@ -228,7 +240,10 @@ export class PageLine extends Group<LineElement> {
   private addInterMeasureStaffDecorations<T>(
     predicate: (chord: notation.Chord) => T | undefined,
     elementGenerator: (value: T, amount: number) => LineElement,
-    includeChordSpacer = false
+    options?: {
+      group?: string;
+      includeChordSpacer?: boolean;
+    }
   ) {
     // TODO the endColumn goes to the end of the chord box, but we probably only want it to go to the end of part of the chord
     //      box that contains the notes, not including the spacing at the right.
@@ -265,13 +280,14 @@ export class PageLine extends Group<LineElement> {
         amount = 0;
       }
 
-      endIndex = index + (includeChordSpacer ? 2 : 1);
+      endIndex = index + (options?.includeChordSpacer ? 2 : 1);
     });
 
     if (isNumber(startIndex)) {
       this.aboveStaffLayout.addElement(elementGenerator(predicateValue!, amount), {
         startColumn: startIndex,
         endColumn: endIndex,
+        group: options?.group,
       });
     }
   }
@@ -316,11 +332,6 @@ export class PageLine extends Group<LineElement> {
           continue;
         }
 
-        const constraint: GridConstraint = {
-          startColumn: index + 1,
-          endColumn: index + 1,
-        };
-
         if (element.chord.text) {
           // TODO baseSize isn't an appropriate width, but we have no way to measure text :(
           this.aboveStaffLayout.addElement(
@@ -333,7 +344,11 @@ export class PageLine extends Group<LineElement> {
                 fontStyle: "italic",
               },
             },
-            constraint
+            {
+              startColumn: index + 1,
+              endColumn: index + 1,
+              group: "lyricsAndText",
+            }
           );
         }
 
@@ -357,7 +372,10 @@ export class PageLine extends Group<LineElement> {
               size: accentSize,
               value: accentString,
             },
-            constraint
+            {
+              startColumn: index + 1,
+              endColumn: index + 1,
+            }
           );
         }
       }
@@ -549,6 +567,7 @@ export class PageLine extends Group<LineElement> {
       }
     });
   }
+
   private layOutArcs() {
     // TODO unfortunate to have to do this `as`, but we want to make the `forEach` function below simpler by only considering chords
     const chords = this.gridLayoutElements().filter(({ element }) => element.type === "Chord") as {

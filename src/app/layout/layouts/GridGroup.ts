@@ -12,6 +12,9 @@ export interface Constraint {
 
   /** End column consumed by this element (inclusive) */
   endColumn: number;
+
+  /** An optional row key, such that only elements with the given key can be found on the same row */
+  group?: string;
 }
 
 /**
@@ -110,11 +113,12 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
       return constraint.mustBeBottomRow;
     });
 
-    const newRow = () => ({
+    const newRow = (group?: string) => ({
       columnAvailability: new Array(this.widths.length).fill(true),
       elements: [] as T[],
+      group,
     });
-    const rows = [newRow()];
+    const rows: ReturnType<typeof newRow>[] = [];
 
     // Lay out everything that isn't the bottom row
     for (const [element, constraint] of everythingElse) {
@@ -128,11 +132,14 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
 
       // If the span of cells we need don't exist, create a new row
       let row = find(rows, (row) => {
-        return every(row.columnAvailability.slice(constraint.startColumn, constraint.endColumn + 1));
+        return (
+          constraint.group === row.group &&
+          every(row.columnAvailability.slice(constraint.startColumn, constraint.endColumn + 1))
+        );
       });
 
       if (!row) {
-        row = newRow();
+        row = newRow(constraint.group);
         rows.push(row);
       }
 
