@@ -13,5 +13,5 @@ public/example*
 /build
 
 # build files
-public/bundle.js*
+public/*.bundle.js*
 public/*.hot*
