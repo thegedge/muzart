@@ -8,9 +8,18 @@ const BEND_COLOR = "#555555";
 export function Bend(props: { node: Bend }) {
   const points = bendPoints(props.node);
   const bendTextX = points[1][0];
+
+  // TODO not sure why I need to explicitly specify optimizeSpeed below, but if I don't do that, everything gets
+  //      rendered poorly :(
   return (
     <BoxGroup node={props.node}>
-      <path d={bendPath(points)} fill="none" stroke={BEND_COLOR} strokeWidth={LINE_STROKE_WIDTH} />
+      <path
+        d={bendPath(points)}
+        fill="none"
+        stroke={BEND_COLOR}
+        strokeWidth={LINE_STROKE_WIDTH}
+        shapeRendering="optimizeSpeed"
+      />
       {bendArrowHeads(points)}
       <text
         x={bendTextX}
