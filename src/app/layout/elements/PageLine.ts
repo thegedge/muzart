@@ -228,7 +228,6 @@ export class PageLine extends Group<LineElement> {
         box: new Box(0, 0, 0, STAFF_LINE_HEIGHT),
       }),
       {
-        group: "vibrato",
         includeChordSpacer: true,
       }
     );

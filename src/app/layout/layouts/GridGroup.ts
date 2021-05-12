@@ -133,6 +133,7 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
           element.layout();
         }
 
+        rows[0].columnAvailability.fill(false, constraint.startColumn, constraint.endColumn + 1);
         rows[0].elements.push(element);
       }
     }
