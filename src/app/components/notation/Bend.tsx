@@ -13,13 +13,7 @@ export function Bend(props: { node: Bend }) {
   //      rendered poorly :(
   return (
     <BoxGroup node={props.node}>
-      <path
-        d={bendPath(points)}
-        fill="none"
-        stroke={BEND_COLOR}
-        strokeWidth={LINE_STROKE_WIDTH}
-        shapeRendering="optimizeSpeed"
-      />
+      <path d={bendPath(points)} fill="none" stroke={BEND_COLOR} strokeWidth={LINE_STROKE_WIDTH} />
       {bendArrowHeads(points)}
       <text
         x={bendTextX}

@@ -45,19 +45,6 @@ export function Part(props: { part: Part }) {
             floodOpacity="0.25"
           />
         </filter>
-
-        <pattern
-          id="vibrato"
-          width={(VIBRATO_HEIGHT * 1.1233) / 1.5}
-          height={VIBRATO_HEIGHT}
-          viewBox="0 -0.25 1.1233 1.5"
-          patternUnits="userSpaceOnUse"
-        >
-          <path
-            fill="#000000"
-            d="m 0.688304,0.9802 c -0.252031,-0.32929 -0.177584,-0.22229 -0.445038,-0.61152 l -0.243266,-0.002 c 0.263226,-0.5592 0.444703,-0.43032 0.833124,0.0605 l 0.290176,6.3e-4 c 0,0 -0.06812,0.12133 -0.119681,0.22557 -0.07544,0.1151 -0.237,0.42877 -0.315315,0.32644 z"
-          />
-        </pattern>
       </defs>
       {pages}
     </svg>

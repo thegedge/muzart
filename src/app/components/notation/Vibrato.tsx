@@ -1,13 +1,29 @@
+import { range } from "lodash";
 import React from "react";
 import * as layout from "../../layout";
-import { STAFF_LINE_HEIGHT } from "../../layout";
+import { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 
 export function Vibrato(props: { node: layout.Vibrato }) {
-  const y = (props.node.box.height - STAFF_LINE_HEIGHT) / 2;
+  const startX = 0.5 * STAFF_LINE_HEIGHT;
+  const startY = 0.6 * props.node.box.height;
+  const amplitude = 0.3 * STAFF_LINE_HEIGHT;
+  const wavelength = 0.3 * STAFF_LINE_HEIGHT;
+  const numPeaks = Math.floor((props.node.box.width - startX) / wavelength / 2) * 2;
+  const points = range(numPeaks - 1).map((_) => `${wavelength},0`);
+
+  const path = `
+    M ${startX},${startY}
+    q ${0.5 * wavelength},-${amplitude} ${wavelength},0
+    t ${points.join(" ")}
+    l ${0.6 * wavelength},-${0.6 * wavelength}
+    q -${0.5 * wavelength},${amplitude} -${wavelength},0
+    t -${points.join(" -")}
+  `;
+
   return (
     <BoxGroup node={props.node}>
-      <rect x={0} y={y} width={props.node.box.width} height={STAFF_LINE_HEIGHT} fill="url(#vibrato)" />
+      <path d={path} fill="#555555" stroke="#555555" strokeWidth={LINE_STROKE_WIDTH} />
     </BoxGroup>
   );
 }

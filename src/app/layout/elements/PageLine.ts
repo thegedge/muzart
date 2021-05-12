@@ -222,7 +222,7 @@ export class PageLine extends Group<LineElement> {
       (chord: notation.Chord) => some(chord.notes, "vibrato"),
       (_vibrato: boolean, _amount: number) => ({
         type: "Vibrato",
-        box: new Box(0, 0, 0, baseSize),
+        box: new Box(0, 0, 0, STAFF_LINE_HEIGHT),
       }),
       {
         group: "vibrato",
