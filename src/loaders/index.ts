@@ -65,6 +65,8 @@ type StaffDetailValues = {
   [Property in keyof StaffDetails]: ChangeableValueType<NonNullable<StaffDetails[Property]>>;
 };
 
+// TODO what to do about these in the context of an editor, where we won't want to do a full post process?
+
 function postProcess(score: Score) {
   propagateStaffDetails(score);
   linkTiedNotes(score);

@@ -118,7 +118,24 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
       elements: [] as T[],
       group,
     });
-    const rows: ReturnType<typeof newRow>[] = [];
+    const rows = [newRow()];
+
+    // Now the forced bottom row, if we have anything in it
+    if (mustBeBottomRow.length > 0) {
+      rows.unshift(newRow());
+
+      for (const [element, constraint] of mustBeBottomRow) {
+        const right = this.leftEdges[constraint.endColumn + 1] ?? this.box.width;
+        element.box.x = this.leftEdges[constraint.startColumn];
+        element.box.width = right - element.box.x;
+
+        if (element.layout) {
+          element.layout();
+        }
+
+        rows[0].elements.push(element);
+      }
+    }
 
     // Lay out everything that isn't the bottom row
     for (const [element, constraint] of everythingElse) {
@@ -145,23 +162,6 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
 
       row.columnAvailability.fill(false, constraint.startColumn, constraint.endColumn + 1);
       row.elements.push(element);
-    }
-
-    // Now the forced bottom row, if we have anything in it
-    if (mustBeBottomRow.length > 0) {
-      rows.unshift(newRow());
-
-      for (const [element, constraint] of mustBeBottomRow) {
-        const right = this.leftEdges[constraint.endColumn + 1] ?? this.box.width;
-        element.box.x = this.leftEdges[constraint.startColumn];
-        element.box.width = right - element.box.x;
-
-        if (element.layout) {
-          element.layout();
-        }
-
-        rows[0].elements.push(element);
-      }
     }
 
     return rows.reverse();
