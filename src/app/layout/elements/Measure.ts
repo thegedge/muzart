@@ -20,7 +20,7 @@ export class Measure extends FlexGroup<LineElement> {
 
     if (measure.staffDetails.time?.changed) {
       const ts = measure.staffDetails.time.value;
-      const size = STAFF_LINE_HEIGHT * 2;
+      const size = STAFF_LINE_HEIGHT * 2.5;
       const group = new FlexGroupElement<Text>({
         box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, size, STAFF_LINE_HEIGHT * (part.lineCount - 1)),
         axis: "vertical",

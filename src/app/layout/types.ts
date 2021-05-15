@@ -42,6 +42,7 @@ export type LineElement =
   | Beam
   | Bend
   | Chord
+  | ChordDiagram
   | DashedLineText
   | Dot
   | Group
@@ -83,8 +84,14 @@ export interface Bend {
 
 export interface Group {
   type: "Group";
-  elements: LineElement[];
   box: Box;
+  elements: LineElement[];
+}
+
+export interface ChordDiagram {
+  type: "ChordDiagram";
+  box: Box;
+  diagram: notation.ChordDiagram;
 }
 
 export interface Line {

@@ -314,7 +314,7 @@ export class PageLine extends Group<LineElement> {
           type: "Text",
           halign: firstMeasure ? "start" : "middle",
           valign: "end",
-          box: new Box(0, 0, numberSize, numberSize),
+          box: new Box(0, 0, 0, numberSize),
           size: numberSize,
           value: measure.number.toString(),
           style: {
@@ -334,12 +334,46 @@ export class PageLine extends Group<LineElement> {
           continue;
         }
 
+        if (element.chord.chordDiagram) {
+          const diagram = element.chord.chordDiagram;
+          if (diagram.diagram) {
+            this.aboveStaffLayout.addElement(
+              {
+                type: "ChordDiagram",
+                box: new Box(0, 0, 0, 5 * STAFF_LINE_HEIGHT),
+                diagram,
+              },
+              {
+                startColumn: index + 1,
+                endColumn: index + 1,
+                group: "chords",
+              }
+            );
+          } else {
+            this.aboveStaffLayout.addElement(
+              {
+                type: "Text",
+                box: new Box(0, 0, 0, 1.25 * baseSize),
+                size: 1.25 * baseSize,
+                value: diagram.name,
+                style: {
+                  fontWeight: "bold",
+                },
+              },
+              {
+                startColumn: index + 1,
+                endColumn: index + 1,
+                group: "chords",
+              }
+            );
+          }
+        }
+
         if (element.chord.text) {
-          // TODO baseSize isn't an appropriate width, but we have no way to measure text :(
           this.aboveStaffLayout.addElement(
             {
               type: "Text",
-              box: new Box(0, 0, baseSize, baseSize),
+              box: new Box(0, 0, 0, baseSize),
               size: baseSize,
               value: element.chord.text,
               style: {
@@ -348,7 +382,7 @@ export class PageLine extends Group<LineElement> {
             },
             {
               startColumn: index + 1,
-              endColumn: index + 1,
+              endColumn: index + 2,
               group: "lyricsAndText",
             }
           );
@@ -370,7 +404,7 @@ export class PageLine extends Group<LineElement> {
           this.aboveStaffLayout.addElement(
             {
               type: "Text",
-              box: new Box(element.box.x, 0, accentSize, accentSize),
+              box: new Box(0, 0, 0, accentSize),
               size: accentSize,
               value: accentString,
             },

@@ -28,6 +28,8 @@ export default function ScoreElement(props: { element: PageElement | LineElement
       return <Beam node={props.element} />;
     case "Chord":
       return <Chord chord={props.element} />;
+    case "ChordDiagram":
+      return <BoxGroup node={props.element} forceDebug />;
     case "DashedLineText":
       return <DashedLineText element={props.element} />;
     case "Dot":

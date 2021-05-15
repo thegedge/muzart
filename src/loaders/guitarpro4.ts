@@ -1,8 +1,9 @@
-import { padStart, range } from "lodash";
+import { padStart, range, zip } from "lodash";
 import {
   AccentStyle,
   Bend,
   BendType,
+  ChordDiagram,
   HarmonicStyle,
   Measure,
   Note,
@@ -212,8 +213,9 @@ export default function load(source: ArrayBuffer): Score {
           /* const n = */ cursor.nextNumber(NumberType.Uint32);
         }
 
+        let chordDiagram;
         if (hasChordDiagram) {
-          /* const diagram = */ readChordDiagram(cursor);
+          chordDiagram = readChordDiagram(cursor);
         }
 
         let text;
@@ -313,7 +315,7 @@ export default function load(source: ArrayBuffer): Score {
           measure.staffDetails.time = { value: newTimeSignature, changed: true };
         }
 
-        measure.chords.push({ notes, text, value: duration, rest });
+        measure.chords.push({ notes, chordDiagram, text, value: duration, rest });
       }
 
       score.parts[trackIndex].measures.push(measure);
@@ -525,7 +527,7 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
   return options;
 }
 
-function readChordDiagram(cursor: BufferCursor) {
+function readChordDiagram(cursor: BufferCursor): ChordDiagram {
   /* const version */ cursor.nextNumber(NumberType.Uint8);
   /* const sharp = */ cursor.nextNumber(NumberType.Uint8);
 
@@ -549,35 +551,44 @@ function readChordDiagram(cursor: BufferCursor) {
   /* const fifth = */ cursor.nextNumber(NumberType.Uint8);
   /* const ninth = */ cursor.nextNumber(NumberType.Uint8);
   /* const eleventh = */ cursor.nextNumber(NumberType.Uint8);
-  /* const baseFret = */ cursor.nextNumber(NumberType.Uint32);
 
-  /* const fret1 = */ cursor.nextNumber(NumberType.Uint32);
-  /* const fret2 = */ cursor.nextNumber(NumberType.Uint32);
-  /* const fret3 = */ cursor.nextNumber(NumberType.Uint32);
-  /* const fret4 = */ cursor.nextNumber(NumberType.Uint32);
-  /* const fret5 = */ cursor.nextNumber(NumberType.Uint32);
-  /* const fret6 = */ cursor.nextNumber(NumberType.Uint32);
-  /* const fret7 = */ cursor.nextNumber(NumberType.Uint32);
+  const baseFret = cursor.nextNumber(NumberType.Uint32);
 
-  /* const numBarres = */ cursor.nextNumber(NumberType.Uint8);
+  const frets = [
+    cursor.nextNumber(NumberType.Int32),
+    cursor.nextNumber(NumberType.Int32),
+    cursor.nextNumber(NumberType.Int32),
+    cursor.nextNumber(NumberType.Int32),
+    cursor.nextNumber(NumberType.Int32),
+    cursor.nextNumber(NumberType.Int32),
+    cursor.nextNumber(NumberType.Int32),
+  ];
 
-  /* const barreFret1 = */ cursor.nextNumber(NumberType.Uint8);
-  /* const barreFret2 = */ cursor.nextNumber(NumberType.Uint8);
-  /* const barreFret3 = */ cursor.nextNumber(NumberType.Uint8);
-  /* const barreFret4 = */ cursor.nextNumber(NumberType.Uint8);
-  /* const barreFret5 = */ cursor.nextNumber(NumberType.Uint8);
+  const numBarres = cursor.nextNumber(NumberType.Uint8);
 
-  /* const barreStart1 = */ cursor.nextNumber(NumberType.Uint8);
-  /* const barreStart2 = */ cursor.nextNumber(NumberType.Uint8);
-  /* const barreStart3 = */ cursor.nextNumber(NumberType.Uint8);
-  /* const barreStart4 = */ cursor.nextNumber(NumberType.Uint8);
-  /* const barreStart5 = */ cursor.nextNumber(NumberType.Uint8);
+  const barreFrets = [
+    cursor.nextNumber(NumberType.Uint8),
+    cursor.nextNumber(NumberType.Uint8),
+    cursor.nextNumber(NumberType.Uint8),
+    cursor.nextNumber(NumberType.Uint8),
+    cursor.nextNumber(NumberType.Uint8),
+  ];
 
-  /* const barreEnd1 = */ cursor.nextNumber(NumberType.Uint8);
-  /* const barreEnd2 = */ cursor.nextNumber(NumberType.Uint8);
-  /* const barreEnd3 = */ cursor.nextNumber(NumberType.Uint8);
-  /* const barreEnd4 = */ cursor.nextNumber(NumberType.Uint8);
-  /* const barreEnd5 = */ cursor.nextNumber(NumberType.Uint8);
+  const barreStarts = [
+    cursor.nextNumber(NumberType.Uint8),
+    cursor.nextNumber(NumberType.Uint8),
+    cursor.nextNumber(NumberType.Uint8),
+    cursor.nextNumber(NumberType.Uint8),
+    cursor.nextNumber(NumberType.Uint8),
+  ];
+
+  const barreEnds = [
+    cursor.nextNumber(NumberType.Uint8),
+    cursor.nextNumber(NumberType.Uint8),
+    cursor.nextNumber(NumberType.Uint8),
+    cursor.nextNumber(NumberType.Uint8),
+    cursor.nextNumber(NumberType.Uint8),
+  ];
 
   /* const omission1 = */ cursor.nextNumber(NumberType.Uint8);
   /* const omission3 = */ cursor.nextNumber(NumberType.Uint8);
@@ -598,6 +609,26 @@ function readChordDiagram(cursor: BufferCursor) {
   /* const fingering7 = */ cursor.nextNumber(NumberType.Uint8);
 
   /* const showDiagonalFingering = */ cursor.nextNumber(NumberType.Uint8);
+
+  let diagram;
+  if (numBarres > 0 || frets.some((v) => v != -1)) {
+    diagram = {
+      baseFret,
+      frets,
+      barres: zip(barreFrets, barreStarts, barreEnds)
+        .slice(0, numBarres)
+        .map(([fret, start, end]) => ({
+          baseFret: fret || 1,
+          firstString: start || 1,
+          lastString: end || 1,
+        })),
+    };
+  }
+
+  return {
+    name,
+    diagram,
+  };
 }
 
 function bits(byte: number): boolean[] {
