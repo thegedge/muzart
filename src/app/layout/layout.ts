@@ -77,12 +77,33 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     }
   }
 
+  // TODO a lot of code here is shared with the loop above
+
   if (line.elements.length > 0) {
     line.layout();
-    pageGroup.addElement(line);
-  } else {
-    pageGroup.popElement();
+
+    pageGroup.addElement({
+      type: "Space",
+      box: new Box(0, 0, LINE_MARGIN, LINE_MARGIN),
+    });
+
+    if (!pageGroup.tryAddElement(line)) {
+      pageGroup.popElement();
+      pageGroup.layout();
+
+      pages.push({
+        elements: pageGroup.elements,
+        width: DEFAULT_PAGE_WIDTH,
+        height: DEFAULT_PAGE_HEIGHT,
+        margins: clone(margins),
+      });
+
+      pageGroup = new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical" });
+      pageGroup.addElement(line);
+    }
   }
+
+  pageGroup.popElement();
 
   if (pageGroup.elements.length > 0) {
     pageGroup.layout(false);
