@@ -5,9 +5,11 @@ import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
 import { Bend } from "./Bend";
+import { Chord } from "./Chord";
 import { DashedLineText } from "./DashedLineText";
 import { Dot } from "./Dot";
 import { Measure } from "./Measure";
+import { Rest } from "./Rest";
 import { Slide } from "./Slide";
 import { Stem } from "./Stem";
 import { TextElement } from "./TextElement";
@@ -24,6 +26,8 @@ export default function ScoreElement(props: { element: PageElement | LineElement
       return <Bend node={props.element} />;
     case "Beam":
       return <Beam node={props.element} />;
+    case "Chord":
+      return <Chord chord={props.element} />;
     case "DashedLineText":
       return <DashedLineText element={props.element} />;
     case "Dot":
@@ -52,6 +56,8 @@ export default function ScoreElement(props: { element: PageElement | LineElement
       );
     case "Measure":
       return <Measure measure={props.element} />;
+    case "Rest":
+      return <Rest node={props.element} />;
     case "Slide":
       return <Slide node={props.element} />;
     case "Space":

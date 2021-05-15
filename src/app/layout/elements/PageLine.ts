@@ -715,7 +715,7 @@ export class PageLine extends Group<LineElement> {
     }
   }
 
-  private groupElementsOnBeat(measure: notation.Measure, elements: (Chord | Rest | Space)[]) {
+  private groupElementsOnBeat(measure: notation.Measure, elements: LineElement[]) {
     let beatAmount = 0.25; // TODO What do default to? Currently assuming quarter beat, hence 0.25.
     const timeBeat = measure.staffDetails.time?.value?.toBeat();
     if (timeBeat) {

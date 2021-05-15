@@ -41,11 +41,13 @@ export type LineElement =
   | BarLine
   | Beam
   | Bend
+  | Chord
   | DashedLineText
   | Dot
   | Group
   | Line
   | Measure
+  | Rest
   | Slide
   | Space
   | Stem
@@ -128,7 +130,7 @@ export interface Measure {
   type: "Measure";
   measure: notation.Measure;
   box: Box;
-  elements: (Chord | Rest | Space)[];
+  elements: LineElement[];
   // TODO decorations, like time signatures, clefs, etc
 }
 

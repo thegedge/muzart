@@ -1,15 +1,15 @@
 import * as notation from "../../../notation";
 import { NoteValue } from "../../../notation";
 import { STAFF_LINE_HEIGHT } from "../constants";
-import { FlexGroup } from "../layouts/FlexGroup";
-import { Chord, Inches, Rest, Space } from "../types";
+import { FlexGroup, FlexGroupElement } from "../layouts/FlexGroup";
+import { Chord, Inches, LineElement, Rest, Text } from "../types";
 import { maxMap } from "../utils";
 import Box from "../utils/Box";
 
 const MIN_NOTE_WIDTH: Inches = 0.2;
 const QUARTER_NOTE_WIDTH: Inches = 0.25;
 
-export class Measure extends FlexGroup<Chord | Rest | Space> {
+export class Measure extends FlexGroup<LineElement> {
   readonly type = "Measure";
 
   constructor(readonly part: notation.Part, readonly measure: notation.Measure) {
@@ -17,6 +17,45 @@ export class Measure extends FlexGroup<Chord | Rest | Space> {
 
     const spacerWidth = QUARTER_NOTE_WIDTH / 2;
     this.box.height = part.lineCount * STAFF_LINE_HEIGHT;
+
+    if (measure.staffDetails.time?.changed) {
+      const ts = measure.staffDetails.time.value;
+      const size = STAFF_LINE_HEIGHT * 2;
+      const group = new FlexGroupElement<Text>({
+        box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, size, STAFF_LINE_HEIGHT * (part.lineCount - 1)),
+        axis: "vertical",
+      });
+
+      group.addElement({
+        type: "Text",
+        box: new Box(0, 0, size, size),
+        size,
+        value: ts.count.toString(),
+        halign: "middle",
+        valign: "middle",
+        style: {
+          fontWeight: "bold",
+        },
+      });
+
+      group.addElement({
+        type: "Text",
+        box: new Box(0, 0, size, size),
+        size,
+        value: Math.round(1 / ts.value.toDecimal()).toString(),
+        halign: "middle",
+        valign: "middle",
+        style: {
+          fontWeight: "bold",
+        },
+      });
+
+      group.layout();
+      this.addElement({ type: "Space", box: new Box(0, 0, 0.5 * spacerWidth, spacerWidth) }, { factor: null });
+      this.box.width += 0.5 * spacerWidth;
+      this.addElement(group, { factor: null });
+      this.box.width += size;
+    }
 
     this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: null });
     this.box.width += spacerWidth;
