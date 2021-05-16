@@ -336,37 +336,19 @@ export class PageLine extends Group<LineElement> {
 
         if (element.chord.chordDiagram) {
           const diagram = element.chord.chordDiagram;
-          if (diagram.diagram) {
-            this.aboveStaffLayout.addElement(
-              {
-                type: "ChordDiagram",
-                box: new Box(0, 0, 0, 5 * STAFF_LINE_HEIGHT),
-                diagram,
-              },
-              {
-                startColumn: index + 1,
-                endColumn: index + 1,
-                group: "chords",
-              }
-            );
-          } else {
-            this.aboveStaffLayout.addElement(
-              {
-                type: "Text",
-                box: new Box(0, 0, 0, 1.25 * baseSize),
-                size: 1.25 * baseSize,
-                value: diagram.name,
-                style: {
-                  fontWeight: "bold",
-                },
-              },
-              {
-                startColumn: index + 1,
-                endColumn: index + 1,
-                group: "chords",
-              }
-            );
-          }
+          const height = (diagram.diagram ? 8 : 1) * STAFF_LINE_HEIGHT;
+          this.aboveStaffLayout.addElement(
+            {
+              type: "ChordDiagram",
+              box: new Box(0, 0, 0, height),
+              diagram,
+            },
+            {
+              startColumn: index + 1,
+              endColumn: index + 1,
+              group: "chords",
+            }
+          );
         }
 
         if (element.chord.text) {

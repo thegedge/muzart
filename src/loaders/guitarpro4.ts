@@ -610,7 +610,7 @@ function readChordDiagram(cursor: BufferCursor): ChordDiagram {
 
   /* const showDiagonalFingering = */ cursor.nextNumber(NumberType.Uint8);
 
-  let diagram;
+  let diagram: ChordDiagram["diagram"];
   if (numBarres > 0 || frets.some((v) => v != -1)) {
     diagram = {
       baseFret,
@@ -619,8 +619,8 @@ function readChordDiagram(cursor: BufferCursor): ChordDiagram {
         .slice(0, numBarres)
         .map(([fret, start, end]) => ({
           baseFret: fret || 1,
-          firstString: start || 1,
-          lastString: end || 1,
+          firstString: start || 0,
+          lastString: end || 0,
         })),
     };
   }

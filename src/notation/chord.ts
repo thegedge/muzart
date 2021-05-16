@@ -11,7 +11,7 @@ export interface ChordDiagram {
   name: string;
   diagram?: {
     baseFret: number;
-    frets: number[];
+    frets: (number | undefined)[];
     barres: Barre[];
   };
 }

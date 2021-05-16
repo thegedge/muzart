@@ -6,6 +6,7 @@ import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
 import { Bend } from "./Bend";
 import { Chord } from "./Chord";
+import { ChordDiagram } from "./ChordDiagram";
 import { DashedLineText } from "./DashedLineText";
 import { Dot } from "./Dot";
 import { Measure } from "./Measure";
@@ -29,7 +30,7 @@ export default function ScoreElement(props: { element: PageElement | LineElement
     case "Chord":
       return <Chord chord={props.element} />;
     case "ChordDiagram":
-      return <BoxGroup node={props.element} forceDebug />;
+      return <ChordDiagram element={props.element} />;
     case "DashedLineText":
       return <DashedLineText element={props.element} />;
     case "Dot":
