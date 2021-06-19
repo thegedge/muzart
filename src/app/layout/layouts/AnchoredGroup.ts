@@ -1,7 +1,7 @@
 import { zip } from "lodash";
-import { HasBox, Wrapped } from "../types";
-import Box from "../utils/Box";
-import { Group } from "./Group";
+import { wrap } from "../elements/Wrapped";
+import { HasBox, LayoutElement, Wrapped } from "../types";
+import { AbstractGroup as AbstractGroup } from "./AbstractGroup";
 import { MaybeLayout } from "./types";
 
 /**
@@ -9,7 +9,9 @@ import { MaybeLayout } from "./types";
  *
  * **Note**: Currently anchors only to the top-left corner of the anchor element.
  */
-export class AnchoredGroup<T extends MaybeLayout<HasBox>, AnchorT extends HasBox> extends Group<Wrapped<T>> {
+export class AnchoredGroup<T extends MaybeLayout<LayoutElement>, AnchorT extends HasBox> extends AbstractGroup<
+  Wrapped<T>
+> {
   readonly align = "end";
   public anchors: (AnchorT | null | undefined)[] = [];
 
@@ -23,12 +25,7 @@ export class AnchoredGroup<T extends MaybeLayout<HasBox>, AnchorT extends HasBox
    */
   addElement(element: T, anchor: AnchorT | null | undefined) {
     // TODO if no anchor, instead of wrapping, just use the element as is
-
-    this.elements.push({
-      type: "Wrapped",
-      element,
-      box: new Box(0, 0, 0, 0),
-    });
+    this.elements.push(wrap(element));
     this.anchors.push(anchor);
   }
 

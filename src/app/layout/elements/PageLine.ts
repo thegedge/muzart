@@ -2,16 +2,16 @@ import { clone, find, first, groupBy, isNumber, isUndefined, map, max, range, so
 import * as notation from "../../../notation";
 import { AccentStyle, NoteValueName } from "../../../notation";
 import { BEAM_HEIGHT, DOT_SIZE, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../constants";
+import { AbstractGroup } from "../layouts/AbstractGroup";
 import { AnchoredGroup } from "../layouts/AnchoredGroup";
 import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
 import { GridGroup } from "../layouts/GridGroup";
-import { Group } from "../layouts/Group";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
 import { Chord, Line, LineElement, Measure, Rest, Space, Text } from "../types";
 import { minMap, runs } from "../utils";
 import Box from "../utils/Box";
 
-export class PageLine extends Group<LineElement> {
+export class PageLine extends AbstractGroup<LineElement> {
   private aboveStaffLayout: GridGroup<LineElement>;
   private staffLayout: FlexGroupElement<LineElement>;
   private belowStaffLayout: NonNegativeGroup<LineElement>;
@@ -128,11 +128,16 @@ export class PageLine extends Group<LineElement> {
   }
 
   addElement(element: LineElement, flexProps?: Partial<FlexProps>) {
+    element.parent = this;
     return this.staffLayout.addElement(element, flexProps);
   }
 
   tryAddElement(element: LineElement, flexProps?: Partial<FlexProps>) {
-    return this.staffLayout.tryAddElement(element, flexProps);
+    const wasAdded = this.staffLayout.tryAddElement(element, flexProps);
+    if (wasAdded) {
+      element.parent = this;
+    }
+    return wasAdded;
   }
 
   layout() {

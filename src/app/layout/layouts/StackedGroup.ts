@@ -1,12 +1,13 @@
-import { HasBox, Wrapped } from "../types";
+import { wrap } from "../elements/Wrapped";
+import { LayoutElement, Wrapped } from "../types";
 import Box from "../utils/Box";
-import { Group } from "./Group";
+import { AbstractGroup } from "./AbstractGroup";
 import { MaybeLayout } from "./types";
 
 /**
  * A group that stacks its elements vertically.
  */
-export class StackedGroup<T extends MaybeLayout<HasBox>> extends Group<Wrapped<T>> {
+export class StackedGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGroup<Wrapped<T>> {
   constructor(readonly spacing = 0, box = new Box(0, 0, 0, 0)) {
     super(box);
   }
@@ -20,11 +21,7 @@ export class StackedGroup<T extends MaybeLayout<HasBox>> extends Group<Wrapped<T
    * @param anchor the element to anchor to
    */
   addElement(element: T) {
-    this.elements.push({
-      type: "Wrapped",
-      element,
-      box: new Box(0, 0, 0, 0),
-    });
+    this.elements.push(wrap(element));
   }
 
   reset() {

@@ -6,34 +6,43 @@ export type Inches = number;
 export type Alignment = "start" | "middle" | "end";
 export type VerticalOrientation = "above" | "below";
 
-export type HasBox = {
+export interface HasBox {
   box: Box;
-};
+}
 
-export type Margins = {
+export interface HasParent<T = any> {
+  parent?: T;
+}
+
+export interface LayoutElement<T = any> extends HasBox, HasParent<T> {
+  type: string;
+}
+
+export interface Margins {
   left: Inches;
   right: Inches;
   top: Inches;
   bottom: Inches;
-};
+}
 
 export interface Score {
+  type: "Score";
   score: notation.Score;
   parts: Part[];
 }
 
-export interface Part {
+export interface Part extends HasParent<Score> {
+  type: "Part";
   part: notation.Part;
   pages: Page[];
 }
 
 export type PageElement = Space | Text | Group;
 
-export interface Page {
+export interface Page extends LayoutElement<Part> {
+  type: "Page";
   elements: PageElement[];
   margins: Margins;
-  width: Inches;
-  height: Inches;
 }
 
 export type LineElement =
@@ -56,21 +65,18 @@ export type LineElement =
   | Vibrato
   | Wrapped<LineElement>;
 
-export interface Wrapped<T extends HasBox> {
+export interface Wrapped<T extends LayoutElement<any>> extends LayoutElement<any> {
   type: "Wrapped";
   element: T;
-  box: Box;
 }
 
-export interface Arc {
+export interface Arc extends LayoutElement<LineElement> {
   type: "Arc";
-  box: Box;
   orientation: VerticalOrientation;
 }
 
-export interface Bend {
+export interface Bend extends LayoutElement<LineElement> {
   type: "Bend";
-  box: Box;
   bend: notation.Bend;
 
   /**
@@ -82,58 +88,50 @@ export interface Bend {
   descent: number;
 }
 
-export interface Group {
+export interface Group extends LayoutElement<any> {
   type: "Group";
-  box: Box;
   elements: LineElement[];
 }
 
-export interface ChordDiagram {
+export interface ChordDiagram extends LayoutElement<LineElement> {
   type: "ChordDiagram";
-  box: Box;
   diagram: notation.ChordDiagram;
 }
 
-export interface Line {
+export interface Line extends LayoutElement<LineElement> {
   type: "Line";
-  box: Box;
   color: string;
 }
 
-export interface Space {
+export interface Space extends LayoutElement<LineElement> {
   type: "Space";
-  box: Box;
 }
 
-export interface Vibrato {
+export interface Vibrato extends LayoutElement<LineElement> {
   type: "Vibrato";
-  box: Box;
 }
 
-export interface BarLine {
+export interface BarLine extends LayoutElement<LineElement> {
   type: "BarLine";
   strokeSize: number;
-  box: Box;
 }
 
-export interface Text {
+export interface Text extends LayoutElement<LineElement> {
   type: "Text";
   value: string;
   size: Inches;
   halign?: Alignment;
   valign?: Alignment;
-  box: Box;
   style?: CSSProperties;
 }
 
-export interface DashedLineText {
+export interface DashedLineText extends LayoutElement<LineElement> {
   type: "DashedLineText";
   value: string;
   size: Inches;
-  box: Box;
 }
 
-export interface Measure {
+export interface Measure extends LayoutElement<LineElement> {
   type: "Measure";
   measure: notation.Measure;
   box: Box;
@@ -141,48 +139,40 @@ export interface Measure {
   // TODO decorations, like time signatures, clefs, etc
 }
 
-export interface Chord {
+export interface Chord extends LayoutElement<LineElement> {
   type: "Chord";
   chord: notation.Chord;
   notes: Note[];
-  box: Box;
 }
 
-export interface Rest {
+export interface Rest extends LayoutElement<LineElement> {
   type: "Rest";
   chord: notation.Chord;
-  box: Box;
 }
 
-export interface Note {
+export interface Note extends LayoutElement<LineElement> {
   type: "Note";
   note: notation.Note;
-  box: Box;
 }
 
-export interface Slide {
+export interface Slide extends LayoutElement<LineElement> {
   type: "Slide";
-  box: Box;
   upwards: boolean;
 }
 
-export interface Stem {
+export interface Stem extends LayoutElement<LineElement> {
   type: "Stem";
-  box: Box;
 }
 
-export interface Beam {
+export interface Beam extends LayoutElement<LineElement> {
   type: "Beam";
-  box: Box;
 }
 
-export interface Dot {
+export interface Dot extends LayoutElement<LineElement> {
   type: "Dot";
-  box: Box;
 }
 
-export interface Tuplet {
+export interface Tuplet extends LayoutElement<LineElement> {
   type: "Tuplet";
-  box: Box;
   orientation: VerticalOrientation;
 }

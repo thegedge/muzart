@@ -4,7 +4,8 @@ import { DEFAULT_MARGINS, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH, LINE_MARGIN, 
 import { Measure, Measure as MeasureLayout } from "./elements/Measure";
 import { PageLine } from "./elements/PageLine";
 import { FlexGroupElement } from "./layouts/FlexGroup";
-import { Page, PageElement, Part, Score, Text } from "./types";
+import { SimpleGroup } from "./layouts/SimpleGroup";
+import { LineElement, Margins, Page, PageElement, Part, Score, Text } from "./types";
 import Box from "./utils/Box";
 
 /**
@@ -16,6 +17,7 @@ import Box from "./utils/Box";
  */
 export function layout(score: notation.Score): Score {
   return {
+    type: "Score",
     score,
     parts: score.parts.map((part) => layOutPart(score, part)),
   };
@@ -57,17 +59,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
       }
 
       if (!pageGroup.tryAddElement(line, { factor: null })) {
-        pageGroup.popElement(); // remove spacer we just added above
-        pageGroup.layout();
-
-        pages.push({
-          elements: pageGroup.elements,
-          width: DEFAULT_PAGE_WIDTH,
-          height: DEFAULT_PAGE_HEIGHT,
-          margins: clone(margins),
-        });
-
-        pageGroup = new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical" });
+        pageGroup = startNewPage(pages, margins, pageContentBox, pageGroup);
         pageGroup.addElement(line);
       }
 
@@ -88,17 +80,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     });
 
     if (!pageGroup.tryAddElement(line)) {
-      pageGroup.popElement();
-      pageGroup.layout();
-
-      pages.push({
-        elements: pageGroup.elements,
-        width: DEFAULT_PAGE_WIDTH,
-        height: DEFAULT_PAGE_HEIGHT,
-        margins: clone(margins),
-      });
-
-      pageGroup = new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical" });
+      pageGroup = startNewPage(pages, margins, pageContentBox, pageGroup);
       pageGroup.addElement(line);
     }
   }
@@ -108,14 +90,43 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   if (pageGroup.elements.length > 0) {
     pageGroup.layout(false);
     pages.push({
+      type: "Page",
       elements: pageGroup.elements,
-      width: DEFAULT_PAGE_WIDTH,
-      height: DEFAULT_PAGE_HEIGHT,
+      box: new Box(0, 0, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT),
       margins: clone(margins),
     });
   }
 
-  return { part, pages };
+  const partLayout: Part = {
+    type: "Part",
+    part,
+    pages,
+  };
+
+  for (const page of pages) {
+    page.parent = partLayout;
+  }
+
+  return partLayout;
+}
+
+function startNewPage(pages: Page[], margins: Margins, pageContentBox: Box, pageGroup: FlexGroupElement<PageElement>) {
+  pageGroup.popElement(); // remove spacer we just added above
+  pageGroup.layout();
+
+  const page: Page = {
+    type: "Page",
+    elements: pageGroup.elements,
+    box: new Box(0, 0, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT),
+    margins: clone(margins),
+  };
+
+  for (const element of pageGroup.elements) {
+    element.parent = page;
+  }
+  pages.push(page);
+
+  return new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical" });
 }
 
 function layOutPartHeader(
@@ -176,21 +187,16 @@ function layOutPartHeader(
 
     const offset = Math.round(texts.length / 2);
     for (let index = 0; index < offset; ++index) {
-      const elements = [texts[index]];
+      const group = new SimpleGroup<LineElement>(new Box(0, 0, textSize * 10, 1.3 * textSize));
+      group.addElement(texts[index]);
+
       if (offset + index < texts.length) {
         const text = texts[offset + index];
         text.box.x = textSize * 5;
-        elements.push(text);
+        group.addElement(text);
       }
 
-      pageGroup.addElement(
-        {
-          type: "Group",
-          box: new Box(0, 0, textSize * 10, 1.3 * textSize),
-          elements,
-        },
-        { factor: 0 }
-      );
+      pageGroup.addElement(group, { factor: 0 });
     }
   }
 }

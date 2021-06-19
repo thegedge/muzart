@@ -1,6 +1,6 @@
 import { every, find, partition, sum, zip } from "lodash";
-import { HasBox } from "../types";
-import { Group } from "./Group";
+import { LayoutElement } from "../types";
+import { AbstractGroup } from "./AbstractGroup";
 import { MaybeLayout } from "./types";
 
 export interface Constraint {
@@ -20,7 +20,7 @@ export interface Constraint {
 /**
  * TBD
  */
-export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
+export class GridGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGroup<T> {
   private constraints: Constraint[] = [];
   private widths: ReadonlyArray<number> = [];
   private leftEdges: ReadonlyArray<number> = [];
@@ -30,6 +30,7 @@ export class GridGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
   }
 
   addElement(element: T, constraint: Constraint) {
+    element.parent = this;
     this.elements.push(element);
     this.constraints.push(constraint);
   }

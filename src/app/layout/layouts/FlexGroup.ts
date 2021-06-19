@@ -1,5 +1,5 @@
 import { defaults, isNull, last, sum, zip } from "lodash";
-import { HasBox } from "../types";
+import { LayoutElement } from "../types";
 import Box from "../utils/Box";
 import { MaybeLayout } from "./types";
 
@@ -27,7 +27,7 @@ export type FlexGroupConfig = {
  * If, after laying out the child elements, there is still space left in the box of this group, distribute that space to all
  * elements that can be stretched (flex props with a non-null factor and not fixed).
  */
-export class FlexGroup<T extends MaybeLayout<HasBox>> {
+export class FlexGroup<T extends MaybeLayout<LayoutElement>> {
   // TODO "space between" option
 
   readonly elements: T[] = [];
@@ -75,6 +75,7 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
       element.box[this.startAttribute] = lastElement.box[this.endAttribute];
     }
 
+    element.parent = this;
     this.elements.push(element);
     this.flexProps.push(defaults({}, flexProps, this.defaultFlexProps));
     return true;
@@ -85,13 +86,18 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
     if (lastElement) {
       element.box[this.startAttribute] = lastElement.box[this.endAttribute];
     }
+    element.parent = this;
     this.elements.push(element);
     this.flexProps.push(defaults({}, flexProps, this.defaultFlexProps));
   }
 
   popElement(): T | undefined {
     this.flexProps.pop();
-    return this.elements.pop();
+    const element = this.elements.pop();
+    if (element) {
+      element.parent = undefined;
+    }
+    return element;
   }
 
   /**
@@ -133,6 +139,6 @@ export class FlexGroup<T extends MaybeLayout<HasBox>> {
   }
 }
 
-export class FlexGroupElement<T extends MaybeLayout<HasBox>> extends FlexGroup<T> {
+export class FlexGroupElement<T extends MaybeLayout<LayoutElement>> extends FlexGroup<T> {
   readonly type = "Group";
 }

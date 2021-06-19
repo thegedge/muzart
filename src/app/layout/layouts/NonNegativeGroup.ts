@@ -1,5 +1,5 @@
-import { HasBox } from "../types";
-import { Group } from "./Group";
+import { LayoutElement } from "../types";
+import { AbstractGroup } from "./AbstractGroup";
 import { MaybeLayout } from "./types";
 
 /**
@@ -7,8 +7,9 @@ import { MaybeLayout } from "./types";
  *
  * This is achieved by offsetting all elements by the top-left (x,y) corner of the bounding box of all elements.
  */
-export class NonNegativeGroup<T extends MaybeLayout<HasBox>> extends Group<T> {
+export class NonNegativeGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGroup<T> {
   addElement(element: T) {
+    element.parent = this;
     this.box = this.box.encompass(element.box);
     this.elements.push(element);
   }

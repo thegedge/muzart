@@ -8,6 +8,7 @@ export function Slide(props: { node: Slide }) {
   const arc = useMemo<ArcElement>(
     () => ({
       type: "Arc",
+      parent: props.node.parent,
       box: new Box(
         -0.5 * STAFF_LINE_HEIGHT,
         props.node.box.height + 0.1 * STAFF_LINE_HEIGHT,

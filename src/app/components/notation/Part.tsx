@@ -15,8 +15,8 @@ export function Part(props: { part: Part }) {
       </g>
     );
 
-    width = Math.max(width, page.width);
-    height += PAGE_MARGIN + page.height;
+    width = Math.max(width, page.box.width);
+    height += PAGE_MARGIN + page.box.height;
 
     return pageElement;
   });
