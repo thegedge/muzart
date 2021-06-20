@@ -3,7 +3,7 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import { determineType, load, ScoreDataType } from "../loaders";
 import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
-import Score from "./components/notation/Score";
+import { Score } from "./components/notation/Score";
 import { PlaybackContext } from "./components/utils/PlaybackContext";
 import { SelectionContext } from "./components/utils/SelectionContext";
 import * as layout from "./layout";

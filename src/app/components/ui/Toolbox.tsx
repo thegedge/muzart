@@ -1,22 +1,17 @@
-import { clone } from "lodash";
-import React, { useCallback } from "react";
+import React from "react";
 import { Score } from "../../../notation";
-import { useSelection } from "../utils/SelectionContext";
+import { useWriteSelection } from "../utils/SelectionContext";
 
 export function Toolbox(props: { score: Score; onDebugToggled: (value: boolean) => void }) {
-  const { indices, setSelection } = useSelection();
+  const { updateSelection } = useWriteSelection();
 
-  const onPartChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
-    indices.part = event.target.selectedIndex;
-    setSelection(clone(indices));
-  }, []);
+  const onPartChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    updateSelection({ part: event.target.selectedIndex });
+  };
 
-  const onDebugToggled = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      props.onDebugToggled(event.target.checked);
-    },
-    [props.onDebugToggled]
-  );
+  const onDebugToggled = (event: React.ChangeEvent<HTMLInputElement>) => {
+    props.onDebugToggled(event.target.checked);
+  };
 
   return (
     <div className="sticky top-4 h-0">

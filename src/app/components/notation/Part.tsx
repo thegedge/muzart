@@ -1,11 +1,11 @@
 import React from "react";
-import { LINE_STROKE_WIDTH, Part, STAFF_LINE_HEIGHT } from "../../layout";
+import { LINE_STROKE_WIDTH, Part as LayoutPart, STAFF_LINE_HEIGHT } from "../../layout";
 import Page from "../layout/Page";
 
 const PAGE_MARGIN = 0.5;
 const BASE_SCALE = 8;
 
-export function Part(props: { part: Part }) {
+export function Part(props: { part: LayoutPart }) {
   let width = 0;
   let height = PAGE_MARGIN;
   const pages = props.part.pages.map((page, index) => {

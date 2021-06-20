@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "server": "webpack serve --hot",
-    "build": "cross-env NODE_ENV=production webpack",
+    "build": "cross-env webpack",
     "tc": "tsc --noEmit"
   },
   "dependencies": {

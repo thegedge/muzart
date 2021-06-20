@@ -5,10 +5,10 @@ import { Suspenseful } from "../../suspenseful";
 import { Toolbox } from "../ui/Toolbox";
 import { DebugContext, DebugContextData } from "../utils/DebugContext";
 import { usePlayback } from "../utils/PlaybackContext";
-import { useSelection } from "../utils/SelectionContext";
+import { useReadSelection } from "../utils/SelectionContext";
 import { Part } from "./Part";
 
-export default function Score(props: { score: layout.Score | Suspenseful<layout.Score> }) {
+export function Score(props: { score: layout.Score | Suspenseful<layout.Score> }) {
   if (props.score == null) {
     return <></>;
   }
@@ -18,8 +18,8 @@ export default function Score(props: { score: layout.Score | Suspenseful<layout.
     return <></>;
   }
 
-  const { indices } = useSelection();
-  const part = score.parts[indices.part];
+  const { part: selectedPart } = useReadSelection();
+  const part = score.parts[selectedPart];
 
   const playback = usePlayback();
   const onKeyPress = useCallback(

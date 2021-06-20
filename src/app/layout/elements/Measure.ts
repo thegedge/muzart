@@ -107,6 +107,7 @@ function layOutChord(chord: notation.Chord): Chord | Rest {
     chordLayout.box.height = Math.max(chordLayout.box.height, noteY + STAFF_LINE_HEIGHT);
     chordLayout.notes.push({
       type: "Note",
+      parent: chordLayout,
       // box: new Box((width - noteWidth) * 0.5, noteY, noteWidth, STAFF_LINE_HEIGHT),
       box: new Box(0, noteY, noteWidth, STAFF_LINE_HEIGHT),
       note,

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from "react";
+import { defaults } from "lodash";
+import React, { createContext, useCallback, useContext, useState } from "react";
 
 export interface Selection {
   part: number;
@@ -7,32 +8,66 @@ export interface Selection {
   note: number;
 }
 
-interface ContextData {
-  indices: Selection;
+interface ReadContextData extends Selection {}
+
+interface WriteContextData {
   setSelection: (selection: Selection) => void;
+  updateSelection: (selection: Partial<Selection>) => void;
 }
 
-const Context = createContext<ContextData>({
-  indices: {
-    part: 0,
-    measure: 0,
-    chord: 0,
-    note: 0,
-  },
-  setSelection: (_: Selection) => {},
+const ReadContext = createContext<ReadContextData>({
+  part: 0,
+  measure: 0,
+  chord: 0,
+  note: 0,
 });
 
+const WriteContext = createContext<WriteContextData>({
+  setSelection: (_: Selection) => {},
+  updateSelection: (_: Partial<Selection>) => {},
+});
+
+export function useWriteSelection() {
+  return useContext(WriteContext);
+}
+
+export function useReadSelection() {
+  return useContext(ReadContext);
+}
+
 export function useSelection() {
-  return useContext(Context);
+  const read = useReadSelection();
+  const write = useWriteSelection();
+  return { selection: read, ...write };
 }
 
 export function SelectionContext(props: { children?: React.ReactNode }) {
-  const [indices, setSelection] = useState({
+  const [selection, setSelection] = useState({
     part: 0,
     measure: 0,
     chord: 0,
     note: 0,
   });
 
-  return <Context.Provider value={{ indices, setSelection }}>{props.children}</Context.Provider>;
+  const updateSelection = useCallback(
+    (selection: Partial<Selection>) => {
+      setSelection((current) => {
+        const a = selection.part && selection.part != current.part;
+        const b = selection.measure && selection.measure != current.measure;
+        const c = selection.chord && selection.chord != current.chord;
+        const d = selection.note && selection.note != current.note;
+        if (a || b || c || d) {
+          return defaults(selection, current);
+        }
+        return current;
+      });
+    },
+    [setSelection]
+  );
+
+  return (
+    <ReadContext.Provider value={selection}>
+      <WriteContext.Provider value={{ setSelection, updateSelection }}>{props.children}</WriteContext.Provider>
+    </ReadContext.Provider>
+  );
 }

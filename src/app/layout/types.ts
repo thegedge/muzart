@@ -176,3 +176,17 @@ export interface Tuplet extends LayoutElement<LineElement> {
   type: "Tuplet";
   orientation: VerticalOrientation;
 }
+
+export function getParentOfType<T extends LayoutElement<any>>(
+  e: LayoutElement<any> | undefined,
+  type: string
+): T | undefined {
+  e = e?.parent;
+  while (e) {
+    if (e.type == type) {
+      return e as T;
+    }
+    e = e.parent;
+  }
+  return e;
+}
