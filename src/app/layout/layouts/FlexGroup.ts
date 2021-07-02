@@ -27,11 +27,12 @@ export type FlexGroupConfig = {
  * If, after laying out the child elements, there is still space left in the box of this group, distribute that space to all
  * elements that can be stretched (flex props with a non-null factor and not fixed).
  */
-export class FlexGroup<T extends MaybeLayout<LayoutElement>> {
+export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent = LayoutElement> {
   // TODO "space between" option
 
   readonly elements: T[] = [];
 
+  public parent?: Parent;
   public box: Box;
 
   private defaultFlexProps: FlexProps;
@@ -65,7 +66,7 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>> {
    *
    * @returns `true` if the element was added, `false` otherwise
    */
-  tryAddElement(element: T, flexProps?: Partial<FlexProps>) {
+  tryAddElement(element: T, flexProps?: Partial<FlexProps>): boolean {
     const lastElement = last(this.elements);
     if (lastElement) {
       if (lastElement.box[this.endAttribute] + element.box[this.dimensionAttribute] > this.box[this.endAttribute]) {
@@ -81,7 +82,7 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>> {
     return true;
   }
 
-  addElement(element: T, flexProps?: Partial<FlexProps>) {
+  addElement(element: T, flexProps?: Partial<FlexProps>): void {
     const lastElement = last(this.elements);
     if (lastElement) {
       element.box[this.startAttribute] = lastElement.box[this.endAttribute];

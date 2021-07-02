@@ -37,12 +37,13 @@ export interface Part extends HasParent<Score> {
   pages: Page[];
 }
 
-export type PageElement = Space | Text | Group;
+export type PageElement = Space | Text | Group<LineElement>;
 
 export interface Page extends LayoutElement<Part> {
   type: "Page";
   elements: PageElement[];
   margins: Margins;
+  measures: Measure[];
 }
 
 export type LineElement =
@@ -54,7 +55,7 @@ export type LineElement =
   | ChordDiagram
   | DashedLineText
   | Dot
-  | Group
+  | Group<LineElement>
   | Line
   | Measure
   | Rest
@@ -88,9 +89,9 @@ export interface Bend extends LayoutElement<LineElement> {
   descent: number;
 }
 
-export interface Group extends LayoutElement<any> {
+export interface Group<T> extends LayoutElement<any> {
   type: "Group";
-  elements: LineElement[];
+  elements: T[];
 }
 
 export interface ChordDiagram extends LayoutElement<LineElement> {
@@ -136,6 +137,7 @@ export interface Measure extends LayoutElement<LineElement> {
   measure: notation.Measure;
   box: Box;
   elements: LineElement[];
+  chords: (Chord | Rest)[];
   // TODO decorations, like time signatures, clefs, etc
 }
 
@@ -177,11 +179,15 @@ export interface Tuplet extends LayoutElement<LineElement> {
   orientation: VerticalOrientation;
 }
 
-export function getParentOfType<T extends LayoutElement<any>>(
+/**
+ * Find the ancestor element of a given type.
+ *
+ * @returns The element whose `type` matches the given `type`. If `e` itself is of the given type, `e` will be returned.
+ */
+export function getAncestorOfType<T extends LayoutElement<any>>(
   e: LayoutElement<any> | undefined,
   type: string
 ): T | undefined {
-  e = e?.parent;
   while (e) {
     if (e.type == type) {
       return e as T;

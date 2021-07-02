@@ -1,14 +1,15 @@
-import React from "react";
-import { HasBox } from "../../layout";
+import React, { SVGProps } from "react";
+import { LayoutElement } from "../../layout";
 import { useDebugRectParams } from "../utils/DebugContext";
 import { svgBoxProps, svgPositionTransform } from "../utils/svg";
 
-export function BoxGroup(props: {
-  node: HasBox & { type?: string };
+export interface BoxGroupProps extends SVGProps<SVGGElement> {
+  node: LayoutElement;
   scale?: number;
   forceDebug?: boolean;
-  children?: React.ReactNode;
-}) {
+}
+
+export function BoxGroup(props: BoxGroupProps) {
   const debugParams = useDebugRectParams(props.node.type, props.forceDebug);
   const transforms = [svgPositionTransform(props.node)];
   if (props.scale) {
@@ -17,7 +18,7 @@ export function BoxGroup(props: {
 
   return (
     <>
-      <g transform={transforms.join(" ")}>{props.children}</g>
+      <g transform={transforms.join(" ")} {...props} />
       {debugParams && <rect {...svgBoxProps(props.node)} {...debugParams} />}
     </>
   );

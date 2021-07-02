@@ -21,7 +21,9 @@ export class StackedGroup<T extends MaybeLayout<LayoutElement>> extends Abstract
    * @param anchor the element to anchor to
    */
   addElement(element: T) {
-    this.elements.push(wrap(element));
+    const wrapped = wrap(element);
+    wrapped.parent = this;
+    this.elements.push(wrapped);
   }
 
   reset() {

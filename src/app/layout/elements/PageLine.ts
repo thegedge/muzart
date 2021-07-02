@@ -15,17 +15,17 @@ export class PageLine extends AbstractGroup<LineElement> {
   private aboveStaffLayout: GridGroup<LineElement>;
   private staffLayout: FlexGroupElement<LineElement>;
   private belowStaffLayout: NonNegativeGroup<LineElement>;
+  private staffLines: Line[] = [];
 
   // TODO find a better place for these
   private staffOverlay: AnchoredGroup<LineElement, Measure | Chord>;
 
-  private staffLines: Line[] = [];
+  public measures: Measure[] = [];
 
   constructor(box: Box, private numStaffLines = 6) {
     super(box);
 
     this.staffOverlay = new AnchoredGroup();
-
     this.aboveStaffLayout = new GridGroup(STAFF_LINE_HEIGHT * 0.25);
     this.staffLayout = new FlexGroupElement<LineElement>({ box: clone(box) });
     this.belowStaffLayout = new NonNegativeGroup();
@@ -47,6 +47,11 @@ export class PageLine extends AbstractGroup<LineElement> {
       },
       { factor: null }
     );
+  }
+
+  reset() {
+    super.reset();
+    this.measures = [];
   }
 
   private initializeElements() {
@@ -115,9 +120,15 @@ export class PageLine extends AbstractGroup<LineElement> {
 
     this.staffLines = range(this.numStaffLines).map((_index) => ({
       type: "Line",
+      parent: this,
       box: new Box(0, 0, 0, 0),
       color: "#888888",
     }));
+
+    this.aboveStaffLayout.parent = this;
+    this.staffLayout.parent = this;
+    this.belowStaffLayout.parent = this;
+    this.staffOverlay.parent = this;
 
     this.elements = (this.staffLines as LineElement[]).concat([
       this.aboveStaffLayout,
@@ -128,14 +139,16 @@ export class PageLine extends AbstractGroup<LineElement> {
   }
 
   addElement(element: LineElement, flexProps?: Partial<FlexProps>) {
-    element.parent = this;
+    if (element.type == "Measure") {
+      this.measures.push(element);
+    }
     return this.staffLayout.addElement(element, flexProps);
   }
 
   tryAddElement(element: LineElement, flexProps?: Partial<FlexProps>) {
     const wasAdded = this.staffLayout.tryAddElement(element, flexProps);
-    if (wasAdded) {
-      element.parent = this;
+    if (wasAdded && element.type == "Measure") {
+      this.measures.push(element);
     }
     return wasAdded;
   }

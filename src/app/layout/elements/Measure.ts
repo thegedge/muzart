@@ -1,7 +1,7 @@
 import * as notation from "../../../notation";
 import { NoteValue } from "../../../notation";
 import { STAFF_LINE_HEIGHT } from "../constants";
-import { FlexGroup, FlexGroupElement } from "../layouts/FlexGroup";
+import { FlexGroup, FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
 import { Chord, Inches, LineElement, Rest, Text } from "../types";
 import { maxMap } from "../utils";
 import Box from "../utils/Box";
@@ -9,8 +9,10 @@ import Box from "../utils/Box";
 const MIN_NOTE_WIDTH: Inches = 0.2;
 const QUARTER_NOTE_WIDTH: Inches = 0.25;
 
-export class Measure extends FlexGroup<LineElement> {
+export class Measure extends FlexGroup<LineElement, LineElement> {
   readonly type = "Measure";
+
+  public chords: (Chord | Rest)[] = [];
 
   constructor(readonly part: notation.Part, readonly measure: notation.Measure) {
     super({ box: new Box(0, 0, 0, 0), axis: "horizontal" });
@@ -83,6 +85,23 @@ export class Measure extends FlexGroup<LineElement> {
 
     this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: null });
     this.box.width += spacerWidth;
+  }
+
+  tryAddElement(element: LineElement, flexProps?: Partial<FlexProps>) {
+    const wasAdded = super.tryAddElement(element, flexProps);
+    if (wasAdded) {
+      if (element.type == "Rest" || element.type == "Chord") {
+        this.chords.push(element);
+      }
+    }
+    return wasAdded;
+  }
+
+  addElement(element: LineElement, flexProps?: Partial<FlexProps>) {
+    super.addElement(element, flexProps);
+    if (element.type == "Rest" || element.type == "Chord") {
+      this.chords.push(element);
+    }
   }
 }
 

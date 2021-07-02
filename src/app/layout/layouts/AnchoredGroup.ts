@@ -25,7 +25,9 @@ export class AnchoredGroup<T extends MaybeLayout<LayoutElement>, AnchorT extends
    */
   addElement(element: T, anchor: AnchorT | null | undefined) {
     // TODO if no anchor, instead of wrapping, just use the element as is
-    this.elements.push(wrap(element));
+    const wrapped = wrap(element);
+    wrapped.parent = this;
+    this.elements.push(wrapped);
     this.anchors.push(anchor);
   }
 

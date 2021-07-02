@@ -4,8 +4,8 @@ import * as layout from "../../layout";
 import { Suspenseful } from "../../suspenseful";
 import { Toolbox } from "../ui/Toolbox";
 import { DebugContext, DebugContextData } from "../utils/DebugContext";
-import { usePlayback } from "../utils/PlaybackContext";
-import { useReadSelection } from "../utils/SelectionContext";
+import { PlaybackContext, usePlayback } from "../utils/PlaybackContext";
+import { SelectionContext, useReadSelection } from "../utils/SelectionContext";
 import { Part } from "./Part";
 
 export function Score(props: { score: layout.Score | Suspenseful<layout.Score> }) {
@@ -18,8 +18,8 @@ export function Score(props: { score: layout.Score | Suspenseful<layout.Score> }
     return <></>;
   }
 
-  const { part: selectedPart } = useReadSelection();
-  const part = score.parts[selectedPart];
+  const selection = useReadSelection();
+  const part = score.parts[selection.part];
 
   const playback = usePlayback();
   const onKeyPress = useCallback(
@@ -56,7 +56,11 @@ export function Score(props: { score: layout.Score | Suspenseful<layout.Score> }
         }}
       />
       <DebugContext.Provider value={debugData}>
-        <Part part={part} />
+        <SelectionContext score={score}>
+          <PlaybackContext>
+            <Part part={part} />
+          </PlaybackContext>
+        </SelectionContext>
       </DebugContext.Provider>
     </>
   );

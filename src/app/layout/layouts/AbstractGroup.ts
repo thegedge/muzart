@@ -5,6 +5,7 @@ import { MaybeLayout } from "./types";
 export abstract class AbstractGroup<T extends MaybeLayout<LayoutElement>> {
   readonly type = "Group";
 
+  public parent?: LayoutElement;
   public elements: T[] = [];
 
   constructor(public box = new Box(0, 0, 0, 0)) {}

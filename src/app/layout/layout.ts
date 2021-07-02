@@ -1,11 +1,11 @@
 import { clone } from "lodash";
 import * as notation from "../../notation";
 import { DEFAULT_MARGINS, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH, LINE_MARGIN, STAFF_LINE_HEIGHT } from "./constants";
-import { Measure, Measure as MeasureLayout } from "./elements/Measure";
+import { Measure as MeasureLayout } from "./elements/Measure";
 import { PageLine } from "./elements/PageLine";
 import { FlexGroupElement } from "./layouts/FlexGroup";
 import { SimpleGroup } from "./layouts/SimpleGroup";
-import { LineElement, Margins, Page, PageElement, Part, Score, Text } from "./types";
+import { LineElement, Margins, Measure, Page, PageElement, Part, Score, Text } from "./types";
 import Box from "./utils/Box";
 
 /**
@@ -22,6 +22,8 @@ export function layout(score: notation.Score): Score {
     parts: score.parts.map((part) => layOutPart(score, part)),
   };
 }
+
+export const PAGE_MARGIN = 0.5;
 
 // TODO decompose this more, move into other files (e.g., `Line.fromMeasures`)
 
@@ -85,16 +87,21 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     }
   }
 
-  pageGroup.popElement();
-
   if (pageGroup.elements.length > 0) {
     pageGroup.layout(false);
-    pages.push({
+
+    const page: Page = {
       type: "Page",
       elements: pageGroup.elements,
-      box: new Box(0, 0, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT),
+      box: new Box(0, pages.length * (DEFAULT_PAGE_HEIGHT + PAGE_MARGIN), DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT),
       margins: clone(margins),
-    });
+      measures: measureElements(pageGroup.elements),
+    };
+
+    for (const element of pageGroup.elements) {
+      element.parent = page;
+    }
+    pages.push(page);
   }
 
   const partLayout: Part = {
@@ -117,8 +124,9 @@ function startNewPage(pages: Page[], margins: Margins, pageContentBox: Box, page
   const page: Page = {
     type: "Page",
     elements: pageGroup.elements,
-    box: new Box(0, 0, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT),
+    box: new Box(0, pages.length * (DEFAULT_PAGE_HEIGHT + PAGE_MARGIN), DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT),
     margins: clone(margins),
+    measures: measureElements(pageGroup.elements),
   };
 
   for (const element of pageGroup.elements) {
@@ -127,6 +135,16 @@ function startNewPage(pages: Page[], margins: Margins, pageContentBox: Box, page
   pages.push(page);
 
   return new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical" });
+}
+
+function measureElements(pageElements: PageElement[]): Measure[] {
+  return pageElements.flatMap((e) => {
+    if (e.type != "Group") {
+      return [];
+    }
+
+    return e.elements.filter((e) => e.type == "Measure") as Measure[];
+  });
 }
 
 function layOutPartHeader(
