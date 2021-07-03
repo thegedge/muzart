@@ -21,6 +21,8 @@ export interface Constraint {
  * TBD
  */
 export class GridGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGroup<T> {
+  readonly type = "Group";
+
   private constraints: Constraint[] = [];
   private widths: ReadonlyArray<number> = [];
   private leftEdges: ReadonlyArray<number> = [];

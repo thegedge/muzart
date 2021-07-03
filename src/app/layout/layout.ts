@@ -139,11 +139,11 @@ function startNewPage(pages: Page[], margins: Margins, pageContentBox: Box, page
 
 function measureElements(pageElements: PageElement[]): Measure[] {
   return pageElements.flatMap((e) => {
-    if (e.type != "Group") {
+    if (e.type != "PageLine") {
       return [];
     }
 
-    return e.elements.filter((e) => e.type == "Measure") as Measure[];
+    return e.measures;
   });
 }
 

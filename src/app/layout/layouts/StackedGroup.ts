@@ -8,6 +8,8 @@ import { MaybeLayout } from "./types";
  * A group that stacks its elements vertically.
  */
 export class StackedGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGroup<Wrapped<T>> {
+  readonly type = "Group";
+
   constructor(readonly spacing = 0, box = new Box(0, 0, 0, 0)) {
     super(box);
   }

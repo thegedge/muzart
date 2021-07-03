@@ -1,9 +1,14 @@
+import { assign } from "lodash";
 import * as React from "react";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { determineType, load, ScoreDataType } from "../loaders";
 import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { Score } from "./components/notation/Score";
+import { Toolbox } from "./components/ui/Toolbox";
+import { DebugContext, DebugContextData } from "./components/utils/DebugContext";
+import { PlaybackContext } from "./components/utils/PlaybackContext";
+import { SelectionContext } from "./components/utils/SelectionContext";
 import * as layout from "./layout";
 import { Suspenseful, suspenseful } from "./suspenseful";
 
@@ -57,11 +62,45 @@ export default function App() {
           onDragOver={(event) => event.preventDefault()}
         >
           <ErrorBoundary>
-            <Score score={score} />
+            <ScoreWithContexts score={score} />
           </ErrorBoundary>
         </div>
       )}
     </Suspense>
+  );
+}
+
+function ScoreWithContexts(props: { score: Suspenseful<layout.Score> }) {
+  if (props.score == null) {
+    return <></>;
+  }
+
+  const score = props.score.read();
+  if (score == null) {
+    return <></>;
+  }
+
+  const [debugData, setDebugData] = useState<DebugContextData>({
+    enabled: false,
+    index: 0,
+    colorMap: {},
+  });
+
+  return (
+    <DebugContext.Provider value={debugData}>
+      <PlaybackContext>
+        <SelectionContext score={score}>
+          <Toolbox
+            score={score.score}
+            onDebugToggled={(v) => {
+              const value = assign({}, debugData, { enabled: v });
+              setDebugData(value);
+            }}
+          />
+          <Score score={score} />
+        </SelectionContext>
+      </PlaybackContext>
+    </DebugContext.Provider>
   );
 }
 

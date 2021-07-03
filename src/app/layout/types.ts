@@ -37,12 +37,18 @@ export interface Part extends HasParent<Score> {
   pages: Page[];
 }
 
-export type PageElement = Space | Text | Group<LineElement>;
+export type PageElement = Space | Text | Group<LineElement> | PageLine;
 
 export interface Page extends LayoutElement<Part> {
   type: "Page";
   elements: PageElement[];
   margins: Margins;
+  measures: Measure[];
+}
+
+export interface PageLine extends LayoutElement<Page> {
+  type: "PageLine";
+  elements: LineElement[];
   measures: Measure[];
 }
 
@@ -99,7 +105,7 @@ export interface ChordDiagram extends LayoutElement<LineElement> {
   diagram: notation.ChordDiagram;
 }
 
-export interface Line extends LayoutElement<LineElement> {
+export interface Line extends LayoutElement<PageLine> {
   type: "Line";
   color: string;
 }

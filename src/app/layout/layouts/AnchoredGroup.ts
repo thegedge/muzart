@@ -12,6 +12,7 @@ import { MaybeLayout } from "./types";
 export class AnchoredGroup<T extends MaybeLayout<LayoutElement>, AnchorT extends HasBox> extends AbstractGroup<
   Wrapped<T>
 > {
+  readonly type = "Group";
   readonly align = "end";
   public anchors: (AnchorT | null | undefined)[] = [];
 

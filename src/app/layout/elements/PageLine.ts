@@ -7,11 +7,13 @@ import { AnchoredGroup } from "../layouts/AnchoredGroup";
 import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
 import { GridGroup } from "../layouts/GridGroup";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
-import { Chord, Line, LineElement, Measure, Rest, Space, Text } from "../types";
+import { Chord, Line, LineElement, Measure, Page, Rest, Space, Text } from "../types";
 import { minMap, runs } from "../utils";
 import Box from "../utils/Box";
 
-export class PageLine extends AbstractGroup<LineElement> {
+export class PageLine extends AbstractGroup<LineElement, Page> {
+  readonly type = "PageLine";
+
   private aboveStaffLayout: GridGroup<LineElement>;
   private staffLayout: FlexGroupElement<LineElement>;
   private belowStaffLayout: NonNegativeGroup<LineElement>;

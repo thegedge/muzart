@@ -2,10 +2,8 @@ import { LayoutElement } from "../types";
 import Box from "../utils/Box";
 import { MaybeLayout } from "./types";
 
-export abstract class AbstractGroup<T extends MaybeLayout<LayoutElement>> {
-  readonly type = "Group";
-
-  public parent?: LayoutElement;
+export abstract class AbstractGroup<T extends MaybeLayout<LayoutElement>, Parent = LayoutElement> {
+  public parent?: Parent;
   public elements: T[] = [];
 
   constructor(public box = new Box(0, 0, 0, 0)) {}

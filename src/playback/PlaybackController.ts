@@ -66,12 +66,12 @@ export class PlaybackController {
     this.instrument = new Sampler(noteMap).toDestination();
   }
 
-  togglePlay(part: Part) {
+  togglePlay(part: Part, startFrom?: { measure?: number; chord?: number }) {
     if (this.playbackHandle) {
       this.stop();
     } else {
-      let currentMeasure = 0;
-      let currentChord = 0;
+      let currentMeasure = startFrom?.measure ?? 0;
+      let currentChord = startFrom?.chord ?? 0;
 
       const playNext = () => {
         const measure = part.measures[currentMeasure];

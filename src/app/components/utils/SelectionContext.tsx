@@ -1,4 +1,4 @@
-import { defaults } from "lodash";
+import { clone, defaults, first, inRange, last } from "lodash";
 import React, { createContext, useCallback, useContext, useState } from "react";
 import { Chord, getAncestorOfType, LayoutElement, Measure, Note, Score } from "../../layout";
 
@@ -62,6 +62,38 @@ export function SelectionContext(props: { score: Score; children?: React.ReactNo
         const n = selection.note && selection.note != current.note;
         const e = selection.element != current.element;
         if (p || m || c || n || e) {
+          if (!selection.element) {
+            // No element was explicitly given, but something else changed. It's unlikely that the previously
+            // specified element is still correct, so pick one based on the indices.
+            selection = clone(selection);
+
+            const part = props.score.parts[selection.part ?? current.part];
+            const measureIndex = selection.measure ?? current.measure;
+            const page = part.pages.find((p) =>
+              inRange(
+                measureIndex + 1,
+                first(p.measures)?.measure?.number ?? -1,
+                (last(p.measures)?.measure?.number ?? -1) + 1
+              )
+            );
+
+            if (page) {
+              const measure = page.measures[selection.measure ?? current.measure];
+              let chord = measure.chords[selection.chord ?? current.chord];
+              if (!chord) {
+                selection.chord = 0;
+                selection.note = 0;
+                chord = measure.chords[0];
+              }
+
+              if (chord.type == "Rest") {
+                selection.element = chord;
+              } else {
+                selection.element = chord.notes[selection.note ?? current.note];
+              }
+            }
+          }
+
           return defaults(selection, current);
         }
         return current;
@@ -70,23 +102,26 @@ export function SelectionContext(props: { score: Score; children?: React.ReactNo
     [setSelection]
   );
 
-  const updateSelectionFor = (element: LayoutElement) => {
-    // TODO optimize getting indexes (context?)
+  const updateSelectionFor = useCallback(
+    (element: LayoutElement) => {
+      // TODO optimize getting indexes (context?)
 
-    const noteElement = getAncestorOfType<Note>(element, "Note");
-    const chordElement = getAncestorOfType<Chord>(noteElement ?? element, "Chord");
-    const measureElement = getAncestorOfType<Measure>(noteElement ?? chordElement ?? element, "Measure");
+      const noteElement = getAncestorOfType<Note>(element, "Note");
+      const chordElement = getAncestorOfType<Chord>(noteElement ?? element, "Chord");
+      const measureElement = getAncestorOfType<Measure>(noteElement ?? chordElement ?? element, "Measure");
 
-    updateSelection({
-      measure: measureElement && measureElement.measure.number,
-      chord:
-        chordElement &&
-        measureElement &&
-        measureElement.measure.chords.findIndex((n) => Object.is(n, chordElement.chord)),
-      note: noteElement && chordElement && chordElement.notes.findIndex((n) => Object.is(n, element)),
-      element: element,
-    });
-  };
+      updateSelection({
+        measure: measureElement && measureElement.measure.number - 1,
+        chord:
+          chordElement &&
+          measureElement &&
+          measureElement.measure.chords.findIndex((n) => Object.is(n, chordElement.chord)),
+        note: noteElement && chordElement && chordElement.notes.findIndex((n) => Object.is(n, noteElement)),
+        element,
+      });
+    },
+    [updateSelection]
+  );
 
   return (
     <ReadContext.Provider value={selection}>

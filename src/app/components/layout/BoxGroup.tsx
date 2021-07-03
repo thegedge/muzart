@@ -1,3 +1,4 @@
+import { omit } from "lodash";
 import React, { SVGProps } from "react";
 import { LayoutElement } from "../../layout";
 import { useDebugRectParams } from "../utils/DebugContext";
@@ -18,7 +19,7 @@ export function BoxGroup(props: BoxGroupProps) {
 
   return (
     <>
-      <g transform={transforms.join(" ")} {...props} />
+      <g transform={transforms.join(" ")} {...omit(props, "node", "scale", "forceDebug")} />
       {debugParams && <rect {...svgBoxProps(props.node)} {...debugParams} />}
     </>
   );

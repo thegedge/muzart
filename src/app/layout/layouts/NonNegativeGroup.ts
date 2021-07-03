@@ -8,6 +8,8 @@ import { MaybeLayout } from "./types";
  * This is achieved by offsetting all elements by the top-left (x,y) corner of the bounding box of all elements.
  */
 export class NonNegativeGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGroup<T> {
+  readonly type = "Group";
+
   addElement(element: T) {
     element.parent = this;
     this.box = this.box.encompass(element.box);

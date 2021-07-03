@@ -36,6 +36,7 @@ export default function ScoreElement(props: { element: PageElement | LineElement
     case "Dot":
       return <Dot node={props.element} />;
     case "Group":
+    case "PageLine":
       return (
         <BoxGroup node={props.element}>
           {props.element.elements.map((e, index) => (
