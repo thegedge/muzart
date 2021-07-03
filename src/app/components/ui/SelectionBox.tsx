@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { createRef, useEffect, useMemo } from "react";
 import { DEFAULT_MARGIN, LINE_STROKE_WIDTH } from "../../layout";
 import Box from "../../layout/utils/Box";
 import { useReadSelection } from "../utils/SelectionContext";
@@ -29,6 +29,14 @@ export function SelectionBox() {
     return box;
   }, [element]);
 
+  const ref = createRef<SVGRectElement>();
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.scrollIntoView({ inline: "center", block: "center" });
+    }
+  }, [element]);
+
   if (!box) {
     return <></>;
   }
@@ -39,5 +47,5 @@ export function SelectionBox() {
   box.width += 2 * padding;
   box.height += 2 * padding;
 
-  return <rect {...svgBoxProps(box)} fill="#f0f0a055" strokeWidth={LINE_STROKE_WIDTH} stroke="#c0c080" />;
+  return <rect {...svgBoxProps(box)} ref={ref} fill="#f0f0a055" strokeWidth={LINE_STROKE_WIDTH} stroke="#c0c080" />;
 }
