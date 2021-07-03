@@ -29,7 +29,7 @@ export const Note = React.memo(function Note(props: { note: layout.Note }) {
         valign="middle"
         size={props.note.box.height}
         text={text}
-        style={{ userSelect: "none" }}
+        style={{ userSelect: "none", cursor: "pointer" }}
         fill
       />
     </SelectableBoxGroup>
