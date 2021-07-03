@@ -102,7 +102,7 @@ export class PlaybackController {
   }
 
   playNote(note: Note) {
-    const seconds = noteValueToSeconds(note.value);
+    const seconds = noteDurationSeconds(note);
     this.instrument.triggerAttackRelease(note.pitch.toString(), seconds);
     return seconds;
   }
@@ -111,13 +111,22 @@ export class PlaybackController {
     const seconds = noteValueToSeconds(chord.value);
     if (!chord.rest) {
       const notes = chord.notes.filter((note) => !note.tie || note.tie.type === "start");
-      if (notes.length > 0) {
+      for (const note of notes) {
         this.instrument.triggerAttackRelease(
           notes.map((note) => note.pitch.toString()),
-          seconds
+          noteDurationSeconds(note)
         );
       }
     }
     return seconds;
   }
+}
+
+function noteDurationSeconds(note?: Note) {
+  let seconds = 0;
+  while (note) {
+    seconds += noteValueToSeconds(note.value);
+    note = note.tie?.next;
+  }
+  return seconds;
 }
