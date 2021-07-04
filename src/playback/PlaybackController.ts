@@ -1,5 +1,5 @@
-import { Sampler } from "tone";
 import { Chord, Note, Part } from "../notation";
+import { Sampler } from "./Sampler";
 import { noteValueToSeconds } from "./util/durations";
 
 export class PlaybackController {
@@ -63,7 +63,7 @@ export class PlaybackController {
       noteMap[note] = encodeURIComponent(`notes/${note}.mp3`);
     }
 
-    this.instrument = new Sampler(noteMap).toDestination();
+    this.instrument = new Sampler({ urls: noteMap }).toDestination();
   }
 
   togglePlay(part: Part, startFrom?: { measure?: number; chord?: number }) {
@@ -103,31 +103,16 @@ export class PlaybackController {
   }
 
   playNote(note: Note) {
-    const seconds = noteDurationSeconds(note);
-    this.instrument.triggerAttackRelease(note.pitch.toString(), seconds);
-    return seconds;
+    this.instrument.playNote(note);
   }
 
   playChord(chord: Chord) {
     const seconds = noteValueToSeconds(chord.value);
     if (!chord.rest) {
-      const notes = chord.notes.filter((note) => !note.tie || note.tie.type === "start");
-      for (const note of notes) {
-        this.instrument.triggerAttackRelease(
-          notes.map((note) => note.pitch.toString()),
-          noteDurationSeconds(note)
-        );
+      for (const note of chord.notes) {
+        this.instrument.playNote(note);
       }
     }
     return seconds;
   }
-}
-
-function noteDurationSeconds(note?: Note) {
-  let seconds = 0;
-  while (note) {
-    seconds += noteValueToSeconds(note.value);
-    note = note.tie?.next;
-  }
-  return seconds;
 }
