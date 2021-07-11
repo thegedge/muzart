@@ -210,7 +210,7 @@ export class Note {
    * If the attribute isn't defined, and this note is a middle/end tie, try the note it is
    * linked to to see if it has the attribute.
    */
-  private get<K extends keyof NoteOptions>(property: K): NoteOptions[K] | undefined {
+  private get(property: keyof NoteOptions): NoteOptions[keyof NoteOptions] | undefined {
     const v = this.options[property];
     if (v) {
       return v;

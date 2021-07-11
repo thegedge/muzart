@@ -19,5 +19,7 @@ export const STAFF_LINE_HEIGHT: Inches = 0.1;
 /** The space between lines */
 export const LINE_MARGIN: Inches = 0.25;
 
+export const STEM_HEIGHT = STAFF_LINE_HEIGHT * 3;
 export const BEAM_HEIGHT = STAFF_LINE_HEIGHT / 4;
 export const DOT_SIZE = 2 * BEAM_HEIGHT;
+export const TUPLET_SIZE = 2.5 * BEAM_HEIGHT;

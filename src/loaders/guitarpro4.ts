@@ -210,7 +210,14 @@ export default function load(source: ArrayBuffer): Score {
         }
 
         if (hasTuplet) {
-          /* const n = */ cursor.nextNumber(NumberType.Uint32);
+          const n = cursor.nextNumber(NumberType.Uint32);
+
+          // TODO actual is derived for simple metre here, but will need to eventual deal with compound
+          let actual = 1;
+          while (2 * actual < n) {
+            actual <<= 1;
+          }
+          duration = duration.withTuplet({ n, actual });
         }
 
         let chordDiagram;

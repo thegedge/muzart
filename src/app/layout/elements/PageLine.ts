@@ -1,7 +1,7 @@
 import { clone, find, first, groupBy, isNumber, isUndefined, map, max, range, some } from "lodash";
 import * as notation from "../../../notation";
 import { AccentStyle, NoteValueName } from "../../../notation";
-import { BEAM_HEIGHT, DOT_SIZE, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../constants";
+import { BEAM_HEIGHT, DOT_SIZE, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT, STEM_HEIGHT, TUPLET_SIZE } from "../constants";
 import { AbstractGroup } from "../layouts/AbstractGroup";
 import { AnchoredGroup } from "../layouts/AnchoredGroup";
 import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
@@ -188,6 +188,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
       if (lineChild.type !== "Measure") {
         continue;
       }
+
       this.stemAndBeam(lineChild);
     }
     this.belowStaffLayout.layout();
@@ -402,19 +403,21 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
               break;
           }
 
-          const accentSize = baseSize * 1.5;
-          this.aboveStaffLayout.addElement(
-            {
-              type: "Text",
-              box: new Box(0, 0, 0, accentSize),
-              size: accentSize,
-              value: accentString,
-            },
-            {
-              startColumn: index + 1,
-              endColumn: index + 1,
-            }
-          );
+          if (accentString) {
+            const accentSize = baseSize * 1.5;
+            this.aboveStaffLayout.addElement(
+              {
+                type: "Text",
+                box: new Box(0, 0, 0, accentSize),
+                size: accentSize,
+                value: accentString,
+              },
+              {
+                startColumn: index + 1,
+                endColumn: index + 1,
+              }
+            );
+          }
         }
       }
 
@@ -471,6 +474,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
       this.layOutStems(measureElement.box, beat);
       this.layOutBeams(measureElement.box, beat);
       this.layOutDots(measureElement.box, beat);
+      this.layOutTuplets(measureElement.box, beat);
     }
   }
 
@@ -682,23 +686,22 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
 
       // Half notes have a shorter stem on tablature
       const y = this.numBeams(beatElement) < 0 ? STAFF_LINE_HEIGHT * 2 : STAFF_LINE_HEIGHT;
-      const bottom = STAFF_LINE_HEIGHT * 3;
 
       this.belowStaffLayout.addElement({
         type: "Stem",
-        box: new Box(measureBox.x + this.elementOffset(beatElement), y, beatElement.box.width, bottom - y),
+        box: new Box(measureBox.x + this.elementOffset(beatElement), y, beatElement.box.width, STEM_HEIGHT - y),
       });
     }
   }
 
   private layOutDots(measureBox: Box, beatElements: (Chord | Rest)[]) {
     for (const beatElement of beatElements) {
-      if (beatElement.chord.value.ndots > 0) {
+      if (beatElement.chord.value.dots > 0) {
         // TODO more than one dot
         // TODO rests have dot next to them
 
-        // const y = STAFF_LINE_HEIGHT * 3 - BEAM_HEIGHT - (1.5 * BEAM_HEIGHT * this.numBeams(beatElement)) - BEAM_HEIGHT;
-        let y = STAFF_LINE_HEIGHT * 3 - DOT_SIZE;
+        // const y = STEM_SIZE - BEAM_HEIGHT - (1.5 * BEAM_HEIGHT * this.numBeams(beatElement)) - BEAM_HEIGHT;
+        let y = STEM_HEIGHT - DOT_SIZE;
         const numBeams = this.numBeams(beatElement);
         if (numBeams > 0) {
           y -= BEAM_HEIGHT * this.numBeams(beatElement);
@@ -713,10 +716,33 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
     }
   }
 
+  private layOutTuplets(measureBox: Box, beatElements: (Chord | Rest)[]) {
+    // TODO "bracket" multiple notes in a row, e.g., └─ 3 ─┘. It's a little challenging though, because there are
+    //  a lot of special cases:
+    //     1. If the entire beat is the same tuplet value, and it's beamed, no bracketing
+    //     2. Bracketing regardless if we're crossing a beat? Is it the entire set of n notes, or just what falls in the beat?
+
+    for (const beatElement of beatElements) {
+      const noteWithTuplet = beatElement.chord.notes.find((note) => !!note.value.tuplet);
+      const tuplet = noteWithTuplet?.value.tuplet;
+      if (tuplet) {
+        let y = STEM_HEIGHT + BEAM_HEIGHT;
+        this.belowStaffLayout.addElement({
+          type: "Text",
+          box: new Box(measureBox.x + beatElement.box.x, y, beatElement.box.width, TUPLET_SIZE),
+          value: String(tuplet.n),
+          size: TUPLET_SIZE,
+          halign: "middle",
+          valign: "middle",
+        });
+      }
+    }
+  }
+
   private layOutBeams(measureBox: Box, beatElements: (Chord | Rest)[]) {
     // TODO draw dots
 
-    let y = STAFF_LINE_HEIGHT * 3 - BEAM_HEIGHT;
+    let y = STEM_HEIGHT - BEAM_HEIGHT;
     const beamCounts = beatElements.map((element) => this.numBeams(element));
     while (true) {
       // Find runs of elements that still need a beam drawn, then draw a beam between the two
