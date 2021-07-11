@@ -7,6 +7,7 @@ import {
   SamplerOptions,
   ToneAudioBuffer,
   ToneAudioBuffers,
+  ToneAudioNode,
   ToneBufferSource,
   ToneBufferSourceCurve,
   Vibrato,
@@ -285,20 +286,11 @@ export class Sampler extends Instrument<SamplerOptions> {
       const source = this.createToneBufferSource(pitch, time, velocity);
       this.triggerRelease(pitch, computedTime + duration);
 
-      if (note.bend) {
-        adjustPlaybackRateForBend(note, source);
-      }
+      maybeBend(note, source);
 
       let lastNode: OutputNode = source;
       if (note.vibrato) {
-        const vibratoEffect = new Vibrato({
-          context: this.context,
-          frequency: 4, // TODO customizable?
-          depth: 0.5,
-        });
-
-        source.connect(vibratoEffect);
-        lastNode = vibratoEffect;
+        lastNode = this.vibrato(note, lastNode);
       }
 
       lastNode.connect(this.output);
@@ -307,6 +299,17 @@ export class Sampler extends Instrument<SamplerOptions> {
     }
 
     return duration;
+  }
+
+  private vibrato(note: notation.Note, source: ToneAudioNode) {
+    const vibratoEffect = new Vibrato({
+      context: this.context,
+      frequency: 4, // TODO customizable?
+      depth: 0.5,
+    });
+
+    source.connect(vibratoEffect);
+    return vibratoEffect;
   }
 
   private createToneBufferSource(note: Frequency, time?: Time, velocity: NormalRange = 1): ToneBufferSource {
@@ -350,10 +353,14 @@ export class Sampler extends Instrument<SamplerOptions> {
   }
 }
 
-function adjustPlaybackRateForBend(note: notation.Note, source: ToneBufferSource) {
+function maybeBend(note: notation.Note, source: ToneBufferSource) {
+  if (!note.bend) {
+    return;
+  }
+
   const duration = tiedNoteDurationSeconds(note);
   const value = source.playbackRate.value;
-  switch (note.bend?.type) {
+  switch (note.bend.type) {
     case BendType.Prebend: {
       const ratio = intervalToFrequencyRatio(note.bend.amplitude * 2);
       source.playbackRate.value *= ratio;
