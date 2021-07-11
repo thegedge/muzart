@@ -79,17 +79,19 @@ export function SelectionContext(props: { score: Score; children?: React.ReactNo
 
             if (page) {
               const measure = page.measures[selection.measure ?? current.measure];
-              let chord = measure.chords[selection.chord ?? current.chord];
-              if (!chord) {
-                selection.chord = 0;
-                selection.note = 0;
-                chord = measure.chords[0];
-              }
+              if (measure) {
+                let chord = measure.chords[selection.chord ?? current.chord];
+                if (!chord) {
+                  selection.chord = 0;
+                  selection.note = 0;
+                  chord = measure.chords[0];
+                }
 
-              if (chord.type == "Rest") {
-                selection.element = chord;
-              } else {
-                selection.element = chord.notes[selection.note ?? current.note];
+                if (chord.type == "Rest") {
+                  selection.element = chord;
+                } else {
+                  selection.element = chord.notes[selection.note ?? current.note];
+                }
               }
             }
           }
