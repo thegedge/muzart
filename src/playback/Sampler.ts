@@ -1,9 +1,11 @@
-import { defaults } from "lodash";
+import { compact, defaults } from "lodash";
 import {
+  Channel,
   FrequencyClass,
+  Gain,
   intervalToFrequencyRatio,
   isNote,
-  OutputNode,
+  Noise,
   SamplerOptions,
   ToneAudioBuffer,
   ToneAudioBuffers,
@@ -283,33 +285,57 @@ export class Sampler extends Instrument<SamplerOptions> {
     const computedTime = this.toSeconds(time);
 
     try {
-      const source = this.createToneBufferSource(pitch, time, velocity);
-      this.triggerRelease(pitch, computedTime + duration);
+      const source = this.createToneBufferSource(pitch, time);
+      const chain: (ToneAudioNode | undefined)[] = [];
+      if (note.deadNote) {
+        const frequency = ftomf(new FrequencyClass(this.context, pitch).toFrequency()) * 2;
+        const noise = new Noise({ context: this.context, type: "brown", playbackRate: 50, volume: -10 });
+        noise.start();
 
-      maybeBend(note, source);
+        // TODO somehow connect this ot the original source
+        const channel = new Channel({ context: this.context });
+        source.connect(channel);
+        noise.connect(channel);
 
-      let lastNode: OutputNode = source;
-      if (note.vibrato) {
-        lastNode = this.vibrato(note, lastNode);
+        const level = new Gain({ context: this.context, gain: velocity });
+        level.gain.exponentialRampTo(0, 0.15, computedTime + 0.05);
+
+        setTimeout(() => {
+          noise.stop();
+        }, (computedTime + 0.2 - this.context.currentTime) * 1000);
+
+        chain.push(channel, level);
+      } else {
+        this.triggerRelease(pitch, computedTime + duration);
+        maybeBend(note, source);
+
+        chain.push(source, this.maybeVibrato(note));
       }
 
-      lastNode.connect(this.output);
+      compact(chain)
+        .reduce((previous, current) => {
+          previous.connect(current);
+          return current;
+        })
+        .connect(this.output);
     } catch (e) {
       // No available buffers
+      console.warn(e);
     }
 
     return duration;
   }
 
-  private vibrato(note: notation.Note, source: ToneAudioNode) {
-    const vibratoEffect = new Vibrato({
+  private maybeVibrato(note: notation.Note) {
+    if (!note.vibrato) {
+      return;
+    }
+
+    return new Vibrato({
       context: this.context,
       frequency: 4, // TODO customizable?
       depth: 0.5,
     });
-
-    source.connect(vibratoEffect);
-    return vibratoEffect;
   }
 
   private createToneBufferSource(note: Frequency, time?: Time, velocity: NormalRange = 1): ToneBufferSource {
