@@ -1,9 +1,9 @@
 import React from "react";
 import { Score } from "../../../notation";
-import { useWriteSelection } from "../utils/SelectionContext";
+import { useSelection } from "../utils/SelectionContext";
 
 export function Toolbox(props: { score: Score; onDebugToggled: (value: boolean) => void }) {
-  const { updateSelection } = useWriteSelection();
+  const { updateSelection, selection } = useSelection();
 
   const onPartChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     updateSelection({ part: event.target.selectedIndex });
@@ -19,7 +19,11 @@ export function Toolbox(props: { score: Score; onDebugToggled: (value: boolean) 
         <div className="px-2">
           <input type="checkbox" name="debug" onChange={onDebugToggled} /> <label htmlFor="debug">Debug</label>
         </div>
-        <select className="bg-transparent px-2 focus:outline-none" onChange={onPartChange}>
+        <select
+          className="bg-transparent px-2 focus:outline-none"
+          onChange={onPartChange}
+          defaultValue={selection.part}
+        >
           {props.score.parts.map((part, index) => (
             <option key={index} value={index}>
               {part.name}
