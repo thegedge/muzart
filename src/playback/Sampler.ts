@@ -18,7 +18,6 @@ import { assert } from "tone/build/esm/core/util/Debug";
 import { noOp } from "tone/build/esm/core/util/Interface";
 import { Instrument } from "tone/build/esm/instrument/Instrument";
 import * as notation from "../notation";
-import { BendType } from "../notation";
 import { noteValueToSeconds } from "./util/durations";
 
 interface SamplesMap {
@@ -272,6 +271,8 @@ export class Sampler extends Instrument<SamplerOptions> {
     return this;
   }
 
+  // TODO figure out if I could just use the regular ToneJS sampler hooked into some output nodes
+
   playNote(note: notation.Note, time?: Time, velocity: NormalRange = 1): number | undefined {
     if (note.tie && note.tie.type != "start") {
       return;
@@ -291,6 +292,7 @@ export class Sampler extends Instrument<SamplerOptions> {
         this.triggerRelease(pitch, computedTime + duration);
       }
 
+      // TODO Could this be another node, instead of mutating the ToneBufferSource?
       maybeBend(note, source);
 
       chain.push(source, this.maybeVibrato(note));
@@ -369,40 +371,13 @@ function maybeBend(note: notation.Note, source: ToneBufferSource) {
 
   const duration = tiedNoteDurationSeconds(note);
   const value = source.playbackRate.value;
-  switch (note.bend.type) {
-    case BendType.Prebend: {
-      const ratio = intervalToFrequencyRatio(note.bend.amplitude * 2);
-      source.playbackRate.value *= ratio;
-    }
-    case BendType.Bend: {
-      const ratio = intervalToFrequencyRatio(note.bend.amplitude * 2);
-      source.playbackRate.linearRampTo(value * ratio, duration);
-      break;
-    }
-    case BendType.BendRelease: {
-      const ratio = intervalToFrequencyRatio(note.bend.amplitude * 2);
-      source.playbackRate.setRampPoint(0.5 * duration);
-      source.playbackRate.linearRampTo(value * ratio, 0.5 * duration, 0);
-      source.playbackRate.linearRampTo(value, 0.5 * duration, 0.5 * duration);
-      break;
-    }
-    case BendType.BendReleaseBend: {
-      const ratio = intervalToFrequencyRatio(note.bend.amplitude * 2);
-      const oneThird = duration / 3;
-      source.playbackRate.setRampPoint(oneThird);
-      source.playbackRate.setRampPoint(2 * oneThird);
-      source.playbackRate.linearRampTo(value * ratio, oneThird, 0);
-      source.playbackRate.linearRampTo(value, oneThird, 1 * oneThird);
-      source.playbackRate.linearRampTo(value * ratio, oneThird, 2 * oneThird);
-      break;
-    }
-    case BendType.PrebendRelease: {
-      const ratio = intervalToFrequencyRatio(note.bend.amplitude * 2);
-      const value = source.playbackRate.value;
-      source.playbackRate.value *= ratio;
-      source.playbackRate.linearRampTo(value, duration);
-      break;
-    }
+
+  let previousTime = 0;
+  for (const { time, amplitude } of note.bend.points) {
+    const ratio = intervalToFrequencyRatio(amplitude * 2);
+    const bendPointDuration = duration * (time - previousTime);
+    source.playbackRate.linearRampTo(value * ratio, bendPointDuration);
+    previousTime = time;
   }
 }
 

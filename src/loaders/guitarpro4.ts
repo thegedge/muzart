@@ -667,6 +667,8 @@ function readMidiChannels(cursor: BufferCursor) {
   }
 }
 
+let first = true;
+
 function readBend(cursor: BufferCursor): Bend {
   let type: BendType;
   const bendTypeValue = cursor.nextNumber(NumberType.Uint8);
@@ -711,23 +713,21 @@ function readBend(cursor: BufferCursor): Bend {
   }
 
   const amplitude = cursor.nextNumber(NumberType.Uint32) / 100.0;
-
-  // TODO use these
   const numPoints = cursor.nextNumber(NumberType.Uint32);
-  for (let point = 0; point < numPoints; ++point) {
-    // Time relative from the previous point; between 0 and 60, in sixtieths of the note duration.
-    /* const absoluteTimePosition = */ cursor.nextNumber(NumberType.Uint32);
-
-    // Same as amplitude above
-    /* const verticalPosition = */ cursor.nextNumber(NumberType.Uint32);
+  const points = range(numPoints).map((_) => {
+    const time = cursor.nextNumber(NumberType.Uint32) / 60.0;
+    const amplitude = cursor.nextNumber(NumberType.Uint32) / 100.0;
 
     // 0 = none, 1 = fast, 2 = average, 3 = slow
-    /* const vibrato = */ cursor.nextNumber(NumberType.Uint8);
-  }
+    const vibrato = cursor.nextNumber(NumberType.Uint8);
+
+    return { time, amplitude, vibrato };
+  });
 
   return {
     type,
     amplitude,
+    points,
   };
 }
 
