@@ -1,11 +1,8 @@
 import { compact, defaults } from "lodash";
 import {
-  Channel,
   FrequencyClass,
-  Gain,
   intervalToFrequencyRatio,
   isNote,
-  Noise,
   SamplerOptions,
   ToneAudioBuffer,
   ToneAudioBuffers,
@@ -287,30 +284,16 @@ export class Sampler extends Instrument<SamplerOptions> {
     try {
       const source = this.createToneBufferSource(pitch, time);
       const chain: (ToneAudioNode | undefined)[] = [];
-      if (note.deadNote) {
-        const frequency = ftomf(new FrequencyClass(this.context, pitch).toFrequency()) * 2;
-        const noise = new Noise({ context: this.context, type: "brown", playbackRate: 50, volume: -10 });
-        noise.start();
 
-        // TODO somehow connect this ot the original source
-        const channel = new Channel({ context: this.context });
-        source.connect(channel);
-        noise.connect(channel);
-
-        const level = new Gain({ context: this.context, gain: velocity });
-        level.gain.exponentialRampTo(0, 0.15, computedTime + 0.05);
-
-        setTimeout(() => {
-          noise.stop();
-        }, (computedTime + 0.2 - this.context.currentTime) * 1000);
-
-        chain.push(channel, level);
+      if (note.dead) {
+        this.triggerRelease(pitch, computedTime + 0.05);
       } else {
         this.triggerRelease(pitch, computedTime + duration);
-        maybeBend(note, source);
-
-        chain.push(source, this.maybeVibrato(note));
       }
+
+      maybeBend(note, source);
+
+      chain.push(source, this.maybeVibrato(note));
 
       compact(chain)
         .reduce((previous, current) => {

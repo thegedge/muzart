@@ -187,16 +187,8 @@ export default function load(source: ArrayBuffer): Score {
 
       const numBeats = cursor.nextNumber(NumberType.Uint32);
       for (let beat = 0; beat < numBeats; ++beat) {
-        const [
-          _blank1,
-          hasStatus,
-          hasTuplet,
-          hasMixTableChangeEvent,
-          hasEffects,
-          hasText,
-          hasChordDiagram,
-          dotted,
-        ] = bits(cursor.nextNumber(NumberType.Uint8));
+        const [_blank1, hasStatus, hasTuplet, hasMixTableChangeEvent, hasEffects, hasText, hasChordDiagram, dotted] =
+          bits(cursor.nextNumber(NumberType.Uint8));
 
         let rest = false;
         if (hasStatus) {
@@ -403,7 +395,7 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
   const options: NoteOptions = {
     pitch: stringTuning.adjust(fret),
     value: duration == 0 ? defaultNoteValue : NoteValue.fromNumber(duration as any),
-    deadNote: variant === 3,
+    dead: variant === 3,
     tie: variant === 2 ? { type: "stop" } : undefined,
     ghost: isGhostNote,
     accent: isAccentuated ? AccentStyle.Accentuated : undefined,
@@ -424,16 +416,8 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
       cursor.nextNumber(NumberType.Uint8)
     );
 
-    const [
-      _blank2_1,
-      leftHandVibrato,
-      hasTrill,
-      hasHarmonics,
-      hasSlide,
-      hasTremoloPicking,
-      isPalmMute,
-      isStaccato,
-    ] = bits(cursor.nextNumber(NumberType.Uint8));
+    const [_blank2_1, leftHandVibrato, hasTrill, hasHarmonics, hasSlide, hasTremoloPicking, isPalmMute, isStaccato] =
+      bits(cursor.nextNumber(NumberType.Uint8));
 
     options.letRing = letRing;
     options.palmMute = isPalmMute;

@@ -87,7 +87,7 @@ export interface NoteOptions {
   bend?: Bend;
   slide?: Slide;
   vibrato?: boolean;
-  deadNote?: boolean;
+  dead?: boolean;
   tie?: Tie;
   letRing?: boolean;
   ghost?: boolean;
@@ -133,8 +133,8 @@ export class Note {
     return this.get("letRing");
   }
 
-  get deadNote() {
-    return this.options.deadNote;
+  get dead() {
+    return this.options.dead;
   }
 
   get ghost() {
@@ -187,7 +187,7 @@ export class Note {
 
   toString() {
     let text;
-    if (this.deadNote) {
+    if (this.dead) {
       text = "x";
     } else if (this.tie && this.tie.previous) {
       text = "";
