@@ -67,10 +67,18 @@ function Loading() {
     <div className="flex justify-center items-center w-screen h-screen text-slate-200">
       <div className="text-8xl">
         Loading
-        <div className="animate-bounce inline-block" children="." />
-        <div className="animate-bounce inline-block" style={{ animationDelay: "100ms" }} children="." />
-        <div className="animate-bounce inline-block" style={{ animationDelay: "200ms" }} children="." />
+        <BouncingDot delayMS={100} />
+        <BouncingDot delayMS={200} />
+        <BouncingDot delayMS={300} />
       </div>
+    </div>
+  );
+}
+
+function BouncingDot(props: { delayMS: number }) {
+  return (
+    <div className="animate-bounce -translate-y-1/4 inline-block" style={{ animationDelay: `${props.delayMS}ms` }}>
+      .
     </div>
   );
 }
