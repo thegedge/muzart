@@ -54,19 +54,24 @@ export default function App() {
   }, []);
 
   return (
-    <Suspense fallback={<h1>Loading...</h1>}>
-      {score && (
-        <div
-          className="bg-gray-400 min-h-screen min-w-max"
-          onDrop={onDrop}
-          onDragOver={(event) => event.preventDefault()}
-        >
-          <ErrorBoundary>
-            <ScoreWithContexts score={score} />
-          </ErrorBoundary>
-        </div>
-      )}
-    </Suspense>
+    <div className="bg-gray-400 min-h-screen min-w-max" onDrop={onDrop} onDragOver={(event) => event.preventDefault()}>
+      <Suspense fallback={<Loading />}>
+        <ErrorBoundary>{score && <ScoreWithContexts score={score} />}</ErrorBoundary>
+      </Suspense>
+    </div>
+  );
+}
+
+function Loading() {
+  return (
+    <div className="flex justify-center items-center w-screen h-screen text-slate-200">
+      <div className="text-8xl">
+        Loading
+        <div className="animate-bounce inline-block" children="." />
+        <div className="animate-bounce inline-block" style={{ animationDelay: "100ms" }} children="." />
+        <div className="animate-bounce inline-block" style={{ animationDelay: "200ms" }} children="." />
+      </div>
+    </div>
   );
 }
 
