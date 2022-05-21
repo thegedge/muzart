@@ -3,5 +3,13 @@
   "proseWrap": "always",
   "printWidth": 120,
   "useTabs": false,
-  "quoteProps": "consistent"
+  "quoteProps": "consistent",
+  "overrides": [
+    {
+      "files": "LICENSE.md",
+      "options": {
+        "printWidth": 80
+      }
+    }
+  ]
 }

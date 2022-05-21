@@ -1,3 +1,3 @@
-# Muzart (temporary name)
+# Muzart
 
-Singe-page score editor app
+Singe-page score editor app built with React + SVG.
