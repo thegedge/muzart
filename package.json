@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "server": "webpack serve --hot",
+    "dev": "NODE_ENV=development webpack serve --hot",
     "build": "cross-env webpack",
     "tc": "tsc --noEmit"
   },
