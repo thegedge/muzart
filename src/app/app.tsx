@@ -4,6 +4,7 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import { determineType, load, ScoreDataType } from "../loaders";
 import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { PageCallout } from "./components/layout/PageCallout";
 import { Score } from "./components/notation/Score";
 import { Toolbox } from "./components/ui/Toolbox";
 import { DebugContext, DebugContextData } from "./components/utils/DebugContext";
@@ -55,23 +56,27 @@ export default function App() {
 
   return (
     <div className="bg-gray-400 min-h-screen min-w-max" onDrop={onDrop} onDragOver={(event) => event.preventDefault()}>
-      <Suspense fallback={<Loading />}>
-        <ErrorBoundary>{score && <ScoreWithContexts score={score} />}</ErrorBoundary>
-      </Suspense>
+      {score ? (
+        <ErrorBoundary>
+          <Suspense fallback={<Loading />}>
+            <ScoreWithContexts score={score} />
+          </Suspense>
+        </ErrorBoundary>
+      ) : (
+        <PageCallout>Drop a Guitar Pro 4 file here</PageCallout>
+      )}
     </div>
   );
 }
 
 function Loading() {
   return (
-    <div className="flex justify-center items-center w-screen h-screen text-slate-200">
-      <div className="text-8xl">
-        Loading
-        <BouncingDot delayMS={100} />
-        <BouncingDot delayMS={200} />
-        <BouncingDot delayMS={300} />
-      </div>
-    </div>
+    <PageCallout>
+      Loading
+      <BouncingDot delayMS={100} />
+      <BouncingDot delayMS={200} />
+      <BouncingDot delayMS={300} />
+    </PageCallout>
   );
 }
 

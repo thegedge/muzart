@@ -1,4 +1,5 @@
 import * as React from "react";
+import { PageCallout } from "./layout/PageCallout";
 
 export default class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error?: Error }> {
   constructor(props: any) {
@@ -12,12 +13,11 @@ export default class ErrorBoundary extends React.Component<{ children: React.Rea
 
   render() {
     if (this.state.error) {
-      // TODO if development, show stack trace
       return (
-        <div>
-          <h1 className="text-red-600 text-4xl">{this.state.error.message}</h1>
+        <PageCallout>
+          <h1 className="text-red-600 text-4xl">Error: {this.state.error.message}</h1>
           {this.state.error.stack}
-        </div>
+        </PageCallout>
       );
     }
     return this.props.children;
