@@ -75,14 +75,16 @@ const configuration: Configuration = {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         use: [
-          isDevelopment
-            ? {
-                loader: "babel-loader",
-                options: {
-                  plugins: ["react-refresh/babel"],
+          ...(isDevelopment
+            ? [
+                {
+                  loader: "babel-loader",
+                  options: {
+                    plugins: ["react-refresh/babel"],
+                  },
                 },
-              }
-            : {},
+              ]
+            : []),
           {
             loader: "ts-loader",
             options: { transpileOnly: true },

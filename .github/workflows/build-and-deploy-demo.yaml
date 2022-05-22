@@ -1,0 +1,29 @@
+name: Build and Deploy Demo
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: yarn
+      - run: yarn install
+      - run: NODE_ENV=production yarn build
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO_URL="https://${{ github.actor }}:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+
+          cd public
+          git init
+          git remote add origin "${REPO_URL}"
+          git add -A
+          git config --global user.email "github-actions[bot]+${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git commit -am "automated demo build"
+          git push --force origin HEAD:demo
