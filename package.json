@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_ENV=development webpack serve --hot",
-    "build": "cross-env webpack",
+    "dev": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack serve --hot",
+    "build": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack",
     "tc": "tsc --noEmit"
   },
   "dependencies": {
@@ -20,6 +20,7 @@
     "@types/node": "^17.0.35",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
+    "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.17.0",
     "autoprefixer": "^10.4.7",
     "babel-loader": "^8.2.5",
@@ -35,6 +36,7 @@
     "style-loader": "^3.3.1",
     "tailwindcss": "^3.0.24",
     "ts-loader": "^9.3.0",
+    "ts-node": "^10.8.0",
     "typescript": "^4.6.4",
     "webpack": "^5.72.1",
     "webpack-cli": "^4.9.2",

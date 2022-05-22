@@ -1,20 +1,42 @@
-const path = require("path");
-const webpack = require("webpack");
-
-const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import path from "node:path";
+import { Configuration, EnvironmentPlugin, HotModuleReplacementPlugin } from "webpack";
+import "webpack-dev-server";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
-module.exports = {
+const plugins: Configuration["plugins"] = [];
+if (isDevelopment) {
+  plugins.push(new HotModuleReplacementPlugin());
+  plugins.push(new ReactRefreshWebpackPlugin());
+}
+
+plugins.push(
+  new HtmlWebpackPlugin({
+    template: "./src/app/index.html",
+  })
+);
+
+plugins.push(
+  new EnvironmentPlugin({
+    NODE_ENV: isDevelopment ? "development" : "production",
+    DEFAULT_FILE: null,
+    DEBUG: process.env.DEBUG_APP ?? isDevelopment,
+  })
+);
+
+const configuration: Configuration = {
   mode: isDevelopment ? "development" : "production",
 
   entry: {
     main: {
-      import: "./src/app/index.tsx",
-      dependOn: "deps",
+      import: ["./src/app/index.tsx"],
+      dependOn: ["deps"],
     },
-    deps: ["lodash", "react", "react-dom", "tone"],
+    deps: {
+      import: ["lodash", "react", "react-dom", "tone"],
+    },
   },
 
   output: {
@@ -32,7 +54,6 @@ module.exports = {
   },
 
   devServer: {
-    // contentBase: path.join(__dirname, "public"),
     compress: true,
     port: 3001,
   },
@@ -54,17 +75,19 @@ module.exports = {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         use: [
-          isDevelopment && {
-            loader: "babel-loader",
-            options: {
-              plugins: ["react-refresh/babel"],
-            },
-          },
+          isDevelopment
+            ? {
+                loader: "babel-loader",
+                options: {
+                  plugins: ["react-refresh/babel"],
+                },
+              }
+            : {},
           {
             loader: "ts-loader",
             options: { transpileOnly: true },
           },
-        ].filter(Boolean),
+        ],
       },
       {
         test: /\.css$/i,
@@ -91,16 +114,7 @@ module.exports = {
     ],
   },
 
-  plugins: [
-    isDevelopment && new webpack.HotModuleReplacementPlugin(),
-    isDevelopment && new ReactRefreshWebpackPlugin(),
-    new HtmlWebpackPlugin({
-      template: "src/app/index.html",
-    }),
-    new webpack.EnvironmentPlugin({
-      NODE_ENV: isDevelopment ? "development" : "production",
-      DEFAULT_FILE: null,
-      DEBUG: process.env.DEBUG_APP ?? isDevelopment,
-    }),
-  ].filter(Boolean),
+  plugins,
 };
+
+export default configuration;
