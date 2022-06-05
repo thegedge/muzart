@@ -16,11 +16,16 @@ import { Box } from "./utils/Box";
  * some lines of text describing the composition (name, artist, etc) followed by many staff lines.
  */
 export function layout(score: notation.Score): Score {
-  return {
-    type: "Score",
-    score,
-    parts: score.parts.map((part) => layOutPart(score, part)),
-  };
+  console.time("layout");
+  try {
+    return {
+      type: "Score",
+      score,
+      parts: score.parts.map((part) => layOutPart(score, part)),
+    };
+  } finally {
+    console.timeEnd("layout");
+  }
 }
 
 export const PAGE_MARGIN = 0.5;

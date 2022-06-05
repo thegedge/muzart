@@ -125,9 +125,6 @@ function ScoreWithContexts(props: { score: Suspenseful<layout.Score> }) {
 function loadScore(source: string | File | URL) {
   return suspenseful(async () => {
     const score = await load(source);
-    const start = performance.now();
-    const scoreLayout = layout.layout(score);
-    console.log(`Time to lay out full score: ${performance.now() - start}ms`);
-    return scoreLayout;
+    return layout.layout(score);
   });
 }

@@ -46,18 +46,20 @@ function loadScore(buffer: ArrayBuffer, type: ScoreDataType): Score {
     throw new Error("Unable to load score from buffer with unknown type");
   }
 
-  let score;
-  const now = performance.now();
-  switch (type) {
-    case ScoreDataType.MusicXML:
-      score = loadMusicXml(utf8StringFromBuffer(buffer));
-      break;
-    case ScoreDataType.GuitarPro4:
-      score = loadGuitarPro4(buffer);
+  console.time("loadScore");
+  try {
+    let score;
+    switch (type) {
+      case ScoreDataType.MusicXML:
+        score = loadMusicXml(utf8StringFromBuffer(buffer));
+        break;
+      case ScoreDataType.GuitarPro4:
+        score = loadGuitarPro4(buffer);
+    }
+    return postProcess(score);
+  } finally {
+    console.timeEnd("loadScore");
   }
-  console.log(`Time to parse ${type}: ${performance.now() - now}ms`);
-
-  return postProcess(score);
 }
 
 type ChangeableValueType<T> = T extends Changeable<infer V> ? V : never;
