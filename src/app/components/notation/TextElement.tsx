@@ -1,6 +1,6 @@
 import React, { CSSProperties } from "react";
 import { Alignment } from "../../layout";
-import Box from "../../layout/utils/Box";
+import { Box } from "../../layout/utils/Box";
 import { useDebugRectParams } from "../utils/DebugContext";
 import { svgBoxProps } from "../utils/svg";
 

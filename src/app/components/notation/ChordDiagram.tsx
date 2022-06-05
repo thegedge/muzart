@@ -2,7 +2,7 @@ import { range } from "lodash";
 import React from "react";
 import * as notation from "../../../notation";
 import { ChordDiagram, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../layout";
-import Box from "../../layout/utils/Box";
+import { Box } from "../../layout/utils/Box";
 import { BoxGroup } from "../layout/BoxGroup";
 import { TextElement } from "./TextElement";
 

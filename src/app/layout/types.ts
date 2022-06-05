@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 import * as notation from "../../notation";
-import Box from "./utils/Box";
+import { Box } from "./utils/Box";
 
 export type Inches = number;
 export type Alignment = "start" | "middle" | "end";

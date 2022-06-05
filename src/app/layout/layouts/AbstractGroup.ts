@@ -1,5 +1,5 @@
 import { LayoutElement } from "../types";
-import Box from "../utils/Box";
+import { Box } from "../utils/Box";
 import { MaybeLayout } from "./types";
 
 export abstract class AbstractGroup<T extends MaybeLayout<LayoutElement>, Parent = LayoutElement> {

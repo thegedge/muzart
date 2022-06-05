@@ -6,7 +6,7 @@ import { PageLine } from "./elements/PageLine";
 import { FlexGroupElement } from "./layouts/FlexGroup";
 import { SimpleGroup } from "./layouts/SimpleGroup";
 import { LineElement, Margins, Measure, Page, PageElement, Part, Score, Text } from "./types";
-import Box from "./utils/Box";
+import { Box } from "./utils/Box";
 
 /**
  * Return a layout for the given score.

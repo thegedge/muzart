@@ -1,6 +1,6 @@
 import React, { createRef, useEffect, useMemo } from "react";
 import { DEFAULT_MARGIN, LINE_STROKE_WIDTH } from "../../layout";
-import Box from "../../layout/utils/Box";
+import { Box } from "../../layout/utils/Box";
 import { useReadSelection } from "../utils/SelectionContext";
 import { svgBoxProps } from "../utils/svg";
 

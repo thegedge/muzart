@@ -1,6 +1,6 @@
 import React from "react";
 import { DashedLineText, LINE_STROKE_WIDTH } from "../../layout";
-import Box from "../../layout/utils/Box";
+import { Box } from "../../layout/utils/Box";
 import { BoxGroup } from "../layout/BoxGroup";
 import { TextElement } from "./TextElement";
 

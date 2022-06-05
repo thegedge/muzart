@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Arc as ArcElement, LINE_STROKE_WIDTH, Slide, STAFF_LINE_HEIGHT } from "../../layout";
-import Box from "../../layout/utils/Box";
+import { Box } from "../../layout/utils/Box";
 import { BoxGroup } from "../layout/BoxGroup";
 import { Arc } from "./Arc";
 

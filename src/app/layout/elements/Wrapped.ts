@@ -1,5 +1,5 @@
 import { LayoutElement, Wrapped } from "..";
-import Box from "../utils/Box";
+import { Box } from "../utils/Box";
 
 export function wrap<T extends LayoutElement>(element: T) {
   const wrapped: Wrapped<T> = {

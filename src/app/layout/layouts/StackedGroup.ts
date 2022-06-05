@@ -1,6 +1,6 @@
 import { wrap } from "../elements/Wrapped";
 import { LayoutElement, Wrapped } from "../types";
-import Box from "../utils/Box";
+import { Box } from "../utils/Box";
 import { AbstractGroup } from "./AbstractGroup";
 import { MaybeLayout } from "./types";
 

@@ -4,7 +4,7 @@ import { STAFF_LINE_HEIGHT } from "../constants";
 import { FlexGroup, FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
 import { Chord, Inches, LineElement, Rest, Text } from "../types";
 import { maxMap } from "../utils";
-import Box from "../utils/Box";
+import { Box } from "../utils/Box";
 
 const MIN_NOTE_WIDTH: Inches = 0.2;
 const QUARTER_NOTE_WIDTH: Inches = 0.25;

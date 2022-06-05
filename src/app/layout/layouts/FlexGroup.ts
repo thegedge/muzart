@@ -1,6 +1,6 @@
 import { defaults, isNull, last, sum, zip } from "lodash";
 import { LayoutElement } from "../types";
-import Box from "../utils/Box";
+import { Box } from "../utils/Box";
 import { MaybeLayout } from "./types";
 
 export type FlexProps = {

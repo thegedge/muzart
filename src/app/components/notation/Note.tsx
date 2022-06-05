@@ -1,6 +1,6 @@
 import React from "react";
 import * as layout from "../../layout";
-import Box from "../../layout/utils/Box";
+import { Box } from "../../layout/utils/Box";
 import { SelectableBoxGroup } from "../layout/SelectableBoxGroup";
 import { usePlayback } from "../utils/PlaybackContext";
 import { TextElement } from "./TextElement";

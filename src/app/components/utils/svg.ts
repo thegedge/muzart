@@ -1,7 +1,7 @@
 import { pick } from "lodash";
 import { CSSProperties, SVGAttributes } from "react";
 import { HasBox, Margins } from "../../layout/types";
-import Box from "../../layout/utils/Box";
+import { Box } from "../../layout/utils/Box";
 
 //
 // DOM Props

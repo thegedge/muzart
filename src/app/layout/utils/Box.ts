@@ -1,4 +1,4 @@
-export default class Box {
+export class Box {
   constructor(public x: number, public y: number, public width: number, public height: number) {}
 
   /**
