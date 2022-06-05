@@ -9,7 +9,7 @@
 
     "jsx": "react",
     "target": "es2017",
-    "lib": ["esnext", "DOM"],
+    "lib": ["esnext", "DOM", "WebWorker"],
     "module": "esnext",
     "moduleResolution": "node",
     "esModuleInterop": true,

@@ -9,7 +9,11 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 const plugins: Configuration["plugins"] = [];
 if (isDevelopment) {
   plugins.push(new HotModuleReplacementPlugin());
-  plugins.push(new ReactRefreshWebpackPlugin());
+  plugins.push(
+    new ReactRefreshWebpackPlugin({
+      overlay: false,
+    })
+  );
 }
 
 plugins.push(
@@ -30,23 +34,18 @@ const configuration: Configuration = {
   mode: isDevelopment ? "development" : "production",
 
   entry: {
-    main: {
-      import: ["./src/app/index.tsx"],
-      dependOn: ["deps"],
-    },
-    deps: {
-      import: ["lodash", "react", "react-dom", "tone"],
-    },
+    "main": "./src/app/index.tsx",
+    "layout.worker": "./src/app/workers/layout/main.ts",
   },
 
   output: {
-    filename: "[name].bundle.js",
+    filename: "[name].js",
     sourceMapFilename: "[name].js.map",
     path: path.resolve(__dirname, "public"),
   },
 
   resolve: {
-    extensions: [".ts", ".js", ".tsx"],
+    extensions: [".ts", ".js", ".tsx", ".jsx"],
   },
 
   watchOptions: {
@@ -62,6 +61,10 @@ const configuration: Configuration = {
 
   optimization: {
     runtimeChunk: "single",
+    usedExports: true,
+    splitChunks: {
+      chunks: "all",
+    },
   },
 
   module: {
@@ -69,11 +72,11 @@ const configuration: Configuration = {
       {
         test: /\.js$/,
         enforce: "pre",
-        use: ["source-map-loader"].filter(Boolean),
+        use: ["source-map-loader"],
       },
       {
         test: /\.tsx?$/,
-        exclude: /node_modules/,
+        exclude: /node_modules$/,
         use: [
           ...(isDevelopment
             ? [

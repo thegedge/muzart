@@ -1,7 +1,7 @@
 import { assign } from "lodash";
 import * as React from "react";
 import { Suspense, useCallback, useEffect, useState } from "react";
-import { determineType, load, ScoreDataType } from "../loaders";
+import { determineType, ScoreDataType } from "../loaders";
 import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { PageCallout } from "./components/layout/PageCallout";
@@ -11,15 +11,44 @@ import { DebugContext, DebugContextData } from "./components/utils/DebugContext"
 import { PlaybackContext } from "./components/utils/PlaybackContext";
 import { SelectionContext } from "./components/utils/SelectionContext";
 import * as layout from "./layout";
-import { Suspenseful, suspenseful } from "./suspenseful";
+import { isWorkerResponseEvent, LoadEvent, __workerRequestEvent } from "./workers/layout/events";
+
+const worker = new Worker(new URL("./workers/layout/main.ts", import.meta.url));
+
+const loadScore = (source: string | URL | File | null | undefined) => {
+  if (!source) {
+    return;
+  }
+
+  worker.postMessage({
+    __workerRequestEvent,
+    type: "load",
+    source: process.env.DEFAULT_FILE,
+  } as LoadEvent);
+};
 
 export default function App() {
-  const [score, setScore] = useState<Suspenseful<layout.Score>>();
+  const [score, setScore] = useState<layout.Score>();
 
   useEffect(() => {
-    if (process.env.DEFAULT_FILE) {
-      setScore(loadScore(process.env.DEFAULT_FILE));
-    }
+    worker.onmessage = (event: MessageEvent<unknown>) => {
+      if (!isWorkerResponseEvent(event)) {
+        return;
+      }
+
+      switch (event.data.type) {
+        case "loaded": {
+          setScore(event.data.score);
+          return;
+        }
+      }
+    };
+
+    return () => worker.terminate();
+  }, [worker]);
+
+  useEffect(() => {
+    loadScore(process.env.DEFAULT_FILE);
   }, []);
 
   const onDrop = useCallback((event: React.DragEvent<Element>) => {
@@ -49,9 +78,7 @@ export default function App() {
       }
     }
 
-    if (file) {
-      setScore(loadScore(file));
-    }
+    loadScore(file);
   }, []);
 
   return (
@@ -59,7 +86,7 @@ export default function App() {
       {score ? (
         <ErrorBoundary>
           <Suspense fallback={<Loading />}>
-            <ScoreWithContexts score={score} />
+            <ScoreWithContexts scoreLayout={score} />
           </Suspense>
         </ErrorBoundary>
       ) : (
@@ -88,13 +115,8 @@ function BouncingDot(props: { delayMS: number }) {
   );
 }
 
-function ScoreWithContexts(props: { score: Suspenseful<layout.Score> }) {
-  if (props.score == null) {
-    return <></>;
-  }
-
-  const score = props.score.read();
-  if (score == null) {
+function ScoreWithContexts(props: { scoreLayout: layout.Score | null }) {
+  if (props.scoreLayout == null) {
     return <></>;
   }
 
@@ -107,27 +129,17 @@ function ScoreWithContexts(props: { score: Suspenseful<layout.Score> }) {
   return (
     <DebugContext.Provider value={debugData}>
       <PlaybackContext>
-        <SelectionContext score={score}>
+        <SelectionContext score={props.scoreLayout}>
           <Toolbox
-            score={score.score}
+            score={props.scoreLayout.score}
             onDebugToggled={(v) => {
               const value = assign({}, debugData, { enabled: v });
               setDebugData(value);
             }}
           />
-          <Score score={score} />
+          <Score score={props.scoreLayout} />
         </SelectionContext>
       </PlaybackContext>
     </DebugContext.Provider>
   );
-}
-
-function loadScore(source: string | File | URL) {
-  return suspenseful(async () => {
-    const score = await load(source);
-    const start = performance.now();
-    const scoreLayout = layout.layout(score);
-    console.log(`Time to lay out full score: ${performance.now() - start}ms`);
-    return scoreLayout;
-  });
 }
