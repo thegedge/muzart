@@ -1,11 +1,12 @@
+import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
 import * as layout from "../../layout";
+import { useApplicationState } from "../utils/ApplicationStateContext";
 import { usePlayback } from "../utils/PlaybackContext";
-import { useReadSelection } from "../utils/SelectionContext";
 import { Part } from "./Part";
 
-export function Score(props: { score: layout.Score }) {
-  const selection = useReadSelection();
+export const Score = observer(function Score(props: { score: layout.Score }) {
+  const { selection } = useApplicationState();
   const part = props.score.parts[selection.part];
 
   const playback = usePlayback();
@@ -25,4 +26,4 @@ export function Score(props: { score: layout.Score }) {
   }, [playback, onKeyPress]);
 
   return <Part part={part} />;
-}
+});

@@ -1,12 +1,12 @@
 import React from "react";
 import { Score } from "../../../notation";
-import { useSelection } from "../utils/SelectionContext";
+import { useApplicationState } from "../utils/ApplicationStateContext";
 
 export function Toolbox(props: { score: Score; onDebugToggled: (value: boolean) => void }) {
-  const { updateSelection, selection } = useSelection();
+  const { selection } = useApplicationState();
 
   const onPartChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    updateSelection({ part: event.target.selectedIndex });
+    selection.update({ part: event.target.selectedIndex });
   };
 
   const onDebugToggled = (event: React.ChangeEvent<HTMLInputElement>) => {

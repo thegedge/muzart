@@ -15,8 +15,8 @@ export default class ErrorBoundary extends React.Component<{ children: React.Rea
     if (this.state.error) {
       return (
         <PageCallout>
-          <h1 className="text-red-600 text-4xl">Error: {this.state.error.message}</h1>
-          {this.state.error.stack}
+          <h1 className="text-red-600 text-3xl">Error: {this.state.error.message}</h1>
+          <pre className="text-xl">{this.state.error.stack?.replaceAll("webpack-internal:///./", "")}</pre>
         </PageCallout>
       );
     }

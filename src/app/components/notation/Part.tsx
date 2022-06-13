@@ -23,7 +23,6 @@ export function Part(props: { part: LayoutPart }) {
     height: `${height * BASE_SCALE}rem`,
   };
 
-  // TODO maybe lift <svg> higher? (e.g., selection box may be better outside of here?)
   return (
     <svg className="m-auto" style={style} viewBox={viewBox}>
       <defs>

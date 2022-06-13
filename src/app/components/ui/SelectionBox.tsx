@@ -1,11 +1,13 @@
+import { observer } from "mobx-react-lite";
 import React, { createRef, useEffect, useMemo } from "react";
 import { DEFAULT_MARGIN, LINE_STROKE_WIDTH } from "../../layout";
 import { Box } from "../../layout/utils/Box";
-import { useReadSelection } from "../utils/SelectionContext";
+import { useApplicationState } from "../utils/ApplicationStateContext";
 import { svgBoxProps } from "../utils/svg";
 
-export function SelectionBox() {
-  const { element } = useReadSelection();
+export const SelectionBox = observer(() => {
+  const application = useApplicationState();
+  const element = application.selection.element;
 
   const box = useMemo(() => {
     if (!element) {
@@ -38,7 +40,7 @@ export function SelectionBox() {
   }, [element]);
 
   if (!box) {
-    return <></>;
+    return null;
   }
 
   const padding = 3 * LINE_STROKE_WIDTH;
@@ -48,4 +50,4 @@ export function SelectionBox() {
   box.height += 2 * padding;
 
   return <rect {...svgBoxProps(box)} ref={ref} fill="#f0f0a055" strokeWidth={LINE_STROKE_WIDTH} stroke="#c0c080" />;
-}
+});
