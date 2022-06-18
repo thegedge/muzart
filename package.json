@@ -45,6 +45,7 @@
     "webpack-dev-server": "^4.9.0"
   },
   "volta": {
-    "node": "18.2.0"
+    "node": "18.2.0",
+    "yarn": "1.22.10"
   }
 }
