@@ -14,7 +14,7 @@ export class Application {
     makeAutoObservable(this, undefined, { deep: false, proxy: false });
   }
 
-  *loadScore(source: string | File | URL): Generator<any> {
+  *loadScore(source: string | File | URL): Generator<Promise<Score>> {
     try {
       this.error = null;
       this.loading = true;

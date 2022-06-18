@@ -52,7 +52,7 @@ export default function load(source: ArrayBuffer): Score {
   // console.debug("lyrics");
   readLyrics(cursor);
 
-  let tempo = cursor.nextNumber(NumberType.Uint32);
+  const tempo = cursor.nextNumber(NumberType.Uint32);
   /* const key = */ cursor.nextNumber(NumberType.Uint8);
   /* const octave = */ cursor.nextNumber(NumberType.Uint32);
 
@@ -71,7 +71,7 @@ export default function load(source: ArrayBuffer): Score {
   // Measure props
   //------------------------------------------------------------------------------------------------
 
-  const measureData = range(numMeasures).map((index) => {
+  const measureData = range(numMeasures).map((_index) => {
     // console.debug({ measureDataIndex: index });
 
     const [
@@ -96,7 +96,7 @@ export default function load(source: ArrayBuffer): Score {
 
     let timeSignature;
     if (numerator && denominator) {
-      timeSignature = new TimeSignature(NoteValue.fromNumber(denominator as any), numerator);
+      timeSignature = new TimeSignature(NoteValue.fromNumber(denominator), numerator);
     }
 
     if (hasEndOfRepeat) {
@@ -129,7 +129,7 @@ export default function load(source: ArrayBuffer): Score {
   // Track props
   //------------------------------------------------------------------------------------------------
 
-  const trackData = range(numTracks).map((index) => {
+  const trackData = range(numTracks).map(() => {
     // console.debug({ trackDataIndex: index });
 
     const [_blank1, _blank2, _blank3, _blank4, _blank5, _banjoTrack, _twelveStringTrack, _drumsTrack] = bits(
@@ -196,7 +196,7 @@ export default function load(source: ArrayBuffer): Score {
           rest = status == 0x02;
         }
 
-        let duration = NoteValue.fromNumber((1 << (cursor.nextNumber(NumberType.Int8) + 2)) as any);
+        let duration = NoteValue.fromNumber(1 << (cursor.nextNumber(NumberType.Int8) + 2));
         if (dotted) {
           duration = duration.dot();
         }
@@ -394,7 +394,7 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
   // options initialized here because pitch/value have to be defined
   const options: NoteOptions = {
     pitch: stringTuning.adjust(fret),
-    value: duration == 0 ? defaultNoteValue : NoteValue.fromNumber(duration as any),
+    value: duration == 0 ? defaultNoteValue : NoteValue.fromNumber(duration),
     dead: variant === 3,
     tie: variant === 2 ? { type: "stop" } : undefined,
     ghost: isGhostNote,
@@ -667,14 +667,13 @@ function readMidiChannels(cursor: BufferCursor) {
   }
 }
 
-let first = true;
-
-function readBend(cursor: BufferCursor): Bend {
+function readBend(cursor: BufferCursor): Bend | undefined {
   let type: BendType;
   const bendTypeValue = cursor.nextNumber(NumberType.Uint8);
   switch (bendTypeValue) {
     case 0:
-    // None?
+      // None?
+      return;
     case 1:
       type = BendType.Bend;
       break;

@@ -22,7 +22,7 @@ export default function App() {
   );
 }
 
-const ScoreDropZone = observer(function ScoreDropZone(props: {}) {
+const ScoreDropZone = observer(function ScoreDropZone() {
   const application = useApplicationState();
 
   useEffect(() => {
@@ -94,7 +94,7 @@ function BouncingDot(props: { delayMS: number }) {
   );
 }
 
-const ScoreWithToolbox = observer(function ScoreWithToolbox(props: {}) {
+const ScoreWithToolbox = observer(function ScoreWithToolbox() {
   const application = useApplicationState();
 
   const [debugData, setDebugData] = useState<DebugContextData>({

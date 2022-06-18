@@ -1,4 +1,4 @@
-import { clone, find, first, groupBy, isNumber, isUndefined, map, max, range, some } from "lodash";
+import { clone, find, groupBy, isNumber, isUndefined, map, max, range, some } from "lodash";
 import * as notation from "../../../notation";
 import { AccentStyle, NoteValueName } from "../../../notation";
 import { BEAM_HEIGHT, DOT_SIZE, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT, STEM_HEIGHT, TUPLET_SIZE } from "../constants";
@@ -275,7 +275,8 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
     let startIndex: number | undefined;
     let endIndex = 0;
     let amount = 0;
-    this.gridLayoutElements().forEach(({ element, measure }, index) => {
+
+    this.gridLayoutElements().forEach(({ element }, index) => {
       if (element.type === "Space") {
         return;
       }
@@ -293,10 +294,12 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
           amount += 1;
         }
       } else if (isNumber(startIndex)) {
-        this.aboveStaffLayout.addElement(elementGenerator(predicateValue!, amount), {
-          startColumn: startIndex,
-          endColumn: endIndex,
-        });
+        if (predicateValue) {
+          this.aboveStaffLayout.addElement(elementGenerator(predicateValue, amount), {
+            startColumn: startIndex,
+            endColumn: endIndex,
+          });
+        }
 
         startIndex = undefined;
         predicateValue = undefined;
@@ -306,8 +309,8 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
       endIndex = index + (options?.includeChordSpacer ? 2 : 1);
     });
 
-    if (isNumber(startIndex)) {
-      this.aboveStaffLayout.addElement(elementGenerator(predicateValue!, amount), {
+    if (isNumber(startIndex) && predicateValue) {
+      this.aboveStaffLayout.addElement(elementGenerator(predicateValue, amount), {
         startColumn: startIndex,
         endColumn: endIndex,
         group: options?.group,
@@ -466,7 +469,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
   private stemAndBeam(measureElement: Measure) {
     const beats = this.groupElementsOnBeat(measureElement.measure, measureElement.elements);
     for (const beat of beats) {
-      const firstElement = first(beat);
+      const firstElement = beat[0];
       if (!firstElement) {
         continue;
       }
@@ -726,7 +729,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
       const noteWithTuplet = beatElement.chord.notes.find((note) => !!note.value.tuplet);
       const tuplet = noteWithTuplet?.value.tuplet;
       if (tuplet) {
-        let y = STEM_HEIGHT + BEAM_HEIGHT;
+        const y = STEM_HEIGHT + BEAM_HEIGHT;
         this.belowStaffLayout.addElement({
           type: "Text",
           box: new Box(measureBox.x + beatElement.box.x, y, beatElement.box.width, TUPLET_SIZE),
@@ -744,6 +747,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
 
     let y = STEM_HEIGHT - BEAM_HEIGHT;
     const beamCounts = beatElements.map((element) => this.numBeams(element));
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       // Find runs of elements that still need a beam drawn, then draw a beam between the two
       const beamRuns = runs(beamCounts, (v) => v > 0);

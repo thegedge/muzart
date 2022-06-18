@@ -31,7 +31,7 @@ export class Pitch {
     const stepIndex = value % PITCHES.length;
     const octave = Math.floor(value / PITCHES.length);
     const pitch = PITCHES[stepIndex];
-    return new Pitch((pitch[0] as unknown) as Step, octave, pitch.length - 1);
+    return new Pitch(pitch[0] as unknown as Step, octave, pitch.length - 1);
   }
 
   constructor(readonly step: Step, readonly octave: number, readonly alterations = 0) {}

@@ -30,6 +30,7 @@ export class TimeSignature {
           return { value: this.value, count: 3 };
         }
       }
+      // eslint-disable-next-line no-fallthrough
       default:
         // Simple signatures – 4/4, 3/4, and so on
         return { value: this.value, count: 1 };

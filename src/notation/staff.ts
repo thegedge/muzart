@@ -1,9 +1,10 @@
 import { TimeSignature } from "./time_signature";
 
 export interface Changeable<T> {
-  value: T;
+  value: T | undefined;
   changed: boolean;
 }
+
 export interface StaffDetails {
   key?: Changeable<Key>;
   clef?: Changeable<Clef>;
@@ -13,7 +14,7 @@ export interface StaffDetails {
 
 export function changed<T>(newValue: T | undefined, previousValue: T): Changeable<T> {
   return {
-    value: newValue || previousValue,
+    value: newValue ?? previousValue,
     changed: !!newValue && newValue !== previousValue,
   };
 }

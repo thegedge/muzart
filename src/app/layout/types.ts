@@ -10,11 +10,11 @@ export interface HasBox {
   box: Box;
 }
 
-export interface HasParent<T = any> {
-  parent?: T;
+export interface HasParent<T = unknown> {
+  parent?: LayoutElement<T>;
 }
 
-export interface LayoutElement<T = any> extends HasBox, HasParent<T> {
+export interface LayoutElement<T = unknown> extends HasBox, HasParent<T> {
   type: string;
 }
 
@@ -72,7 +72,7 @@ export type LineElement =
   | Vibrato
   | Wrapped<LineElement>;
 
-export interface Wrapped<T extends LayoutElement<any>> extends LayoutElement<any> {
+export interface Wrapped<T extends LayoutElement<unknown>> extends LayoutElement<unknown> {
   type: "Wrapped";
   element: T;
 }
@@ -95,7 +95,7 @@ export interface Bend extends LayoutElement<LineElement> {
   descent: number;
 }
 
-export interface Group<T> extends LayoutElement<any> {
+export interface Group<T> extends LayoutElement<unknown> {
   type: "Group";
   elements: T[];
 }
@@ -190,8 +190,8 @@ export interface Tuplet extends LayoutElement<LineElement> {
  *
  * @returns The element whose `type` matches the given `type`. If `e` itself is of the given type, `e` will be returned.
  */
-export function getAncestorOfType<T extends LayoutElement<any>>(
-  e: LayoutElement<any> | undefined,
+export function getAncestorOfType<T extends LayoutElement<unknown>>(
+  e: LayoutElement<unknown> | undefined,
   type: string
 ): T | undefined {
   while (e) {

@@ -1,18 +1,19 @@
-import { first, inRange, last } from "lodash";
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { head, inRange, last } from "lodash";
 import { makeAutoObservable } from "mobx";
 import { Chord, getAncestorOfType, LayoutElement, Measure, Note, Score } from "../../layout";
 
 export class Selection {
   public score: Score | null = null;
 
-  public part: number = 0;
-  public measure: number = 0;
-  public chord: number = 0;
-  public note: number = 0;
-  public element: LayoutElement<any> | undefined;
+  public part = 0;
+  public measure = 0;
+  public chord = 0;
+  public note = 0;
+  public element: LayoutElement<unknown> | undefined;
 
   constructor() {
-    makeAutoObservable(this, undefined, { deep: false, proxy: false });
+    makeAutoObservable(this, undefined, { deep: false });
   }
 
   setScore(score: Score | null) {
@@ -46,7 +47,7 @@ export class Selection {
       const page = part.pages.find((p) =>
         inRange(
           measureIndex + 1,
-          first(p.measures)?.measure?.number ?? -1,
+          head(p.measures)?.measure?.number ?? -1,
           (last(p.measures)?.measure?.number ?? -1) + 1
         )
       );

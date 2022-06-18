@@ -33,7 +33,7 @@ export interface Tuplet {
 }
 
 export class NoteValue {
-  static fromNumber(num: 1 | 2 | 4 | 8 | 16 | 32 | 64): NoteValue {
+  static fromNumber(num: number): NoteValue {
     switch (num) {
       case 1:
         return new NoteValue(NoteValueName.Whole);
@@ -54,7 +54,7 @@ export class NoteValue {
     }
   }
 
-  static fromString(str: `${NoteValueName}`): NoteValue {
+  static fromString(str: NoteValueName): NoteValue {
     switch (str) {
       case "whole":
         return new NoteValue(NoteValueName.Whole);

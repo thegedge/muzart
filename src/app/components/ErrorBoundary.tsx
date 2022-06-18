@@ -2,7 +2,7 @@ import * as React from "react";
 import { PageCallout } from "./layout/PageCallout";
 
 export default class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error?: Error }> {
-  constructor(props: any) {
+  constructor(props: { children: React.ReactNode }) {
     super(props);
     this.state = {};
   }
