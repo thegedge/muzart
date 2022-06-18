@@ -2,14 +2,13 @@ import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
 import * as layout from "../../layout";
 import { useApplicationState } from "../utils/ApplicationStateContext";
-import { usePlayback } from "../utils/PlaybackContext";
 import { Part } from "./Part";
 
 export const Score = observer(function Score(props: { score: layout.Score }) {
   const { selection } = useApplicationState();
   const part = props.score.parts[selection.part];
 
-  const playback = usePlayback();
+  const { playback } = useApplicationState();
   const onKeyPress = (event: KeyboardEvent) => {
     if (event.key === " ") {
       event.preventDefault();

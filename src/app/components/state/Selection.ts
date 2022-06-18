@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { head, inRange, last } from "lodash";
 import { makeAutoObservable } from "mobx";
-import { Chord, getAncestorOfType, LayoutElement, Measure, Note, Score } from "../../layout";
+import { Chord, getAncestorOfType, LineElement, Measure, Note, Score } from "../../layout";
+
+export type Selectables = LineElement | Note;
 
 export class Selection {
   public score: Score | null = null;
@@ -10,7 +12,7 @@ export class Selection {
   public measure = 0;
   public chord = 0;
   public note = 0;
-  public element: LayoutElement<unknown> | undefined;
+  public element: Selectables | undefined;
 
   constructor() {
     makeAutoObservable(this, undefined, { deep: false });
@@ -72,7 +74,7 @@ export class Selection {
     }
   }
 
-  setFor(element: LayoutElement) {
+  setFor(element: Selectables) {
     // TODO optimize getting indexes (context?)
     const noteElement = getAncestorOfType<Note>(element, "Note");
     const chordElement = getAncestorOfType<Chord>(noteElement ?? element, "Chord");

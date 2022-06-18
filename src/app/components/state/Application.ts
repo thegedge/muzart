@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { load } from "../../../loaders";
 import { Score } from "../../../notation";
+import { PlaybackController } from "../../../playback/PlaybackController";
 import * as layout from "../../layout";
 import { Selection } from "./Selection";
 
@@ -9,6 +10,7 @@ export class Application {
   public score: layout.Score | null = null;
   public loading = false;
   public error: Error | null = null;
+  public playback = new PlaybackController();
 
   constructor() {
     makeAutoObservable(this, undefined, { deep: false, proxy: false });

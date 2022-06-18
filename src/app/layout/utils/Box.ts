@@ -16,6 +16,13 @@ export class Box {
   }
 
   /**
+   * Create a new box that expands in all directions by the given amount.
+   */
+  expand(amount: number) {
+    return new Box(this.x - amount, this.y - amount, this.width + 2 * amount, this.height + 2 * amount);
+  }
+
+  /**
    * Create a new box that includes both this box and the given box.
    */
   encompass(box: Box) {

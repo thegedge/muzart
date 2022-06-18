@@ -10,14 +10,11 @@ import { Score } from "./components/notation/Score";
 import { Toolbox } from "./components/ui/Toolbox";
 import { ApplicationState, useApplicationState } from "./components/utils/ApplicationStateContext";
 import { DebugContext, DebugContextData } from "./components/utils/DebugContext";
-import { PlaybackContext } from "./components/utils/PlaybackContext";
 
 export default function App() {
   return (
     <ApplicationState>
-      <PlaybackContext>
-        <ScoreDropZone />
-      </PlaybackContext>
+      <ScoreDropZone />
     </ApplicationState>
   );
 }
