@@ -14,7 +14,7 @@ import {
   Step,
   TimeSignature,
 } from "../notation";
-import { NoteValue } from "../notation/note_value";
+import { NoteValue, NoteValueName } from "../notation/note_value";
 
 // TODO this is pretty slow, so perhaps a SAX-based parser
 // TODO quite incomplete, but I can't find any good MusicXML files with all the guitar tablature elements, or programs that can produce them
@@ -115,7 +115,7 @@ function time(document: Document, node: Node): TimeSignature | undefined {
   const beats = textQueryMaybe(document, node, "time/beats");
   const beatType = textQueryMaybe(document, node, "time/beat-type");
   if (beats && beatType) {
-    return new TimeSignature(NoteValue.fromNumber(beatType as any), parseInt(beats));
+    return new TimeSignature(NoteValue.fromNumber(parseInt(beatType)), parseInt(beats));
   }
 }
 
@@ -135,7 +135,7 @@ function tuning(document: Document, node: Node): Pitch[] | undefined {
   if (tuning) {
     // TODO use `line` attribute to order, but for now we assume correct ordering
     return tuning.map((pitch) => {
-      const step = (textQuery(document, pitch, "tuning-step") as unknown) as Step;
+      const step = textQuery(document, pitch, "tuning-step") as unknown as Step;
       const octave = parseInt(textQuery(document, pitch, "tuning-octave"));
       const alter = parseInt(textQueryMaybe(document, pitch, "tuning-alter") || "0");
       return new Pitch(step, octave, alter);
@@ -150,7 +150,7 @@ function chords(document: Document, node: Node): Chord[] {
   const result = document.evaluate("note", node, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
   let item = result.iterateNext();
   while (item) {
-    let notes: Note[] = [];
+    const notes: Note[] = [];
     while (item) {
       if (contains(document, item, "pitch") && contains(document, item, "duration")) {
         notes.push(note(document, item));
@@ -172,17 +172,17 @@ function chords(document: Document, node: Node): Chord[] {
 }
 
 function note(document: Document, node: Node): Note {
-  const step = (textQuery(document, node, "pitch/step") as unknown) as Step;
+  const step = textQuery(document, node, "pitch/step") as unknown as Step;
   const octave = parseInt(textQuery(document, node, "pitch/octave"));
   const alter = parseInt(textQueryMaybe(document, node, "pitch/alter") || "0");
   const pitch = new Pitch(step, octave, alter);
 
   // any so we can typecheck on `Duration.fromString` below, relying on MusicXML's validations to ensure correctness
-  const duration: any = textQuery(document, node, "type");
+  const duration = textQuery(document, node, "type");
 
   const options: NoteOptions = {
     pitch,
-    value: NoteValue.fromString(duration),
+    value: NoteValue.fromString(duration as NoteValueName),
   };
 
   const fret = textQueryMaybe(document, node, "notations/technical/fret");

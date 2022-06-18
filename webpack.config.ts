@@ -80,7 +80,7 @@ const configuration: Configuration = {
                 {
                   loader: "babel-loader",
                   options: {
-                    plugins: ["react-refresh/babel"],
+                    plugins: ["react-refresh/babel", "@babel/plugin-transform-react-display-name"],
                   },
                 },
               ]

@@ -1,5 +1,5 @@
-import { isString, mapValues, pickBy, range } from "lodash";
-import { Changeable, changed, Chord, Note, Score, StaffDetails } from "../notation";
+import { isString, pickBy, range } from "lodash";
+import { changed, Chord, Measure, Note, Score, StaffDetails } from "../notation";
 import loadGuitarPro4 from "./guitarpro4";
 import loadMusicXml from "./musicxml";
 
@@ -62,12 +62,7 @@ function loadScore(buffer: ArrayBuffer, type: ScoreDataType): Score {
   }
 }
 
-type ChangeableValueType<T> = T extends Changeable<infer V> ? V : never;
-type StaffDetailValues = {
-  [Property in keyof StaffDetails]: ChangeableValueType<NonNullable<StaffDetails[Property]>>;
-};
-
-// TODO what to do about these in the context of an editor, where we won't want to do a full post process?
+// TODO refactor these for the editor editor, where we won't want to do a full post process
 
 function postProcess(score: Score) {
   propagateStaffDetails(score);
@@ -76,26 +71,29 @@ function postProcess(score: Score) {
 }
 
 function propagateStaffDetails(score: Score): void {
+  const previousDetails: StaffDetails = {};
+
+  const updateStaffDetails = <K extends keyof StaffDetails>(key: K, measure: Measure): void => {
+    const previousValue = previousDetails[key];
+    if (previousValue) {
+      const newValue = measure.staffDetails[key];
+      measure.staffDetails[key] = changed(newValue?.value, previousValue.value) as StaffDetails[K];
+    }
+  };
+
   // Set the staff details reference on all measures
   for (const part of score.parts) {
-    let previousDetails: StaffDetailValues = {
-      key: undefined,
-      time: undefined,
-      clef: undefined,
-      tempo: undefined,
-    };
+    previousDetails.key = undefined;
+    previousDetails.time = undefined;
+    previousDetails.clef = undefined;
+    previousDetails.tempo = undefined;
 
     for (const measure of part.measures) {
-      for (const [key, previousValue] of Object.entries(previousDetails)) {
-        if (!previousValue) {
-          continue;
-        }
-
-        const newValue = (measure.staffDetails as any)[key];
-        (measure.staffDetails as any)[key] = changed(newValue?.value, previousValue);
-      }
-
-      Object.assign(previousDetails, mapValues(pickBy(measure.staffDetails), "value"));
+      updateStaffDetails("clef", measure);
+      updateStaffDetails("key", measure);
+      updateStaffDetails("tempo", measure);
+      updateStaffDetails("time", measure);
+      Object.assign(previousDetails, pickBy(measure.staffDetails));
     }
   }
 }

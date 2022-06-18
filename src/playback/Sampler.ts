@@ -20,7 +20,7 @@ import { Instrument } from "tone/build/esm/instrument/Instrument";
 import * as notation from "../notation";
 import { noteValueToSeconds } from "./util/durations";
 
-interface SamplesMap {
+export interface SamplesMap {
   [note: string]: ToneAudioBuffer | AudioBuffer | string;
   [midi: number]: ToneAudioBuffer | AudioBuffer | string;
 }
@@ -125,9 +125,9 @@ export class Sampler extends Instrument<SamplerOptions> {
       const noteNumber = parseInt(note, 10);
       if (isNote(note)) {
         const mid = new FrequencyClass(this.context, note).toMidi();
-        urlMap[mid] = parsedOptions.urls![note];
+        urlMap[mid] = parsedOptions.urls[note];
       } else if (Number.isFinite(noteNumber)) {
-        urlMap[noteNumber] = parsedOptions.urls![noteNumber];
+        urlMap[noteNumber] = parsedOptions.urls[noteNumber];
       } else {
         throw new Error(`url key is neither a note or midi pitch: ${note}`);
       }
@@ -146,7 +146,7 @@ export class Sampler extends Instrument<SamplerOptions> {
     // invoke the callback if it's already loaded
     if (this._buffers.loaded) {
       // invoke onload deferred
-      Promise.resolve().then(parsedOptions.onload);
+      void Promise.resolve().then(parsedOptions.onload);
     }
   }
 
@@ -154,7 +154,7 @@ export class Sampler extends Instrument<SamplerOptions> {
     return Object.assign(Instrument.getDefaults(), {
       attack: 0,
       baseUrl: "",
-      curve: "exponential" as "exponential",
+      curve: "exponential" as const,
       onload: noOp,
       onerror: noOp,
       release: 0.1,
@@ -273,7 +273,7 @@ export class Sampler extends Instrument<SamplerOptions> {
 
   // TODO figure out if I could just use the regular ToneJS sampler hooked into some output nodes
 
-  playNote(note: notation.Note, time?: Time, velocity: NormalRange = 1): number | undefined {
+  playNote(note: notation.Note, time?: Time, _velocity: NormalRange = 1): number | undefined {
     if (note.tie && note.tie.type != "start") {
       return;
     }
