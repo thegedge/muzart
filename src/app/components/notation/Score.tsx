@@ -1,28 +1,49 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
-import * as layout from "../../layout";
+import { createKeybindingsHandler } from "tinykeys";
 import { useApplicationState } from "../utils/ApplicationStateContext";
 import { Part } from "./Part";
 
-export const Score = observer(function Score(props: { score: layout.Score }) {
-  const { selection } = useApplicationState();
-  const part = props.score.parts[selection.partIndex];
-
-  const { playback } = useApplicationState();
-  const onKeyPress = (event: KeyboardEvent) => {
-    if (event.key === " ") {
-      event.preventDefault();
-      event.stopPropagation();
-      playback.togglePlay(part.part, selection);
-    }
-  };
+export const Score = observer(function Score() {
+  const { selection, playback } = useApplicationState();
+  if (!selection.part) {
+    return null;
+  }
 
   useEffect(() => {
-    playback.stop();
+    return () => playback.stop();
+  }, [playback]);
 
-    // TODO find a way to not have to do this, perhaps some hotkeys library
-    document.body.onkeypress = onKeyPress;
-  }, [playback, onKeyPress]);
+  useEffect(() => {
+    const listener = createKeybindingsHandler({
+      Space: (event) => {
+        event.preventDefault();
+        playback.togglePlay(selection);
+      },
+      ArrowLeft: (event) => {
+        event.preventDefault();
+        selection.previousChord();
+      },
+      ArrowRight: (event) => {
+        event.preventDefault();
+        selection.nextChord();
+      },
+      ArrowUp: (event) => {
+        event.preventDefault();
+        selection.previousNote();
+      },
+      ArrowDown: (event) => {
+        event.preventDefault();
+        selection.nextNote();
+      },
+    });
 
-  return <Part part={part} />;
+    document.body.addEventListener("keydown", listener);
+
+    return () => {
+      document.body.removeEventListener("keydown", listener);
+    };
+  }, [selection, playback]);
+
+  return <Part part={selection.part} />;
 });

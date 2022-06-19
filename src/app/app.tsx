@@ -92,19 +92,17 @@ function BouncingDot(props: { delayMS: number }) {
 }
 
 const ScoreWithToolbox = observer(function ScoreWithToolbox() {
-  const application = useApplicationState();
-
   const [debugData, setDebugData] = useState<DebugContextData>({
     enabled: false,
     index: 0,
     colorMap: {},
   });
 
-  const score = application.score;
+  const { score, error, loading } = useApplicationState();
   if (score == null) {
-    if (application.error) {
-      throw application.error;
-    } else if (application.loading) {
+    if (error) {
+      throw error;
+    } else if (loading) {
       return <Loading />;
     }
     return <PageCallout>Drop a Guitar Pro 4 file here</PageCallout>;
@@ -119,7 +117,7 @@ const ScoreWithToolbox = observer(function ScoreWithToolbox() {
           setDebugData(value);
         }}
       />
-      <Score score={score} />
+      <Score />
     </DebugContext.Provider>
   );
 });
