@@ -17,8 +17,8 @@ import { Frequency, Interval, NormalRange, Time } from "tone/build/esm/core/type
 import { assert } from "tone/build/esm/core/util/Debug";
 import { noOp } from "tone/build/esm/core/util/Interface";
 import { Instrument } from "tone/build/esm/instrument/Instrument";
-import * as notation from "../notation";
-import { noteValueToSeconds } from "./util/durations";
+import * as notation from "../../../notation";
+import { noteValueToSeconds } from "../../util/durations";
 
 export interface SamplesMap {
   [note: string]: ToneAudioBuffer | AudioBuffer | string;
