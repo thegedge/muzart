@@ -1,9 +1,14 @@
 import { TimeSignature } from "./time_signature";
 
-export interface Changeable<T> {
-  value: T | undefined;
-  changed: boolean;
-}
+export type Changeable<T> =
+  | {
+      value: T;
+      changed: true;
+    }
+  | {
+      value: T | undefined;
+      changed: false;
+    };
 
 export interface StaffDetails {
   key?: Changeable<Key>;

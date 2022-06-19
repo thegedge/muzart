@@ -1,5 +1,19 @@
 export class Box {
+  /**
+   * Create an empty box (zero width/height, located at origin).
+   */
+  static empty() {
+    return new Box(0, 0, 0, 0);
+  }
+
   constructor(public x: number, public y: number, public width: number, public height: number) {}
+
+  /**
+   * Create a copy of this box.
+   */
+  clone() {
+    return new Box(this.x, this.y, this.width, this.height);
+  }
 
   /**
    * Create a new box, translated by the given amounts.

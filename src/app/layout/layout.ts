@@ -22,6 +22,7 @@ export function layout(score: notation.Score): Score {
       type: "Score",
       score,
       parts: score.parts.map((part) => layOutPart(score, part)),
+      box: new Box(0, 0, 0, 0), // TODO compute a box
     };
   } finally {
     console.timeEnd("layout");
@@ -113,6 +114,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     type: "Part",
     part,
     pages,
+    box: new Box(0, 0, 0, 0), // TODO compute a box
   };
 
   for (const page of pages) {

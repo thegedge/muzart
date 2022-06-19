@@ -6,7 +6,7 @@ import { Part } from "./Part";
 
 export const Score = observer(function Score(props: { score: layout.Score }) {
   const { selection } = useApplicationState();
-  const part = props.score.parts[selection.part];
+  const part = props.score.parts[selection.partIndex];
 
   const { playback } = useApplicationState();
   const onKeyPress = (event: KeyboardEvent) => {

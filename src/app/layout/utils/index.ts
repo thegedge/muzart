@@ -1,4 +1,51 @@
+import { DEFAULT_MARGIN } from "../constants";
+import { LayoutElement } from "../types";
+import { Box } from "./Box";
+
 export * from "./Box";
+
+/**
+ * Get an ancestor of a given type for an element.
+ */
+export function ancestorOfType<LayoutT extends LayoutElement>(
+  source: LayoutT,
+  ancestorType: LayoutT["type"]
+): LayoutElement | undefined {
+  let e: LayoutElement | undefined = source.parent;
+  while (e && e.type != ancestorType) {
+    e = e.parent;
+  }
+  return e;
+}
+
+/**
+ * Move the box of a given element into an ancestor's coordinate system.
+ *
+ * If no ancestor given, or the ancestor is not found, the absolute coordinates of the element's box will be returned.
+ *
+ * @param ancestorType type of ancestor element whose coordinate system to map into
+ */
+export function toAncestorCoordinateSystem<LayoutT extends LayoutElement>(
+  source: LayoutT,
+  ancestorType?: LayoutT["type"]
+): Box {
+  const box = source.box.clone();
+  let e: LayoutElement | undefined = source.parent;
+  while (e && e.type != ancestorType) {
+    // TODO eliminate need for this by making Page have a single group child properly offset
+    if (e.type == "Page") {
+      box.x += e.box.x + DEFAULT_MARGIN;
+      box.y += e.box.y + DEFAULT_MARGIN;
+    } else {
+      box.x += e.box.x;
+      box.y += e.box.y;
+    }
+    e = e.parent;
+  }
+
+  // TODO this would be a lot simpler, and perhaps generally more useful, if boxes also had absolute coordinates
+  return box;
+}
 
 /**
  * Compute the min of a collection after being mapped by a function.
