@@ -18,8 +18,8 @@ export class PlaybackController {
     if (this.playbackHandle) {
       this.stop();
     } else {
-      let currentMeasure = startFrom?.measure ?? 0;
-      let currentChord = startFrom?.chord ?? 0;
+      let currentMeasure = startFrom?.measureIndex ?? 0;
+      let currentChord = startFrom?.chordIndex ?? 0;
 
       const playNext = () => {
         const measure = part.measures[currentMeasure];
@@ -27,8 +27,8 @@ export class PlaybackController {
         const seconds = this.playChord(chord);
 
         startFrom?.update({
-          measure: currentMeasure,
-          chord: currentChord,
+          measureIndex: currentMeasure,
+          chordIndex: currentChord,
         });
 
         currentChord += 1;

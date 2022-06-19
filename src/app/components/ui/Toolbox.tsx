@@ -6,7 +6,7 @@ export function Toolbox(props: { score: Score; onDebugToggled: (value: boolean) 
   const { selection } = useApplicationState();
 
   const onPartChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    selection.update({ part: event.target.selectedIndex });
+    selection.update({ partIndex: event.target.selectedIndex });
   };
 
   const onDebugToggled = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,7 +22,7 @@ export function Toolbox(props: { score: Score; onDebugToggled: (value: boolean) 
         <select
           className="bg-transparent px-2 focus:outline-none"
           onChange={onPartChange}
-          defaultValue={selection.part}
+          defaultValue={selection.partIndex}
         >
           {props.score.parts.map((part, index) => (
             <option key={index} value={index}>

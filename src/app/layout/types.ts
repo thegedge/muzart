@@ -10,11 +10,11 @@ export interface HasBox {
   box: Box;
 }
 
-export interface HasParent<T = unknown> {
-  parent?: LayoutElement<T>;
+export interface HasParent<ParentT = unknown> {
+  parent?: LayoutElement<ParentT>;
 }
 
-export interface LayoutElement<T = unknown> extends HasBox, HasParent<T> {
+export interface LayoutElement<ParentT = unknown> extends HasBox, HasParent<ParentT> {
   type: string;
 }
 
@@ -25,13 +25,13 @@ export interface Margins {
   bottom: Inches;
 }
 
-export interface Score {
+export interface Score extends LayoutElement<never> {
   type: "Score";
   score: notation.Score;
   parts: Part[];
 }
 
-export interface Part extends HasParent<Score> {
+export interface Part extends LayoutElement<Score> {
   type: "Part";
   part: notation.Part;
   pages: Page[];

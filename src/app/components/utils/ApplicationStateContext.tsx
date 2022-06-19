@@ -1,6 +1,12 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { Application } from "../state/Application";
 
+declare global {
+  interface Window {
+    Muzart: Application | undefined;
+  }
+}
+
 const ApplicationStateContext = createContext<Application | null>(null);
 
 export function useApplicationState(): Application {
@@ -12,6 +18,10 @@ export function useApplicationState(): Application {
 }
 
 export function ApplicationState(props: { children?: React.ReactNode }) {
-  const state = useMemo(() => new Application(), []);
+  const state = useMemo(() => {
+    const application = new Application();
+    window.Muzart = application;
+    return application;
+  }, []);
   return <ApplicationStateContext.Provider value={state}>{props.children}</ApplicationStateContext.Provider>;
 }
