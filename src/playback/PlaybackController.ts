@@ -1,18 +1,27 @@
-import { makeAutoObservable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 import { Selection } from "../app/components/state/Selection";
 import { Chord, Note } from "../notation";
-import { Sampler } from "./Sampler";
+import { Instrument } from "./instruments/Instrument";
+import { SamplerInstrument } from "./instruments/sampler/SamplerInstrument";
 import { noteValueToSeconds } from "./util/durations";
 
 export class PlaybackController {
+  /** If true, playing back the entire score */
   public playing = false;
 
-  private instrument: Sampler;
+  private instrument: Instrument;
   private playbackHandle?: NodeJS.Timeout;
 
-  constructor() {
-    makeAutoObservable(this, undefined, { deep: false });
-    this.instrument = new Sampler({ urls: NOTES }).toDestination();
+  constructor(instrument?: Instrument) {
+    this.instrument = instrument ?? new SamplerInstrument();
+
+    makeObservable(this, {
+      playing: observable,
+      togglePlay: action,
+      stop: action,
+      playChord: action,
+      playNote: action,
+    });
   }
 
   togglePlay(selection: Selection) {
@@ -25,9 +34,10 @@ export class PlaybackController {
         return;
       }
 
-      let currentMeasure = selection.measureIndex ?? 0;
-      let currentChord = selection.chordIndex ?? 0;
+      let currentMeasure = selection.measureIndex;
+      let currentChord = selection.chordIndex;
 
+      // TODO if we had an autorun that played on selection change, we'd only need the setTimeout
       const playNext = () => {
         const measure = part.measures[currentMeasure];
         const chord = measure.chords[currentChord];
@@ -64,10 +74,6 @@ export class PlaybackController {
     }
   }
 
-  playNote(note: Note) {
-    this.instrument.playNote(note);
-  }
-
   playChord(chord: Chord) {
     const seconds = noteValueToSeconds(chord.value);
     if (!chord.rest) {
@@ -77,57 +83,8 @@ export class PlaybackController {
     }
     return seconds;
   }
-}
 
-// TODO factor out instrument
-const NOTES = Object.fromEntries(
-  [
-    "A2",
-    "A3",
-    "A4",
-    "A5",
-    "Ab2",
-    "Ab3",
-    "Ab4",
-    "Ab5",
-    "B2",
-    "B3",
-    "B4",
-    "B5",
-    "Bb2",
-    "Bb3",
-    "Bb4",
-    "Bb5",
-    "C#3",
-    "C#4",
-    "C#5",
-    "C#6",
-    "C3",
-    "C4",
-    "C5",
-    "C6",
-    "D3",
-    "D4",
-    "D5",
-    "D6",
-    "E2",
-    "E3",
-    "E4",
-    "E5",
-    "Eb3",
-    "Eb4",
-    "Eb5",
-    "F#2",
-    "F#3",
-    "F#4",
-    "F#5",
-    "F2",
-    "F3",
-    "F4",
-    "F5",
-    "G2",
-    "G3",
-    "G4",
-    "G5",
-  ].map((note) => [note, encodeURIComponent(`notes/${note}.mp3`)])
-);
+  playNote(note: Note): void {
+    this.instrument.playNote(note);
+  }
+}
