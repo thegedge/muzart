@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useRef } from "react";
-import { LINE_STROKE_WIDTH, toAncestorCoordinateSystem } from "../../layout";
+import { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT, toAncestorCoordinateSystem } from "../../layout";
 import { Box } from "../../layout/utils/Box";
 import { useApplicationState } from "../utils/ApplicationStateContext";
 import { svgBoxProps } from "../utils/svg";
@@ -16,15 +16,21 @@ export const SelectionBox = observer(() => {
     }
 
     return toAncestorCoordinateSystem(selection.measure);
-  }, [selection.measure]);
+  }, [selection.measure, selection.part]);
 
   const elementBox = useMemo(() => {
-    if (!selection.element) {
+    console.info(selection);
+    if (!selection.chord) {
       return Box.empty();
     }
 
-    return toAncestorCoordinateSystem(selection.element);
-  }, [selection, selection.element]);
+    const chordBox = toAncestorCoordinateSystem(selection.chord);
+    return chordBox.update({
+      y: chordBox.y + selection.noteIndex * STAFF_LINE_HEIGHT,
+      width: selection.chord.type == "Chord" ? chordBox.width : STAFF_LINE_HEIGHT,
+      height: STAFF_LINE_HEIGHT,
+    });
+  }, [selection, selection.chord, selection.noteIndex]);
 
   const ref = useRef<SVGRectElement | null>();
 

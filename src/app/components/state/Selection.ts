@@ -84,6 +84,53 @@ export class Selection {
     }
   }
 
+  previousChord() {
+    if (this.chordIndex == 0) {
+      if (this.measureIndex > 0) {
+        this.measureIndex -= 1;
+        this.chordIndex = (this.measure?.chords.length ?? 1) - 1;
+      }
+    } else {
+      this.chordIndex -= 1;
+    }
+  }
+
+  nextChord() {
+    if (!this.measure || !this.part) {
+      return;
+    }
+
+    if (this.chordIndex == this.measure.chords.length - 1) {
+      const lastMeasureNumber = last(this.part.part.measures)?.number;
+      if (!lastMeasureNumber) {
+        return;
+      }
+
+      if (this.measureIndex < lastMeasureNumber) {
+        this.measureIndex += 1;
+        this.chordIndex = 0;
+      }
+    } else {
+      this.chordIndex += 1;
+    }
+  }
+
+  previousNote() {
+    if (this.noteIndex > 0) {
+      this.noteIndex -= 1;
+    }
+  }
+
+  nextNote() {
+    if (!this.part) {
+      return;
+    }
+
+    if (this.noteIndex < this.part.part.lineCount - 1) {
+      this.noteIndex += 1;
+    }
+  }
+
   setFor(element: LayoutElement) {
     // TODO optimize getting indexes (context?)
     const noteElement = getAncestorOfType<Note>(element, "Note");

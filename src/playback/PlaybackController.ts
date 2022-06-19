@@ -1,11 +1,12 @@
 import { makeAutoObservable } from "mobx";
 import { Selection } from "../app/components/state/Selection";
-import { Chord, Note, Part } from "../notation";
+import { Chord, Note } from "../notation";
 import { Sampler } from "./Sampler";
 import { noteValueToSeconds } from "./util/durations";
 
 export class PlaybackController {
   public playing = false;
+
   private instrument: Sampler;
   private playbackHandle?: NodeJS.Timeout;
 
@@ -14,19 +15,25 @@ export class PlaybackController {
     this.instrument = new Sampler({ urls: NOTES }).toDestination();
   }
 
-  togglePlay(part: Part, startFrom?: Selection) {
+  togglePlay(selection: Selection) {
     if (this.playbackHandle) {
       this.stop();
     } else {
-      let currentMeasure = startFrom?.measureIndex ?? 0;
-      let currentChord = startFrom?.chordIndex ?? 0;
+      // TODO play across all parts, not just the selected one
+      const part = selection.part?.part;
+      if (!part) {
+        return;
+      }
+
+      let currentMeasure = selection.measureIndex ?? 0;
+      let currentChord = selection.chordIndex ?? 0;
 
       const playNext = () => {
         const measure = part.measures[currentMeasure];
         const chord = measure.chords[currentChord];
         const seconds = this.playChord(chord);
 
-        startFrom?.update({
+        selection.update({
           measureIndex: currentMeasure,
           chordIndex: currentChord,
         });

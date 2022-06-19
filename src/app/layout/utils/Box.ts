@@ -37,6 +37,18 @@ export class Box {
   }
 
   /**
+   * Create a new box that updates only the given components.
+   */
+  update(components: { x?: number; y?: number; width?: number; height?: number }) {
+    return new Box(
+      components.x ?? this.x,
+      components.y ?? this.y,
+      components.width ?? this.width,
+      components.height ?? this.height
+    );
+  }
+
+  /**
    * Create a new box that includes both this box and the given box.
    */
   encompass(box: Box) {
