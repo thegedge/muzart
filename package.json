@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack serve --hot",
+    "dev": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack serve",
     "build": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack",
     "tc": "tsc --noEmit",
     "lint": "yarn run lint:prettier && yarn run lint:eslint",
