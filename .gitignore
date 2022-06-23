@@ -9,3 +9,6 @@
 # production
 /build
 /public
+
+# Miscellaneous
+*.pem

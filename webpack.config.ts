@@ -1,5 +1,6 @@
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
+import fs from "node:fs";
 import path from "node:path";
 import { Configuration, EnvironmentPlugin, HotModuleReplacementPlugin } from "webpack";
 import "webpack-dev-server";
@@ -26,6 +27,21 @@ plugins.push(
   })
 );
 
+// If someone ran `mkcert muzart.dev '*.muzart.dev' localhost 127.0.0.1 ::1` they can set up /etc/hosts to
+// point to localhost and use HTTPS. This is necessary for MIDI playback.
+const devServer: Configuration["devServer"] = {
+  compress: true,
+  port: 3001,
+};
+
+if (fs.existsSync("muzart.dev+4.pem")) {
+  devServer["host"] = "muzart.dev";
+  devServer["https"] = {
+    cert: "muzart.dev+4.pem",
+    key: "muzart.dev+4-key.pem",
+  };
+}
+
 const configuration: Configuration = {
   mode: isDevelopment ? "development" : "production",
 
@@ -39,6 +55,8 @@ const configuration: Configuration = {
     },
   },
 
+  devServer,
+
   output: {
     filename: "[name].bundle.js",
     sourceMapFilename: "[name].js.map",
@@ -51,11 +69,6 @@ const configuration: Configuration = {
 
   watchOptions: {
     ignored: "/node_modules/",
-  },
-
-  devServer: {
-    compress: true,
-    port: 3001,
   },
 
   devtool: isDevelopment ? "eval-source-map" : undefined,
