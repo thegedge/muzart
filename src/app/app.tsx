@@ -1,16 +1,11 @@
-import { assign } from "lodash";
-import { observer } from "mobx-react-lite";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { determineType, ScoreDataType } from "../loaders";
 import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { PageCallout } from "./components/layout/PageCallout";
 import { Score } from "./components/notation/Score";
-import { Loading } from "./components/ui/Loading";
 import { Toolbox } from "./components/ui/Toolbox";
 import { ApplicationState, useApplicationState } from "./components/utils/ApplicationStateContext";
-import { DebugContext, DebugContextData } from "./components/utils/DebugContext";
 
 export default function App() {
   return (
@@ -67,41 +62,8 @@ const ScoreDropZone = () => {
 
   return (
     <div onDrop={onDrop} onDragOver={(e) => e.preventDefault()}>
-      <ScoreWithToolbox />
+      <Toolbox />
+      <Score />
     </div>
   );
 };
-
-const ScoreWithToolbox = observer(function ScoreWithToolbox() {
-  // TODO move to application state
-  const [debugData, setDebugData] = useState<DebugContextData>({
-    enabled: false,
-    index: 0,
-    colorMap: {},
-  });
-
-  const { score, error, loading } = useApplicationState();
-  if (loading) {
-    return <Loading />;
-  }
-
-  if (error) {
-    throw error; // Let the ErrorBoundary figure it out
-  }
-
-  if (score == null) {
-    return <PageCallout>Drop a Guitar Pro 4 file here</PageCallout>;
-  }
-
-  return (
-    <DebugContext.Provider value={debugData}>
-      <Toolbox
-        onDebugToggled={(v) => {
-          const value = assign({}, debugData, { enabled: v });
-          setDebugData(value);
-        }}
-      />
-      <Score />
-    </DebugContext.Provider>
-  );
-});
