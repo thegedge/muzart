@@ -143,7 +143,7 @@ export class Selection {
         chordElement &&
         measureElement &&
         measureElement.measure.chords.findIndex((n) => Object.is(n, chordElement.chord)),
-      noteIndex: noteElement && chordElement && chordElement.notes.findIndex((n) => Object.is(n, noteElement)),
+      noteIndex: noteElement && noteElement.note.placement && noteElement.note.placement.string - 1,
       element,
     });
   }
