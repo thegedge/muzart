@@ -29,7 +29,7 @@ export const Toolbox = observer(function Toolbox(_props: Record<string, never>) 
           defaultValue={selection.partIndex}
         >
           {score.score.parts.map((part, index) => (
-            <option key={index} value={index}>
+            <option key={index} value={index} style={{ color: "initial" }}>
               {part.name}
             </option>
           ))}
