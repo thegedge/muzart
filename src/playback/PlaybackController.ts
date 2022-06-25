@@ -6,15 +6,17 @@ import { SamplerInstrument } from "./instruments/sampler/SamplerInstrument";
 import { noteValueToSeconds } from "./util/durations";
 
 export class PlaybackController {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  static async construct() {
+    return new PlaybackController(new SamplerInstrument());
+  }
+
   /** If true, playing back the entire score */
   public playing = false;
 
-  private instrument: Instrument;
   private playbackHandle?: NodeJS.Timeout;
 
-  constructor(instrument?: Instrument) {
-    this.instrument = instrument ?? new SamplerInstrument();
-
+  constructor(private instrument: Instrument) {
     makeObservable(this, {
       playing: observable,
       togglePlay: action,

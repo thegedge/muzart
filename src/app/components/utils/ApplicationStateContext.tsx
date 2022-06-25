@@ -1,5 +1,8 @@
-import React, { createContext, useContext, useMemo } from "react";
+import React, { createContext, Suspense, useContext, useMemo } from "react";
+import { PlaybackController } from "../../../playback/PlaybackController";
+import { Suspenseful, suspenseful } from "../../suspenseful";
 import { Application } from "../state/Application";
+import { Loading } from "../ui/Loading";
 
 declare global {
   interface Window {
@@ -7,7 +10,7 @@ declare global {
   }
 }
 
-const ApplicationStateContext = createContext<Application | null>(null);
+export const ApplicationStateContext = createContext<Application | null>(null);
 
 export function useApplicationState(): Application {
   const state = useContext(ApplicationStateContext);
@@ -18,10 +21,23 @@ export function useApplicationState(): Application {
 }
 
 export function ApplicationState(props: { children?: React.ReactNode }) {
-  const state = useMemo(() => {
-    const application = new Application();
-    window.Muzart = application;
-    return application;
+  const application = useMemo(() => {
+    return suspenseful(async () => {
+      const playback = await PlaybackController.construct();
+      const application = new Application(playback);
+      window.Muzart = application;
+      return application;
+    });
   }, []);
-  return <ApplicationStateContext.Provider value={state}>{props.children}</ApplicationStateContext.Provider>;
+
+  return (
+    <Suspense fallback={<Loading />}>
+      <ApplicationFetcher application={application}>{props.children}</ApplicationFetcher>
+    </Suspense>
+  );
+}
+
+function ApplicationFetcher(props: { application: Suspenseful<Application>; children?: React.ReactNode }) {
+  const application = props.application.read();
+  return <ApplicationStateContext.Provider value={application}>{props.children}</ApplicationStateContext.Provider>;
 }
