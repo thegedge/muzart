@@ -10,7 +10,7 @@
     "lint:fix": "yarn run lint:prettier:fix && yarn run lint:eslint:fix",
     "lint:prettier": "prettier --check \"src/**/*.{js,ts,tsx}\"",
     "lint:prettier:fix": "prettier --write --check \"src/**/*.{js,ts,tsx}\"",
-    "lint:eslint": "eslint --max-warnings=0 --ext ts,tsx src",
+    "lint:eslint": "eslint --cache --max-warnings=0 --ext ts,tsx src",
     "lint:eslint:fix": "eslint --max-warnings=0 --ext ts,tsx --fix src"
   },
   "dependencies": {
