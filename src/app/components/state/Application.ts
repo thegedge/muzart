@@ -3,6 +3,7 @@ import { load } from "../../../loaders";
 import { Score } from "../../../notation";
 import { PlaybackController } from "../../../playback/PlaybackController";
 import * as layout from "../../layout";
+import { DebugContext } from "./DebugContext";
 import { Selection } from "./Selection";
 
 export class Application {
@@ -10,6 +11,7 @@ export class Application {
   public score: layout.Score | null = null;
   public loading = false;
   public error: Error | null = null;
+  public debug: DebugContext = new DebugContext();
 
   constructor(public playback: PlaybackController) {
     makeAutoObservable(this, undefined, { deep: false, proxy: false });

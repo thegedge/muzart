@@ -1,8 +1,8 @@
 import { omit } from "lodash";
 import React, { SVGProps } from "react";
 import { LayoutElement } from "../../layout";
-import { useDebugRectParams } from "../utils/DebugContext";
-import { svgBoxProps, svgPositionTransform } from "../utils/svg";
+import { svgPositionTransform } from "../utils/svg";
+import { DebugBox } from "./DebugBox";
 
 export interface BoxGroupProps extends SVGProps<SVGGElement> {
   node: LayoutElement;
@@ -11,7 +11,6 @@ export interface BoxGroupProps extends SVGProps<SVGGElement> {
 }
 
 export function BoxGroup(props: BoxGroupProps) {
-  const debugParams = useDebugRectParams(props.node.type, props.forceDebug);
   const transforms = [svgPositionTransform(props.node)];
   if (props.scale) {
     transforms.push(`scale(${props.scale})`);
@@ -20,7 +19,7 @@ export function BoxGroup(props: BoxGroupProps) {
   return (
     <>
       <g transform={transforms.join(" ")} {...omit(props, "node", "scale", "forceDebug")} />
-      {debugParams && <rect {...svgBoxProps(props.node)} {...debugParams} />}
+      <DebugBox box={props.node.box} debugType={props.node.type} />
     </>
   );
 }

@@ -1,8 +1,9 @@
+import { observer } from "mobx-react-lite";
 import React from "react";
 import { useApplicationState } from "../utils/ApplicationStateContext";
 
-export function Toolbox(props: { onDebugToggled: (value: boolean) => void }) {
-  const { selection, score } = useApplicationState();
+export const Toolbox = observer(function Toolbox(_props: Record<string, never>) {
+  const { selection, debug, score } = useApplicationState();
 
   if (!score) {
     return null;
@@ -13,7 +14,7 @@ export function Toolbox(props: { onDebugToggled: (value: boolean) => void }) {
   };
 
   const onDebugToggled = (event: React.ChangeEvent<HTMLInputElement>) => {
-    props.onDebugToggled(event.target.checked);
+    debug.setEnabled(event.currentTarget.checked);
   };
 
   return (
@@ -36,4 +37,4 @@ export function Toolbox(props: { onDebugToggled: (value: boolean) => void }) {
       </div>
     </div>
   );
-}
+});

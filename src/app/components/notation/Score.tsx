@@ -1,14 +1,13 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
 import { createKeybindingsHandler } from "tinykeys";
+import { PageCallout } from "../layout/PageCallout";
+import { Loading } from "../ui/Loading";
 import { useApplicationState } from "../utils/ApplicationStateContext";
 import { Part } from "./Part";
 
 export const Score = observer(function Score() {
-  const { selection, playback } = useApplicationState();
-  if (!selection.part) {
-    return null;
-  }
+  const { score, loading, error, selection, playback } = useApplicationState();
 
   useEffect(() => {
     return () => playback.stop();
@@ -44,6 +43,22 @@ export const Score = observer(function Score() {
       document.body.removeEventListener("keydown", listener);
     };
   }, [selection, playback]);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    throw error; // Let the ErrorBoundary figure it out
+  }
+
+  if (score == null) {
+    return <PageCallout>Drop a Guitar Pro 4 file here</PageCallout>;
+  }
+
+  if (!selection.part) {
+    return null;
+  }
 
   return <Part part={selection.part} />;
 });

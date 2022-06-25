@@ -1,7 +1,7 @@
 import React, { CSSProperties } from "react";
 import { Alignment } from "../../layout";
 import { Box } from "../../layout/utils/Box";
-import { useDebugRectParams } from "../utils/DebugContext";
+import { DebugBox } from "../layout/DebugBox";
 import { svgBoxProps } from "../utils/svg";
 
 export function TextElement(props: {
@@ -43,10 +43,9 @@ export function TextElement(props: {
       break;
   }
 
-  const debugParams = useDebugRectParams("TextElement");
   return (
     <>
-      {debugParams && <rect {...svgBoxProps(props.box)} {...debugParams} />}
+      <DebugBox box={props.box} debugType="TextElement" />
       {props.fill && <rect {...svgBoxProps(props.box)} fill={props.fill === true ? "#ffffff" : props.fill} />}
       <text
         x={x}
