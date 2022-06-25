@@ -19,7 +19,6 @@ export const SelectionBox = observer(() => {
   }, [selection.measure, selection.part]);
 
   const elementBox = useMemo(() => {
-    console.info(selection);
     if (!selection.chord) {
       return Box.empty();
     }

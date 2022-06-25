@@ -10,9 +10,8 @@ export class Application {
   public score: layout.Score | null = null;
   public loading = false;
   public error: Error | null = null;
-  public playback = new PlaybackController();
 
-  constructor() {
+  constructor(public playback: PlaybackController) {
     makeAutoObservable(this, undefined, { deep: false, proxy: false });
   }
 

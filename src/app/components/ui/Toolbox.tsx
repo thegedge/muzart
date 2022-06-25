@@ -1,9 +1,12 @@
 import React from "react";
-import { Score } from "../../../notation";
 import { useApplicationState } from "../utils/ApplicationStateContext";
 
-export function Toolbox(props: { score: Score; onDebugToggled: (value: boolean) => void }) {
-  const { selection } = useApplicationState();
+export function Toolbox(props: { onDebugToggled: (value: boolean) => void }) {
+  const { selection, score } = useApplicationState();
+
+  if (!score) {
+    return null;
+  }
 
   const onPartChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     selection.update({ partIndex: event.target.selectedIndex });
@@ -24,7 +27,7 @@ export function Toolbox(props: { score: Score; onDebugToggled: (value: boolean) 
           onChange={onPartChange}
           defaultValue={selection.partIndex}
         >
-          {props.score.parts.map((part, index) => (
+          {score.score.parts.map((part, index) => (
             <option key={index} value={index}>
               {part.name}
             </option>
