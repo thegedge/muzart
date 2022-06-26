@@ -360,7 +360,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
 
         if (element.chord.chordDiagram) {
           const diagram = element.chord.chordDiagram;
-          const height = (diagram.diagram ? 8 : 1) * STAFF_LINE_HEIGHT;
+          const height = (diagram.diagram ? 7 : 1) * STAFF_LINE_HEIGHT;
           this.aboveStaffLayout.addElement(
             {
               type: "ChordDiagram",
