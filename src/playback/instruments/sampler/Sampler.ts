@@ -48,8 +48,8 @@ export interface SamplesMap {
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //--------------------------------------------------------------------------------
 //
-// Sampler is (currently) mostly derived from the sampler in tone.js.
-//
+// Sampler is (currently) mostly derived from the sampler in tone.js, adjusted for
+// the notation representation in muzart.
 
 /**
  * Pass in an object which maps the note's pitch or midi value to the url,
@@ -383,6 +383,11 @@ function maybeBend(note: notation.Note, source: ToneBufferSource) {
 
 function tiedNoteDurationSeconds(note?: notation.Note) {
   let seconds = 0;
+
+  // TODO get tempo from tab and provide to `noteValueToSeconds` below
+
+  // TODO this is wrong, because the tied note could pass through many other notes, so we need to
+  //      also find out all of the durations in between
   while (note) {
     seconds += noteValueToSeconds(note.value);
     note = note.tie?.next;

@@ -1,10 +1,8 @@
 import { NoteValue } from "../../notation";
 
-// TODO no default for tempo, but currently set to a common tempo for rock
 export function noteValueToSeconds(value: NoteValue, tempo = 128): number {
-  // TODO assuming 4/4, which has four beats, each beat consists of 1 quarter
-  const beat = 0.25;
+  const beat = 0.25; // TODO assuming each quarter note is a beat
   const numBeats = value.toDecimal() / beat;
-  const beatsPerSecond = tempo / 60;
+  const beatsPerSecond = tempo / 60.0;
   return numBeats / beatsPerSecond;
 }

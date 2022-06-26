@@ -22,7 +22,7 @@ plugins.push(
 plugins.push(
   new EnvironmentPlugin({
     NODE_ENV: isDevelopment ? "development" : "production",
-    DEFAULT_FILE: null,
+    DEFAULT_FILE: "Song13.gp4",
     DEBUG: process.env.DEBUG_APP ?? isDevelopment,
   })
 );
