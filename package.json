@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack serve",
     "build": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack",
+    "serve": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack serve",
     "tc": "tsc --noEmit",
     "lint": "yarn run lint:prettier && yarn run lint:eslint",
     "lint:fix": "yarn run lint:prettier:fix && yarn run lint:eslint:fix",
