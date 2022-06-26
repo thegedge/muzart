@@ -196,6 +196,26 @@ function layOutPartHeader(
     );
   }
 
+  if (score.comments) {
+    const height = STAFF_LINE_HEIGHT;
+    for (const comment of score.comments) {
+      pageGroup.addElement(
+        {
+          type: "Text",
+          box: new Box(0, 0, contentWidth, 1.5 * height),
+          halign: "middle",
+          size: height,
+          value: comment,
+          style: {
+            fontFamily: "serif",
+            fontStyle: "italic",
+          },
+        },
+        { factor: 0 }
+      );
+    }
+  }
+
   if (part.instrument && part.instrument.tuning) {
     // TODO show alternative name for tuning
     const textSize = STAFF_LINE_HEIGHT;

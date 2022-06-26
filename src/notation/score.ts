@@ -4,6 +4,7 @@ import { Measure } from "./measure";
 export interface Score {
   title?: string;
   composer?: string;
+  comments?: string[];
   parts: Part[];
 }
 
