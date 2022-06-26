@@ -73,7 +73,7 @@ function measures(document: Document, node: Node): Measure[] {
 function staves(document: Document, node: Node): StaffDetails[] {
   const attributesNode = single(document, node, "attributes");
   if (!attributesNode) {
-    return [];
+    return [{}];
   }
 
   // TODO track old values for these

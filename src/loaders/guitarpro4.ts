@@ -19,6 +19,12 @@ import { BufferCursor, NumberType } from "./util/BufferCursor";
 
 // TODO different versions
 
+const debug = process.env.NODE_ENV == "development";
+
+enum Version {
+  v4_06,
+}
+
 // Implemented with help from http://dguitar.sourceforge.net/GP4format.html (some adjustments, it's not totally correct)
 
 export default function load(source: ArrayBuffer): Score {
@@ -28,11 +34,9 @@ export default function load(source: ArrayBuffer): Score {
   // Song attributes
   //------------------------------------------------------------------------------------------------
 
-  const version = cursor.nextLengthPrefixedString();
-  cursor.skip(30 - version.length);
-  // console.debug({ version });
+  /* const version = */ readVersion(cursor);
 
-  // console.debug("tab info");
+  debug && console.debug("tab info");
   const tabInformation = {
     title: readInfoString(cursor),
     subtitle: readInfoString(cursor),
@@ -43,20 +47,22 @@ export default function load(source: ArrayBuffer): Score {
     transcriber: readInfoString(cursor),
     instructions: readInfoString(cursor),
   };
+  debug && console.debug({ tabInformation });
 
-  // console.debug("comments");
-  readComments(cursor);
+  debug && console.debug("comments");
+  const comments = readComments(cursor);
+  debug && console.debug({ comments });
 
   /* const tripletFeel = */ cursor.nextNumber(NumberType.Uint8);
 
-  // console.debug("lyrics");
+  debug && console.debug("lyrics");
   readLyrics(cursor);
 
   const tempo = cursor.nextNumber(NumberType.Uint32);
   /* const key = */ cursor.nextNumber(NumberType.Uint8);
   /* const octave = */ cursor.nextNumber(NumberType.Uint32);
 
-  // console.debug("midi channels");
+  debug && console.debug("midi channels");
   readMidiChannels(cursor);
 
   const numMeasures = cursor.nextNumber(NumberType.Uint32);
@@ -64,6 +70,7 @@ export default function load(source: ArrayBuffer): Score {
 
   const score: Score = {
     parts: [],
+    comments,
     ...tabInformation,
   };
 
@@ -71,8 +78,8 @@ export default function load(source: ArrayBuffer): Score {
   // Measure props
   //------------------------------------------------------------------------------------------------
 
-  const measureData = range(numMeasures).map((_index) => {
-    // console.debug({ measureDataIndex: index });
+  const measureData = range(numMeasures).map((index) => {
+    debug && console.debug({ measureDataIndex: index });
 
     const [
       _doubleBar,
@@ -129,8 +136,8 @@ export default function load(source: ArrayBuffer): Score {
   // Track props
   //------------------------------------------------------------------------------------------------
 
-  const trackData = range(numTracks).map(() => {
-    // console.debug({ trackDataIndex: index });
+  const trackData = range(numTracks).map((index) => {
+    debug && console.debug({ trackDataIndex: index });
 
     const [_blank1, _blank2, _blank3, _blank4, _blank5, _banjoTrack, _twelveStringTrack, _drumsTrack] = bits(
       cursor.nextNumber(NumberType.Uint8)
@@ -174,7 +181,7 @@ export default function load(source: ArrayBuffer): Score {
 
   for (let measureIndex = 0; measureIndex < numMeasures; ++measureIndex) {
     for (let trackIndex = 0; trackIndex < numTracks; ++trackIndex) {
-      // console.debug({ trackIndex, measureIndex });
+      debug && console.debug({ trackIndex, measureIndex });
 
       const measure: Measure = {
         chords: [],
@@ -636,11 +643,11 @@ function bits(byte: number): boolean[] {
 }
 
 function readComments(cursor: BufferCursor) {
-  let numLines = cursor.nextNumber(NumberType.Uint32);
-  while (numLines > 0) {
-    /* const line = */ cursor.nextLengthPrefixedString(NumberType.Uint32);
-    numLines -= 1;
-  }
+  const numCommentLines = cursor.nextNumber(NumberType.Uint32);
+  debug && console.debug({ numCommentLines });
+  return range(numCommentLines).map(() => {
+    return cursor.nextLengthPrefixedString(NumberType.Uint32);
+  });
 }
 
 function readLyrics(cursor: BufferCursor) {
@@ -741,6 +748,25 @@ function readColor(cursor: BufferCursor): string {
 
 function readInfoString(cursor: BufferCursor): string {
   const length = cursor.nextNumber(NumberType.Uint32) - 1;
-  cursor.skip();
-  return cursor.nextString(length);
+  cursor.skip(); // some extra byte that appears to be the length of the string???
+  if (length <= 0) {
+    return "";
+  } else {
+    return cursor.nextString(length);
+  }
+}
+
+function readVersion(cursor: BufferCursor) {
+  const version = cursor.nextLengthPrefixedString();
+  try {
+    switch (version) {
+      case "FICHIER GUITAR PRO v4.06":
+        return Version.v4_06;
+      default:
+        throw new Error(`Unsupported Guitar Pro version: ${version}`);
+    }
+  } finally {
+    cursor.skip(30 - version.length);
+    debug && console.debug({ version });
+  }
 }
