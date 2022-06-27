@@ -10,11 +10,14 @@ import { ApplicationState, useApplicationState } from "./components/utils/Applic
 export default function App() {
   return (
     <div className="bg-gray-400 min-h-screen min-w-max">
-      <ErrorBoundary>
-        <ApplicationState>
-          <ScoreDropZone />
-        </ApplicationState>
-      </ErrorBoundary>
+      <div className="bg-gray-400 text-gray-100 opacity-80 sticky top-0 left-0 px-2 py-1">
+        <a href="https://github.com/thegedge/muzart" className="underline">
+          Source on GitHub
+        </a>
+      </div>
+      <ApplicationState>
+        <ScoreDropZone />
+      </ApplicationState>
     </div>
   );
 }
@@ -62,8 +65,10 @@ const ScoreDropZone = () => {
 
   return (
     <div onDrop={onDrop} onDragOver={(e) => e.preventDefault()}>
-      <Toolbox />
-      <Score />
+      <ErrorBoundary>
+        <Toolbox />
+        <Score />
+      </ErrorBoundary>
     </div>
   );
 };
