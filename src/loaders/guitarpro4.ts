@@ -1,4 +1,5 @@
 import { padStart, range, zip } from "lodash";
+import { BufferCursor, NumberType } from "../io/BufferCursor";
 import {
   AccentStyle,
   Bend,
@@ -15,7 +16,6 @@ import {
   TimeSignature,
 } from "../notation";
 import { NoteValue } from "../notation/note_value";
-import { BufferCursor, NumberType } from "./util/BufferCursor";
 
 // TODO different versions
 

@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .hex-viewer {
+    min-height: 50em;
+  }
+
+  .hex-viewer > div {
+    @apply text-white w-fit mx-auto grid;
+    grid-template-columns: 125ch 40ch;
+  }
+
+  .hex-viewer > div > .bytes {
+    @apply grid;
+    grid-template-columns: repeat(40, 3ch);
+  }
+
+  .hex-viewer > div > .chars {
+    @apply grid;
+    grid-template-columns: repeat(40, 1ch);
+  }
+}

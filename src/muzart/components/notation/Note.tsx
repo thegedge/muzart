@@ -2,7 +2,7 @@ import React from "react";
 import * as layout from "../../layout";
 import { Box } from "../../layout/utils/Box";
 import { SelectableBoxGroup } from "../layout/SelectableBoxGroup";
-import { useApplicationState } from "../utils/ApplicationStateContext";
+import { useApplicationState } from "../state/ApplicationStateContext";
 import { TextElement } from "./TextElement";
 
 export const Note = React.memo(function Note(props: { note: layout.Note }) {

@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useRef } from "react";
 import { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT, toAncestorCoordinateSystem } from "../../layout";
 import { Box } from "../../layout/utils/Box";
-import { useApplicationState } from "../utils/ApplicationStateContext";
+import { useApplicationState } from "../state/ApplicationStateContext";
 import { svgBoxProps } from "../utils/svg";
 
 export const SelectionBox = observer(() => {

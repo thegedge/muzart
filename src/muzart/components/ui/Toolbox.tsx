@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { useApplicationState } from "../utils/ApplicationStateContext";
+import { useApplicationState } from "../state/ApplicationStateContext";
 
 export const Toolbox = observer(function Toolbox(_props: Record<string, never>) {
   const { selection, debug, score } = useApplicationState();

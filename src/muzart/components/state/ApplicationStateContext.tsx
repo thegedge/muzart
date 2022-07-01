@@ -1,8 +1,8 @@
 import React, { createContext, Suspense, useContext, useMemo } from "react";
 import { PlaybackController } from "../../../playback/PlaybackController";
-import { Suspenseful, suspenseful } from "../../suspenseful";
-import { Application } from "../state/Application";
-import { Loading } from "../ui/Loading";
+import { Loading } from "../../../shared/components/Loading";
+import { Suspenseful, suspenseful } from "../../../shared/utils/suspenseful";
+import { Application } from "./Application";
 
 declare global {
   interface Window {

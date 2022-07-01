@@ -15,7 +15,14 @@ if (isDevelopment) {
 
 plugins.push(
   new HtmlWebpackPlugin({
-    template: "./src/app/index.html",
+    template: "./src/index.html",
+    filename: "index.html",
+    excludeChunks: ["hexdebug"],
+  }),
+  new HtmlWebpackPlugin({
+    template: "./src/index.html",
+    filename: "hexdebug.html",
+    excludeChunks: ["main"],
   })
 );
 
@@ -47,7 +54,11 @@ const configuration: Configuration = {
 
   entry: {
     main: {
-      import: ["./src/app/index.tsx"],
+      import: ["./src/muzart.tsx"],
+      dependOn: ["deps"],
+    },
+    hexdebug: {
+      import: ["./src/hexdebug.tsx"],
       dependOn: ["deps"],
     },
     deps: {

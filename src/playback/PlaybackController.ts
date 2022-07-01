@@ -1,5 +1,5 @@
 import { action, makeObservable, observable } from "mobx";
-import { Selection } from "../app/components/state/Selection";
+import { Selection } from "../muzart/components/state/Selection";
 import { Chord, Note } from "../notation";
 import { Instrument } from "./instruments/Instrument";
 import { SamplerInstrument } from "./instruments/sampler/SamplerInstrument";

@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { useApplicationState } from "../utils/ApplicationStateContext";
+import { useApplicationState } from "../state/ApplicationStateContext";
 import { BoxGroup, BoxGroupProps } from "./BoxGroup";
 
 export const SelectableBoxGroup = observer((props: BoxGroupProps) => {

@@ -1,9 +1,9 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
 import { createKeybindingsHandler } from "tinykeys";
+import { Loading } from "../../../shared/components/Loading";
 import { PageCallout } from "../layout/PageCallout";
-import { Loading } from "../ui/Loading";
-import { useApplicationState } from "../utils/ApplicationStateContext";
+import { useApplicationState } from "../state/ApplicationStateContext";
 import { Part } from "./Part";
 
 export const Score = observer(function Score() {

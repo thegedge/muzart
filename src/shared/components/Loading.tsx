@@ -1,5 +1,5 @@
 import React from "react";
-import { PageCallout } from "../layout/PageCallout";
+import { PageCallout } from "../../muzart/components/layout/PageCallout";
 
 export function Loading() {
   return (

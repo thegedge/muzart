@@ -1,60 +1,53 @@
 import { isString, pickBy, range } from "lodash";
+import { filenameFrom, mimeFrom } from "../io/fileTypes";
 import { changed, Chord, Measure, Note, Score, StaffDetails } from "../notation";
 import loadGuitarPro4 from "./guitarpro4";
 import loadMusicXml from "./musicxml";
 
-export async function load(source: File | URL | string, type?: ScoreDataType): Promise<Score> {
-  if (isString(source) || "hostname" in source) {
-    const response = await fetch(source.toString());
-    const buffer = await response.arrayBuffer();
-    return loadScore(buffer, type ?? determineType(response));
-  } else {
-    const buffer = await source.arrayBuffer();
-    return loadScore(buffer, type ?? determineType(source));
-  }
-}
-
-export enum ScoreDataType {
+export enum ScoreType {
   GuitarPro4 = "Guitar Pro 4",
   MusicXML = "MusicXML",
   Unknown = "Unknown",
 }
 
-// TODO perhaps also support determining the type from the buffer?
-export function determineType(source: File | Response) {
-  let filename: string | null | undefined;
-  let mimeType: string | null | undefined;
-  if ("name" in source) {
-    filename = source.name;
-    mimeType = source.type;
+export async function load(source: File | URL | string, type?: ScoreType): Promise<Score> {
+  if (isString(source) || "hostname" in source) {
+    const response = await fetch(source.toString());
+    const buffer = await response.arrayBuffer();
+    return loadScore(buffer, type ?? determineScoreType(response));
   } else {
-    filename = new URL(source.url).pathname;
-    mimeType = source.headers.get("Content-Type");
+    const buffer = await source.arrayBuffer();
+    return loadScore(buffer, type ?? determineScoreType(source));
   }
-
-  if (filename?.endsWith(".gp4")) {
-    return ScoreDataType.GuitarPro4;
-  } else if (filename?.endsWith(".xml") || filename?.endsWith(".musicxml") || mimeType === "application/xml") {
-    return ScoreDataType.MusicXML;
-  }
-
-  return ScoreDataType.Unknown;
 }
 
-function loadScore(buffer: ArrayBuffer, type: ScoreDataType): Score {
-  if (type == ScoreDataType.Unknown) {
+export function determineScoreType(source: File | Response): ScoreType {
+  const filename = filenameFrom(source);
+  const mimeType = mimeFrom(source);
+  if (filename?.endsWith(".gp4")) {
+    return ScoreType.GuitarPro4;
+  } else if (filename?.endsWith(".xml") || filename?.endsWith(".musicxml") || mimeType === "application/xml") {
+    return ScoreType.MusicXML;
+  }
+
+  return ScoreType.Unknown;
+}
+
+function loadScore(buffer: ArrayBuffer, type: ScoreType): Score {
+  if (type == ScoreType.Unknown) {
     throw new Error("Unable to load score from buffer with unknown type");
   }
 
   console.time("loadScore");
   try {
-    let score;
+    let score: Score | undefined;
     switch (type) {
-      case ScoreDataType.MusicXML:
+      case ScoreType.MusicXML:
         score = loadMusicXml(utf8StringFromBuffer(buffer));
         break;
-      case ScoreDataType.GuitarPro4:
+      case ScoreType.GuitarPro4:
         score = loadGuitarPro4(buffer);
+        break;
     }
     return postProcess(score);
   } finally {
