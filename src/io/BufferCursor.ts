@@ -22,13 +22,31 @@ const NUM_BYTES = {
   [NumberType.Uint32]: 4,
 };
 
-export class BufferCursor {
-  public byteOffset = 0;
+export interface Cursor {
+  sectionStart(name: string): void;
+  sectionEnd(name: string): void;
+
+  nextNumber(type: NumberType): number;
+  skip(numBytes?: number): void;
+  nextLengthPrefixedString(lengthType?: NumberType): string;
+  nextString(length: number): string;
+}
+
+export class BufferCursor implements Cursor {
+  private byteOffset = 0;
   private view: DataView;
   private decoder = new TextDecoder();
 
   constructor(readonly buffer: ArrayBuffer) {
     this.view = new DataView(buffer);
+  }
+
+  sectionStart(_name: string) {
+    void 0;
+  }
+
+  sectionEnd(_name: string) {
+    void 0;
   }
 
   nextNumber(type: NumberType): number {
