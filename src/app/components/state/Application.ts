@@ -7,14 +7,14 @@ import { DebugContext } from "./DebugContext";
 import { Selection } from "./Selection";
 
 export class Application {
-  public selection: Selection = new Selection();
-  public score: layout.Score | null = null;
   public loading = false;
   public error: Error | null = null;
+  public score: layout.Score | null = null;
+
   public debug: DebugContext = new DebugContext();
 
-  constructor(public playback: PlaybackController) {
-    makeAutoObservable(this, undefined, { deep: false, proxy: false });
+  constructor(public selection: Selection, public playback: PlaybackController) {
+    makeAutoObservable(this, undefined, { deep: false });
   }
 
   *loadScore(source: string | File | URL): Generator<Promise<Score>> {

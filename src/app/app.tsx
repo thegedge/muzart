@@ -29,6 +29,10 @@ const ScoreDropZone = () => {
     if (process.env.DEFAULT_FILE) {
       void application.loadScore(process.env.DEFAULT_FILE);
     }
+
+    if (process.env.DEFAULT_SOUNDFONT) {
+      void application.playback.loadSoundFont(process.env.DEFAULT_SOUNDFONT);
+    }
   }, [application]);
 
   const onDrop = (event: React.DragEvent<Element>) => {

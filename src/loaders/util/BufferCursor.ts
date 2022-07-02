@@ -23,7 +23,7 @@ const NUM_BYTES = {
 };
 
 export class BufferCursor {
-  public byteOffset = 0;
+  private byteOffset = 0;
   private view: DataView;
   private decoder = new TextDecoder();
 
@@ -31,9 +31,13 @@ export class BufferCursor {
     this.view = new DataView(buffer);
   }
 
+  get position() {
+    return this.byteOffset;
+  }
+
   nextNumber(type: NumberType): number {
     const numBytes = NUM_BYTES[type];
-    if (this.byteOffset + numBytes >= this.buffer.byteLength) {
+    if (this.byteOffset + numBytes > this.buffer.byteLength) {
       throw new OutOfBoundsError();
     }
 
@@ -84,12 +88,35 @@ export class BufferCursor {
       return "";
     }
 
-    if (this.byteOffset + length >= this.buffer.byteLength) {
+    if (this.byteOffset + length > this.buffer.byteLength) {
       throw new OutOfBoundsError();
     }
 
     const ret = this.decoder.decode(this.buffer.slice(this.byteOffset, this.byteOffset + length));
     this.byteOffset += length;
     return ret;
+  }
+
+  /**
+   * Load a string from this buffer that is null terminated.
+   */
+  nextNullTerminatedString(length: number): string {
+    if (length <= 0) {
+      return "";
+    }
+
+    if (this.byteOffset + length > this.buffer.byteLength) {
+      throw new OutOfBoundsError();
+    }
+
+    const charBuffer = this.buffer.slice(this.byteOffset, this.byteOffset + length);
+    const view = new Uint8Array(charBuffer);
+    const indexOfNullByte = view.findIndex((value) => value == 0);
+    this.byteOffset += length;
+    if (indexOfNullByte == -1) {
+      return this.decoder.decode(charBuffer);
+    } else {
+      return this.decoder.decode(charBuffer.slice(0, indexOfNullByte));
+    }
   }
 }

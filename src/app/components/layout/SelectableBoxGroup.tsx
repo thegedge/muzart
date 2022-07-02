@@ -8,8 +8,8 @@ export const SelectableBoxGroup = observer((props: BoxGroupProps) => {
   const { selection } = useApplicationState();
 
   const onClick = (event: React.MouseEvent<SVGGElement>) => {
-    onClickProp?.(event);
     selection.setFor(props.node);
+    onClickProp?.(event);
   };
 
   return <BoxGroup {...props} onClick={onClick} />;

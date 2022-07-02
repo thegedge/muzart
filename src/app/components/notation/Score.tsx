@@ -17,7 +17,7 @@ export const Score = observer(function Score() {
     const listener = createKeybindingsHandler({
       Space: (event) => {
         event.preventDefault();
-        playback.togglePlay(selection);
+        playback.togglePlay();
       },
       ArrowLeft: (event) => {
         event.preventDefault();

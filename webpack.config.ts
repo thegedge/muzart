@@ -2,7 +2,7 @@ import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import fs from "node:fs";
 import path from "node:path";
-import { Configuration, EnvironmentPlugin, HotModuleReplacementPlugin } from "webpack";
+import { Configuration, DefinePlugin, HotModuleReplacementPlugin } from "webpack";
 import "webpack-dev-server";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -20,10 +20,13 @@ plugins.push(
 );
 
 plugins.push(
-  new EnvironmentPlugin({
-    NODE_ENV: isDevelopment ? "development" : "production",
-    DEFAULT_FILE: "Song13.gp4",
-    DEBUG: process.env.DEBUG_APP ?? isDevelopment,
+  new DefinePlugin({
+    "process.env.NODE_ENV": JSON.stringify(isDevelopment ? "development" : "production"),
+    "process.env.DEFAULT_FILE": JSON.stringify((isDevelopment ? process.env.DEFAULT_FILE : null) || "Song13.gp4"),
+    "process.env.DEFAULT_SOUNDFONT": JSON.stringify(
+      process.env.DEFAULT_SOUNDFONT ? `soundfonts/${encodeURIComponent(process.env.DEFAULT_SOUNDFONT)}` : null
+    ),
+    "process.env.DEBUG": JSON.stringify(process.env.DEBUG_APP ?? isDevelopment),
   })
 );
 
@@ -79,11 +82,6 @@ const configuration: Configuration = {
 
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        enforce: "pre",
-        use: ["source-map-loader"].filter(Boolean),
-      },
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,

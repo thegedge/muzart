@@ -1,14 +1,14 @@
-import { action, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { Selection } from "../app/components/state/Selection";
-import { Chord, Note } from "../notation";
-import { Instrument } from "./instruments/Instrument";
-import { SamplerInstrument } from "./instruments/sampler/SamplerInstrument";
+import { SoundFont } from "./SoundFont";
 import { noteValueToSeconds } from "./util/durations";
 
 export class PlaybackController {
   // eslint-disable-next-line @typescript-eslint/require-await
-  static async construct() {
-    return new PlaybackController(new SamplerInstrument());
+  static async construct(selection: Selection) {
+    const soundFont = await SoundFont.fromURL(encodeURI("soundfonts/MuseScore v1.442.sf2"));
+    // const soundFont = await SoundFont.fromURL(encodeURI("soundfonts/Essential Keys-sforzando-v9.6.sf2"));
+    return new PlaybackController(soundFont, selection);
   }
 
   /** If true, playing back the entire score */
@@ -16,41 +16,49 @@ export class PlaybackController {
 
   private playbackHandle?: NodeJS.Timeout;
 
-  constructor(private instrument: Instrument) {
+  constructor(private soundFont: SoundFont, private selection: Selection) {
     makeObservable(this, {
       playing: observable,
+      instruments: computed,
       togglePlay: action,
       stop: action,
-      playChord: action,
-      playNote: action,
     });
   }
 
-  togglePlay(selection: Selection) {
+  get instrument() {
+    const midiPreset = this.selection.part?.part.instrument?.midiPreset ?? 24;
+    return this.soundFont.instrument(midiPreset);
+  }
+
+  get instruments(): { name: string; midiPreset: number }[] {
+    return this.soundFont.instruments;
+  }
+
+  togglePlay() {
     if (this.playbackHandle) {
       this.stop();
     } else {
       // TODO play across all parts, not just the selected one
-      const part = selection.part?.part;
+      const part = this.selection.part?.part;
       if (!part) {
         return;
       }
 
-      let currentMeasure = selection.measureIndex;
-      let currentChord = selection.chordIndex;
+      let currentMeasure = this.selection.measureIndex;
+      let currentChord = this.selection.chordIndex;
 
       // TODO if we had an autorun that played on selection change, we'd only need the setTimeout
       const playNext = () => {
-        const measure = part.measures[currentMeasure];
-        const chord = measure.chords[currentChord];
-        const seconds = this.playChord(chord);
+        const seconds = this.playSelectedChord();
 
-        selection.update({
+        this.selection.update({
           measureIndex: currentMeasure,
           chordIndex: currentChord,
         });
 
         currentChord += 1;
+
+        const measure = part.measures[currentMeasure];
         if (currentChord >= measure.chords.length) {
           currentMeasure += 1;
           currentChord = 0;
@@ -76,17 +84,21 @@ export class PlaybackController {
     }
   }
 
-  playChord(chord: Chord) {
-    const seconds = noteValueToSeconds(chord.value);
-    if (!chord.rest) {
+  playSelectedChord() {
+    const chord = this.selection.chord?.chord;
+    if (chord && !chord.rest) {
       for (const note of chord.notes) {
         this.instrument.playNote(note);
       }
     }
-    return seconds;
+
+    return chord ? noteValueToSeconds(chord.value) : 0;
   }
 
-  playNote(note: Note): void {
-    this.instrument.playNote(note);
+  playSelectedNote(): void {
+    const note = this.selection.note?.note;
+    if (note) {
+      this.instrument.playNote(note);
+    }
   }
 }

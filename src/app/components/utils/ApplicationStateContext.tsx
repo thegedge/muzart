@@ -1,7 +1,7 @@
 import React, { createContext, Suspense, useContext, useMemo } from "react";
 import { PlaybackController } from "../../../playback/PlaybackController";
-import { Suspenseful, suspenseful } from "../../suspenseful";
 import { Application } from "../state/Application";
+import { Selection } from "../state/Selection";
 import { Loading } from "../ui/Loading";
 
 declare global {
@@ -22,22 +22,16 @@ export function useApplicationState(): Application {
 
 export function ApplicationState(props: { children?: React.ReactNode }) {
   const application = useMemo(() => {
-    return suspenseful(async () => {
-      const playback = await PlaybackController.construct();
-      const application = new Application(playback);
-      window.Muzart = application;
-      return application;
-    });
+    const selection = new Selection();
+    const playback = new PlaybackController(selection);
+    const application = new Application(selection, playback);
+    window.Muzart = application;
+    return application;
   }, []);
 
   return (
     <Suspense fallback={<Loading />}>
-      <ApplicationFetcher application={application}>{props.children}</ApplicationFetcher>
+      <ApplicationStateContext.Provider value={application}>{props.children}</ApplicationStateContext.Provider>
     </Suspense>
   );
-}
-
-function ApplicationFetcher(props: { application: Suspenseful<Application>; children?: React.ReactNode }) {
-  const application = props.application.read();
-  return <ApplicationStateContext.Provider value={application}>{props.children}</ApplicationStateContext.Provider>;
 }

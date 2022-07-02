@@ -13,7 +13,7 @@ export const Note = React.memo(function Note(props: { note: layout.Note }) {
 
   const { playback } = useApplicationState();
   const playNote = () => {
-    playback.playNote(props.note.note);
+    playback.playSelectedNote();
   };
 
   return (
