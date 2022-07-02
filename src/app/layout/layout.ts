@@ -98,15 +98,13 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
 
     const page: Page = {
       type: "Page",
-      elements: pageGroup.elements,
+      content: pageGroup,
       box: new Box(0, pages.length * (DEFAULT_PAGE_HEIGHT + PAGE_MARGIN), DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT),
-      margins: clone(margins),
       measures: measureElements(pageGroup.elements),
     };
 
-    for (const element of pageGroup.elements) {
-      element.parent = page;
-    }
+    pageGroup.parent = page;
+
     pages.push(page);
   }
 
@@ -130,15 +128,11 @@ function startNewPage(pages: Page[], margins: Margins, pageContentBox: Box, page
 
   const page: Page = {
     type: "Page",
-    elements: pageGroup.elements,
+    content: pageGroup,
     box: new Box(0, pages.length * (DEFAULT_PAGE_HEIGHT + PAGE_MARGIN), DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT),
-    margins: clone(margins),
     measures: measureElements(pageGroup.elements),
   };
 
-  for (const element of pageGroup.elements) {
-    element.parent = page;
-  }
   pages.push(page);
 
   return new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical" });

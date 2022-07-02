@@ -12,12 +12,7 @@ export default function Page(props: { page: Page }) {
         fill="#ffffff"
         style={{ filter: "url(#pageShadow)" }}
       />
-      {/* TODO make this be single child Group of page, to avoid the custom transform */}
-      <g transform={`translate(${props.page.margins.left} ${props.page.margins.top})`}>
-        {props.page.elements.map((e, index) => (
-          <ScoreElement key={index} element={e} />
-        ))}
-      </g>
+      <ScoreElement element={props.page.content} />
     </BoxGroup>
   );
 }
