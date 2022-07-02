@@ -41,8 +41,7 @@ export type PageElement = Space | Text | Group<LineElement> | PageLine;
 
 export interface Page extends LayoutElement<Part> {
   type: "Page";
-  elements: PageElement[];
-  margins: Margins;
+  content: Group<PageElement>;
   measures: Measure[];
 }
 

@@ -5,8 +5,6 @@ import { Box } from "../../layout/utils/Box";
 import { useApplicationState } from "../utils/ApplicationStateContext";
 import { svgBoxProps } from "../utils/svg";
 
-// TODO factor out these "relative to absolute" calculations in the useMemo calls below
-
 export const SelectionBox = observer(() => {
   const { selection, playback } = useApplicationState();
 

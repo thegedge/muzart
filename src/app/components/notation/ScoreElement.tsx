@@ -1,5 +1,5 @@
 import React from "react";
-import { LineElement, LINE_STROKE_WIDTH, PageElement } from "../../layout";
+import { Group, LineElement, LINE_STROKE_WIDTH, PageElement } from "../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
@@ -17,7 +17,9 @@ import { TextElement } from "./TextElement";
 import { Vibrato } from "./Vibrato";
 import { WrappedElement } from "./WrappedElement";
 
-export default function ScoreElement(props: { element: PageElement | LineElement }): React.ReactElement {
+export default function ScoreElement(props: {
+  element: Group<PageElement> | PageElement | LineElement;
+}): React.ReactElement {
   switch (props.element.type) {
     case "Arc":
       return <Arc element={props.element} />;

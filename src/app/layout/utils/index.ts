@@ -1,4 +1,3 @@
-import { DEFAULT_MARGIN } from "../constants";
 import { LayoutElement } from "../types";
 import { Box } from "./Box";
 
@@ -32,14 +31,8 @@ export function toAncestorCoordinateSystem<LayoutT extends LayoutElement>(
   const box = source.box.clone();
   let e: LayoutElement | undefined = source.parent;
   while (e && e.type != ancestorType) {
-    // TODO eliminate need for this by making Page have a single group child properly offset
-    if (e.type == "Page") {
-      box.x += e.box.x + DEFAULT_MARGIN;
-      box.y += e.box.y + DEFAULT_MARGIN;
-    } else {
-      box.x += e.box.x;
-      box.y += e.box.y;
-    }
+    box.x += e.box.x;
+    box.y += e.box.y;
     e = e.parent;
   }
 
