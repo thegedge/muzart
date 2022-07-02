@@ -17,6 +17,7 @@ export type FlexProps = {
 
 export type FlexGroupConfig = {
   box?: Box;
+  gap?: number;
   defaultFlexProps?: Partial<FlexProps>;
   axis?: "vertical" | "horizontal";
 };
@@ -28,8 +29,6 @@ export type FlexGroupConfig = {
  * elements that can be stretched (flex props with a non-null factor and not fixed).
  */
 export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends LayoutElement = LayoutElement> {
-  // TODO "space between" option
-
   readonly type: string;
   readonly elements: T[] = [];
 
@@ -38,6 +37,7 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends Layo
 
   private defaultFlexProps: FlexProps;
   private flexProps: FlexProps[] = [];
+  private gap: number;
 
   private startAttribute: "x" | "y";
   private endAttribute: "right" | "bottom";
@@ -47,6 +47,7 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends Layo
     const { defaultFlexProps, axis } = defaults(config, { axis: "horizontal" });
 
     this.type = "FlexGroup";
+    this.gap = config.gap ?? 0;
     this.box = config.box || new Box(0, 0, 0, 0);
     this.defaultFlexProps = defaults(defaultFlexProps, { factor: 1, fixed: false });
     if (axis == "vertical") {
@@ -71,11 +72,14 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends Layo
   tryAddElement(element: T, flexProps?: Partial<FlexProps>): boolean {
     const lastElement = last(this.elements);
     if (lastElement) {
-      if (lastElement.box[this.endAttribute] + element.box[this.dimensionAttribute] > this.box[this.endAttribute]) {
+      if (
+        lastElement.box[this.endAttribute] + this.gap + element.box[this.dimensionAttribute] >
+        this.box[this.endAttribute]
+      ) {
         return false;
       }
 
-      element.box[this.startAttribute] = lastElement.box[this.endAttribute];
+      element.box[this.startAttribute] = lastElement.box[this.endAttribute] + this.gap;
     }
 
     element.parent = this;
@@ -87,7 +91,7 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends Layo
   addElement(element: T, flexProps?: Partial<FlexProps>): void {
     const lastElement = last(this.elements);
     if (lastElement) {
-      element.box[this.startAttribute] = lastElement.box[this.endAttribute];
+      element.box[this.startAttribute] = lastElement.box[this.endAttribute] + this.gap;
     }
     element.parent = this;
     this.elements.push(element);
@@ -123,6 +127,9 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends Layo
       const lastElement = last(this.elements);
       if (lastElement) {
         extraSpace = this.box[this.dimensionAttribute] - lastElement.box[this.endAttribute];
+
+        // When adding elements, we added the gap, so we need to take that away from the extra space too
+        extraSpace -= this.gap * (this.elements.length - 1);
       }
     }
 
@@ -137,7 +144,7 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends Layo
         }
       }
 
-      start += element.box[this.dimensionAttribute];
+      start += element.box[this.dimensionAttribute] + this.gap;
     }
   }
 }

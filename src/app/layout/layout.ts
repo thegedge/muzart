@@ -1,11 +1,11 @@
-import { clone } from "lodash";
+import { clone, last } from "lodash";
 import * as notation from "../../notation";
 import { DEFAULT_MARGINS, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH, LINE_MARGIN, STAFF_LINE_HEIGHT } from "./constants";
 import { Measure as MeasureLayout } from "./elements/Measure";
 import { PageLine } from "./elements/PageLine";
 import { FlexGroupElement } from "./layouts/FlexGroup";
 import { SimpleGroup } from "./layouts/SimpleGroup";
-import { LineElement, Margins, Measure, Page, PageElement, Part, Score, Text } from "./types";
+import { Group, LineElement, Measure, Page, PageElement, Part, Score, Text } from "./types";
 import { Box } from "./utils/Box";
 
 /**
@@ -41,8 +41,10 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   const pageContentBox = new Box(margins.left, margins.top, contentWidth, contentHeight);
   const pages: Page[] = [];
 
-  let pageGroup = new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical" });
-  layOutPartHeader(pageGroup, score, part, contentWidth);
+  let pageGroup = new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical", gap: LINE_MARGIN });
+
+  const header = partHeader(score, part, contentWidth);
+  pageGroup.addElement(header, { factor: 0 });
 
   let line = new PageLine(new Box(0, 0, contentWidth, 0), part.lineCount);
   for (const measureToLayOut of measures) {
@@ -58,16 +60,8 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     } else {
       line.layout();
 
-      // TODO "min space between" in flex group
-      if (pageGroup.elements.length > 0) {
-        pageGroup.addElement({
-          type: "Space",
-          box: new Box(0, 0, LINE_MARGIN, LINE_MARGIN),
-        });
-      }
-
       if (!pageGroup.tryAddElement(line, { factor: null })) {
-        pageGroup = startNewPage(pages, margins, pageContentBox, pageGroup);
+        pageGroup = startNewPage(pages, pageContentBox, pageGroup);
         pageGroup.addElement(line);
       }
 
@@ -82,13 +76,8 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   if (line.elements.length > 0) {
     line.layout();
 
-    pageGroup.addElement({
-      type: "Space",
-      box: new Box(0, 0, LINE_MARGIN, LINE_MARGIN),
-    });
-
     if (!pageGroup.tryAddElement(line)) {
-      pageGroup = startNewPage(pages, margins, pageContentBox, pageGroup);
+      pageGroup = startNewPage(pages, pageContentBox, pageGroup);
       pageGroup.addElement(line);
     }
   }
@@ -122,8 +111,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   return partLayout;
 }
 
-function startNewPage(pages: Page[], margins: Margins, pageContentBox: Box, pageGroup: FlexGroupElement<PageElement>) {
-  pageGroup.popElement(); // remove spacer we just added above
+function startNewPage(pages: Page[], pageContentBox: Box, pageGroup: FlexGroupElement<PageElement>) {
   pageGroup.layout();
 
   const page: Page = {
@@ -135,7 +123,7 @@ function startNewPage(pages: Page[], margins: Margins, pageContentBox: Box, page
 
   pages.push(page);
 
-  return new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical" });
+  return new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical", gap: LINE_MARGIN });
 }
 
 function measureElements(pageElements: PageElement[]): Measure[] {
@@ -148,65 +136,57 @@ function measureElements(pageElements: PageElement[]): Measure[] {
   });
 }
 
-function layOutPartHeader(
-  pageGroup: FlexGroupElement<PageElement>,
-  score: notation.Score,
-  part: notation.Part,
-  contentWidth: number
-) {
+function partHeader(score: notation.Score, part: notation.Part, contentWidth: number): Group<PageElement> {
+  const headerGroup = new FlexGroupElement<PageElement>({
+    box: new Box(0, 0, contentWidth, 0),
+    axis: "vertical",
+    defaultFlexProps: { factor: null },
+  });
+
   // Lay out the composition title, composer, etc
   if (score.title) {
     const height = 4 * STAFF_LINE_HEIGHT;
-    pageGroup.addElement(
-      {
-        type: "Text",
-        box: new Box(0, 0, contentWidth, height),
-        halign: "middle",
-        size: height,
-        value: score.title,
-        style: {
-          fontFamily: "serif",
-        },
+    headerGroup.addElement({
+      type: "Text",
+      box: new Box(0, 0, contentWidth, height),
+      halign: "middle",
+      size: height,
+      value: score.title,
+      style: {
+        fontFamily: "serif",
       },
-      { factor: 0 }
-    );
+    });
   }
 
   if (score.composer) {
     const height = 1.5 * STAFF_LINE_HEIGHT;
 
-    pageGroup.addElement(
-      {
-        type: "Text",
-        box: new Box(0, 0, contentWidth, 2 * height),
-        halign: "end",
-        size: height,
-        value: score.composer,
-        style: {
-          fontFamily: "serif",
-        },
+    headerGroup.addElement({
+      type: "Text",
+      box: new Box(0, 0, contentWidth, 2 * height),
+      halign: "end",
+      size: height,
+      value: score.composer,
+      style: {
+        fontFamily: "serif",
       },
-      { factor: 0 }
-    );
+    });
   }
 
   if (score.comments) {
     const height = STAFF_LINE_HEIGHT;
     for (const comment of score.comments) {
-      pageGroup.addElement(
-        {
-          type: "Text",
-          box: new Box(0, 0, contentWidth, 1.5 * height),
-          halign: "middle",
-          size: height,
-          value: comment,
-          style: {
-            fontFamily: "serif",
-            fontStyle: "italic",
-          },
+      headerGroup.addElement({
+        type: "Text",
+        box: new Box(0, 0, contentWidth, 1.5 * height),
+        halign: "middle",
+        size: height,
+        value: comment,
+        style: {
+          fontFamily: "serif",
+          fontStyle: "italic",
         },
-        { factor: 0 }
-      );
+      });
     }
   }
 
@@ -235,7 +215,12 @@ function layOutPartHeader(
         group.addElement(text);
       }
 
-      pageGroup.addElement(group, { factor: 0 });
+      headerGroup.addElement(group);
     }
   }
+
+  headerGroup.layout();
+  headerGroup.box.height = last(headerGroup.elements)?.box.bottom ?? 0;
+
+  return headerGroup;
 }
