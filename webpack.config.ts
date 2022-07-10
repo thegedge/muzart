@@ -54,7 +54,7 @@ const configuration: Configuration = {
       dependOn: ["deps"],
     },
     deps: {
-      import: ["lodash", "react", "react-dom", "tone"],
+      import: ["lodash", "react", "react-dom"],
     },
   },
 

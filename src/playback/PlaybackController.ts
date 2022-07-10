@@ -14,9 +14,12 @@ export class PlaybackController {
   /** If true, playing back the entire score */
   public playing = false;
 
+  private audioContext: AudioContext;
   private playbackHandle?: NodeJS.Timeout;
 
   constructor(private soundFont: SoundFont, private selection: Selection) {
+    this.audioContext = new AudioContext();
+
     makeObservable(this, {
       playing: observable,
       instruments: computed,
@@ -27,7 +30,7 @@ export class PlaybackController {
 
   get instrument() {
     const midiPreset = this.selection.part?.part.instrument?.midiPreset ?? 24;
-    return this.soundFont.instrument(midiPreset);
+    return this.soundFont.instrument(this.audioContext, midiPreset);
   }
 
   get instruments(): { name: string; midiPreset: number }[] {
@@ -49,12 +52,12 @@ export class PlaybackController {
 
       // TODO if we had an autorun that played on selection change, we'd only need the setTimeout
       const playNext = () => {
-        const seconds = this.playSelectedChord();
-
         this.selection.update({
           measureIndex: currentMeasure,
           chordIndex: currentChord,
         });
+
+        const seconds = this.playSelectedChord();
 
         currentChord += 1;
 
@@ -63,6 +66,7 @@ export class PlaybackController {
           currentMeasure += 1;
           currentChord = 0;
           if (currentMeasure >= part.measures.length) {
+            this.stop();
             return;
           }
         }

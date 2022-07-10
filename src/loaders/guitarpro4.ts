@@ -150,7 +150,7 @@ export default function load(source: ArrayBuffer): Score {
     const stringTuning = range(7)
       .map(() => {
         const value = cursor.nextNumber(NumberType.Uint32);
-        return Pitch.fromInt(value);
+        return Pitch.fromMidi(12 + value); // +12 because C0 is 0 in GP4, whereas C0 is 12 in midi
       })
       .slice(0, numStrings);
 

@@ -1,7 +1,6 @@
 import { compact, last } from "lodash";
-import { Frequency, getContext } from "tone";
-import { MidiNote, Note } from "tone/build/esm/core/type/NoteUnits";
 import { BufferCursor, NumberType } from "../loaders/util/BufferCursor";
+import { Pitch } from "../notation";
 import { Instrument } from "./instruments/Instrument";
 import { Sampler } from "./instruments/Sampler";
 
@@ -74,14 +73,13 @@ export class SoundFont {
   private presets!: SoundFontPreset[];
   private instruments_!: SoundFontInstrument[];
   private samples!: SoundFontSample[];
-  // private tones: ToneAudioBuffers = new ToneAudioBuffers();
 
   constructor(buffer: ArrayBuffer) {
     const cursor = new BufferCursor(buffer);
     this.readRiffChunk(cursor);
   }
 
-  instrument(midiPreset: number): Instrument {
+  instrument(audioContext: AudioContext, midiPreset: number): Instrument {
     // TODO What are global zones? What should we do for them?
 
     const preset = this.presets.find((preset) => preset.bank == 0 && preset.midiPreset == midiPreset);
@@ -105,26 +103,25 @@ export class SoundFont {
       throw new Error(`instrument for preset ${midiPreset} has no sampling generator`);
     }
 
-    const context = getContext();
-    const buffers: Partial<Record<MidiNote, AudioBuffer>> = Object.fromEntries(
-      compact(
-        zonesWithSamples.map((zone) => {
-          const sampleInfo = this.samples[zone.generators[SoundFontGeneratorType.SampleId]];
-          const length = sampleInfo.end - sampleInfo.start;
-          const sampleRate = sampleInfo.sampleRate;
+    const buffers = compact(
+      zonesWithSamples.map((zone): [number, AudioBuffer] | undefined => {
+        const sampleInfo = this.samples[zone.generators[SoundFontGeneratorType.SampleId]];
+        const length = sampleInfo.end - sampleInfo.start;
+        const sampleRate = sampleInfo.sampleRate;
 
-          const buffer = context.createBuffer(1, length, sampleRate);
-          buffer.copyToChannel(this.sampleData.subarray(sampleInfo.start, sampleInfo.end), 0);
+        const buffer = audioContext.createBuffer(1, length, sampleRate);
+        buffer.copyToChannel(this.sampleData.subarray(sampleInfo.start, sampleInfo.end), 0);
 
-          const note = last(sampleInfo.sampleName.split("-")) as Note;
-
-          const frq = Frequency(note);
-          return [frq.toMidi(), buffer];
-        })
-      )
+        // TODO find note from root key generator instead of sample name
+        const note = last(sampleInfo.sampleName.split("-"));
+        if (note) {
+          const pitch = Pitch.fromScientificNotation(note);
+          return [pitch.toMidi(), buffer];
+        }
+      })
     );
 
-    return new Sampler({ buffers, context }).toDestination();
+    return new Sampler({ buffers, context: audioContext });
   }
 
   get instruments() {
