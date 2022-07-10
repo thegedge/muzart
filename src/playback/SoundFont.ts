@@ -2,7 +2,7 @@ import { compact, last } from "lodash";
 import { BufferCursor, NumberType } from "../loaders/util/BufferCursor";
 import { Pitch } from "../notation";
 import { Instrument } from "./instruments/Instrument";
-import { Sampler } from "./instruments/Sampler";
+import { SamplerInstrument } from "./instruments/SamplerInstrument";
 
 interface SoundFontPreset {
   name: string;
@@ -121,7 +121,7 @@ export class SoundFont {
       })
     );
 
-    return new Sampler({ buffers, context: audioContext });
+    return new SamplerInstrument({ buffers, context: audioContext });
   }
 
   get instruments() {

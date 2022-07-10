@@ -11,7 +11,7 @@ interface SamplerOptions {
 /**
  * An instrument that takes a set of note buffers and can interpolate all other notes from those.
  */
-export class Sampler implements Instrument {
+export class SamplerInstrument implements Instrument {
   readonly name: string = "Sampler";
 
   /** The audio context in which this sampler instrument will be used */
