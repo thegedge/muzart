@@ -3,7 +3,7 @@ import React from "react";
 import { useApplicationState } from "../utils/ApplicationStateContext";
 
 export const Toolbox = observer(function Toolbox(_props: Record<string, never>) {
-  const { selection, debug, score } = useApplicationState();
+  const { selection, playback, debug, score } = useApplicationState();
 
   if (!score) {
     return null;
@@ -11,6 +11,13 @@ export const Toolbox = observer(function Toolbox(_props: Record<string, never>) 
 
   const onPartChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     selection.update({ partIndex: event.target.selectedIndex });
+  };
+
+  const instrument = selection.part?.part.instrument;
+  const onInstrumentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    if (instrument) {
+      instrument.midiPreset = parseInt(event.target.value);
+    }
   };
 
   const onDebugToggled = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,7 +33,8 @@ export const Toolbox = observer(function Toolbox(_props: Record<string, never>) 
         <select
           className="bg-transparent px-2 focus:outline-none"
           onChange={onPartChange}
-          defaultValue={selection.partIndex}
+          value={selection.partIndex}
+          defaultValue={0}
         >
           {score.score.parts.map((part, index) => (
             <option key={index} value={index} style={{ color: "initial" }}>
@@ -34,6 +42,20 @@ export const Toolbox = observer(function Toolbox(_props: Record<string, never>) 
             </option>
           ))}
         </select>
+        {playback.instruments.length > 0 && (
+          <select
+            className="bg-transparent px-2 focus:outline-none"
+            onChange={onInstrumentChange}
+            value={instrument?.midiPreset}
+            defaultValue={24}
+          >
+            {playback.instruments.map((instrument) => (
+              <option key={instrument.midiPreset} value={instrument.midiPreset} style={{ color: "initial" }}>
+                {instrument.name}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
     </div>
   );

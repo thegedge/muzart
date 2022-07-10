@@ -63,7 +63,7 @@ export default function load(source: ArrayBuffer): Score {
   /* const octave = */ cursor.nextNumber(NumberType.Uint32);
 
   debug && console.debug("midi channels");
-  readMidiChannels(cursor);
+  const midiPorts = readMidiChannels(cursor);
 
   const numMeasures = cursor.nextNumber(NumberType.Uint32);
   const numTracks = cursor.nextNumber(NumberType.Uint32);
@@ -149,12 +149,13 @@ export default function load(source: ArrayBuffer): Score {
     const numStrings = cursor.nextNumber(NumberType.Uint32);
     const stringTuning = range(7)
       .map(() => {
-        return Pitch.fromInt(cursor.nextNumber(NumberType.Uint32));
+        const value = cursor.nextNumber(NumberType.Uint32);
+        return Pitch.fromMidi(12 + value); // +12 because C0 is 0 in GP4, whereas C0 is 12 in midi
       })
       .slice(0, numStrings);
 
-    /* const midiPort = */ cursor.nextNumber(NumberType.Uint32);
-    /* const midiChannel = */ cursor.nextNumber(NumberType.Uint32);
+    const midiPort = cursor.nextNumber(NumberType.Uint32);
+    const midiChannel = cursor.nextNumber(NumberType.Uint32);
     /* const midiChannelEffects = */ cursor.nextNumber(NumberType.Uint32);
     /* const numberOfFrets = */ cursor.nextNumber(NumberType.Uint32);
     /* const capoFret = */ cursor.nextNumber(NumberType.Uint32);
@@ -165,6 +166,7 @@ export default function load(source: ArrayBuffer): Score {
       lineCount: numStrings,
       measures: [],
       instrument: {
+        midiPreset: midiPorts[midiPort - 1][midiChannel - 1] ?? 24,
         tuning: stringTuning,
       },
     });
@@ -659,9 +661,12 @@ function readLyrics(cursor: BufferCursor) {
 }
 
 function readMidiChannels(cursor: BufferCursor) {
+  const ports = [];
+
   for (let port = 1; port <= 4; ++port) {
+    const channels = [];
     for (let channel = 1; channel <= 16; ++channel) {
-      /* const instrument = */ cursor.nextNumber(NumberType.Uint32);
+      const instrument = cursor.nextNumber(NumberType.Uint32);
       /* const volume = */ cursor.nextNumber(NumberType.Uint8);
       /* const balance = */ cursor.nextNumber(NumberType.Uint8);
       /* const chorus = */ cursor.nextNumber(NumberType.Uint8);
@@ -670,8 +675,14 @@ function readMidiChannels(cursor: BufferCursor) {
       /* const tremolo = */ cursor.nextNumber(NumberType.Uint8);
       /* const blank1 = */ cursor.nextNumber(NumberType.Uint8);
       /* const blank2 = */ cursor.nextNumber(NumberType.Uint8);
+
+      channels.push(instrument);
     }
+
+    ports.push(channels);
   }
+
+  return ports;
 }
 
 function readBend(cursor: BufferCursor): Bend | undefined {

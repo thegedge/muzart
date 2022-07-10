@@ -358,6 +358,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
           continue;
         }
 
+        // TODO pre-process chord diagrams and lift them to the top of the diagram, instead of on a per-line basis
         if (element.chord.chordDiagram) {
           const diagram = element.chord.chordDiagram;
           const height = (diagram.diagram ? 7 : 1) * STAFF_LINE_HEIGHT;

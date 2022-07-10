@@ -47,7 +47,7 @@ export class Selection {
     if (this.chord?.type != "Chord") {
       return undefined;
     }
-    return this.chord?.notes[this.noteIndex];
+    return this.chord?.notes.find((note) => note.note.placement?.string == this.noteIndex + 1);
   }
 
   update(selection: Partial<Selection>) {
