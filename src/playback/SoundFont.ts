@@ -112,8 +112,10 @@ export class SoundFont {
         buffer.copyToChannel(this.sampleData.subarray(sampleInfo.start, sampleInfo.end), 0);
 
         const pitch = zone.generators[SoundFontGeneratorType.PitchOverride];
-        if (pitch) {
+        if (pitch !== undefined) {
           return [pitch, buffer];
+        } else {
+          return [sampleInfo.originalPitch, buffer];
         }
       })
     );
