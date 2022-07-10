@@ -42,7 +42,7 @@ interface SoundFontInstrument {
   zones: SoundFontZone[];
 }
 
-interface SoundFontSample {
+export interface SoundFontSample {
   sampleName: string;
   start: number;
   end: number;
@@ -53,6 +53,10 @@ interface SoundFontSample {
   pitchCorrection: number;
   sampleLink: number;
   sampleType: number;
+}
+
+export interface SampleWithBuffer extends SoundFontSample {
+  buffer: AudioBuffer;
 }
 
 enum SoundFontGeneratorType {
@@ -103,7 +107,7 @@ export class SoundFont {
     }
 
     const buffers = compact(
-      zonesWithSamples.map((zone): [number, AudioBuffer] | undefined => {
+      zonesWithSamples.map((zone): [number, SampleWithBuffer] | undefined => {
         const sampleInfo = this.samples[zone.generators[SoundFontGeneratorType.SampleId]];
         const length = sampleInfo.end - sampleInfo.start;
         const sampleRate = sampleInfo.sampleRate;
@@ -113,9 +117,9 @@ export class SoundFont {
 
         const pitch = zone.generators[SoundFontGeneratorType.PitchOverride];
         if (pitch !== undefined) {
-          return [pitch, buffer];
+          return [pitch, { buffer, ...sampleInfo }];
         } else {
-          return [sampleInfo.originalPitch, buffer];
+          return [sampleInfo.originalPitch, { buffer, ...sampleInfo }];
         }
       })
     );

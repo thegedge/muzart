@@ -1,11 +1,12 @@
 import { memoize } from "lodash";
 import * as notation from "../../notation";
+import { SampleWithBuffer } from "../SoundFont";
 import { noteValueToSeconds } from "../util/durations";
 import { Instrument } from "./Instrument";
 
 interface SamplerOptions {
   context: AudioContext;
-  buffers: [number, AudioBuffer][];
+  buffers: [number, SampleWithBuffer][];
 }
 
 /**
@@ -18,7 +19,7 @@ export class SamplerInstrument implements Instrument {
   private context: AudioContext;
 
   /** The stored and loaded buffers */
-  private buffers: Map<number, AudioBuffer>;
+  private buffers: Map<number, SampleWithBuffer>;
 
   /** The object of all currently playing BufferSources */
   private activeSources: Map<number, AudioBufferSourceNode[]> = new Map();
@@ -49,7 +50,7 @@ export class SamplerInstrument implements Instrument {
       return;
     }
 
-    const duration = this.tiedNoteDurationSeconds(note);
+    const duration = note.dead ? 0.05 : this.tiedNoteDurationSeconds(note);
     try {
       const source = this.createToneBufferSource(note);
 
@@ -61,12 +62,6 @@ export class SamplerInstrument implements Instrument {
 
       const computedTime = this.context.currentTime + (startTime ?? 0);
       source.start(computedTime, 0, duration);
-      if (note.dead) {
-        source.stop(computedTime + 0.05);
-      } else {
-        source.stop(computedTime + duration);
-      }
-
       this.addActiveSource(source, note.pitch.toMidi());
     } catch (e) {
       console.warn(e);
@@ -76,7 +71,7 @@ export class SamplerInstrument implements Instrument {
   }
 
   /** Returns the difference in steps between the given midi note at the closets sample.  */
-  private findClosest = memoize((midi: number): [AudioBuffer, number] => {
+  private findClosest = memoize((midi: number): [SampleWithBuffer, number] => {
     for (let offset = 0; offset < 96; ++offset) {
       const hiBuffer = this.buffers.get(midi + offset);
       if (hiBuffer) {
@@ -94,15 +89,18 @@ export class SamplerInstrument implements Instrument {
 
   private createToneBufferSource(note: notation.Note): AudioBufferSourceNode {
     const midi = note.pitch.toMidi();
-    const [buffer, offset] = this.findClosest(midi);
+    const [sample, offset] = this.findClosest(midi);
 
     // Frequency doubles per octave.
     // see https://en.wikipedia.org/wiki/Scientific_pitch_notation#Table_of_note_frequencies
     const playbackRate = Math.pow(2, -offset / 12);
 
     const source = this.context.createBufferSource();
-    source.buffer = buffer;
+    source.buffer = sample.buffer;
     source.playbackRate.value = playbackRate;
+    source.loop = true;
+    source.loopStart = sample.startLoop - sample.start;
+    source.loopEnd = sample.endLoop - sample.start;
     return source;
   }
 
@@ -114,16 +112,12 @@ export class SamplerInstrument implements Instrument {
     }
     sources.push(source);
 
+    const closureSources = sources;
     source.addEventListener("ended", () => {
-      if (this.activeSources && this.activeSources.has(midiNote)) {
-        const sources = this.activeSources.get(midiNote);
-        if (sources) {
-          const index = sources.indexOf(source);
-          if (index !== -1) {
-            sources.splice(index, 1);
-            source.disconnect();
-          }
-        }
+      const index = closureSources.indexOf(source);
+      if (index !== -1) {
+        closureSources.splice(index, 1);
+        source.disconnect();
       }
     });
 
