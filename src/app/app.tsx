@@ -15,9 +15,11 @@ export default function App() {
           Source on GitHub
         </a>
       </div>
-      <ApplicationState>
-        <ScoreDropZone />
-      </ApplicationState>
+      <ErrorBoundary>
+        <ApplicationState>
+          <ScoreDropZone />
+        </ApplicationState>
+      </ErrorBoundary>
     </div>
   );
 }
@@ -69,10 +71,8 @@ const ScoreDropZone = () => {
 
   return (
     <div onDrop={onDrop} onDragOver={(e) => e.preventDefault()}>
-      <ErrorBoundary>
-        <Toolbox />
-        <Score />
-      </ErrorBoundary>
+      <Toolbox />
+      <Score />
     </div>
   );
 };
