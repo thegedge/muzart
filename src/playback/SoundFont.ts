@@ -146,15 +146,16 @@ export class SoundFont {
   private readInfoList(cursor: BufferCursor) {
     cursor.nextString(4); // 'LIST'
     const listChunkSize = cursor.nextNumber(NumberType.Uint32);
-    const end = cursor.position + listChunkSize;
 
     cursor.nextString(4); // 'INFO'
 
-    while (cursor.position < end) {
-      /* const chunkType = */ cursor.nextString(4);
-      const chunkSize = cursor.nextNumber(NumberType.Uint32);
-      /* const infoString = */ cursor.nextString(chunkSize);
-    }
+    cursor.skip(listChunkSize - 4);
+    // const end = cursor.position + listChunkSize;
+    // while (cursor.position < end) {
+    //   /* const chunkType = */ cursor.nextString(4);
+    //   const chunkSize = cursor.nextNumber(NumberType.Uint32);
+    //   /* const infoString = */ cursor.nextString(chunkSize);
+    // }
   }
 
   private readSampleDataList(cursor: BufferCursor) {
