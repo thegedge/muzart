@@ -1,6 +1,5 @@
-import { compact, last } from "lodash";
+import { compact } from "lodash";
 import { BufferCursor, NumberType } from "../loaders/util/BufferCursor";
-import { Pitch } from "../notation";
 import { Instrument } from "./instruments/Instrument";
 import { SamplerInstrument } from "./instruments/SamplerInstrument";
 
@@ -112,11 +111,9 @@ export class SoundFont {
         const buffer = audioContext.createBuffer(1, length, sampleRate);
         buffer.copyToChannel(this.sampleData.subarray(sampleInfo.start, sampleInfo.end), 0);
 
-        // TODO find note from root key generator instead of sample name
-        const note = last(sampleInfo.sampleName.split("-"));
-        if (note) {
-          const pitch = Pitch.fromScientificNotation(note);
-          return [pitch.toMidi(), buffer];
+        const pitch = zone.generators[SoundFontGeneratorType.PitchOverride];
+        if (pitch) {
+          return [pitch, buffer];
         }
       })
     );
