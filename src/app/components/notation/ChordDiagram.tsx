@@ -57,9 +57,9 @@ function FretboardDiagram(props: { diagram: Required<notation.ChordDiagram>["dia
   return (
     <>
       <line
-        x1={props.box.x}
+        x1={props.box.x - 0.5 * LINE_STROKE_WIDTH}
         y1={fretY}
-        x2={props.box.right}
+        x2={props.box.right + 0.5 * LINE_STROKE_WIDTH}
         y2={fretY}
         stroke="#000000"
         strokeWidth={LINE_STROKE_WIDTH * (props.diagram.baseFret == 1 ? 5 : 1)}
