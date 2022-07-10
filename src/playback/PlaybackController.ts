@@ -1,40 +1,48 @@
-import { action, computed, makeObservable, observable } from "mobx";
+import { action, computed, flow, makeObservable, observable } from "mobx";
 import { Selection } from "../app/components/state/Selection";
 import { SoundFont } from "./SoundFont";
 import { noteValueToSeconds } from "./util/durations";
 
 export class PlaybackController {
-  // eslint-disable-next-line @typescript-eslint/require-await
-  static async construct(selection: Selection) {
-    const soundFont = await SoundFont.fromURL(encodeURI("soundfonts/MuseScore v1.442.sf2"));
-    // const soundFont = await SoundFont.fromURL(encodeURI("soundfonts/Essential Keys-sforzando-v9.6.sf2"));
-    return new PlaybackController(soundFont, selection);
-  }
-
   /** If true, playing back the entire score */
   public playing = false;
 
-  private audioContext: AudioContext;
-  private playbackHandle?: NodeJS.Timeout;
+  /** @private */
+  public soundFont: SoundFont | undefined;
 
-  constructor(private soundFont: SoundFont, private selection: Selection) {
+  private audioContext: AudioContext;
+  private playbackHandle: NodeJS.Timeout | undefined;
+
+  constructor(private selection: Selection) {
     this.audioContext = new AudioContext();
 
     makeObservable(this, {
       playing: observable,
+      soundFont: observable.ref,
+
       instruments: computed,
+
       togglePlay: action,
       stop: action,
+      loadSoundFont: flow,
     });
   }
 
   get instrument() {
-    const midiPreset = this.selection.part?.part.instrument?.midiPreset ?? 24;
-    return this.soundFont.instrument(this.audioContext, midiPreset);
+    const midiPreset = this.selection.part?.part.instrument?.midiPreset ?? 24; // default to 24, nylon guitar
+    return this.soundFont?.instrument(this.audioContext, midiPreset);
   }
 
   get instruments(): { name: string; midiPreset: number }[] {
-    return this.soundFont.instruments;
+    return this.soundFont?.instruments ?? [];
+  }
+
+  *loadSoundFont(url: string | URL): Generator<Promise<SoundFont>> {
+    try {
+      this.soundFont = (yield SoundFont.fromURL(url)) as SoundFont;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   togglePlay() {
@@ -92,7 +100,7 @@ export class PlaybackController {
     const chord = this.selection.chord?.chord;
     if (chord && !chord.rest) {
       for (const note of chord.notes) {
-        this.instrument.playNote(note);
+        this.instrument?.playNote(note);
       }
     }
 
@@ -102,7 +110,7 @@ export class PlaybackController {
   playSelectedNote(): void {
     const note = this.selection.note?.note;
     if (note) {
-      this.instrument.playNote(note);
+      this.instrument?.playNote(note);
     }
   }
 }
