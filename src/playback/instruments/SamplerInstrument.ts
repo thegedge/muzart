@@ -99,8 +99,8 @@ export class SamplerInstrument implements Instrument {
     source.buffer = sample.buffer;
     source.playbackRate.value = playbackRate;
     source.loop = true;
-    source.loopStart = sample.startLoop - sample.start;
-    source.loopEnd = sample.endLoop - sample.start;
+    source.loopStart = (sample.startLoop - sample.start) / sample.sampleRate;
+    source.loopEnd = (sample.endLoop - sample.start) / sample.sampleRate;
     return source;
   }
 
