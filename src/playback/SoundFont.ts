@@ -1,4 +1,4 @@
-import { compact } from "lodash";
+import { compact, defaults } from "lodash";
 import { BufferCursor, NumberType } from "../loaders/util/BufferCursor";
 import { Instrument } from "./instruments/Instrument";
 import { SamplerInstrument } from "./instruments/SamplerInstrument";
@@ -16,7 +16,7 @@ interface SoundFontPreset {
 }
 
 // TODO eventally key by SoundFontGeneratorType
-type Generators = Record<number, number>;
+type Generators = Record<number, number | undefined>;
 
 interface SoundFontZone {
   generators: Generators;
@@ -36,7 +36,7 @@ interface SoundFontModulator {
   modulatorTransform: number;
 }
 
-interface SoundFontInstrument {
+export interface SoundFontInstrument {
   name: string;
   zoneIndex: number;
   zones: SoundFontZone[];
@@ -55,14 +55,34 @@ export interface SoundFontSample {
   sampleType: number;
 }
 
-export interface SampleWithBuffer extends SoundFontSample {
+export interface SampleZone extends SoundFontSample, SoundFontZone {
   buffer: AudioBuffer;
 }
 
-enum SoundFontGeneratorType {
+export enum SoundFontGeneratorType {
+  /** Time of attack phase (seconds) */
+  EnvelopeVolumeAttack = 34,
+
+  /** Time of decay phase (seconds) */
+  EnvelopeVolumeDecay = 36,
+
+  /** Time from end of attack phase to beginning of decay (seconds) */
+  EnvelopeVolumeHold = 35,
+
+  /** Time of decay phase (seconds) */
+  EnvelopeVolumeRelease = 38,
+
+  /** The decrease in volume during decay (centibels, 0 meaning no change) */
+  EnvelopeVolumeSustain = 37,
+
+  /** Index into the instrument list */
   Instrument = 41,
+
+  /** Overriding root key for samples */
+  RootKeyOverride = 58,
+
+  /** Index into sample array */
   SampleId = 53,
-  PitchOverride = 58, // overridingRootKey
 }
 
 export class SoundFont {
@@ -96,7 +116,7 @@ export class SoundFont {
     }
 
     const instrumentIndex = zoneWithInstrument.generators[SoundFontGeneratorType.Instrument];
-    const instrument = this.instruments_[instrumentIndex];
+    const instrument = instrumentIndex === undefined ? undefined : this.instruments_[instrumentIndex];
     if (!instrument) {
       throw new Error(`preset ${midiPreset} has invalid instrument generator`);
     }
@@ -106,21 +126,36 @@ export class SoundFont {
       throw new Error(`instrument for preset ${midiPreset} has no sampling generator`);
     }
 
+    let globalZone: SoundFontZone | undefined = instrument.zones[0];
+    const hasGlobalZone = !globalZone?.generators[SoundFontGeneratorType.SampleId];
+    if (!hasGlobalZone) {
+      globalZone = undefined;
+    }
+
     const buffers = compact(
-      zonesWithSamples.map((zone): [number, SampleWithBuffer] | undefined => {
-        const sampleInfo = this.samples[zone.generators[SoundFontGeneratorType.SampleId]];
+      zonesWithSamples.map((zone): [number, SampleZone] | undefined => {
+        const sampleIndex = zone.generators[SoundFontGeneratorType.SampleId];
+        if (!sampleIndex) {
+          return;
+        }
+
+        const sampleInfo = this.samples[sampleIndex];
         const length = sampleInfo.end - sampleInfo.start;
         const sampleRate = sampleInfo.sampleRate;
 
         const buffer = audioContext.createBuffer(1, length, sampleRate);
         buffer.copyToChannel(this.sampleData.subarray(sampleInfo.start, sampleInfo.end), 0);
 
-        const pitch = zone.generators[SoundFontGeneratorType.PitchOverride];
-        if (pitch !== undefined) {
-          return [pitch, { buffer, ...sampleInfo }];
-        } else {
-          return [sampleInfo.originalPitch, { buffer, ...sampleInfo }];
-        }
+        const pitch = zone.generators[SoundFontGeneratorType.RootKeyOverride] ?? sampleInfo.originalPitch;
+        return [
+          pitch,
+          {
+            ...sampleInfo,
+            buffer,
+            generators: defaults({}, zone.generators, globalZone?.generators),
+            modulators: defaults({}, zone.modulators, globalZone?.modulators),
+          },
+        ];
       })
     );
 
@@ -321,7 +356,19 @@ export class SoundFont {
     const end = cursor.position + chunkSize;
     for (let index = 0; cursor.position < end; index += 1) {
       const type = cursor.nextNumber(NumberType.Uint16);
-      const amount = cursor.nextNumber(NumberType.Uint16);
+
+      let amount;
+      switch (type) {
+        case SoundFontGeneratorType.EnvelopeVolumeAttack:
+        case SoundFontGeneratorType.EnvelopeVolumeDecay:
+        case SoundFontGeneratorType.EnvelopeVolumeHold:
+        case SoundFontGeneratorType.EnvelopeVolumeRelease:
+          amount = Math.pow(2, cursor.nextNumber(NumberType.Int16) / 1200);
+          break;
+        default:
+          amount = cursor.nextNumber(NumberType.Uint16);
+          break;
+      }
       generators.push([type, amount]);
     }
 

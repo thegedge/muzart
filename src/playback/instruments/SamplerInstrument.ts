@@ -1,12 +1,19 @@
 import { memoize } from "lodash";
 import * as notation from "../../notation";
-import { SampleWithBuffer } from "../SoundFont";
+import { SampleZone, SoundFontGeneratorType } from "../SoundFont";
 import { noteValueToSeconds } from "../util/durations";
 import { Instrument } from "./Instrument";
 
 interface SamplerOptions {
   context: AudioContext;
-  buffers: [number, SampleWithBuffer][];
+  buffers: [number, SampleZone][];
+}
+
+interface Envelope {
+  attack: number;
+  hold: number;
+  decay: number;
+  release: number;
 }
 
 /**
@@ -19,7 +26,7 @@ export class SamplerInstrument implements Instrument {
   private context: AudioContext;
 
   /** The stored and loaded buffers */
-  private buffers: Map<number, SampleWithBuffer>;
+  private buffers: Map<number, SampleZone>;
 
   /** The object of all currently playing BufferSources */
   private activeSources: Map<number, AudioBufferSourceNode[]> = new Map();
@@ -52,13 +59,32 @@ export class SamplerInstrument implements Instrument {
 
     const duration = note.dead ? 0.05 : this.tiedNoteDurationSeconds(note);
     try {
-      const source = this.createToneBufferSource(note);
+      const midi = note.pitch.toMidi();
+      const [sample, offset] = this.findClosest(midi);
+
+      const source = this.createToneBufferSource(sample, offset);
 
       // TODO Make these work again
       this.maybeBend(note, source);
       this.maybeVibrato(note);
 
-      source.connect(this.context.destination);
+      //---------------------------------------------------------------------------------------------
+
+      const volume = this.context.createGain();
+
+      const attack = sample.generators[SoundFontGeneratorType.EnvelopeVolumeAttack];
+      const hold = sample.generators[SoundFontGeneratorType.EnvelopeVolumeHold];
+      const decay = sample.generators[SoundFontGeneratorType.EnvelopeVolumeDecay];
+      const release = sample.generators[SoundFontGeneratorType.EnvelopeVolumeRelease];
+      // const sustain = sample.generators[SoundFontGeneratorType.EnvelopeVolumeSustain];
+
+      this.createEnvelope(volume.gain, { attack, hold, decay, release });
+
+      source.connect(volume);
+
+      //---------------------------------------------------------------------------------------------
+
+      volume.connect(this.context.destination);
 
       const computedTime = this.context.currentTime + (startTime ?? 0);
       source.start(computedTime, 0, duration);
@@ -70,8 +96,36 @@ export class SamplerInstrument implements Instrument {
     return duration;
   }
 
+  private createEnvelope(param: AudioParam, envelope: Partial<Envelope>) {
+    const { attack, hold, decay, release } = envelope;
+
+    let currentEnvelopeTime = this.context.currentTime;
+    if (attack) {
+      param.setValueAtTime(0, currentEnvelopeTime);
+      param.linearRampToValueAtTime(1, currentEnvelopeTime + attack);
+      currentEnvelopeTime += attack;
+    } else {
+      param.setValueAtTime(1, currentEnvelopeTime);
+    }
+
+    if (hold) {
+      currentEnvelopeTime += hold;
+    }
+
+    if (decay) {
+      // TODO use sustain value, if we can somehow set decibel output
+      param.linearRampToValueAtTime(0.5, currentEnvelopeTime + decay);
+      currentEnvelopeTime += decay;
+    }
+
+    if (release) {
+      param.linearRampToValueAtTime(0, currentEnvelopeTime + release);
+      currentEnvelopeTime += release;
+    }
+  }
+
   /** Returns the difference in steps between the given midi note at the closets sample.  */
-  private findClosest = memoize((midi: number): [SampleWithBuffer, number] => {
+  private findClosest = memoize((midi: number): [SampleZone, number] => {
     for (let offset = 0; offset < 96; ++offset) {
       const hiBuffer = this.buffers.get(midi + offset);
       if (hiBuffer) {
@@ -87,10 +141,7 @@ export class SamplerInstrument implements Instrument {
     throw new Error(`No available buffers for note: ${midi}`);
   });
 
-  private createToneBufferSource(note: notation.Note): AudioBufferSourceNode {
-    const midi = note.pitch.toMidi();
-    const [sample, offset] = this.findClosest(midi);
-
+  private createToneBufferSource(sample: SampleZone, offset: number): AudioBufferSourceNode {
     // Frequency doubles per octave.
     // see https://en.wikipedia.org/wiki/Scientific_pitch_notation#Table_of_note_frequencies
     const playbackRate = Math.pow(2, -offset / 12);
@@ -101,6 +152,7 @@ export class SamplerInstrument implements Instrument {
     source.loop = true;
     source.loopStart = (sample.startLoop - sample.start) / sample.sampleRate;
     source.loopEnd = (sample.endLoop - sample.start) / sample.sampleRate;
+
     return source;
   }
 
