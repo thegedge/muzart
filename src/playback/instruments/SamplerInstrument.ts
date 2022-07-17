@@ -49,19 +49,15 @@ export class SamplerInstrument implements Instrument {
     return this.context.currentTime;
   }
 
-  /**
-   * Clean up all audio resources.
-   */
   dispose() {
     this.stop();
   }
 
   stop() {
-    console.info(this.activeSources);
     this.activeSources.forEach((sources) => {
       sources.forEach((source) => {
-        source.volume.disconnect();
         source.audio.disconnect();
+        source.volume.disconnect();
       });
     });
     this.activeSources.clear();

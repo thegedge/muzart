@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useEffect } from "react";
-import { determineType, ScoreDataType } from "../loaders";
+import { determineScoreType, getFilenameAndMimeType, ScoreDataType } from "../loaders";
 import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { Score } from "./components/notation/Score";
@@ -45,37 +45,43 @@ const ScoreDropZone = () => {
   const onDrop = (event: React.DragEvent<Element>) => {
     event.preventDefault();
 
-    let file: File | null = null;
-    let type: ScoreDataType | undefined;
+    const sources: File[] = [];
     if (event.dataTransfer.items) {
       for (let i = 0; i < event.dataTransfer.items.length; i++) {
         if (event.dataTransfer.items[i].kind === "file") {
-          file = event.dataTransfer.items[i].getAsFile();
+          const file = event.dataTransfer.items[i].getAsFile();
           if (file) {
-            type = determineType(file);
-            if (type != ScoreDataType.Unknown) {
-              break;
-            }
+            sources.push(file);
           }
         }
       }
     } else {
       for (let i = 0; i < event.dataTransfer.files.length; i++) {
-        file = event.dataTransfer.files[i];
-        type = determineType(file);
-        if (type != ScoreDataType.Unknown) {
-          break;
-        }
+        const file = event.dataTransfer.files[i];
+        sources.push(file);
       }
     }
 
-    if (file) {
-      void application.loadScore(file);
+    const soundfontFile = sources.find((file) => getFilenameAndMimeType(file).filename.endsWith(".sf2"));
+    const tabFile = sources.find((file) => determineScoreType(file) != ScoreDataType.Unknown);
+
+    if (soundfontFile) {
+      void application.playback.loadSoundFont(soundfontFile);
+    }
+
+    if (tabFile) {
+      void application.loadScore(tabFile);
     }
   };
 
   return (
-    <div onDrop={onDrop} onDragOver={(e) => e.preventDefault()}>
+    <div
+      onDrop={onDrop}
+      onDragOver={(e) => {
+        console.info("dragging");
+        e.preventDefault();
+      }}
+    >
       <Toolbox />
       <Score />
     </div>

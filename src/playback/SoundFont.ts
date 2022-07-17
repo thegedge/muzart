@@ -86,9 +86,19 @@ export enum SoundFontGeneratorType {
 }
 
 export class SoundFont {
-  static async fromURL(url: string | URL) {
-    const response = await fetch(url);
-    const buffer = await response.arrayBuffer();
+  static async fromSource(source: string | URL | File | Response | ArrayBuffer) {
+    let buffer: ArrayBuffer;
+    if (typeof source == "string" || source instanceof URL) {
+      const response = await fetch(source);
+      buffer = await response.arrayBuffer();
+    } else if (source instanceof File) {
+      buffer = await source.arrayBuffer();
+    } else if (source instanceof Response) {
+      buffer = await source.arrayBuffer();
+    } else {
+      buffer = source;
+    }
+
     return new SoundFont(buffer);
   }
 

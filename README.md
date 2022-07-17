@@ -1,7 +1,12 @@
 # Muzart
 
-Singe-page score editor app built with React + SVG.
+Singe-page score editor app built with:
+
+- React
+- SVG
+- Web Audio
 
 Demo URL: https://thegedge.github.io/muzart/
 
-> :warning: there's currently no note files in this repo, so playback won't produce any audio in the demo. I hope to one day to find some free note samples to include, use MIDI, or create a custom synthesizer.
+> :warning: I haven't yet been able to find an MIT-compatible soundfont, so for now you can drag and drop your own
+> soundfont into the app.

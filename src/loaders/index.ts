@@ -7,10 +7,10 @@ export async function load(source: File | URL | string, type?: ScoreDataType): P
   if (isString(source) || "hostname" in source) {
     const response = await fetch(source.toString());
     const buffer = await response.arrayBuffer();
-    return loadScore(buffer, type ?? determineType(response));
+    return loadScore(buffer, type ?? determineScoreType(response));
   } else {
     const buffer = await source.arrayBuffer();
-    return loadScore(buffer, type ?? determineType(source));
+    return loadScore(buffer, type ?? determineScoreType(source));
   }
 }
 
@@ -20,10 +20,9 @@ export enum ScoreDataType {
   Unknown = "Unknown",
 }
 
-// TODO perhaps also support determining the type from the buffer?
-export function determineType(source: File | Response) {
-  let filename: string | null | undefined;
-  let mimeType: string | null | undefined;
+export function getFilenameAndMimeType(source: File | Response) {
+  let filename: string | null;
+  let mimeType: string | null;
   if ("name" in source) {
     filename = source.name;
     mimeType = source.type;
@@ -31,6 +30,12 @@ export function determineType(source: File | Response) {
     filename = new URL(source.url).pathname;
     mimeType = source.headers.get("Content-Type");
   }
+  return { filename, mimeType };
+}
+
+// TODO perhaps also support determining the type from the buffer?
+export function determineScoreType(source: File | Response) {
+  const { filename, mimeType } = getFilenameAndMimeType(source);
 
   if (filename?.endsWith(".gp4")) {
     return ScoreDataType.GuitarPro4;

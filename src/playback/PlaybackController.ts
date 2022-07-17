@@ -51,9 +51,12 @@ export class PlaybackController {
     return this.soundFont?.instruments ?? [];
   }
 
-  *loadSoundFont(url: string | URL): Generator<Promise<SoundFont>> {
+  *loadSoundFont(source: string | URL | File | Response | ArrayBuffer): Generator<Promise<SoundFont>> {
     try {
-      this.soundFont = (yield SoundFont.fromURL(url)) as SoundFont;
+      console.time("loading soundfont");
+      this.soundFont = (yield SoundFont.fromSource(source)) as SoundFont;
+      this.currentInstrumentPreset = -1;
+      console.timeEnd("loading soundfont");
     } catch (error) {
       console.error(error);
     }
@@ -63,6 +66,8 @@ export class PlaybackController {
     if (this.playbackHandle) {
       this.stop();
     } else {
+      this.stop();
+
       // TODO play across all parts, not just the selected one
       const part = this.selection.part?.part;
       if (!part) {
