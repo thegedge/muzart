@@ -1,6 +1,7 @@
 import { Note } from "../../notation";
 
 export interface Instrument {
-  dispose(): void;
+  stop(): void;
   playNote(note: Note): void;
+  dispose(): void;
 }

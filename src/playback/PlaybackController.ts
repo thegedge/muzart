@@ -90,7 +90,7 @@ export class PlaybackController {
   stop() {
     if (this.playbackHandle) {
       clearTimeout(this.playbackHandle);
-      // TODO somehow disconnect the instrument or whatever needs to be done to stop it from playing
+      this.instrument?.stop();
       this.playing = false;
       this.playbackHandle = undefined;
     }

@@ -44,6 +44,10 @@ export class SamplerInstrument implements Instrument {
    * Clean up all audio resources.
    */
   dispose() {
+    this.stop();
+  }
+
+  stop() {
     this.activeSources.forEach((sources) => {
       sources.forEach((source) => source.disconnect());
     });
