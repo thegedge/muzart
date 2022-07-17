@@ -16,6 +16,11 @@ interface Envelope {
   release: number;
 }
 
+interface ActiveSourceNodes {
+  audio: AudioBufferSourceNode;
+  volume: GainNode;
+}
+
 /**
  * An instrument that takes a set of note buffers and can interpolate all other notes from those.
  */
@@ -29,7 +34,7 @@ export class SamplerInstrument implements Instrument {
   private buffers: Map<number, SampleZone>;
 
   /** The object of all currently playing BufferSources */
-  private activeSources: Map<number, AudioBufferSourceNode[]> = new Map();
+  private activeSources: Map<number, ActiveSourceNodes[]> = new Map();
 
   constructor(options: SamplerOptions) {
     if (!options.buffers) {
@@ -40,6 +45,10 @@ export class SamplerInstrument implements Instrument {
     this.buffers = new Map(options.buffers);
   }
 
+  get currentTime() {
+    return this.context.currentTime;
+  }
+
   /**
    * Clean up all audio resources.
    */
@@ -48,8 +57,12 @@ export class SamplerInstrument implements Instrument {
   }
 
   stop() {
+    console.info(this.activeSources);
     this.activeSources.forEach((sources) => {
-      sources.forEach((source) => source.disconnect());
+      sources.forEach((source) => {
+        source.volume.disconnect();
+        source.audio.disconnect();
+      });
     });
     this.activeSources.clear();
   }
@@ -90,9 +103,9 @@ export class SamplerInstrument implements Instrument {
 
       volume.connect(this.context.destination);
 
-      const computedTime = this.context.currentTime + (startTime ?? 0);
+      const computedTime = this.currentTime + (startTime ?? 0);
       source.start(computedTime, 0, duration);
-      this.addActiveSource(source, note.pitch.toMidi());
+      this.addActiveSource(source, volume, note.pitch.toMidi());
     } catch (e) {
       console.warn(e);
     }
@@ -103,7 +116,7 @@ export class SamplerInstrument implements Instrument {
   private createEnvelope(param: AudioParam, envelope: Partial<Envelope>) {
     const { attack, hold, decay, release } = envelope;
 
-    let currentEnvelopeTime = this.context.currentTime;
+    let currentEnvelopeTime = this.currentTime;
     if (attack) {
       param.setValueAtTime(0, currentEnvelopeTime);
       param.linearRampToValueAtTime(1, currentEnvelopeTime + attack);
@@ -160,24 +173,25 @@ export class SamplerInstrument implements Instrument {
     return source;
   }
 
-  private addActiveSource(source: AudioBufferSourceNode, midiNote: number) {
+  private addActiveSource(audio: AudioBufferSourceNode, volume: GainNode, midiNote: number) {
     let sources = this.activeSources.get(midiNote);
     if (!sources) {
       sources = [];
       this.activeSources.set(midiNote, sources);
     }
-    sources.push(source);
+    sources.push({ audio, volume });
 
     const closureSources = sources;
-    source.addEventListener("ended", () => {
-      const index = closureSources.indexOf(source);
+    audio.addEventListener("ended", () => {
+      const index = closureSources.findIndex((value) => value.audio == audio);
       if (index !== -1) {
         closureSources.splice(index, 1);
-        source.disconnect();
+        audio.disconnect();
+        volume.disconnect();
       }
     });
 
-    return source;
+    return audio;
   }
 
   private maybeVibrato(note: notation.Note) {

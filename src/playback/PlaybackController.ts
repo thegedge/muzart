@@ -1,5 +1,6 @@
 import { action, computed, flow, makeObservable, observable } from "mobx";
 import { Selection } from "../app/components/state/Selection";
+import { Instrument } from "./instruments/Instrument";
 import { SoundFont } from "./SoundFont";
 import { noteValueToSeconds } from "./util/durations";
 
@@ -12,6 +13,9 @@ export class PlaybackController {
 
   private audioContext: AudioContext;
   private playbackHandle: NodeJS.Timeout | undefined;
+
+  private instrument_: Instrument | undefined;
+  private currentInstrumentPreset = -1;
 
   constructor(private selection: Selection) {
     this.audioContext = new AudioContext();
@@ -29,8 +33,17 @@ export class PlaybackController {
   }
 
   get instrument() {
+    if (!this.soundFont) {
+      return null;
+    }
+
     const midiPreset = this.selection.part?.part.instrument?.midiPreset ?? 24; // default to 24, nylon guitar
-    return this.soundFont?.instrument(this.audioContext, midiPreset);
+    if (midiPreset != this.currentInstrumentPreset) {
+      this.instrument_ = this.soundFont?.instrument(this.audioContext, midiPreset);
+      this.currentInstrumentPreset = midiPreset;
+    }
+
+    return this.instrument_;
   }
 
   get instruments(): { name: string; midiPreset: number }[] {
