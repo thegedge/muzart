@@ -330,8 +330,6 @@ export default function load(source: ArrayBuffer): Score {
     }
   }
 
-  // TODO chord diagrams
-
   return score;
 }
 

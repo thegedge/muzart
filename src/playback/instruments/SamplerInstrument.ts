@@ -69,12 +69,12 @@ export class SamplerInstrument implements Instrument {
 
   // TODO figure out if I could just use the regular ToneJS sampler hooked into some output nodes
 
-  playNote(note: notation.Note, startTime?: number): number | undefined {
+  playNote(note: notation.Note, tempo: number, startTime?: number): number | undefined {
     if (note.tie && note.tie.type != "start") {
       return;
     }
 
-    const duration = note.dead ? 0.05 : this.tiedNoteDurationSeconds(note);
+    const duration = note.dead ? 0.05 : this.tiedNoteDurationSeconds(note, tempo);
     try {
       const midi = note.pitch.toMidi();
       const [sample, offset] = this.findClosest(midi);
@@ -222,17 +222,19 @@ export class SamplerInstrument implements Instrument {
     // }
   }
 
-  private tiedNoteDurationSeconds(note?: notation.Note) {
+  private tiedNoteDurationSeconds(note: notation.Note | undefined, tempo: number) {
     let seconds = 0;
 
     // TODO get tempo from tab and provide to `noteValueToSeconds` below
 
     // TODO this is wrong, because the tied note could pass through many other notes, so we need to
-    //      also find out all of the durations in between
+    //      also find out all of the durations in between. Perhaps the easiest way to do this would
+    //      be to keep the note on until we hit the last tie and then turn it off! So easy.
     while (note) {
-      seconds += noteValueToSeconds(note.value);
+      seconds += noteValueToSeconds(note.value, tempo);
       note = note.tie?.next;
     }
+
     return seconds;
   }
 }

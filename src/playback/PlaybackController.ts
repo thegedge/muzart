@@ -33,11 +33,12 @@ export class PlaybackController {
   }
 
   get instrument() {
-    if (!this.soundFont) {
+    const part = this.selection.part?.part;
+    if (!this.soundFont || !part?.instrument) {
       return null;
     }
 
-    const midiPreset = this.selection.part?.part.instrument?.midiPreset ?? 24; // default to 24, nylon guitar
+    const midiPreset = part.instrument.midiPreset;
     if (midiPreset != this.currentInstrumentPreset) {
       this.instrument_ = this.soundFont?.instrument(this.audioContext, midiPreset);
       this.currentInstrumentPreset = midiPreset;
@@ -113,17 +114,21 @@ export class PlaybackController {
     const chord = this.selection.chord?.chord;
     if (chord && !chord.rest) {
       for (const note of chord.notes) {
-        this.instrument?.playNote(note);
+        this.instrument?.playNote(note, this.tempoOfSelection);
       }
     }
 
-    return chord ? noteValueToSeconds(chord.value) : 0;
+    return chord ? noteValueToSeconds(chord.value, this.tempoOfSelection) : 0;
   }
 
   playSelectedNote(): void {
     const note = this.selection.note?.note;
     if (note) {
-      this.instrument?.playNote(note);
+      this.instrument?.playNote(note, this.tempoOfSelection);
     }
+  }
+
+  private get tempoOfSelection() {
+    return this.selection.measure?.measure.staffDetails.tempo?.value ?? 128;
   }
 }
