@@ -121,6 +121,7 @@ function startNewPage(pages: Page[], pageContentBox: Box, pageGroup: FlexGroupEl
     measures: measureElements(pageGroup.elements),
   };
 
+  pageGroup.parent = page;
   pages.push(page);
 
   return new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical", gap: LINE_MARGIN });
