@@ -1,9 +1,17 @@
 import { observer } from "mobx-react-lite";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useApplicationState } from "../utils/ApplicationStateContext";
 
 export const Toolbox = observer(function Toolbox(_props: Record<string, never>) {
   const { selection, playback, debug, score } = useApplicationState();
+  const instrument = selection.part?.part.instrument;
+  const [midiInstrument, setMidiInstrument] = useState(instrument?.midiPreset ?? 24);
+
+  useEffect(() => {
+    if (instrument) {
+      instrument.midiPreset = midiInstrument;
+    }
+  }, [instrument, midiInstrument]);
 
   if (!score) {
     return null;
@@ -13,11 +21,8 @@ export const Toolbox = observer(function Toolbox(_props: Record<string, never>) 
     selection.update({ partIndex: event.target.selectedIndex });
   };
 
-  const instrument = selection.part?.part.instrument;
   const onInstrumentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    if (instrument) {
-      instrument.midiPreset = parseInt(event.target.value);
-    }
+    setMidiInstrument(parseInt(event.target.value));
   };
 
   const onDebugToggled = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,8 +51,7 @@ export const Toolbox = observer(function Toolbox(_props: Record<string, never>) 
           <select
             className="bg-transparent px-2 focus:outline-none"
             onChange={onInstrumentChange}
-            value={instrument?.midiPreset}
-            defaultValue={24}
+            value={midiInstrument}
           >
             {playback.instruments.map((instrument) => (
               <option key={instrument.midiPreset} value={instrument.midiPreset} style={{ color: "initial" }}>
