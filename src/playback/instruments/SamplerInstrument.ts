@@ -1,4 +1,4 @@
-import { memoize } from "lodash";
+import { compact, memoize } from "lodash";
 import * as notation from "../../notation";
 import { SampleZone, SoundFontGeneratorType } from "../SoundFont";
 import { noteValueToSeconds } from "../util/durations";
@@ -83,13 +83,6 @@ export class SamplerInstrument implements Instrument {
 
         //---------------------------------------------------------------------------------------------
 
-        const bend = this.maybeBend(note);
-        if (bend) {
-          // TODO connect to something
-        }
-
-        //---------------------------------------------------------------------------------------------
-
         const volume = this.context.createGain();
 
         const attack = sample.generators[SoundFontGeneratorType.EnvelopeVolumeAttack];
@@ -106,7 +99,10 @@ export class SamplerInstrument implements Instrument {
         source.connect(volume);
         volume.connect(this.context.destination);
 
-        const effects: AudioNode[] = compact([this.maybeVibrato(note, when), this.maybeBend(note, when)]);
+        this.maybeBend(note, source.playbackRate, when);
+
+        const vibrato = this.maybeVibrato(note, when);
+        const effects: AudioNode[] = compact([vibrato]);
         if (effects.length > 0) {
           effects.reduce((node, previousNode) => {
             node.connect(previousNode);
@@ -123,7 +119,6 @@ export class SamplerInstrument implements Instrument {
         const pitch = note.get("pitch", true);
         if (pitch) {
           const midi = pitch.toMidi();
-          console.info({ midi, k: Object.keys(this.activeSources) });
           const sources = this.activeSources.get(midi);
           if (sources) {
             // TODO we may want to target one specific source, not all, so perhaps tie these things to notes
@@ -218,7 +213,7 @@ export class SamplerInstrument implements Instrument {
     return audio;
   }
 
-  private maybeVibrato(note: notation.Note, _when: number) {
+  private maybeVibrato(note: notation.Note, when: number) {
     if (!note.vibrato) {
       return null;
     }
@@ -231,24 +226,40 @@ export class SamplerInstrument implements Instrument {
     amplitude.gain.value = Math.pow(2, -6); // TODO understand this value better
 
     oscillator.connect(amplitude);
-    oscillator.start(0);
+    oscillator.start(when);
 
     return amplitude;
   }
 
-  private maybeBend(note: notation.Note, when: number) {
+  private maybeBend(note: notation.Note, bend: AudioParam, when: number) {
     if (!note.bend) {
       return null;
     }
 
-    // const duration = this.tiedNoteDurationSeconds(note);
-    // const value = source.playbackRate.value;
-    // let previousTime = 0;
-    // for (const { time, amplitude } of note.bend.points) {
-    //   const ratio = intervalToFrequencyRatio(amplitude * 2);
-    //   const bendPointDuration = duration * (time - previousTime);
-    //   source.playbackRate.linearRampTo(value * ratio, bendPointDuration);
-    //   previousTime = time;
-    // }
+    const source = this.context.createConstantSource();
+    source.offset.value = 0.1;
+
+    // TODO why doesn't a constant source node with offset events feeding into the playbackRate param work?
+
+    // TODO incoroprate tempo + tied notes into duration
+    const duration = noteValueToSeconds(note.value);
+    const gain = this.context.createGain();
+
+    bend.setValueAtTime(1, when);
+
+    let previousEventEnd = when;
+    let previousPoint = 0;
+    for (const { time, amplitude } of note.bend.points) {
+      const value = Math.pow(2, (amplitude * 2) / 12);
+      const bendPointDuration = duration * (time - previousPoint);
+      bend.linearRampToValueAtTime(value, previousEventEnd + bendPointDuration);
+      previousPoint = time;
+      previousEventEnd += bendPointDuration;
+    }
+
+    // source.connect(bend);
+    source.start();
+
+    return gain;
   }
 }
