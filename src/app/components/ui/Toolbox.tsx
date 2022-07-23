@@ -5,10 +5,10 @@ import { useApplicationState } from "../utils/ApplicationStateContext";
 export const Toolbox = observer(function Toolbox(_props: Record<string, never>) {
   const { selection, playback, debug, score } = useApplicationState();
   const instrument = selection.part?.part.instrument;
-  const [midiInstrument, setMidiInstrument] = useState(instrument?.midiPreset ?? 24);
+  const [midiInstrument, setMidiInstrument] = useState<number | undefined>();
 
   useEffect(() => {
-    if (instrument) {
+    if (instrument && midiInstrument) {
       instrument.midiPreset = midiInstrument;
     }
   }, [instrument, midiInstrument]);
@@ -19,6 +19,7 @@ export const Toolbox = observer(function Toolbox(_props: Record<string, never>) 
 
   const onPartChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     selection.update({ partIndex: event.target.selectedIndex });
+    setMidiInstrument(selection.part?.part.instrument?.midiPreset);
   };
 
   const onInstrumentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -35,12 +36,7 @@ export const Toolbox = observer(function Toolbox(_props: Record<string, never>) 
         <div className="px-2">
           <input type="checkbox" name="debug" onChange={onDebugToggled} /> <label htmlFor="debug">Debug</label>
         </div>
-        <select
-          className="bg-transparent px-2 focus:outline-none"
-          onChange={onPartChange}
-          value={selection.partIndex}
-          defaultValue={0}
-        >
+        <select className="bg-transparent px-2 focus:outline-none" onChange={onPartChange} value={selection.partIndex}>
           {score.score.parts.map((part, index) => (
             <option key={index} value={index} style={{ color: "initial" }}>
               {part.name}
@@ -53,8 +49,8 @@ export const Toolbox = observer(function Toolbox(_props: Record<string, never>) 
             onChange={onInstrumentChange}
             value={midiInstrument}
           >
-            {playback.instruments.map((instrument) => (
-              <option key={instrument.midiPreset} value={instrument.midiPreset} style={{ color: "initial" }}>
+            {playback.instruments.map((instrument, index) => (
+              <option key={index} value={instrument.midiPreset} style={{ color: "initial" }}>
                 {instrument.name}
               </option>
             ))}
