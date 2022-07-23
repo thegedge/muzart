@@ -1,5 +1,6 @@
 import { compact, memoize } from "lodash";
 import * as notation from "../../notation";
+import { NoteDynamic } from "../../notation";
 import { SampleZone, SoundFontGeneratorType } from "../SoundFont";
 import { noteValueToSeconds } from "../util/durations";
 import { Instrument } from "./Instrument";
@@ -91,6 +92,35 @@ export class SamplerInstrument implements Instrument {
         const release = sample.generators[SoundFontGeneratorType.EnvelopeVolumeRelease];
         // const sustain = sample.generators[SoundFontGeneratorType.EnvelopeVolumeSustain];
 
+        let value = this.instrument.volume;
+        switch (note.dynamic) {
+          case NoteDynamic.Pianississimo:
+            value *= 0.1;
+            break;
+          case NoteDynamic.Pianissimo:
+            value *= 0.25;
+            break;
+          case NoteDynamic.Piano:
+            value *= 0.5;
+            break;
+          case NoteDynamic.MezzoPiano:
+            value *= 0.9;
+            break;
+          case NoteDynamic.MezzoForte:
+            value *= 1.1;
+            break;
+          case NoteDynamic.Forte:
+            value *= 1.5;
+            break;
+          case NoteDynamic.Fortissimo:
+            value *= 1.75;
+            break;
+          case NoteDynamic.Fortississimo:
+            value *= 2;
+            break;
+        }
+
+        volume.gain.value = value;
         this.createEnvelope(volume.gain, { attack, hold, decay, release }, when);
 
         //---------------------------------------------------------------------------------------------
@@ -137,7 +167,7 @@ export class SamplerInstrument implements Instrument {
 
   private createEnvelope(param: AudioParam, envelope: Partial<Envelope>, when: number) {
     const { attack, hold, decay, release } = envelope;
-    const value = this.instrument.volume;
+    const value = param.value;
 
     let currentEnvelopeTime = when;
     if (attack) {
