@@ -142,7 +142,7 @@ export class PlaybackController {
     const midiPreset = part.instrument.midiPreset;
     let instrument = this.instruments_[midiPreset];
     if (!instrument) {
-      instrument = this.soundFont?.instrument(this.audioContext, midiPreset);
+      instrument = this.soundFont?.instrument(this.audioContext, part.instrument);
       this.instruments_[midiPreset] = instrument;
     }
 

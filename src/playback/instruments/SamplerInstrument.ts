@@ -5,6 +5,7 @@ import { noteValueToSeconds } from "../util/durations";
 import { Instrument } from "./Instrument";
 
 interface SamplerOptions {
+  instrument: notation.Instrument;
   context: AudioContext;
   buffers: [number, SampleZone][];
 }
@@ -27,6 +28,9 @@ interface ActiveSourceNodes {
 export class SamplerInstrument implements Instrument {
   readonly name: string = "Sampler";
 
+  /** The instrument this sampler is derived from */
+  private instrument: notation.Instrument;
+
   /** The audio context in which this sampler instrument will be used */
   private context: AudioContext;
 
@@ -42,6 +46,7 @@ export class SamplerInstrument implements Instrument {
     }
 
     this.context = options.context;
+    this.instrument = options.instrument;
     this.buffers = new Map(options.buffers);
   }
 
@@ -129,14 +134,15 @@ export class SamplerInstrument implements Instrument {
 
   private createEnvelope(param: AudioParam, envelope: Partial<Envelope>) {
     const { attack, hold, decay, release } = envelope;
+    const value = this.instrument.volume;
 
     let currentEnvelopeTime = this.currentTime;
     if (attack) {
       param.setValueAtTime(0, currentEnvelopeTime);
-      param.linearRampToValueAtTime(1, currentEnvelopeTime + attack);
+      param.linearRampToValueAtTime(value, currentEnvelopeTime + attack);
       currentEnvelopeTime += attack;
     } else {
-      param.setValueAtTime(1, currentEnvelopeTime);
+      param.setValueAtTime(value, currentEnvelopeTime);
     }
 
     if (hold) {
@@ -145,7 +151,7 @@ export class SamplerInstrument implements Instrument {
 
     if (decay) {
       // TODO use sustain value, if we can somehow set decibel output
-      param.linearRampToValueAtTime(0.5, currentEnvelopeTime + decay);
+      param.linearRampToValueAtTime(0.5 * value, currentEnvelopeTime + decay);
       currentEnvelopeTime += decay;
     }
 

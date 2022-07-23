@@ -1,5 +1,6 @@
 import { compact, defaults } from "lodash";
 import { BufferCursor, NumberType } from "../loaders/util/BufferCursor";
+import * as notation from "../notation";
 import { Instrument } from "./instruments/Instrument";
 import { SamplerInstrument } from "./instruments/SamplerInstrument";
 
@@ -112,9 +113,10 @@ export class SoundFont {
     this.readRiffChunk(cursor);
   }
 
-  instrument(audioContext: AudioContext, midiPreset: number): Instrument {
+  instrument(audioContext: AudioContext, instrument: notation.Instrument): Instrument {
     // TODO What are global zones? What should we do for them?
 
+    const midiPreset = instrument.midiPreset;
     const preset = this.presets.find((preset) => preset.bank == 0 && preset.midiPreset == midiPreset);
     if (!preset) {
       throw new Error(`soundfont doesn't contain midi preset ${midiPreset}`);
@@ -126,17 +128,17 @@ export class SoundFont {
     }
 
     const instrumentIndex = zoneWithInstrument.generators[SoundFontGeneratorType.Instrument];
-    const instrument = instrumentIndex === undefined ? undefined : this.instruments_[instrumentIndex];
-    if (!instrument) {
+    const sfInstrument = instrumentIndex === undefined ? undefined : this.instruments_[instrumentIndex];
+    if (!sfInstrument) {
       throw new Error(`preset ${midiPreset} has invalid instrument generator`);
     }
 
-    const zonesWithSamples = instrument.zones.filter((zone) => SoundFontGeneratorType.SampleId in zone.generators);
+    const zonesWithSamples = sfInstrument.zones.filter((zone) => SoundFontGeneratorType.SampleId in zone.generators);
     if (!zonesWithSamples) {
       throw new Error(`instrument for preset ${midiPreset} has no sampling generator`);
     }
 
-    let globalZone: SoundFontZone | undefined = instrument.zones[0];
+    let globalZone: SoundFontZone | undefined = sfInstrument.zones[0];
     const hasGlobalZone = !globalZone?.generators[SoundFontGeneratorType.SampleId];
     if (!hasGlobalZone) {
       globalZone = undefined;
@@ -169,7 +171,7 @@ export class SoundFont {
       })
     );
 
-    return new SamplerInstrument({ buffers, context: audioContext });
+    return new SamplerInstrument({ buffers, instrument, context: audioContext });
   }
 
   get instruments() {

@@ -161,12 +161,15 @@ export default function load(source: ArrayBuffer): Score {
     /* const capoFret = */ cursor.nextNumber(NumberType.Uint32);
     /* const color = */ cursor.nextNumber(NumberType.Uint32);
 
+    const midiData = midiPorts[midiPort - 1][midiChannel - 1];
     score.parts.push({
       name,
       lineCount: numStrings,
       measures: [],
       instrument: {
-        midiPreset: midiPorts[midiPort - 1][midiChannel - 1] ?? 24,
+        type: midiChannel == 10 ? "percussion" : "regular",
+        midiPreset: midiData.instrument ?? 24,
+        volume: midiData.volume,
         tuning: stringTuning,
       },
     });
@@ -665,7 +668,7 @@ function readMidiChannels(cursor: BufferCursor) {
     const channels = [];
     for (let channel = 1; channel <= 16; ++channel) {
       const instrument = cursor.nextNumber(NumberType.Uint32);
-      /* const volume = */ cursor.nextNumber(NumberType.Uint8);
+      const volume = cursor.nextNumber(NumberType.Uint8);
       /* const balance = */ cursor.nextNumber(NumberType.Uint8);
       /* const chorus = */ cursor.nextNumber(NumberType.Uint8);
       /* const reverb = */ cursor.nextNumber(NumberType.Uint8);
@@ -674,7 +677,10 @@ function readMidiChannels(cursor: BufferCursor) {
       /* const blank1 = */ cursor.nextNumber(NumberType.Uint8);
       /* const blank2 = */ cursor.nextNumber(NumberType.Uint8);
 
-      channels.push(instrument);
+      channels.push({
+        instrument,
+        volume: volume / 255.0,
+      });
     }
 
     ports.push(channels);

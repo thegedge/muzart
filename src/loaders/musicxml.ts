@@ -56,7 +56,9 @@ function parts(document: Document, node: Node): Part[] {
     const maybeTuning = attributes && tuning(document, attributes);
     if (maybeTuning) {
       result.instrument = {
+        type: "regular",
         midiPreset: 24, // TODO where to get midi preset?
+        volume: 1,
         tuning: maybeTuning,
       };
     }
