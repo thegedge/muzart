@@ -220,15 +220,19 @@ export class Note {
    *
    * If the attribute isn't defined, and this note is a middle/end tie, try the note it is
    * linked to to see if it has the attribute.
+   *
+   * If fromStart, force fetching the property from the starting note for the tie.
    */
-  private get(property: keyof NoteOptions): NoteOptions[keyof NoteOptions] | undefined {
-    const v = this.options[property];
-    if (v) {
-      return v;
+  get<T extends keyof NoteOptions>(property: T, fromStart = false): NoteOptions[T] | undefined {
+    if (!fromStart || !this.options.tie || this.options.tie?.type == "start") {
+      const v = this.options[property];
+      if (v) {
+        return v;
+      }
     }
 
     if (this.options.tie?.previous) {
-      return this.options.tie.previous[property];
+      return this.options.tie.previous.get(property, fromStart);
     }
   }
 }

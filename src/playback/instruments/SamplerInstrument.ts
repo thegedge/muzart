@@ -73,6 +73,7 @@ export class SamplerInstrument implements Instrument {
   playNote(note: notation.Note, tempo: number, startTimeFromNow?: number): number | undefined {
     const duration = note.dead ? 0.05 : noteValueToSeconds(note.value, tempo);
     const tieType = note.tie ? note.tie.type : "start";
+    const when = this.currentTime + (startTimeFromNow ?? 0);
 
     try {
       if (tieType == "start") {
@@ -97,7 +98,7 @@ export class SamplerInstrument implements Instrument {
         const release = sample.generators[SoundFontGeneratorType.EnvelopeVolumeRelease];
         // const sustain = sample.generators[SoundFontGeneratorType.EnvelopeVolumeSustain];
 
-        this.createEnvelope(volume.gain, { attack, hold, decay, release });
+        this.createEnvelope(volume.gain, { attack, hold, decay, release }, when);
 
         //---------------------------------------------------------------------------------------------
         // Connect all the things
@@ -105,23 +106,30 @@ export class SamplerInstrument implements Instrument {
         source.connect(volume);
         volume.connect(this.context.destination);
 
-        const vibrato = this.maybeVibrato(note);
-        if (vibrato) {
-          vibrato.connect(source.playbackRate);
+        const effects: AudioNode[] = compact([this.maybeVibrato(note, when), this.maybeBend(note, when)]);
+        if (effects.length > 0) {
+          effects.reduce((node, previousNode) => {
+            node.connect(previousNode);
+            return node;
+          });
+          effects[0].connect(source.playbackRate);
         }
 
         //---------------------------------------------------------------------------------------------
 
-        const when = this.currentTime + (startTimeFromNow ? startTimeFromNow : 0);
         source.start(when, 0, note.tie ? undefined : duration);
         this.addActiveSource(source, volume, note.pitch.toMidi());
       } else if (tieType == "stop") {
-        const midi = note.pitch.toMidi();
-        const sources = this.activeSources.get(midi);
-        if (sources) {
-          const when = this.currentTime + (startTimeFromNow ? startTimeFromNow : 0);
-          for (const source of sources) {
-            source.audio.stop(when + duration);
+        const pitch = note.get("pitch", true);
+        if (pitch) {
+          const midi = pitch.toMidi();
+          console.info({ midi, k: Object.keys(this.activeSources) });
+          const sources = this.activeSources.get(midi);
+          if (sources) {
+            // TODO we may want to target one specific source, not all, so perhaps tie these things to notes
+            for (const source of sources) {
+              source.audio.stop(when + duration);
+            }
           }
         }
       }
@@ -132,11 +140,11 @@ export class SamplerInstrument implements Instrument {
     return duration;
   }
 
-  private createEnvelope(param: AudioParam, envelope: Partial<Envelope>) {
+  private createEnvelope(param: AudioParam, envelope: Partial<Envelope>, when: number) {
     const { attack, hold, decay, release } = envelope;
     const value = this.instrument.volume;
 
-    let currentEnvelopeTime = this.currentTime;
+    let currentEnvelopeTime = when;
     if (attack) {
       param.setValueAtTime(0, currentEnvelopeTime);
       param.linearRampToValueAtTime(value, currentEnvelopeTime + attack);
@@ -182,6 +190,7 @@ export class SamplerInstrument implements Instrument {
     const source = this.context.createBufferSource();
     source.buffer = sample.buffer;
     source.detune.value = -100 * offset;
+    // source.playbackRate.value = Math.pow(2, -offset / 12);
     source.loop = true;
     source.loopStart = (sample.startLoop - sample.start) / sample.sampleRate;
     source.loopEnd = (sample.endLoop - sample.start) / sample.sampleRate;
@@ -209,7 +218,7 @@ export class SamplerInstrument implements Instrument {
     return audio;
   }
 
-  private maybeVibrato(note: notation.Note) {
+  private maybeVibrato(note: notation.Note, _when: number) {
     if (!note.vibrato) {
       return null;
     }
@@ -218,17 +227,16 @@ export class SamplerInstrument implements Instrument {
     oscillator.type = "sine";
     oscillator.frequency.value = 4; // TODO make customizable
 
-    // Why does this value work?
     const amplitude = this.context.createGain();
-    amplitude.gain.value = Math.pow(2, -6);
+    amplitude.gain.value = Math.pow(2, -6); // TODO understand this value better
 
     oscillator.connect(amplitude);
-    oscillator.start();
+    oscillator.start(0);
 
     return amplitude;
   }
 
-  private maybeBend(note: notation.Note) {
+  private maybeBend(note: notation.Note, when: number) {
     if (!note.bend) {
       return null;
     }
