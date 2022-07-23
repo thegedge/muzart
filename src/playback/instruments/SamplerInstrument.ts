@@ -75,9 +75,12 @@ export class SamplerInstrument implements Instrument {
         const [sample, offset] = this.findClosest(midi);
         const source = this.createToneBufferSource(sample, offset);
 
-        // TODO Make these work again
-        this.maybeBend(note, source);
-        this.maybeVibrato(note);
+        //---------------------------------------------------------------------------------------------
+
+        const bend = this.maybeBend(note);
+        if (bend) {
+          // TODO connect to something
+        }
 
         //---------------------------------------------------------------------------------------------
 
@@ -91,11 +94,18 @@ export class SamplerInstrument implements Instrument {
 
         this.createEnvelope(volume.gain, { attack, hold, decay, release });
 
+        //---------------------------------------------------------------------------------------------
+        // Connect all the things
+
         source.connect(volume);
+        volume.connect(this.context.destination);
+
+        const vibrato = this.maybeVibrato(note);
+        if (vibrato) {
+          vibrato.connect(source.playbackRate);
+        }
 
         //---------------------------------------------------------------------------------------------
-
-        volume.connect(this.context.destination);
 
         const computedTime = startTime ? startTime : this.currentTime;
         source.start(computedTime, 0, note.tie ? undefined : duration);
@@ -161,18 +171,13 @@ export class SamplerInstrument implements Instrument {
     throw new Error(`No available buffers for note: ${midi}`);
   });
 
-  private createToneBufferSource(sample: SampleZone, offset: number): AudioBufferSourceNode {
-    // Frequency doubles per octave.
-    // see https://en.wikipedia.org/wiki/Scientific_pitch_notation#Table_of_note_frequencies
-    const playbackRate = Math.pow(2, -offset / 12);
-
+  private createToneBufferSource(sample: SampleZone, offset: number) {
     const source = this.context.createBufferSource();
     source.buffer = sample.buffer;
-    source.playbackRate.value = playbackRate;
+    source.detune.value = -100 * offset;
     source.loop = true;
     source.loopStart = (sample.startLoop - sample.start) / sample.sampleRate;
     source.loopEnd = (sample.endLoop - sample.start) / sample.sampleRate;
-
     return source;
   }
 
@@ -199,19 +204,26 @@ export class SamplerInstrument implements Instrument {
 
   private maybeVibrato(note: notation.Note) {
     if (!note.vibrato) {
-      return;
+      return null;
     }
 
-    // return new Vibrato({
-    //   context: this.context,
-    //   frequency: 4, // TODO customizable?
-    //   depth: 0.5,
-    // });
+    const oscillator = this.context.createOscillator();
+    oscillator.type = "sine";
+    oscillator.frequency.value = 4; // TODO make customizable
+
+    // Why does this value work?
+    const amplitude = this.context.createGain();
+    amplitude.gain.value = Math.pow(2, -6);
+
+    oscillator.connect(amplitude);
+    oscillator.start();
+
+    return amplitude;
   }
 
-  private maybeBend(note: notation.Note, _source: AudioBufferSourceNode) {
+  private maybeBend(note: notation.Note) {
     if (!note.bend) {
-      return;
+      return null;
     }
 
     // const duration = this.tiedNoteDurationSeconds(note);
