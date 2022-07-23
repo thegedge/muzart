@@ -1,5 +1,6 @@
 import { action, computed, flow, makeObservable, observable } from "mobx";
 import { Selection } from "../app/components/state/Selection";
+import { NoteValue, NoteValueName } from "../notation";
 import { Instrument } from "./instruments/Instrument";
 import { SoundFont } from "./SoundFont";
 import { noteValueToSeconds } from "./util/durations";
@@ -14,8 +15,7 @@ export class PlaybackController {
   private audioContext: AudioContext;
   private playbackHandle: NodeJS.Timeout | undefined;
 
-  private instrument_: Instrument | undefined;
-  private currentInstrumentPreset = -1;
+  private instruments_: Record<string, Instrument | undefined> = {};
 
   constructor(private selection: Selection) {
     this.audioContext = new AudioContext();
@@ -33,18 +33,7 @@ export class PlaybackController {
   }
 
   get instrument() {
-    const part = this.selection.part?.part;
-    if (!this.soundFont || !part?.instrument) {
-      return null;
-    }
-
-    const midiPreset = part.instrument.midiPreset;
-    if (midiPreset != this.currentInstrumentPreset) {
-      this.instrument_ = this.soundFont?.instrument(this.audioContext, midiPreset);
-      this.currentInstrumentPreset = midiPreset;
-    }
-
-    return this.instrument_;
+    return this.instrumentForPart(this.selection.partIndex);
   }
 
   get instruments(): { name: string; midiPreset: number }[] {
@@ -55,7 +44,7 @@ export class PlaybackController {
     try {
       console.time("loading soundfont");
       this.soundFont = (yield SoundFont.fromSource(source)) as SoundFont;
-      this.currentInstrumentPreset = -1;
+      this.instruments_ = {};
       console.timeEnd("loading soundfont");
     } catch (error) {
       console.error(error);
@@ -68,62 +57,67 @@ export class PlaybackController {
     } else {
       this.stop();
 
-      // TODO play across all parts, not just the selected one
-      const part = this.selection.part?.part;
-      if (!part) {
+      const score = this.selection.score;
+      if (!score) {
         return;
       }
 
       let currentMeasure = this.selection.measureIndex;
-      let currentChord = this.selection.chordIndex;
 
-      // TODO if we had an autorun that played on selection change, we'd only need the setTimeout
-      const playNext = () => {
-        this.selection.update({
-          measureIndex: currentMeasure,
-          chordIndex: currentChord,
-        });
+      const playNextMeasure = () => {
+        let tempo: number | undefined;
 
-        const seconds = this.playSelectedChord();
-
-        currentChord += 1;
-
-        const measure = part.measures[currentMeasure];
-        if (currentChord >= measure.chords.length) {
-          currentMeasure += 1;
-          currentChord = 0;
-          if (currentMeasure >= part.measures.length) {
+        score.parts.forEach((part, partIndex) => {
+          const measure = part.part.measures[currentMeasure];
+          if (!measure) {
             this.stop();
             return;
           }
-        }
 
-        this.playbackHandle = setTimeout(playNext, 1000 * seconds);
+          tempo = measure.staffDetails.tempo?.value;
+          const instrument = this.instrumentForPart(partIndex);
+          if (instrument) {
+            let currentTime = 0;
+            for (const chord of measure.chords) {
+              if (!chord.rest) {
+                for (const note of chord.notes) {
+                  instrument.playNote(note, this.tempoOfSelection, currentTime);
+                }
+              }
+
+              currentTime += noteValueToSeconds(chord.value, this.tempoOfSelection);
+            }
+          }
+        });
+
+        currentMeasure += 1;
+
+        // TODO setTimeout may not work great with the audio context timer, and could be blocked by other things happening
+        //      on the main thread. May want it to happen more frequently, with overlaps.
+
+        // TODO I don't think a whole note always spans an entire measure?
+        this.playbackHandle = setTimeout(
+          playNextMeasure,
+          1000 * noteValueToSeconds(new NoteValue(NoteValueName.Whole), tempo)
+        );
       };
 
       this.playing = true;
-      playNext();
+      playNextMeasure();
     }
   }
 
   stop() {
     if (this.playbackHandle) {
       clearTimeout(this.playbackHandle);
-      this.instrument?.stop();
-      this.playing = false;
       this.playbackHandle = undefined;
-    }
-  }
 
-  playSelectedChord() {
-    const chord = this.selection.chord?.chord;
-    if (chord && !chord.rest) {
-      for (const note of chord.notes) {
-        this.instrument?.playNote(note, this.tempoOfSelection);
+      for (const instrument of Object.values(this.instruments_)) {
+        instrument?.stop();
       }
-    }
 
-    return chord ? noteValueToSeconds(chord.value, this.tempoOfSelection) : 0;
+      this.playing = false;
+    }
   }
 
   playSelectedNote(): void {
@@ -135,5 +129,23 @@ export class PlaybackController {
 
   private get tempoOfSelection() {
     return this.selection.measure?.measure.staffDetails.tempo?.value ?? 128;
+  }
+
+  private instrumentForPart(partIndex: number): Instrument | null {
+    const part = this.selection.score?.parts[partIndex]?.part;
+    if (!this.soundFont || !part?.instrument) {
+      return null;
+    }
+
+    // TODO this may be problematic if two parts have the same midi preset, but share the same instrument (verify)
+
+    const midiPreset = part.instrument.midiPreset;
+    let instrument = this.instruments_[midiPreset];
+    if (!instrument) {
+      instrument = this.soundFont?.instrument(this.audioContext, midiPreset);
+      this.instruments_[midiPreset] = instrument;
+    }
+
+    return instrument;
   }
 }

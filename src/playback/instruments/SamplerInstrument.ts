@@ -65,7 +65,7 @@ export class SamplerInstrument implements Instrument {
 
   // TODO figure out if I could just use the regular ToneJS sampler hooked into some output nodes
 
-  playNote(note: notation.Note, tempo: number, startTime?: number): number | undefined {
+  playNote(note: notation.Note, tempo: number, startTimeFromNow?: number): number | undefined {
     const duration = note.dead ? 0.05 : noteValueToSeconds(note.value, tempo);
     const tieType = note.tie ? note.tie.type : "start";
 
@@ -107,15 +107,16 @@ export class SamplerInstrument implements Instrument {
 
         //---------------------------------------------------------------------------------------------
 
-        const computedTime = startTime ? startTime : this.currentTime;
-        source.start(computedTime, 0, note.tie ? undefined : duration);
+        const when = this.currentTime + (startTimeFromNow ? startTimeFromNow : 0);
+        source.start(when, 0, note.tie ? undefined : duration);
         this.addActiveSource(source, volume, note.pitch.toMidi());
       } else if (tieType == "stop") {
         const midi = note.pitch.toMidi();
         const sources = this.activeSources.get(midi);
         if (sources) {
+          const when = this.currentTime + (startTimeFromNow ? startTimeFromNow : 0);
           for (const source of sources) {
-            source.audio.stop((startTime ?? this.currentTime) + duration);
+            source.audio.stop(when + duration);
           }
         }
       }
