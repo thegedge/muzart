@@ -67,8 +67,13 @@ export class PlaybackController {
       const playNextMeasure = () => {
         let tempo: number | undefined;
 
-        score.parts.forEach((part, partIndex) => {
-          const measure = part.part.measures[currentMeasure];
+        score.score.parts.forEach((part, partIndex) => {
+          if (part.instrument?.type == "percussion") {
+            // TODO implement
+            return;
+          }
+
+          const measure = part.measures[currentMeasure];
           if (!measure) {
             this.stop();
             return;
