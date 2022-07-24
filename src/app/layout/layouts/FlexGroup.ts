@@ -74,7 +74,7 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends Layo
     if (lastElement) {
       if (
         lastElement.box[this.endAttribute] + this.gap + element.box[this.dimensionAttribute] >
-        this.box[this.endAttribute]
+        this.box[this.dimensionAttribute]
       ) {
         return false;
       }

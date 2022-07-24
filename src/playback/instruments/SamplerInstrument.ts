@@ -287,7 +287,6 @@ export class SamplerInstrument implements Instrument {
       previousEventEnd += bendPointDuration;
     }
 
-    // source.connect(bend);
     source.start();
 
     return gain;
