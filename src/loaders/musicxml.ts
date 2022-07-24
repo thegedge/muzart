@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck not working on this right now
 import { compact, range } from "lodash";
 import {
   Chord,

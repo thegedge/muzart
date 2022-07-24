@@ -14,7 +14,7 @@ import {
   SlideType,
   TimeSignature,
 } from "../notation";
-import { NoteValue } from "../notation/note_value";
+import { NoteValue, NoteValueName } from "../notation/note_value";
 import { BufferCursor, NumberType } from "./util/BufferCursor";
 
 // TODO different versions
@@ -78,6 +78,8 @@ export default function load(source: ArrayBuffer): Score {
   // Measure props
   //------------------------------------------------------------------------------------------------
 
+  let currentTimeSignature = new TimeSignature(new NoteValue(NoteValueName.Whole), 4);
+
   const measureData = range(numMeasures).map((index) => {
     debug && console.debug({ measureDataIndex: index });
 
@@ -101,9 +103,11 @@ export default function load(source: ArrayBuffer): Score {
       denominator = cursor.nextNumber(NumberType.Uint8);
     }
 
-    let timeSignature;
-    if (numerator && denominator) {
-      timeSignature = new TimeSignature(NoteValue.fromNumber(denominator), numerator);
+    if (numerator || denominator) {
+      currentTimeSignature = new TimeSignature(
+        denominator ? NoteValue.fromNumber(denominator) : currentTimeSignature.value,
+        numerator ?? currentTimeSignature.count
+      );
     }
 
     if (hasEndOfRepeat) {
@@ -129,7 +133,13 @@ export default function load(source: ArrayBuffer): Score {
       /* const minor = */ cursor.nextNumber(NumberType.Uint8);
     }
 
-    return { marker, timeSignature };
+    return {
+      marker,
+      timeSignature: {
+        value: currentTimeSignature,
+        changed: !!(numerator || denominator),
+      },
+    };
   });
 
   //------------------------------------------------------------------------------------------------
@@ -184,7 +194,11 @@ export default function load(source: ArrayBuffer): Score {
   // Track/measure beats
   //------------------------------------------------------------------------------------------------
 
+  let currentMeasureTempo = tempo;
+
   for (let measureIndex = 0; measureIndex < numMeasures; ++measureIndex) {
+    let tempoChanged = true;
+
     for (let trackIndex = 0; trackIndex < numTracks; ++trackIndex) {
       debug && console.debug({ trackIndex, measureIndex });
 
@@ -192,10 +206,10 @@ export default function load(source: ArrayBuffer): Score {
         chords: [],
         number: measureIndex + 1,
         marker: measureData[measureIndex].marker,
-        staffDetails: {},
+        staffDetails: {
+          time: measureData[measureIndex].timeSignature,
+        },
       };
-
-      let measureTempo;
 
       const numBeats = cursor.nextNumber(NumberType.Uint32);
       for (let beat = 0; beat < numBeats; ++beat) {
@@ -297,7 +311,10 @@ export default function load(source: ArrayBuffer): Score {
           }
           if (tempo !== -1) {
             /* const tempoChangeDuration = */ cursor.nextNumber(NumberType.Uint8);
-            measureTempo = tempo;
+            if (tempo !== currentMeasureTempo) {
+              currentMeasureTempo = tempo;
+              tempoChanged = true;
+            }
 
             // TODO need to track the beats, if the value isn't 0
           }
@@ -319,16 +336,15 @@ export default function load(source: ArrayBuffer): Score {
           }
         }
 
-        measure.staffDetails.tempo = { value: measureTempo || tempo, changed: true };
-
-        const newTimeSignature = measureData[measureIndex].timeSignature;
-        if (newTimeSignature) {
-          measure.staffDetails.time = { value: newTimeSignature, changed: true };
-        }
+        measure.staffDetails.tempo = {
+          value: currentMeasureTempo,
+          changed: tempoChanged,
+        };
 
         measure.chords.push({ notes, chordDiagram, text, value: duration, rest });
       }
 
+      tempoChanged = false;
       score.parts[trackIndex].measures.push(measure);
     }
   }
