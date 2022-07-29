@@ -18,11 +18,12 @@ import { Box } from "./utils/Box";
 export function layout(score: notation.Score): Score {
   console.time("layout");
   try {
+    const parts = score.parts.map((part) => layOutPart(score, part));
     return {
       type: "Score",
       score,
-      parts: score.parts.map((part) => layOutPart(score, part)),
-      box: new Box(0, 0, 0, 0), // TODO compute a box
+      parts,
+      box: Box.encompass(...parts.map((p) => p.box)),
     };
   } finally {
     console.timeEnd("layout");
@@ -101,7 +102,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     type: "Part",
     part,
     pages,
-    box: new Box(0, 0, 0, 0), // TODO compute a box
+    box: Box.encompass(...pages.map((p) => p.box)),
   };
 
   for (const page of pages) {

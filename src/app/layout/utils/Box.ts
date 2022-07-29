@@ -6,6 +6,13 @@ export class Box {
     return new Box(0, 0, 0, 0);
   }
 
+  /**
+   * Compute a box that encompasses all of the given boxes.
+   */
+  static encompass(...boxes: Box[]) {
+    return boxes.reduce((encompassBox, box) => encompassBox.encompass(box));
+  }
+
   constructor(public x: number, public y: number, public width: number, public height: number) {}
 
   /**
