@@ -19,18 +19,25 @@ plugins.push(
   })
 );
 
-let soundfont = process.env.DEFAULT_SOUNDFONT || null;
-if (soundfont) {
-  if (!/^https?:\/\//.test(soundfont)) {
-    soundfont = `soundfonts/${encodeURIComponent(soundfont)}`;
+let defaultSoundfont = process.env.DEFAULT_SOUNDFONT || null;
+if (defaultSoundfont) {
+  if (!/^https?:\/\//.test(defaultSoundfont)) {
+    defaultSoundfont = `soundfonts/${encodeURIComponent(defaultSoundfont)}`;
+  }
+}
+
+let defaultFile = process.env.DEFAULT_FILE || "Song13.gp4";
+if (defaultFile) {
+  if (!/^https?:\/\//.test(defaultFile)) {
+    defaultFile = `songs/${encodeURIComponent(defaultFile)}`;
   }
 }
 
 plugins.push(
   new DefinePlugin({
     "process.env.NODE_ENV": JSON.stringify(isDevelopment ? "development" : "production"),
-    "process.env.DEFAULT_FILE": JSON.stringify((isDevelopment ? process.env.DEFAULT_FILE : null) || "Song13.gp4"),
-    "process.env.DEFAULT_SOUNDFONT": JSON.stringify(soundfont),
+    "process.env.DEFAULT_FILE": JSON.stringify(defaultFile),
+    "process.env.DEFAULT_SOUNDFONT": JSON.stringify(defaultSoundfont),
     "process.env.DEBUG": JSON.stringify(process.env.DEBUG_APP ?? isDevelopment),
   })
 );
