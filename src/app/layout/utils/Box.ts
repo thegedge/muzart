@@ -25,7 +25,10 @@ export class Box {
   /**
    * Create a new box, translated by the given amounts.
    */
-  translate(dx: number, dy: number) {
+  translate(amount: number): Box;
+  translate(dx: number, dy: number): Box;
+  translate(dx: number, dy?: number): Box {
+    dy ??= dx;
     return new Box(this.x + dx, this.y + dy, this.width, this.height);
   }
 
@@ -39,8 +42,11 @@ export class Box {
   /**
    * Create a new box that expands in all directions by the given amount.
    */
-  expand(amount: number) {
-    return new Box(this.x - amount, this.y - amount, this.width + 2 * amount, this.height + 2 * amount);
+  expand(amount: number): Box;
+  expand(amountH: number, amountV: number): Box;
+  expand(amountH: number, amountV?: number) {
+    amountV ??= amountH;
+    return new Box(this.x - amountH, this.y - amountV, this.width + 2 * amountH, this.height + 2 * amountV);
   }
 
   /**

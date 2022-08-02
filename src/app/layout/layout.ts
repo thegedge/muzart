@@ -23,7 +23,7 @@ export function layout(score: notation.Score): Score {
       type: "Score",
       score,
       parts,
-      box: Box.encompass(...parts.map((p) => p.box)),
+      box: Box.encompass(...parts.map((p) => p.box)).update({ x: 0, y: 0 }),
     };
   } finally {
     console.timeEnd("layout");
@@ -102,7 +102,9 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     type: "Part",
     part,
     pages,
-    box: Box.encompass(...pages.map((p) => p.box)),
+    box: Box.encompass(...pages.map((p) => p.box))
+      .expand(PAGE_MARGIN)
+      .translate(2 * PAGE_MARGIN),
   };
 
   for (const page of pages) {

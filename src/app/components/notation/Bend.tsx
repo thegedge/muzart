@@ -9,8 +9,6 @@ export function Bend(props: { node: Bend }) {
   const points = bendPoints(props.node);
   const bendTextX = points[1][0];
 
-  // TODO not sure why I need to explicitly specify optimizeSpeed below, but if I don't do that, everything gets
-  //      rendered poorly :(
   return (
     <BoxGroup node={props.node}>
       <path d={bendPath(points)} fill="none" stroke={BEND_COLOR} strokeWidth={LINE_STROKE_WIDTH} />
@@ -136,7 +134,6 @@ function bendPath(points: [number, number][]) {
 }
 
 function bendText(bend: Bend) {
-  // TODO these should likely be ranges, or we could try simplifying a fraction
   switch (bend.bend.amplitude) {
     case 0.25:
       return "¼";

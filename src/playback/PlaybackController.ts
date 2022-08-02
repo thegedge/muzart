@@ -1,5 +1,6 @@
 import { action, computed, flow, makeObservable, observable } from "mobx";
 import { Selection } from "../app/components/state/Selection";
+import { Measure } from "../app/layout";
 import { NoteValue, NoteValueName } from "../notation";
 import { Instrument } from "./instruments/Instrument";
 import { SoundFont } from "./SoundFont";
@@ -8,6 +9,9 @@ import { noteValueToSeconds } from "./util/durations";
 export class PlaybackController {
   /** If true, playing back the entire score */
   public playing = false;
+
+  /** Measure currently being played */
+  public currentMeasure: Measure | undefined;
 
   /** @private */
   public soundFont: SoundFont | undefined;
@@ -22,10 +26,12 @@ export class PlaybackController {
 
     makeObservable(this, {
       playing: observable,
+      currentMeasure: observable.ref,
       soundFont: observable.ref,
 
       instruments: computed,
 
+      setCurrentMeasure: action,
       togglePlay: action,
       stop: action,
       loadSoundFont: flow,
@@ -62,21 +68,26 @@ export class PlaybackController {
         return;
       }
 
-      let currentMeasure = this.selection.measureIndex;
+      let currentMeasureIndex = this.selection.measureIndex;
 
       const playNextMeasure = () => {
         let tempo: number | undefined;
 
-        score.score.parts.forEach((part, partIndex) => {
-          if (part.instrument?.type == "percussion") {
+        score.parts.forEach((part, partIndex) => {
+          if (part.part.instrument?.type == "percussion") {
             // TODO implement
             return;
           }
 
-          const measure = part.measures[currentMeasure];
+          const measure = part.part.measures[currentMeasureIndex];
           if (!measure) {
             this.stop();
             return;
+          }
+
+          if (part == this.selection.part) {
+            const pageWithMeasure = part.pages.find((page) => !!page.measures.find((m) => m.measure == measure));
+            this.setCurrentMeasure(pageWithMeasure?.measures.find((m) => m.measure == measure));
           }
 
           tempo = measure.staffDetails.tempo?.value;
@@ -95,7 +106,7 @@ export class PlaybackController {
           }
         });
 
-        currentMeasure += 1;
+        currentMeasureIndex += 1;
 
         // TODO setTimeout may not work great with the audio context timer, and could be blocked by other things happening
         //      on the main thread. May want it to happen more frequently, with overlaps.
@@ -130,6 +141,10 @@ export class PlaybackController {
     if (note) {
       this.instrument?.playNote(note, this.tempoOfSelection);
     }
+  }
+
+  setCurrentMeasure(measure: Measure | undefined) {
+    this.currentMeasure = measure;
   }
 
   private get tempoOfSelection() {

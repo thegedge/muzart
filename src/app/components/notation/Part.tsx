@@ -1,28 +1,29 @@
-import React from "react";
-import { LINE_STROKE_WIDTH, PAGE_MARGIN, Part as LayoutPart } from "../../layout";
+import React, { useMemo } from "react";
+import { LINE_STROKE_WIDTH, Part as LayoutPart } from "../../layout";
+import { BoxGroup } from "../layout/BoxGroup";
 import Page from "../layout/Page";
+import { PlaybackBox } from "../ui/PlaybackBox";
 import { SelectionBox } from "../ui/SelectionBox";
 
 const BASE_SCALE = 8;
 
 export function Part(props: { part: LayoutPart }) {
-  let width = 0;
-  let height = 0;
-  const pages = props.part.pages.map((page, index) => {
-    width = Math.max(width, page.box.right);
-    height = Math.max(height, page.box.bottom);
-    return <Page key={index} page={page} />;
-  });
-
-  width += 2 * PAGE_MARGIN;
-  height += 2 * PAGE_MARGIN;
-
-  const viewBox = `${-PAGE_MARGIN} ${-PAGE_MARGIN} ${width} ${height}`;
+  const partBox = props.part.box;
+  const viewBox = `0 0 ${partBox.width} ${partBox.height}`;
   const style = {
-    width: `${width * BASE_SCALE}rem`,
-    height: `${height * BASE_SCALE}rem`,
+    width: `${partBox.width * BASE_SCALE}rem`,
+    height: `${partBox.height * BASE_SCALE}rem`,
   };
 
+  const pages = useMemo(
+    () =>
+      props.part.pages.map((page, index) => {
+        return <Page key={index} page={page} />;
+      }),
+    [props.part]
+  );
+
+  // TODO make <Score> be the <svg> component
   return (
     <svg className="m-auto" style={style} viewBox={viewBox}>
       <defs>
@@ -35,8 +36,11 @@ export function Part(props: { part: LayoutPart }) {
           />
         </filter>
       </defs>
-      {pages}
-      <SelectionBox />
+      <BoxGroup node={props.part}>
+        {pages}
+        <SelectionBox />
+        <PlaybackBox />
+      </BoxGroup>
     </svg>
   );
 }

@@ -2,7 +2,6 @@ import React from "react";
 import { NoteValueName } from "../../../notation/note_value";
 
 // TODO should these all fit in a unit square, and have the layout decide the final box?
-// TODO should this be functional, and provide a scale argument that manipulates the path?
 
 export const Icons = {
   [NoteValueName.Whole]: <rect width="1" height="0.5" />,

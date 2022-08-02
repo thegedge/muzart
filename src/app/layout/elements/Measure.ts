@@ -62,7 +62,7 @@ export class Measure extends FlexGroup<LineElement, LineElement> {
     this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: null });
     this.box.width += spacerWidth;
 
-    // TODO if just one rest, lay out differently (centered?)
+    // TODO if just a single whole rest, put in center
 
     for (const chord of measure.chords) {
       if (chord.rest) {

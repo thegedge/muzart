@@ -88,7 +88,7 @@ export default function load(source: ArrayBuffer): Score {
       hasKeySignature,
       hasMarker,
       hasAlternateEnding,
-      hasEndOfRepeat,
+      endOfRepeat,
       _startOfRepeat,
       hasTimeSignatureDenominator,
       hasTimeSignatureNumerator,
@@ -110,7 +110,7 @@ export default function load(source: ArrayBuffer): Score {
       );
     }
 
-    if (hasEndOfRepeat) {
+    if (endOfRepeat) {
       /* const numRepeats = */ cursor.nextNumber(NumberType.Uint8);
     }
 

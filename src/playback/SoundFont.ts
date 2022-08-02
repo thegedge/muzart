@@ -155,19 +155,23 @@ export class SoundFont {
         const length = sampleInfo.end - sampleInfo.start;
         const sampleRate = sampleInfo.sampleRate;
 
-        const buffer = audioContext.createBuffer(1, length, sampleRate);
-        buffer.copyToChannel(this.sampleData.subarray(sampleInfo.start, sampleInfo.end), 0);
+        try {
+          const buffer = audioContext.createBuffer(1, length, sampleRate);
+          buffer.copyToChannel(this.sampleData.subarray(sampleInfo.start, sampleInfo.end), 0);
 
-        const pitch = zone.generators[SoundFontGeneratorType.RootKeyOverride] ?? sampleInfo.originalPitch;
-        return [
-          pitch,
-          {
-            ...sampleInfo,
-            buffer,
-            generators: defaults({}, zone.generators, globalZone?.generators),
-            modulators: defaults({}, zone.modulators, globalZone?.modulators),
-          },
-        ];
+          const pitch = zone.generators[SoundFontGeneratorType.RootKeyOverride] ?? sampleInfo.originalPitch;
+          return [
+            pitch,
+            {
+              ...sampleInfo,
+              buffer,
+              generators: defaults({}, zone.generators, globalZone?.generators),
+              modulators: defaults({}, zone.modulators, globalZone?.modulators),
+            },
+          ];
+        } catch (error) {
+          console.error(`couldn't create instrument buffer: ${error}`);
+        }
       })
     );
 
