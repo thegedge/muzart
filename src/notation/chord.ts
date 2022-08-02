@@ -16,10 +16,21 @@ export interface ChordDiagram {
   };
 }
 
+export enum StrokeDirection {
+  Up = "Up",
+  Down = "Down",
+}
+
+export interface Stroke {
+  direction: StrokeDirection;
+  duration?: NoteValue;
+}
+
 export interface Chord {
   rest: boolean;
   value: NoteValue;
   notes: Note[];
   text?: string;
+  stroke?: Stroke;
   chordDiagram?: ChordDiagram;
 }

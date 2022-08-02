@@ -11,6 +11,8 @@ import { Chord, Line, LineElement, Measure, Page, Rest, Space, Text } from "../t
 import { minMap, runs } from "../utils";
 import { Box } from "../utils/Box";
 
+// TODO break this file up into smaller bits (it's a bit slow to typecheck/format)
+
 export class PageLine extends AbstractGroup<LineElement, Page> {
   readonly type = "PageLine";
 
@@ -197,6 +199,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
   private addAboveStaffElements() {
     this.aboveStaffLayout.reset();
     this.layOutBends();
+    this.layOutStrokes();
 
     // TODO figure out some place for this (size of palm mute text)
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
@@ -498,12 +501,14 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
         return 3;
       case NoteValueName.SixtyFourth:
         return 4;
+      case NoteValueName.OneTwentyEighth:
+        return 5;
     }
   }
 
   private elementOffset(element: Chord | Rest) {
-    if (element.type === "Chord" && element.notes.length > 0) {
-      return element.box.x + element.notes[0].box.centerX;
+    if (element.type === "Chord" && element.elements.length > 0) {
+      return element.box.x + element.elements[0].box.centerX;
     }
     // TODO need to figure out how to best center in a rest
     return element.box.x + 0.4 * STAFF_LINE_HEIGHT;
@@ -549,12 +554,37 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
             },
             {
               startColumn: index + 1,
-              // TODO if a note tie, should go to the end
+              // TODO if a note tie, should go to the end of the tie
               endColumn: index + 2,
               mustBeBottomRow: true,
             }
           );
         }
+      }
+    });
+  }
+
+  private layOutStrokes() {
+    this.gridLayoutElements().forEach(({ element }, index) => {
+      if (element.type !== "Chord" || !element.chord) {
+        return;
+      }
+
+      if (element.chord.stroke) {
+        // TODO this doesn't look right (too wide) when chord contains notes fretted at 10+. I don't think there's
+        //  any straightforward way to deal with this right now, so just gonna deal with it.
+        this.aboveStaffLayout.addElement(
+          {
+            type: "Stroke",
+            box: new Box(0, 0, 0, STAFF_LINE_HEIGHT),
+            stroke: element.chord.stroke,
+          },
+          {
+            startColumn: index + 1,
+            endColumn: index + 1,
+            valign: "end",
+          }
+        );
       }
     });
   }

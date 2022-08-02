@@ -31,5 +31,6 @@ module.exports = {
     "lodash/import-scope": ["error", "member"],
     "lodash/prefer-lodash-method": "off",
     "lodash/prefer-lodash-typecheck": "off",
+    "lodash/prop-shorthand": "off",
   },
 };

@@ -23,3 +23,6 @@ export const STEM_HEIGHT = STAFF_LINE_HEIGHT * 3;
 export const BEAM_HEIGHT = STAFF_LINE_HEIGHT / 4;
 export const DOT_SIZE = 2 * BEAM_HEIGHT;
 export const TUPLET_SIZE = 2.5 * BEAM_HEIGHT;
+
+// TODO less arbitrary, measure text
+export const chordWidth = (numChars: number) => STAFF_LINE_HEIGHT * (0.5 + 0.3 * numChars);

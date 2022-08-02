@@ -12,6 +12,7 @@ import {
   Pitch,
   Score,
   SlideType,
+  StrokeDirection,
   TimeSignature,
 } from "../notation";
 import { NoteValue, NoteValueName } from "../notation/note_value";
@@ -248,6 +249,8 @@ export default function load(source: ArrayBuffer): Score {
           text = cursor.nextLengthPrefixedString(NumberType.Uint32);
         }
 
+        let strokeDirection: StrokeDirection | undefined;
+        let strokeDuration: NoteValue | undefined;
         if (hasEffects) {
           const [
             _blank1,
@@ -272,13 +275,34 @@ export default function load(source: ArrayBuffer): Score {
             /* const effect = */ readBend(cursor);
           }
 
+          let downstrokeDuration: number | undefined;
+          let upstrokeDuration: number | undefined;
           if (hasStroke) {
-            /* const downStrokeDuration = */ cursor.nextNumber(NumberType.Uint8);
-            /* const upStrokeDuration = */ cursor.nextNumber(NumberType.Uint8);
+            downstrokeDuration = cursor.nextNumber(NumberType.Uint8);
+            upstrokeDuration = cursor.nextNumber(NumberType.Uint8);
           }
 
           if (hasPickstroke) {
-            /* const strokeDirection = */ cursor.nextNumber(NumberType.Uint8);
+            const direction = cursor.nextNumber(NumberType.Uint8);
+            switch (direction) {
+              case 0:
+                // none, ignore
+                break;
+              case 1:
+                strokeDirection = StrokeDirection.Up;
+                break;
+              case 2:
+                strokeDirection = StrokeDirection.Down;
+                break;
+            }
+          }
+
+          if (downstrokeDuration && downstrokeDuration !== 0) {
+            strokeDirection ??= StrokeDirection.Down;
+            strokeDuration = NoteValue.fromNumber(Math.pow(2, 8 - downstrokeDuration));
+          } else if (upstrokeDuration && upstrokeDuration !== 0) {
+            strokeDirection ??= StrokeDirection.Up;
+            strokeDuration = NoteValue.fromNumber(Math.pow(2, 8 - upstrokeDuration));
           }
         }
 
@@ -341,7 +365,14 @@ export default function load(source: ArrayBuffer): Score {
           changed: tempoChanged,
         };
 
-        measure.chords.push({ notes, chordDiagram, text, value: duration, rest });
+        measure.chords.push({
+          notes,
+          chordDiagram,
+          text,
+          value: duration,
+          stroke: strokeDirection ? { direction: strokeDirection, duration: strokeDuration } : undefined,
+          rest,
+        });
       }
 
       tempoChanged = false;

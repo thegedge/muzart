@@ -63,6 +63,8 @@ export type LineElement =
   | Group<LineElement>
   | Line
   | Measure
+  | Note
+  | Stroke
   | Rest
   | Slide
   | Space
@@ -122,6 +124,11 @@ export interface BarLine extends LayoutElement<LineElement> {
   strokeSize: number;
 }
 
+export interface Stroke extends LayoutElement<LineElement> {
+  type: "Stroke";
+  stroke: notation.Stroke;
+}
+
 export interface Text extends LayoutElement<LineElement> {
   type: "Text";
   value: string;
@@ -149,7 +156,7 @@ export interface Measure extends LayoutElement<LineElement> {
 export interface Chord extends LayoutElement<LineElement> {
   type: "Chord";
   chord: notation.Chord;
-  notes: Note[];
+  elements: (Note | Stroke)[];
 }
 
 export interface Rest extends LayoutElement<LineElement> {

@@ -5,14 +5,15 @@ import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
 import { Bend } from "./Bend";
-import { Chord } from "./Chord";
 import { ChordDiagram } from "./ChordDiagram";
 import { DashedLineText } from "./DashedLineText";
 import { Dot } from "./Dot";
 import { Measure } from "./Measure";
+import { Note } from "./Note";
 import { Rest } from "./Rest";
 import { Slide } from "./Slide";
 import { Stem } from "./Stem";
+import { Stroke } from "./Stroke";
 import { TextElement } from "./TextElement";
 import { Vibrato } from "./Vibrato";
 import { WrappedElement } from "./WrappedElement";
@@ -27,14 +28,13 @@ export default function ScoreElement(props: { element: PageElement | LineElement
       return <Bend node={props.element} />;
     case "Beam":
       return <Beam node={props.element} />;
-    case "Chord":
-      return <Chord chord={props.element} />;
     case "ChordDiagram":
       return <ChordDiagram element={props.element} />;
     case "DashedLineText":
       return <DashedLineText element={props.element} />;
     case "Dot":
       return <Dot node={props.element} />;
+    case "Chord":
     case "Group":
     case "PageLine":
       return (
@@ -60,6 +60,10 @@ export default function ScoreElement(props: { element: PageElement | LineElement
       );
     case "Measure":
       return <Measure measure={props.element} />;
+    case "Note":
+      return <Note note={props.element} />;
+    case "Stroke":
+      return <Stroke node={props.element} />;
     case "Rest":
       return <Rest node={props.element} />;
     case "Slide":

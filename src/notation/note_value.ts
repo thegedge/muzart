@@ -8,6 +8,7 @@ export enum NoteValueName {
   Sixteenth = "16th",
   ThirtySecond = "32nd",
   SixtyFourth = "64th",
+  OneTwentyEighth = "128th",
 }
 
 export interface NoteValueOptions {
@@ -49,6 +50,8 @@ export class NoteValue {
         return new NoteValue(NoteValueName.ThirtySecond);
       case 64:
         return new NoteValue(NoteValueName.SixtyFourth);
+      case 128:
+        return new NoteValue(NoteValueName.OneTwentyEighth);
       default:
         throw new Error(`unexpected input: ${num}`);
     }
@@ -70,6 +73,8 @@ export class NoteValue {
         return new NoteValue(NoteValueName.ThirtySecond);
       case "64th":
         return new NoteValue(NoteValueName.SixtyFourth);
+      case "128th":
+        return new NoteValue(NoteValueName.OneTwentyEighth);
       default:
         throw new Error(`unexpected input: ${str}`);
     }
@@ -131,6 +136,9 @@ export class NoteValue {
         break;
       case NoteValueName.SixtyFourth:
         denominator = 64;
+        break;
+      case NoteValueName.OneTwentyEighth:
+        denominator = 128;
         break;
     }
 

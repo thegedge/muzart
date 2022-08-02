@@ -1,5 +1,6 @@
 import { every, find, partition, sum, zip } from "lodash";
-import { LayoutElement } from "../types";
+import { Alignment, LayoutElement } from "../types";
+import { maxMap } from "../utils";
 import { AbstractGroup } from "./AbstractGroup";
 import { MaybeLayout } from "./types";
 
@@ -15,6 +16,12 @@ export interface Constraint {
 
   /** An optional row key, such that only elements with the given key can be found on the same row */
   group?: string;
+
+  /** If set, align the element horizontally in the cell instead of stretching */
+  halign?: Alignment;
+
+  /** If set, align the element vertically in the cell instead of stretching */
+  valign?: Alignment;
 }
 
 /**
@@ -88,15 +95,24 @@ export class GridGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGro
     let y = 0;
     const rows = this.determineRows();
     for (const row of rows) {
-      let maxHeight = 0;
-      for (const element of row.elements) {
-        maxHeight = Math.max(maxHeight, element.box.height);
-      }
-
-      for (const element of row.elements) {
+      const maxHeight = maxMap(row.elements, (elements) => elements[0].box.height) ?? 0;
+      for (const [element, constraint] of row.elements) {
         // TODO it may be preferable to not size the element to the row, but to align it within the row (i.e., like valign)
-        element.box.y = y;
-        element.box.height = maxHeight;
+        switch (constraint.valign) {
+          case undefined:
+            element.box.y = y;
+            element.box.height = maxHeight;
+            break;
+          case "start":
+            element.box.y = y;
+            break;
+          case "middle":
+            element.box.y = y + 0.5 * (maxHeight - element.box.height);
+            break;
+          case "end":
+            element.box.y = y + maxHeight - element.box.height;
+            break;
+        }
       }
 
       y += maxHeight + this.spacing;
@@ -110,6 +126,7 @@ export class GridGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGro
   private determineRows() {
     // TODO validate indices in constraints against `this.edges.length`
     // TODO a lot of this could be determined when adding a new element, instead of on demand
+    // TODO see if we can reduce repetition of layout below
 
     const zipped = zip(this.elements, this.constraints) as [T, Constraint][];
     const [mustBeBottomRow, everythingElse] = partition(zipped, ([_, constraint]) => {
@@ -118,7 +135,7 @@ export class GridGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGro
 
     const newRow = (group?: string) => ({
       columnAvailability: new Array(this.widths.length).fill(true),
-      elements: [] as T[],
+      elements: [] as [T, Constraint][],
       group,
     });
     const rows = [newRow()];
@@ -129,23 +146,53 @@ export class GridGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGro
 
       for (const [element, constraint] of mustBeBottomRow) {
         const right = this.leftEdges[constraint.endColumn + 1] ?? this.box.width;
-        element.box.x = this.leftEdges[constraint.startColumn];
-        element.box.width = right - element.box.x;
+        const left = this.leftEdges[constraint.startColumn];
+
+        switch (constraint.halign) {
+          case undefined:
+            element.box.x = left;
+            element.box.width = right - left;
+            break;
+          case "start":
+            element.box.x = left;
+            break;
+          case "middle":
+            element.box.x = 0.5 * (right + left);
+            break;
+          case "end":
+            element.box.x = right - element.box.width;
+            break;
+        }
 
         if (element.layout) {
           element.layout();
         }
 
         rows[0].columnAvailability.fill(false, constraint.startColumn, constraint.endColumn + 1);
-        rows[0].elements.push(element);
+        rows[0].elements.push([element, constraint]);
       }
     }
 
     // Lay out everything that isn't the bottom row
     for (const [element, constraint] of everythingElse) {
       const right = this.leftEdges[constraint.endColumn + 1] ?? this.box.width;
-      element.box.x = this.leftEdges[constraint.startColumn];
-      element.box.width = right - element.box.x;
+      const left = this.leftEdges[constraint.startColumn];
+
+      switch (constraint.halign) {
+        case undefined:
+          element.box.x = left;
+          element.box.width = right - left;
+          break;
+        case "start":
+          element.box.x = left;
+          break;
+        case "middle":
+          element.box.x = 0.5 * (right + left);
+          break;
+        case "end":
+          element.box.x = right - element.box.width;
+          break;
+      }
 
       if (element.layout) {
         element.layout();
@@ -165,7 +212,7 @@ export class GridGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGro
       }
 
       row.columnAvailability.fill(false, constraint.startColumn, constraint.endColumn + 1);
-      row.elements.push(element);
+      row.elements.push([element, constraint]);
     }
 
     return rows.reverse();

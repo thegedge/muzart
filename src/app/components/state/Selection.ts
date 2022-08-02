@@ -47,7 +47,11 @@ export class Selection {
     if (this.chord?.type != "Chord") {
       return undefined;
     }
-    return this.chord?.notes.find((note) => note.note.placement?.string == this.noteIndex + 1);
+
+    // Need the `as` here because TS doesn't understand that the type check internally prevents returning anything else
+    return this.chord?.elements.find(
+      (note) => note.type == "Note" && note.note.placement?.string == this.noteIndex + 1
+    ) as Note | undefined;
   }
 
   update(selection: Partial<Selection>) {
@@ -78,7 +82,7 @@ export class Selection {
         if (chord.type == "Rest") {
           this.element = chord;
         } else {
-          this.element = chord.notes[this.noteIndex];
+          this.element = chord.elements[this.noteIndex];
         }
       }
     }

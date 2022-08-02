@@ -7,12 +7,15 @@ import { SelectableBoxGroup } from "../layout/SelectableBoxGroup";
 const REST_COLOR = "#333333";
 
 export function Rest(props: { node: layout.Rest }) {
+  const icon = Icons[props.node.chord.value.name];
+  if (!icon) {
+    return null;
+  }
+
   return (
     <SelectableBoxGroup node={props.node} scale={STAFF_LINE_HEIGHT}>
       {/* TODO maybe a nicer way to position rests? */}
-      <g transform={`translate(0, 2.5)`}>
-        {React.cloneElement(Icons[props.node.chord.value.name], { fill: REST_COLOR })}
-      </g>
+      <g transform={`translate(0, 2.5)`}>{React.cloneElement(icon, { fill: REST_COLOR })}</g>
     </SelectableBoxGroup>
   );
 }
