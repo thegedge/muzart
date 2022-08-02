@@ -1,7 +1,15 @@
 import { clone, find, groupBy, isNumber, isUndefined, map, max, range, some } from "lodash";
 import * as notation from "../../../notation";
 import { AccentStyle, NoteValueName } from "../../../notation";
-import { BEAM_HEIGHT, DOT_SIZE, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT, STEM_HEIGHT, TUPLET_SIZE } from "../constants";
+import {
+  BEAM_HEIGHT,
+  chordWidth,
+  DOT_SIZE,
+  LINE_STROKE_WIDTH,
+  STAFF_LINE_HEIGHT,
+  STEM_HEIGHT,
+  TUPLET_SIZE,
+} from "../constants";
 import { AbstractGroup } from "../layouts/AbstractGroup";
 import { AnchoredGroup } from "../layouts/AnchoredGroup";
 import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
@@ -198,8 +206,8 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
 
   private addAboveStaffElements() {
     this.aboveStaffLayout.reset();
+    this.layOutSimpleAboveStaffElements();
     this.layOutBends();
-    this.layOutStrokes();
 
     // TODO figure out some place for this (size of palm mute text)
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
@@ -564,7 +572,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
     });
   }
 
-  private layOutStrokes() {
+  private layOutSimpleAboveStaffElements() {
     this.gridLayoutElements().forEach(({ element }, index) => {
       if (element.type !== "Chord" || !element.chord) {
         return;
@@ -576,13 +584,32 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
         this.aboveStaffLayout.addElement(
           {
             type: "Stroke",
-            box: new Box(0, 0, 0, STAFF_LINE_HEIGHT),
+            box: new Box(0, 0, chordWidth(1), STAFF_LINE_HEIGHT),
             stroke: element.chord.stroke,
           },
           {
             startColumn: index + 1,
             endColumn: index + 1,
+            halign: "middle",
             valign: "end",
+          }
+        );
+      }
+
+      if (element.chord.tapped) {
+        // TODO this doesn't look right (too wide) when chord contains notes fretted at 10+. I don't think there's
+        //  any straightforward way to deal with this right now, so just gonna deal with it.
+        this.aboveStaffLayout.addElement(
+          {
+            type: "Text",
+            box: new Box(0, 0, 0, STAFF_LINE_HEIGHT),
+            size: STAFF_LINE_HEIGHT,
+            value: "T",
+            halign: "middle",
+          },
+          {
+            startColumn: index + 1,
+            endColumn: index + 1,
           }
         );
       }

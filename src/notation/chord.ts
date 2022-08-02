@@ -21,6 +21,12 @@ export enum StrokeDirection {
   Down = "Down",
 }
 
+export enum TapStyle {
+  Tap = "Tap",
+  Slap = "Slap",
+  Pop = "Pop",
+}
+
 export interface Stroke {
   direction: StrokeDirection;
   duration?: NoteValue;
@@ -31,6 +37,7 @@ export interface Chord {
   value: NoteValue;
   notes: Note[];
   text?: string;
+  tapped?: TapStyle;
   stroke?: Stroke;
   chordDiagram?: ChordDiagram;
 }

@@ -13,6 +13,7 @@ import {
   Score,
   SlideType,
   StrokeDirection,
+  TapStyle,
   TimeSignature,
 } from "../notation";
 import { NoteValue, NoteValueName } from "../notation/note_value";
@@ -249,6 +250,7 @@ export default function load(source: ArrayBuffer): Score {
           text = cursor.nextLengthPrefixedString(NumberType.Uint32);
         }
 
+        let tapStyle: TapStyle | undefined;
         let strokeDirection: StrokeDirection | undefined;
         let strokeDuration: NoteValue | undefined;
         if (hasEffects) {
@@ -268,7 +270,23 @@ export default function load(source: ArrayBuffer): Score {
           );
 
           if (hasTapping) {
-            /* const effect = */ cursor.nextNumber(NumberType.Uint8);
+            const style = cursor.nextNumber(NumberType.Uint8);
+            switch (style) {
+              case 0:
+                // none, ignore;
+                break;
+              case 1:
+                tapStyle = TapStyle.Tap;
+                break;
+              case 2:
+                tapStyle = TapStyle.Slap;
+                break;
+              case 3:
+                tapStyle = TapStyle.Pop;
+                break;
+              default:
+                throw new Error(`unknown tap style value: ${style}`);
+            }
           }
 
           if (hasTremolo) {
@@ -371,6 +389,7 @@ export default function load(source: ArrayBuffer): Score {
           text,
           value: duration,
           stroke: strokeDirection ? { direction: strokeDirection, duration: strokeDuration } : undefined,
+          tapped: tapStyle,
           rest,
         });
       }

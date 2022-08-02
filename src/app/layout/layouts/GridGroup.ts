@@ -157,7 +157,7 @@ export class GridGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGro
             element.box.x = left;
             break;
           case "middle":
-            element.box.x = 0.5 * (right + left);
+            element.box.x = 0.5 * (right + left - element.box.width);
             break;
           case "end":
             element.box.x = right - element.box.width;
@@ -187,7 +187,7 @@ export class GridGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGro
           element.box.x = left;
           break;
         case "middle":
-          element.box.x = 0.5 * (right + left);
+          element.box.x = 0.5 * (right + left - element.box.width);
           break;
         case "end":
           element.box.x = right - element.box.width;
