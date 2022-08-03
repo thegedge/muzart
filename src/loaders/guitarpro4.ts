@@ -390,7 +390,7 @@ export default function load(source: ArrayBuffer): Score {
           value: duration,
           stroke: strokeDirection ? { direction: strokeDirection, duration: strokeDuration } : undefined,
           tapped: tapStyle,
-          rest,
+          rest: rest || notes.length == 0,
         });
       }
 
