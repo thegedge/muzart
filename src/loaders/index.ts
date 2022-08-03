@@ -1,7 +1,7 @@
 import { isString, pickBy, range } from "lodash";
 import { changed, Chord, Measure, Note, Score, StaffDetails } from "../notation";
-import loadGuitarPro4 from "./guitarpro4";
-import loadMusicXml from "./musicxml";
+import guitarPro from "./guitarpro";
+import musicXml from "./musicxml";
 
 export async function load(source: File | URL | string, type?: ScoreDataType): Promise<Score> {
   if (isString(source) || "hostname" in source) {
@@ -15,7 +15,7 @@ export async function load(source: File | URL | string, type?: ScoreDataType): P
 }
 
 export enum ScoreDataType {
-  GuitarPro4 = "Guitar Pro 4",
+  GuitarPro = "Guitar Pro",
   MusicXML = "MusicXML",
   Unknown = "Unknown",
 }
@@ -38,7 +38,7 @@ export function determineScoreType(source: File | Response) {
   const { filename, mimeType } = getFilenameAndMimeType(source);
 
   if (filename?.endsWith(".gp4")) {
-    return ScoreDataType.GuitarPro4;
+    return ScoreDataType.GuitarPro;
   } else if (filename?.endsWith(".xml") || filename?.endsWith(".musicxml") || mimeType === "application/xml") {
     return ScoreDataType.MusicXML;
   }
@@ -56,11 +56,12 @@ function loadScore(buffer: ArrayBuffer, type: ScoreDataType): Score {
     let score;
     switch (type) {
       case ScoreDataType.MusicXML:
-        score = loadMusicXml(utf8StringFromBuffer(buffer));
+        score = musicXml(buffer).load();
         break;
-      case ScoreDataType.GuitarPro4:
-        score = loadGuitarPro4(buffer);
+      case ScoreDataType.GuitarPro:
+        score = guitarPro(buffer).load();
     }
+
     return postProcess(score);
   } finally {
     console.timeEnd("loadScore");
@@ -155,9 +156,4 @@ function linkTiedNotes(score: Score): void {
       }
     }
   }
-}
-
-function utf8StringFromBuffer(buffer: ArrayBuffer): string {
-  const decoder = new TextDecoder();
-  return decoder.decode(buffer);
 }

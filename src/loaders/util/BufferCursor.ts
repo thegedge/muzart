@@ -31,6 +31,10 @@ export class BufferCursor {
     this.view = new DataView(buffer);
   }
 
+  reset() {
+    this.byteOffset = 0;
+  }
+
   get position() {
     return this.byteOffset;
   }
