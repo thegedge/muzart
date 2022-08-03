@@ -70,7 +70,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
     this.addBarLine();
 
     const tabTextSize = 0.25 * this.numStaffLines * STAFF_LINE_HEIGHT;
-    const tabWidth = 3 * STAFF_LINE_HEIGHT;
+    const tabWidth = 2 * STAFF_LINE_HEIGHT;
     const tabGroup = new FlexGroupElement<Text | Space>({
       box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, tabWidth, STAFF_LINE_HEIGHT * (this.numStaffLines - 1)),
       axis: "vertical",
@@ -359,8 +359,8 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
         },
         {
           mustBeBottomRow: true,
-          startColumn: measureStartColumn - 1,
-          endColumn: measureStartColumn,
+          startColumn: measureStartColumn - 1, // this is the empty spacer at the end of the measure
+          endColumn: measureStartColumn - 1,
         }
       );
 

@@ -22,6 +22,14 @@ export class DebugContext {
   }
 
   paramsForType(type: string): DebugParams {
+    // TODO make it possible to configure this elsewhere
+    // if (type !== "Chord" && type !== "Rest" && type !== "Space") {
+    //   return {
+    //     stroke: "transparent",
+    //     fill: "none",
+    //   };
+    // }
+
     let params = this.colorMap.get(type);
     if (!params) {
       const index = this.index++;

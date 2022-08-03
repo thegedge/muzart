@@ -65,26 +65,30 @@ export class Measure extends FlexGroup<LineElement, LineElement> {
     // TODO if just a single whole rest, put in center
 
     for (const chord of measure.chords) {
+      let width = widthForValue(chord.value);
       if (chord.rest) {
-        const width = widthForValue(chord.value);
-        this.addElement({
-          type: "Rest",
-          box: new Box(0, 0, width, part.lineCount * STAFF_LINE_HEIGHT),
-          chord,
-        });
-        this.box.width += width;
+        this.addElement(
+          {
+            type: "Rest",
+            box: new Box(0, 0, chordWidth(4), part.lineCount * STAFF_LINE_HEIGHT),
+            chord,
+          },
+          { factor: null }
+        );
       } else {
         const hasBend = chord.notes.some((n) => !!n.bend);
-        const width = widthForValue(chord.value) * (hasBend ? 2 : 1);
+        width *= hasBend ? 2 : 1;
+
         const chordLayout = layOutChord(chord);
         this.addElement(chordLayout, { factor: null });
-        this.addElement({ type: "Space", box: new Box(0, 0, width, 1) }, { factor: width });
-        this.box.width += chordLayout.box.width + width;
       }
+
+      this.box.width += width;
+      this.addElement({ type: "Space", box: new Box(0, 0, width, 1) }, { factor: width });
     }
 
-    this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: null });
-    this.box.width += spacerWidth;
+    // An empty spacer where, used to help us place the measure number
+    this.addElement({ type: "Space", box: new Box(0, 0, 0, 0) }, { factor: null });
   }
 
   tryAddElement(element: LineElement, flexProps?: Partial<FlexProps>) {
@@ -106,8 +110,8 @@ export class Measure extends FlexGroup<LineElement, LineElement> {
 }
 
 function widthForValue(value: NoteValue) {
-  // TODO this 3 is kind of arbitrary, make it configurable?
-  return Math.max(MIN_NOTE_WIDTH, QUARTER_NOTE_WIDTH * (3 * value.toDecimal()));
+  // TODO this 5 is kind of arbitrary, make it configurable?
+  return Math.max(MIN_NOTE_WIDTH, QUARTER_NOTE_WIDTH * (5 * value.toDecimal()));
 }
 
 function layOutChord(chord: notation.Chord): Chord | Rest {
