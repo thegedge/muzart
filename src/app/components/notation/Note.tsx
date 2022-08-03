@@ -6,6 +6,10 @@ import { useApplicationState } from "../utils/ApplicationStateContext";
 import { TextElement } from "./TextElement";
 
 export const Note = React.memo(function Note(props: { note: layout.Note }) {
+  if (props.note.note.tie && props.note.note.tie.type !== "start") {
+    return null;
+  }
+
   const text = props.note.note.toString();
   if (text.length === 0) {
     return null;

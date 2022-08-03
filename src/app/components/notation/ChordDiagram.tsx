@@ -54,8 +54,6 @@ function FretboardDiagram(props: { diagram: Required<notation.ChordDiagram>["dia
     openUnplayed.fill(1, barre.firstString, barre.lastString + 1);
   });
 
-  // TODO show note that are open/shouldn't be played, make space for when diagram base fret isn't 1
-
   return (
     <>
       {/* TODO enable this once chord diagrams can influence the width of chords. Not enough width at the moment. */}
