@@ -406,7 +406,7 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
   const [
     hasFingering,
     isAccentuated,
-    _hasNoteType,
+    hasNoteType,
     hasNoteDynamic,
     hasNoteEffects,
     isGhostNote,
@@ -417,17 +417,18 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
   // 1 = normal note
   // 2 = tie (link with previous)
   // 3 = dead note
-  const variant = cursor.nextNumber(NumberType.Uint8);
+  let noteType = 0;
+  if (hasNoteType) {
+    noteType = cursor.nextNumber(NumberType.Uint8);
+  }
 
-  let duration = 0;
+  // TODO currently ignore this duration. Good or bad?
+  const duration = 0;
   if (hasDuration) {
-    const durationType = cursor.nextNumber(NumberType.Int8);
     // -2 = whole note, -1 = half note, ...
-    if (durationType < -2 || durationType > 4) {
-      throw new Error(`unexpected duration: ${durationType}`);
-    }
+    /* const durationType = */ cursor.nextNumber(NumberType.Int8);
 
-    duration = 1 << (4 - Math.max(4, durationType)); // TODO understand the max duration
+    // duration = 1 << (4 - Math.max(4, durationType)); // TODO understand the max duration
     /* const tuplet = */ cursor.nextNumber(NumberType.Uint8);
   }
 
@@ -465,14 +466,22 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
     }
   }
 
-  const fret = cursor.nextNumber(NumberType.Uint8);
+  let fret = 0;
+  if (hasNoteType) {
+    fret = cursor.nextNumber(NumberType.Uint8);
+  }
+
+  if (hasFingering) {
+    /* const leftHandFingering = */ cursor.nextNumber(NumberType.Uint8);
+    /* const rightHandFingering = */ cursor.nextNumber(NumberType.Uint8);
+  }
 
   // options initialized here because pitch/value have to be defined
   const options: NoteOptions = {
     pitch: stringTuning.adjust(fret),
     value: duration == 0 ? defaultNoteValue : NoteValue.fromNumber(duration),
-    dead: variant === 3,
-    tie: variant === 2 ? { type: "stop" } : undefined,
+    dead: noteType === 3,
+    tie: noteType === 2 ? { type: "stop" } : undefined,
     ghost: isGhostNote,
     accent: isAccentuated ? AccentStyle.Accentuated : undefined,
     dynamic,
@@ -481,11 +490,6 @@ function readNote(cursor: BufferCursor, stringTuning: Pitch, defaultNoteValue: N
       string: 0,
     },
   };
-
-  if (hasFingering) {
-    /* const leftHandFingering = */ cursor.nextNumber(NumberType.Uint8);
-    /* const rightHandFingering = */ cursor.nextNumber(NumberType.Uint8);
-  }
 
   if (hasNoteEffects) {
     const [_blank1, _blank2, _blank3, hasGraceNote, letRing, _hasSlide_v3, _isHammerOnPullOff, hasBend] = bits(
