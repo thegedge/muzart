@@ -15,12 +15,10 @@ export function ChordDiagram(props: { element: ChordDiagram }) {
   let diagram;
   if (props.element.diagram.diagram) {
     diagram = (
-      <>
-        <FretboardDiagram
-          diagram={props.element.diagram.diagram}
-          box={new Box(middle - hw, props.element.box.height - dh, 2 * hw, dh)}
-        />
-      </>
+      <FretboardDiagram
+        diagram={props.element.diagram.diagram}
+        box={new Box(middle - hw, props.element.box.height - dh, 2 * hw, dh)}
+      />
     );
   } else {
     textBox.y = props.element.box.height - STAFF_LINE_HEIGHT;
@@ -44,18 +42,32 @@ function FretboardDiagram(props: { diagram: Required<notation.ChordDiagram>["dia
   // TODO maybe store in a react context?
   const numStrings = 6;
   const numFrets = 5;
+
   const fretY = props.box.y + 1.5 * STAFF_LINE_HEIGHT;
   const fretboardH = props.box.height - 1.5 * STAFF_LINE_HEIGHT;
   const fretW = props.box.width / (numStrings - 1);
   const fretH = fretboardH / numFrets;
+  const textSize = 0.8 * STAFF_LINE_HEIGHT;
 
   const openUnplayed = props.diagram.frets.slice(0, numStrings);
   props.diagram.barres.forEach((barre) => {
     openUnplayed.fill(1, barre.firstString, barre.lastString + 1);
   });
 
+  // TODO show note that are open/shouldn't be played, make space for when diagram base fret isn't 1
+
   return (
     <>
+      {/* TODO enable this once chord diagrams can influence the width of chords. Not enough width at the moment. */}
+      {false && props.diagram.baseFret > 1 && (
+        <TextElement
+          text={props.diagram.baseFret.toString()}
+          box={new Box(props.box.x - STAFF_LINE_HEIGHT, fretY, textSize, textSize)}
+          size={textSize}
+          halign="middle"
+          valign="middle"
+        />
+      )}
       <line
         x1={props.box.x - 0.5 * LINE_STROKE_WIDTH}
         y1={fretY}
@@ -108,7 +120,7 @@ function FretboardDiagram(props: { diagram: Required<notation.ChordDiagram>["dia
             box={new Box(props.box.x + (numStrings - index - 1.5) * fretW, props.box.y, fretW, STAFF_LINE_HEIGHT)}
             halign="middle"
             valign="end"
-            size={0.8 * STAFF_LINE_HEIGHT}
+            size={textSize}
             text={text}
           />
         );
