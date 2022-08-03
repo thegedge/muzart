@@ -47,6 +47,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   const header = partHeader(score, part, contentWidth);
   pageGroup.addElement(header, { factor: 0 });
 
+  let isFirstLine = true;
   let line = new PageLine(new Box(0, 0, contentWidth, 0), part.lineCount);
   for (const measureToLayOut of measures) {
     const measure: Measure = new MeasureLayout(part, measureToLayOut);
@@ -56,7 +57,11 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     // When "committing" the current line, it may be too large to fit on the current page, in which case we'll also
     // start a new page.
 
-    if (line.tryAddElement(measure, { factor: measureToLayOut.chords.length })) {
+    if (isFirstLine) {
+      line.addElement(measure, { factor: measureToLayOut.chords.length });
+      line.addBarLine();
+      isFirstLine = false;
+    } else if (line.tryAddElement(measure, { factor: measureToLayOut.chords.length })) {
       line.addBarLine();
     } else {
       line.layout();
@@ -69,6 +74,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
       line = new PageLine(new Box(0, 0, contentWidth, 0), part.lineCount);
       line.addElement(measure, { factor: measureToLayOut.chords.length });
       line.addBarLine();
+      isFirstLine = true;
     }
   }
 
