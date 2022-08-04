@@ -76,6 +76,7 @@ const ScoreDropZone = () => {
 
   return (
     <div
+      className="min-w-screen min-h-screen"
       onDrop={onDrop}
       onDragOver={(e) => {
         console.info("dragging");

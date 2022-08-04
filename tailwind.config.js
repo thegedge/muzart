@@ -3,6 +3,9 @@ module.exports = {
   content: ["./src/**/*.html", "./src/**/*.ts", "./src/**/*.tsx"],
   theme: {
     extend: {
+      minWidth: {
+        screen: "100vw",
+      },
       keyframes: {
         bounce: {
           "0%, 100%": { transform: "translateY(-25%)" },
