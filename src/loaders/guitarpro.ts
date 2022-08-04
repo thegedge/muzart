@@ -22,7 +22,7 @@ import { NoteValue, NoteValueName } from "../notation/note_value";
 import { Loader } from "./Loader";
 import { BufferCursor, NumberType } from "./util/BufferCursor";
 
-const debug = process.env.NODE_ENV == "development";
+const debug = import.meta.env.DEBUG_APP || import.meta.env.DEV;
 
 const VERSION_REGEX = /FICHIER GUITAR PRO v(?<version>\d{1}\.\d{1,2})/;
 

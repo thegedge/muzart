@@ -1,7 +1,7 @@
 import React from "react";
-import * as layout from "../../layout";
+import layout from "../../layout";
 
-export function BarLine(props: { node: layout.BarLine }) {
+export const BarLine = (props: { node: layout.BarLine }) => {
   return (
     <line
       x1={props.node.box.centerX}
@@ -12,4 +12,4 @@ export function BarLine(props: { node: layout.BarLine }) {
       strokeWidth={props.node.strokeSize}
     />
   );
-}
+};

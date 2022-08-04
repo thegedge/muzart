@@ -1,7 +1,6 @@
 import { range } from "lodash";
 import React from "react";
-import * as layout from "../../layout";
-import { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../layout";
+import layout, { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 
 export function Vibrato(props: { node: layout.Vibrato }) {

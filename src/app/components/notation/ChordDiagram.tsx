@@ -1,12 +1,12 @@
 import { range } from "lodash";
 import React from "react";
 import * as notation from "../../../notation";
-import { ChordDiagram, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../layout";
+import layout, { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../layout";
 import { Box } from "../../layout/utils/Box";
 import { BoxGroup } from "../layout/BoxGroup";
 import { TextElement } from "./TextElement";
 
-export function ChordDiagram(props: { element: ChordDiagram }) {
+export const ChordDiagram = (props: { element: layout.ChordDiagram }) => {
   const middle = props.element.box.width * 0.5;
   const hw = STAFF_LINE_HEIGHT * 2;
   const dh = props.element.box.height - STAFF_LINE_HEIGHT;
@@ -36,7 +36,7 @@ export function ChordDiagram(props: { element: ChordDiagram }) {
       {diagram}
     </BoxGroup>
   );
-}
+};
 
 function FretboardDiagram(props: { diagram: Required<notation.ChordDiagram>["diagram"]; box: Box }) {
   // TODO maybe store in a react context?
@@ -99,7 +99,8 @@ function FretboardDiagram(props: { diagram: Required<notation.ChordDiagram>["dia
       {openUnplayed.map((v, index) => {
         let text;
         switch (v) {
-          case undefined: {
+          case undefined:
+          case -1: {
             text = "✗";
             break;
           }

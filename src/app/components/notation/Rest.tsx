@@ -6,7 +6,7 @@ import { SelectableBoxGroup } from "../layout/SelectableBoxGroup";
 
 const REST_COLOR = "#333333";
 
-export function Rest(props: { node: layout.Rest }) {
+export const Rest = (props: { node: layout.Rest }) => {
   const icon = Icons[props.node.chord.value.name];
   if (!icon) {
     return null;
@@ -18,4 +18,4 @@ export function Rest(props: { node: layout.Rest }) {
       <g transform={`translate(0, 2.5)`}>{React.cloneElement(icon, { fill: REST_COLOR })}</g>
     </SelectableBoxGroup>
   );
-}
+};

@@ -33,12 +33,28 @@ const ScoreDropZone = () => {
   const application = useApplicationState();
 
   useEffect(() => {
-    if (process.env.DEFAULT_FILE) {
-      void application.loadScore(process.env.DEFAULT_FILE);
+    let defaultSoundfont = import.meta.env.DEFAULT_SOUNDFONT || null;
+    if (defaultSoundfont) {
+      if (!/^https?:\/\//.test(defaultSoundfont)) {
+        defaultSoundfont = `soundfonts/${encodeURIComponent(defaultSoundfont)}`;
+      }
     }
 
-    if (process.env.DEFAULT_SOUNDFONT) {
-      void application.playback.loadSoundFont(process.env.DEFAULT_SOUNDFONT);
+    if (defaultSoundfont) {
+      void application.playback.loadSoundFont(defaultSoundfont);
+    }
+  }, [application]);
+
+  useEffect(() => {
+    let defaultFile = import.meta.env.DEFAULT_FILE || "Song13.gp4";
+    if (defaultFile) {
+      if (!/^https?:\/\//.test(defaultFile)) {
+        defaultFile = `songs/${encodeURIComponent(defaultFile)}`;
+      }
+    }
+
+    if (defaultFile) {
+      void application.loadScore(defaultFile);
     }
   }, [application]);
 

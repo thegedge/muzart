@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { LINE_STROKE_WIDTH, Part as LayoutPart } from "../../layout";
+import layout, { LINE_STROKE_WIDTH } from "../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 import Page from "../layout/Page";
 import { PlaybackBox } from "../ui/PlaybackBox";
@@ -7,7 +7,7 @@ import { SelectionBox } from "../ui/SelectionBox";
 
 const BASE_SCALE = 8;
 
-export function Part(props: { part: LayoutPart }) {
+export const Part = (props: { part: layout.Part }) => {
   const partBox = props.part.box;
   const viewBox = `0 0 ${partBox.width} ${partBox.height}`;
   const style = {
@@ -43,4 +43,4 @@ export function Part(props: { part: LayoutPart }) {
       </BoxGroup>
     </svg>
   );
-}
+};

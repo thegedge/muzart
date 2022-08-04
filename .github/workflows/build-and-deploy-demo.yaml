@@ -13,13 +13,13 @@ jobs:
           node-version: 18
           cache: yarn
       - run: yarn install
-      - run: NODE_ENV=production yarn build
+      - run: NODE_ENV=production yarn build:github
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           REPO_URL="https://${{ github.actor }}:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
 
-          cd public
+          cd dist
           git init
           git remote add origin "${REPO_URL}"
           git add -A

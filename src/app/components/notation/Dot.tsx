@@ -1,7 +1,7 @@
 import React from "react";
-import { Dot } from "../../layout";
+import layout from "../../layout";
 
-export function Dot(props: { node: Dot }) {
+export const Dot = (props: { node: layout.Dot }) => {
   return (
     <ellipse
       cx={props.node.box.centerX}
@@ -11,4 +11,4 @@ export function Dot(props: { node: Dot }) {
       fill="#000000"
     />
   );
-}
+};

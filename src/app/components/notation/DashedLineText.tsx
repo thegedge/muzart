@@ -1,10 +1,10 @@
 import React from "react";
-import { DashedLineText, LINE_STROKE_WIDTH } from "../../layout";
+import layout, { LINE_STROKE_WIDTH } from "../../layout";
 import { Box } from "../../layout/utils/Box";
 import { BoxGroup } from "../layout/BoxGroup";
 import { TextElement } from "./TextElement";
 
-export function DashedLineText(props: { element: DashedLineText }) {
+export const DashedLineText = (props: { element: layout.DashedLineText }) => {
   // TODO need to have a better measurement of text instead of arbitrary multiplicative factor
   const textWidth = props.element.value.length * props.element.size * 0.6;
 
@@ -44,4 +44,4 @@ export function DashedLineText(props: { element: DashedLineText }) {
       {maybeDashedLine}
     </BoxGroup>
   );
-}
+};

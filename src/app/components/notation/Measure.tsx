@@ -3,7 +3,7 @@ import * as layout from "../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 import ScoreElement from "./ScoreElement";
 
-export function Measure(props: { measure: layout.Measure }) {
+export const Measure = (props: { measure: layout.Measure }) => {
   // TODO index keys aren't super useful here, once we support editing
   return (
     <BoxGroup node={props.measure}>
@@ -12,4 +12,4 @@ export function Measure(props: { measure: layout.Measure }) {
       ))}
     </BoxGroup>
   );
-}
+};

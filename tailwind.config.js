@@ -1,6 +1,6 @@
 module.exports = {
   mode: "jit",
-  content: ["./src/**/*.html", "./src/**/*.ts", "./src/**/*.tsx"],
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       minWidth: {

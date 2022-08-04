@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
-import { Arc as ArcElement, LINE_STROKE_WIDTH, Slide, STAFF_LINE_HEIGHT } from "../../layout";
+import layout, { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../layout";
 import { Box } from "../../layout/utils/Box";
 import { BoxGroup } from "../layout/BoxGroup";
 import { Arc } from "./Arc";
 
-export function Slide(props: { node: Slide }) {
-  const arc = useMemo<ArcElement>(
+export function Slide(props: { node: layout.Slide }) {
+  const arc = useMemo<layout.Arc>(
     () => ({
       type: "Arc",
       parent: props.node.parent,

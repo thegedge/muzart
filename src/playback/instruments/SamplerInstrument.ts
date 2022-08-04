@@ -69,10 +69,13 @@ export class SamplerInstrument implements Instrument {
     this.activeSources.clear();
   }
 
-  // TODO figure out if I could just use the regular ToneJS sampler hooked into some output nodes
-
   playNote(note: notation.Note, tempo: number, startTimeFromNow?: number): number | undefined {
-    const duration = note.dead ? 0.05 : noteValueToSeconds(note.value, tempo);
+    if (note.dead) {
+      // TODO produce some percussive sound
+      return;
+    }
+
+    const duration = noteValueToSeconds(note.value, tempo);
     const tieType = note.tie ? note.tie.type : "start";
     const when = this.currentTime + (startTimeFromNow ?? 0);
 

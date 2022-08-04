@@ -1,8 +1,8 @@
 import React from "react";
-import { Arc, LINE_STROKE_WIDTH } from "../../layout";
+import layout, { LINE_STROKE_WIDTH } from "../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 
-export function Arc(props: { element: Arc }) {
+export function Arc(props: { element: layout.Arc }) {
   const w = props.element.box.width;
   const h = props.element.box.height;
   const offset = 3 * LINE_STROKE_WIDTH;

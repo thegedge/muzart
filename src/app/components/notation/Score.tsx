@@ -6,7 +6,7 @@ import { Loading } from "../ui/Loading";
 import { useApplicationState } from "../utils/ApplicationStateContext";
 import { Part } from "./Part";
 
-export const Score = observer(function Score() {
+export const Score = observer(() => {
   const { score, loading, error, selection, playback } = useApplicationState();
 
   useEffect(() => {

@@ -1,11 +1,11 @@
 import React from "react";
 import { BendType } from "../../../notation";
-import { Bend, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../layout";
+import layout, { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 
 const BEND_COLOR = "#555555";
 
-export function Bend(props: { node: Bend }) {
+export const Bend = (props: { node: layout.Bend }) => {
   const points = bendPoints(props.node);
   const bendTextX = points[1][0];
 
@@ -25,7 +25,7 @@ export function Bend(props: { node: Bend }) {
       </text>
     </BoxGroup>
   );
-}
+};
 
 function bendArrowHeads(points: [number, number][]) {
   // "radius" of the arrow heads
@@ -61,7 +61,7 @@ function bendArrowHeads(points: [number, number][]) {
   );
 }
 
-function bendPoints(bend: Bend): [number, number][] {
+function bendPoints(bend: layout.Bend): [number, number][] {
   // This is width of note text :(
   const x = STAFF_LINE_HEIGHT;
 
@@ -133,7 +133,7 @@ function bendPath(points: [number, number][]) {
   return path.join(" ");
 }
 
-function bendText(bend: Bend) {
+function bendText(bend: layout.Bend) {
   switch (bend.bend.amplitude) {
     case 0.25:
       return "¼";

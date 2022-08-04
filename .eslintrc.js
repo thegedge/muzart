@@ -29,6 +29,7 @@ module.exports = {
     ],
     "@typescript-eslint/restrict-template-expressions": "off",
     "lodash/import-scope": ["error", "member"],
+    "lodash/prefer-constant": "off",
     "lodash/prefer-lodash-method": "off",
     "lodash/prefer-lodash-typecheck": "off",
     "lodash/prop-shorthand": "off",

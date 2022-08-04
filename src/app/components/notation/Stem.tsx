@@ -1,9 +1,9 @@
 import React from "react";
-import { LINE_STROKE_WIDTH, Stem } from "../../layout";
+import layout, { LINE_STROKE_WIDTH } from "../../layout";
 
 const STEM_BEAM_COLOR = "#333333";
 
-export function Stem(props: { node: Stem }) {
+export function Stem(props: { node: layout.Stem }) {
   return (
     <line
       x1={props.node.box.x}
