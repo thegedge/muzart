@@ -33,13 +33,15 @@ export function getFilenameAndMimeType(source: File | Response) {
   return { filename, mimeType };
 }
 
+const GUITAR_PRO_REGEX = /\.gp\d$/;
+
 // TODO perhaps also support determining the type from the buffer?
 export function determineScoreType(source: File | Response) {
   const { filename, mimeType } = getFilenameAndMimeType(source);
 
-  if (filename?.endsWith(".gp4")) {
+  if (GUITAR_PRO_REGEX.test(filename)) {
     return ScoreDataType.GuitarPro;
-  } else if (filename?.endsWith(".xml") || filename?.endsWith(".musicxml") || mimeType === "application/xml") {
+  } else if (filename.endsWith(".xml") || filename.endsWith(".musicxml") || mimeType === "application/xml") {
     return ScoreDataType.MusicXML;
   }
 
