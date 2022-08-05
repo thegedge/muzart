@@ -70,6 +70,7 @@ export type LineElement =
   | Space
   | Stem
   | Text
+  | TimeSignature
   | Vibrato
   | Wrapped<LineElement>;
 
@@ -189,6 +190,11 @@ export interface Dot extends LayoutElement<LineElement> {
 export interface Tuplet extends LayoutElement<LineElement> {
   type: "Tuplet";
   orientation: VerticalOrientation;
+}
+
+export interface TimeSignature extends LayoutElement<LineElement> {
+  type: "TimeSignature";
+  timeSignature: notation.TimeSignature;
 }
 
 /**

@@ -1,13 +1,13 @@
 import React from "react";
 import * as layout from "../../../layout";
 import { STAFF_LINE_HEIGHT } from "../../../layout";
-import { Icons } from "../../resources/rests";
+import { Rests } from "../../resources/rests";
 import { SelectableBoxGroup } from "../layout/SelectableBoxGroup";
 
 const REST_COLOR = "#333333";
 
 export const Rest = (props: { node: layout.Rest }) => {
-  const icon = Icons[props.node.chord.value.name];
+  const icon = Rests[props.node.chord.value.name];
   if (!icon) {
     return null;
   }

@@ -1,7 +1,7 @@
 import React from "react";
 import { NoteValueName } from "../../notation/note_value";
 
-export const Icons = {
+export const Rests = {
   [NoteValueName.Whole]: <rect width="1" height="0.5" />,
 
   [NoteValueName.Half]: <rect y="0.5" width="1" height="0.5" />,

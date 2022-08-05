@@ -15,6 +15,7 @@ import { Slide } from "./Slide";
 import { Stem } from "./Stem";
 import { Stroke } from "./Stroke";
 import { TextElement } from "./TextElement";
+import { TimeSignature } from "./TimeSignature";
 import { Vibrato } from "./Vibrato";
 import { WrappedElement } from "./WrappedElement";
 
@@ -74,6 +75,8 @@ export default function ScoreElement(props: { element: PageElement | LineElement
       return <Stem node={props.element} />;
     case "Text":
       return <TextElement {...props.element} text={props.element.value} />;
+    case "TimeSignature":
+      return <TimeSignature node={props.element} />;
     case "Vibrato":
       return <Vibrato node={props.element} />;
     case "Wrapped":

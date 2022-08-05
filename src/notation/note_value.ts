@@ -107,9 +107,35 @@ export class NoteValue {
   }
 
   /**
-   * Convert this duration to a decimal.
+   * Convert this duration to a numerical representation (the inverse of fromNumber).
+   *
+   * Whole note is 1, half note is 2, quarter note is 4, and so on.
+   */
+  toNumber(): number {
+    switch (this.name) {
+      case NoteValueName.Whole:
+        return 1;
+      case NoteValueName.Half:
+        return 2;
+      case NoteValueName.Quarter:
+        return 4;
+      case NoteValueName.Eighth:
+        return 8;
+      case NoteValueName.Sixteenth:
+        return 16;
+      case NoteValueName.ThirtySecond:
+        return 32;
+      case NoteValueName.SixtyFourth:
+        return 64;
+      case NoteValueName.OneTwentyEighth:
+        return 128;
+    }
+  }
+  /**
+   * Convert this duration to a decimal, factoring in dots and tuplet values.
    *
    * Whole note is 1, half note is 0.5, quarter note is 0.25, and so on.
+   * A single dotted half note would be 0.75.
    */
   toDecimal(): number {
     // TODO everything in here assumes simple metre

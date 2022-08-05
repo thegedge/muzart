@@ -1,8 +1,9 @@
 import * as notation from "../../notation";
 import { NoteValue } from "../../notation";
-import { chordWidth, STAFF_LINE_HEIGHT } from "../constants";
-import { FlexGroup, FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
-import { Chord, Inches, LineElement, Rest, Text } from "../types";
+import { digits } from "../../utils/digits";
+import { chordWidth, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../constants";
+import { FlexGroup, FlexProps } from "../layouts/FlexGroup";
+import { Chord, Inches, LineElement, Rest } from "../types";
 import { maxMap } from "../utils";
 import { Box } from "../utils/Box";
 
@@ -21,42 +22,23 @@ export class Measure extends FlexGroup<LineElement, LineElement> {
     this.box.height = part.lineCount * STAFF_LINE_HEIGHT;
 
     if (measure.staffDetails.time?.changed) {
-      const ts = measure.staffDetails.time.value;
-      const size = STAFF_LINE_HEIGHT * 2.5;
-      const group = new FlexGroupElement<Text>({
-        box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, size, STAFF_LINE_HEIGHT * (part.lineCount - 1)),
-        axis: "vertical",
-      });
-
-      group.addElement({
-        type: "Text",
-        box: new Box(0, 0, size, size),
-        size,
-        value: ts.count.toString(),
-        halign: "middle",
-        valign: "middle",
-        style: {
-          fontWeight: "bold",
-        },
-      });
-
-      group.addElement({
-        type: "Text",
-        box: new Box(0, 0, size, size),
-        size,
-        value: Math.round(1 / ts.value.toDecimal()).toString(),
-        halign: "middle",
-        valign: "middle",
-        style: {
-          fontWeight: "bold",
-        },
-      });
-
-      group.layout();
       this.addElement({ type: "Space", box: new Box(0, 0, 0.5 * spacerWidth, spacerWidth) }, { factor: null });
       this.box.width += 0.5 * spacerWidth;
-      this.addElement(group, { factor: null });
-      this.box.width += size;
+
+      const timeSignature = measure.staffDetails.time.value;
+      const topDigits = digits(timeSignature.count);
+      const bottomDigits = digits(timeSignature.value.toNumber());
+      const width = STAFF_LINE_HEIGHT * 2 * Math.max(topDigits.length, bottomDigits.length);
+      this.addElement(
+        {
+          type: "TimeSignature",
+          // Add a line stroke width for the slightest amount of "padding" between the digits
+          box: new Box(0, STAFF_LINE_HEIGHT, width, 4 * STAFF_LINE_HEIGHT + LINE_STROKE_WIDTH),
+          timeSignature,
+        },
+        { factor: null }
+      );
+      this.box.width += width;
     }
 
     this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: null });
