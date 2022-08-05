@@ -1,7 +1,7 @@
 import { action, computed, flow, makeObservable, observable } from "mobx";
-import { Selection } from "../app/components/state/Selection";
-import { Measure } from "../app/layout";
+import { Measure } from "../layout";
 import { NoteValue, NoteValueName } from "../notation";
+import { Selection } from "../ui/state/Selection";
 import { Instrument } from "./instruments/Instrument";
 import { SoundFont } from "./SoundFont";
 import { noteValueToSeconds } from "./util/durations";
