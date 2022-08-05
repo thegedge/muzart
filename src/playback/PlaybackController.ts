@@ -139,7 +139,7 @@ export class PlaybackController {
   playSelectedNote(): void {
     const note = this.selection.note?.note;
     if (note) {
-      this.instrument?.playNote(note, this.tempoOfSelection);
+      this.instrument?.playNote(note, this.tempoOfSelection, undefined, true);
     }
   }
 

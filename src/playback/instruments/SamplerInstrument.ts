@@ -69,7 +69,7 @@ export class SamplerInstrument implements Instrument {
     this.activeSources.clear();
   }
 
-  playNote(note: notation.Note, tempo: number, startTimeFromNow?: number): number | undefined {
+  playNote(note: notation.Note, tempo: number, startTimeFromNow?: number, ignoreTies = false): number | undefined {
     if (note.dead) {
       // TODO produce some percussive sound
       return;
@@ -146,7 +146,7 @@ export class SamplerInstrument implements Instrument {
 
         //---------------------------------------------------------------------------------------------
 
-        source.start(when, 0, note.tie ? undefined : duration);
+        source.start(when, 0, !ignoreTies && note.tie ? undefined : duration);
         this.addActiveSource(source, volume, note.pitch.toMidi());
       } else if (tieType == "stop") {
         const pitch = note.get("pitch", true);
