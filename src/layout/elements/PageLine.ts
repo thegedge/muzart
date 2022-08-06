@@ -26,6 +26,7 @@ import { Bend } from "./Bend";
 import { ChordDiagram } from "./ChordDiagram";
 import { Dot } from "./Dot";
 import { Line } from "./Line";
+import { Slide } from "./Slide";
 import { Space } from "./Space";
 
 // TODO break this file up into smaller bits (it's a bit slow to typecheck/format)
@@ -647,16 +648,15 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
           }
 
           this.staffOverlay.addElement(
-            {
-              type: "Slide",
-              box: new Box(
+            new Slide(
+              new Box(
                 x,
                 measure.box.y + element.box.y + STAFF_LINE_HEIGHT * ((note.placement?.string || 1) - 1) + yoffset,
                 w,
                 STAFF_LINE_HEIGHT - 2 * yoffset
               ),
-              upwards: note.slide.upwards,
-            },
+              note.slide.upwards
+            ),
             null
           );
         }
