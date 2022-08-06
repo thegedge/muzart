@@ -16,10 +16,12 @@ import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
 import { GridGroup } from "../layouts/GridGroup";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
 import { SimpleGroup } from "../layouts/SimpleGroup";
-import { Beam, Chord, Line, LineElement, Measure, Page, Rest, Text } from "../types";
+import { Chord, Line, LineElement, Measure, Page, Rest, Text } from "../types";
 import { minMap, runs } from "../utils";
 import { Box } from "../utils/Box";
+import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
+import { Beam } from "./Beam";
 import { Space } from "./Space";
 
 // TODO break this file up into smaller bits (it's a bit slow to typecheck/format)
@@ -401,11 +403,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
 
           // TODO are tremolo picks always three beams?
           for (let index = 0, y = 0; index < 3; y += 1.2 * BEAM_HEIGHT + gap, ++index) {
-            group.addElement({
-              type: "Beam",
-              box: new Box(0, y, width, beamBoxHeight),
-              size: 1.2 * BEAM_HEIGHT,
-            });
+            group.addElement(new Beam(new Box(0, y, width, beamBoxHeight), 1.2 * BEAM_HEIGHT));
           }
 
           this.aboveStaffLayout.addElement(group, {
@@ -691,16 +689,14 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
         // If the very first chord in the line has a tie, create an arc to show that
         if (note.tie?.previous && index === 0) {
           this.staffOverlay.addElement(
-            {
-              type: "Arc",
-              box: new Box(
+            new Arc(
+              new Box(
                 measure.box.x,
                 measure.box.y + element.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
                 0.16,
                 STAFF_LINE_HEIGHT * 0.5
-              ),
-              orientation: "below",
-            },
+              )
+            ),
             null
           );
         }
@@ -723,16 +719,14 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
           }
 
           this.staffOverlay.addElement(
-            {
-              type: "Arc",
-              box: new Box(
+            new Arc(
+              new Box(
                 x,
                 measure.box.y + element.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
                 width,
                 STAFF_LINE_HEIGHT * 0.5
-              ),
-              orientation: "below",
-            },
+              )
+            ),
             null
           );
         }
@@ -835,11 +829,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
           }
         }
 
-        this.belowStaffLayout.addElement({
-          type: "Beam",
-          box: new Box(left, y, right - left, BEAM_HEIGHT),
-          size: BEAM_HEIGHT,
-        });
+        this.belowStaffLayout.addElement(new Beam(new Box(left, y, right - left, BEAM_HEIGHT)));
       }
 
       // Decrement all the beam counts, since we just drew one. No worries about some going into the negatives.
