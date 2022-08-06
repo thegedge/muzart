@@ -24,6 +24,7 @@ import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
 import { Bend } from "./Bend";
 import { ChordDiagram } from "./ChordDiagram";
+import { Dot } from "./Dot";
 import { Space } from "./Space";
 
 // TODO break this file up into smaller bits (it's a bit slow to typecheck/format)
@@ -757,10 +758,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
           y -= 0.5 * BEAM_HEIGHT * (this.numBeams(beatElement) - 1);
         }
 
-        this.belowStaffLayout.addElement({
-          type: "Dot",
-          box: new Box(measureBox.x + this.elementOffset(beatElement), y, DOT_SIZE, DOT_SIZE),
-        });
+        this.belowStaffLayout.addElement(new Dot(measureBox.x + this.elementOffset(beatElement), y));
       }
     }
   }
