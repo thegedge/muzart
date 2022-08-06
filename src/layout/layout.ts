@@ -4,9 +4,10 @@ import * as notation from "../notation";
 import { DEFAULT_MARGINS, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH, LINE_MARGIN, STAFF_LINE_HEIGHT } from "./constants";
 import { Measure } from "./elements/Measure";
 import { PageLine } from "./elements/PageLine";
+import { Text } from "./elements/Text";
 import { FlexGroupElement } from "./layouts/FlexGroup";
 import { SimpleGroup } from "./layouts/SimpleGroup";
-import { Group, LineElement, Page, PageElement, Part, Score, Text } from "./types";
+import { Group, LineElement, Page, PageElement, Part, Score } from "./types";
 import { Box } from "./utils/Box";
 
 /**
@@ -157,47 +158,50 @@ function partHeader(score: notation.Score, part: notation.Part, contentWidth: nu
   // Lay out the composition title, composer, etc
   if (score.title) {
     const height = 4 * STAFF_LINE_HEIGHT;
-    headerGroup.addElement({
-      type: "Text",
-      box: new Box(0, 0, contentWidth, height),
-      halign: "middle",
-      size: height,
-      value: score.title,
-      style: {
-        fontFamily: "serif",
-      },
-    });
+    headerGroup.addElement(
+      new Text({
+        box: new Box(0, 0, contentWidth, height),
+        halign: "middle",
+        size: height,
+        value: score.title,
+        style: {
+          fontFamily: "serif",
+        },
+      })
+    );
   }
 
   if (score.composer) {
     const height = 1.5 * STAFF_LINE_HEIGHT;
 
-    headerGroup.addElement({
-      type: "Text",
-      box: new Box(0, 0, contentWidth, 2 * height),
-      halign: "end",
-      size: height,
-      value: score.composer,
-      style: {
-        fontFamily: "serif",
-      },
-    });
+    headerGroup.addElement(
+      new Text({
+        box: new Box(0, 0, contentWidth, 2 * height),
+        halign: "end",
+        size: height,
+        value: score.composer,
+        style: {
+          fontFamily: "serif",
+        },
+      })
+    );
   }
 
   if (score.comments) {
     const height = STAFF_LINE_HEIGHT;
     for (const comment of score.comments) {
-      headerGroup.addElement({
-        type: "Text",
-        box: new Box(0, 0, contentWidth, 1.5 * height),
-        halign: "middle",
-        size: height,
-        value: comment,
-        style: {
-          fontFamily: "serif",
-          fontStyle: "italic",
-        },
-      });
+      headerGroup.addElement(
+        new Text({
+          box: new Box(0, 0, contentWidth, 1.5 * height),
+          halign: "middle",
+          size: height,
+          value: comment,
+          style: {
+            fontFamily: "serif",
+            fontStyle: "italic",
+          },
+        })
+      );
     }
   }
 
@@ -205,15 +209,17 @@ function partHeader(score: notation.Score, part: notation.Part, contentWidth: nu
     // TODO show alternative name for tuning
     const textSize = STAFF_LINE_HEIGHT;
     const stringNumbers = ["①", "②", "③", "④", "⑤", "⑥", "⑦"].slice(0, part.lineCount).reverse();
-    const texts: Text[] = part.instrument.tuning.map((pitch, index) => ({
-      type: "Text",
-      box: new Box(0, 0, textSize * 5, textSize),
-      size: textSize,
-      value: `${stringNumbers[index]} = ${pitch}`,
-      style: {
-        fontFamily: "serif",
-      },
-    }));
+    const texts: Text[] = part.instrument.tuning.map(
+      (pitch, index) =>
+        new Text({
+          box: new Box(0, 0, textSize * 5, textSize),
+          size: textSize,
+          value: `${stringNumbers[index]} = ${pitch}`,
+          style: {
+            fontFamily: "serif",
+          },
+        })
+    );
 
     const offset = Math.round(texts.length / 2);
     for (let index = 0; index < offset; ++index) {
