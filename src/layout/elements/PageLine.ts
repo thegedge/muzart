@@ -22,6 +22,7 @@ import { Box } from "../utils/Box";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
+import { Bend } from "./Bend";
 import { Space } from "./Space";
 
 // TODO break this file up into smaller bits (it's a bit slow to typecheck/format)
@@ -559,20 +560,12 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
 
       for (const note of element.chord.notes) {
         if (note.bend) {
-          this.aboveStaffLayout.addElement(
-            {
-              type: "Bend",
-              box: new Box(0, 0, 0, 2.5 * STAFF_LINE_HEIGHT),
-              bend: note.bend,
-              descent: ((note.placement?.string || 1) - 0.5) * STAFF_LINE_HEIGHT,
-            },
-            {
-              startColumn: index + 1,
-              // TODO if a note tie, should go to the end of the tie
-              endColumn: index + 2,
-              mustBeBottomRow: true,
-            }
-          );
+          this.aboveStaffLayout.addElement(new Bend(note.bend, note), {
+            startColumn: index + 1,
+            // TODO if a note tie, should go to the end of the tie
+            endColumn: index + 2,
+            mustBeBottomRow: true,
+          });
         }
       }
     });
