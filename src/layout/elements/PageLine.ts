@@ -30,6 +30,7 @@ import { Slide } from "./Slide";
 import { Space } from "./Space";
 import { Stem } from "./Stem";
 import { Stroke } from "./Stroke";
+import { Vibrato } from "./Vibrato";
 
 // TODO break this file up into smaller bits (it's a bit slow to typecheck/format)
 
@@ -248,10 +249,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
 
     this.addInterMeasureStaffDecorations(
       (chord: notation.Chord) => some(chord.notes, "vibrato"),
-      (_vibrato: boolean, _amount: number) => ({
-        type: "Vibrato",
-        box: new Box(0, 0, 0, STAFF_LINE_HEIGHT),
-      }),
+      (_vibrato: boolean, _amount: number) => new Vibrato(),
       {
         includeChordSpacer: true,
       }
