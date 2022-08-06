@@ -6,6 +6,7 @@ import { FlexGroup, FlexProps } from "../layouts/FlexGroup";
 import { Chord, Inches, LineElement, Rest } from "../types";
 import { maxMap } from "../utils";
 import { Box } from "../utils/Box";
+import { Space } from "./Space";
 
 const MIN_NOTE_WIDTH: Inches = 0.2;
 const QUARTER_NOTE_WIDTH: Inches = 0.25;
@@ -22,7 +23,7 @@ export class Measure extends FlexGroup<LineElement, LineElement> {
     this.box.height = part.lineCount * STAFF_LINE_HEIGHT;
 
     if (measure.staffDetails.time?.changed) {
-      this.addElement({ type: "Space", box: new Box(0, 0, 0.5 * spacerWidth, spacerWidth) }, { factor: null });
+      this.addElement(Space.fromDimensions(0.5 * spacerWidth, spacerWidth), { factor: null });
       this.box.width += 0.5 * spacerWidth;
 
       const timeSignature = measure.staffDetails.time.value;
@@ -41,7 +42,7 @@ export class Measure extends FlexGroup<LineElement, LineElement> {
       this.box.width += width;
     }
 
-    this.addElement({ type: "Space", box: new Box(0, 0, spacerWidth, spacerWidth) }, { factor: null });
+    this.addElement(Space.fromDimensions(0.5 * spacerWidth, spacerWidth), { factor: null });
     this.box.width += spacerWidth;
 
     // TODO if just a single whole rest, put in center
@@ -66,11 +67,11 @@ export class Measure extends FlexGroup<LineElement, LineElement> {
       }
 
       this.box.width += width;
-      this.addElement({ type: "Space", box: new Box(0, 0, width, 1) }, { factor: width });
+      this.addElement(Space.fromDimensions(width, 1), { factor: width });
     }
 
     // An empty spacer where, used to help us place the measure number
-    this.addElement({ type: "Space", box: new Box(0, 0, 0, 0) }, { factor: null });
+    this.addElement(Space.fromDimensions(0, 0), { factor: null });
   }
 
   tryAddElement(element: LineElement, flexProps?: Partial<FlexProps>) {

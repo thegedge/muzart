@@ -16,10 +16,11 @@ import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
 import { GridGroup } from "../layouts/GridGroup";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
 import { SimpleGroup } from "../layouts/SimpleGroup";
-import { Beam, Chord, Line, LineElement, Measure, Page, Rest, Space, Text } from "../types";
+import { Beam, Chord, Line, LineElement, Measure, Page, Rest, Text } from "../types";
 import { minMap, runs } from "../utils";
 import { Box } from "../utils/Box";
 import { BarLine } from "./BarLine";
+import { Space } from "./Space";
 
 // TODO break this file up into smaller bits (it's a bit slow to typecheck/format)
 
@@ -66,10 +67,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
       axis: "vertical",
     });
 
-    tabGroup.addElement({
-      type: "Space",
-      box: new Box(0, 0, tabWidth, LINE_STROKE_WIDTH),
-    });
+    tabGroup.addElement(Space.fromDimensions(tabWidth, LINE_STROKE_WIDTH));
 
     tabGroup.addElement(
       {
@@ -110,10 +108,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
       { factor: null }
     );
 
-    tabGroup.addElement({
-      type: "Space",
-      box: new Box(0, 0, tabWidth, LINE_STROKE_WIDTH),
-    });
+    tabGroup.addElement(Space.fromDimensions(tabWidth, LINE_STROKE_WIDTH));
 
     // Num staff lines doesn't change, so we can do this once and call it a day
     tabGroup.layout();
@@ -278,7 +273,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
     let amount = 0;
 
     this.gridLayoutElements().forEach(({ element }, index) => {
-      if (element.type === "Space") {
+      if (element instanceof Space) {
         return;
       }
 
