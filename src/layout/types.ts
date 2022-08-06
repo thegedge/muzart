@@ -11,7 +11,7 @@ export interface HasBox {
 }
 
 export interface HasParent<ParentT = unknown> {
-  parent?: LayoutElement<ParentT>;
+  parent?: LayoutElement<ParentT> | null;
 }
 
 export interface LayoutElement<ParentT = unknown> extends HasBox, HasParent<ParentT> {
@@ -202,15 +202,13 @@ export interface TimeSignature extends LayoutElement<LineElement> {
  *
  * @returns The element whose `type` matches the given `type`. If `e` itself is of the given type, `e` will be returned.
  */
-export function getAncestorOfType<T extends LayoutElement<unknown>>(
-  e: LayoutElement<unknown> | undefined,
-  type: string
-): T | undefined {
-  while (e) {
-    if (e.type == type) {
-      return e as T;
+export function getAncestorOfType<T extends LayoutElement<unknown>>(e: LayoutElement<unknown>, type: string): T | null {
+  let current: LayoutElement<unknown> | undefined | null = e;
+  while (current) {
+    if (current.type == type) {
+      return current as T;
     }
-    e = e.parent;
+    current = current.parent;
   }
-  return e;
+  return current ?? null;
 }

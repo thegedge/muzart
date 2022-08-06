@@ -9,12 +9,12 @@ export * from "./Box";
 export function ancestorOfType<LayoutT extends LayoutElement>(
   source: LayoutT,
   ancestorType: LayoutT["type"]
-): LayoutElement | undefined {
-  let e: LayoutElement | undefined = source.parent;
+): LayoutElement | null {
+  let e: LayoutElement | null | undefined = source.parent;
   while (e && e.type != ancestorType) {
     e = e.parent;
   }
-  return e;
+  return e ?? null;
 }
 
 /**
@@ -29,7 +29,7 @@ export function toAncestorCoordinateSystem<LayoutT extends LayoutElement>(
   ancestorType?: LayoutT["type"]
 ): Box {
   const box = source.box.clone();
-  let e: LayoutElement | undefined = source.parent;
+  let e: LayoutElement | null | undefined = source.parent;
   while (e && e.type != ancestorType) {
     box.x += e.box.x;
     box.y += e.box.y;

@@ -142,12 +142,12 @@ export class Selection {
     const measureElement = getAncestorOfType<Measure>(noteElement ?? chordElement ?? element, "Measure");
 
     this.update({
-      measureIndex: measureElement && measureElement.measure.number - 1,
+      measureIndex: measureElement ? measureElement.measure.number - 1 : undefined,
       chordIndex:
-        chordElement &&
-        measureElement &&
-        measureElement.measure.chords.findIndex((n) => Object.is(n, chordElement.chord)),
-      noteIndex: noteElement && noteElement.note.placement && noteElement.note.placement.string - 1,
+        chordElement && measureElement
+          ? measureElement.measure.chords.findIndex((n) => Object.is(n, chordElement.chord))
+          : undefined,
+      noteIndex: noteElement && noteElement.note.placement ? noteElement.note.placement.string - 1 : undefined,
       element,
     });
   }
