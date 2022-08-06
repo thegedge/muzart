@@ -1,12 +1,12 @@
 import * as notation from "../../notation";
 import { NoteValue } from "../../notation";
-import { digits } from "../../utils/digits";
-import { chordWidth, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../constants";
+import { chordWidth, STAFF_LINE_HEIGHT } from "../constants";
 import { FlexGroup, FlexProps } from "../layouts/FlexGroup";
 import { Chord, Inches, LineElement, Rest } from "../types";
 import { maxMap } from "../utils";
 import { Box } from "../utils/Box";
 import { Space } from "./Space";
+import { TimeSignature } from "./TimeSignature";
 
 const MIN_NOTE_WIDTH: Inches = 0.2;
 const QUARTER_NOTE_WIDTH: Inches = 0.25;
@@ -26,20 +26,9 @@ export class Measure extends FlexGroup<LineElement, LineElement> {
       this.addElement(Space.fromDimensions(0.5 * spacerWidth, spacerWidth), { factor: null });
       this.box.width += 0.5 * spacerWidth;
 
-      const timeSignature = measure.staffDetails.time.value;
-      const topDigits = digits(timeSignature.count);
-      const bottomDigits = digits(timeSignature.value.toNumber());
-      const width = STAFF_LINE_HEIGHT * 2 * Math.max(topDigits.length, bottomDigits.length);
-      this.addElement(
-        {
-          type: "TimeSignature",
-          // Add a line stroke width for the slightest amount of "padding" between the digits
-          box: new Box(0, STAFF_LINE_HEIGHT, width, 4 * STAFF_LINE_HEIGHT + LINE_STROKE_WIDTH),
-          timeSignature,
-        },
-        { factor: null }
-      );
-      this.box.width += width;
+      const timeSig = new TimeSignature(measure.staffDetails.time.value);
+      this.addElement(timeSig, { factor: null });
+      this.box.width += timeSig.box.width;
     }
 
     this.addElement(Space.fromDimensions(0.5 * spacerWidth, spacerWidth), { factor: null });
