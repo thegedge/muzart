@@ -28,6 +28,7 @@ import { Dot } from "./Dot";
 import { Line } from "./Line";
 import { Slide } from "./Slide";
 import { Space } from "./Space";
+import { Stem } from "./Stem";
 
 // TODO break this file up into smaller bits (it's a bit slow to typecheck/format)
 
@@ -737,10 +738,9 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
       // Half notes have a shorter stem on tablature
       const y = this.numBeams(beatElement) < 0 ? STAFF_LINE_HEIGHT * 2 : STAFF_LINE_HEIGHT;
 
-      this.belowStaffLayout.addElement({
-        type: "Stem",
-        box: new Box(measureBox.x + this.elementOffset(beatElement), y, beatElement.box.width, STEM_HEIGHT - y),
-      });
+      this.belowStaffLayout.addElement(
+        new Stem(new Box(measureBox.x + this.elementOffset(beatElement), y, beatElement.box.width, STEM_HEIGHT - y))
+      );
     }
   }
 
