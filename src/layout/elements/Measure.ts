@@ -1,11 +1,12 @@
 import types from "..";
 import * as notation from "../../notation";
 import { NoteValue } from "../../notation";
-import { chordWidth, STAFF_LINE_HEIGHT } from "../constants";
+import { STAFF_LINE_HEIGHT } from "../constants";
 import { FlexGroup, FlexProps } from "../layouts/FlexGroup";
 import { Inches, LineElement } from "../types";
 import { Box } from "../utils/Box";
 import { Chord } from "./Chord";
+import { Rest } from "./Rest";
 import { Space } from "./Space";
 import { TimeSignature } from "./TimeSignature";
 
@@ -40,14 +41,7 @@ export class Measure extends FlexGroup<LineElement, LineElement> {
     for (const chord of measure.chords) {
       let width = widthForValue(chord.value);
       if (chord.rest) {
-        this.addElement(
-          {
-            type: "Rest",
-            box: new Box(0, 0, chordWidth(4), part.lineCount * STAFF_LINE_HEIGHT),
-            chord,
-          },
-          { factor: null }
-        );
+        this.addElement(new Rest(chord, part.lineCount * STAFF_LINE_HEIGHT), { factor: null });
       } else {
         const hasBend = chord.notes.some((n) => !!n.bend);
         width *= hasBend ? 2 : 1;
@@ -65,7 +59,7 @@ export class Measure extends FlexGroup<LineElement, LineElement> {
   tryAddElement(element: LineElement, flexProps?: Partial<FlexProps>) {
     const wasAdded = super.tryAddElement(element, flexProps);
     if (wasAdded) {
-      if (element.type == "Rest" || element.type == "Chord") {
+      if (element instanceof Rest || element instanceof Chord) {
         this.chords.push(element);
       }
     }
@@ -74,7 +68,7 @@ export class Measure extends FlexGroup<LineElement, LineElement> {
 
   addElement(element: LineElement, flexProps?: Partial<FlexProps>) {
     super.addElement(element, flexProps);
-    if (element.type == "Rest" || element instanceof Chord) {
+    if (element instanceof Rest || element instanceof Chord) {
       this.chords.push(element);
     }
   }
