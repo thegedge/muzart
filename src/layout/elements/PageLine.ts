@@ -23,6 +23,7 @@ import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
 import { Bend } from "./Bend";
+import { ChordDiagram } from "./ChordDiagram";
 import { Space } from "./Space";
 
 // TODO break this file up into smaller bits (it's a bit slow to typecheck/format)
@@ -360,19 +361,11 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
         // TODO pre-process chord diagrams and lift them to the top of the diagram, instead of on a per-line basis
         if (element.chord.chordDiagram) {
           const diagram = element.chord.chordDiagram;
-          const height = (diagram.diagram ? 7 : 1) * STAFF_LINE_HEIGHT;
-          this.aboveStaffLayout.addElement(
-            {
-              type: "ChordDiagram",
-              box: new Box(0, 0, 0, height),
-              diagram,
-            },
-            {
-              startColumn: index + 1,
-              endColumn: index + 1,
-              group: "chords",
-            }
-          );
+          this.aboveStaffLayout.addElement(new ChordDiagram(diagram), {
+            startColumn: index + 1,
+            endColumn: index + 1,
+            group: "chords",
+          });
         }
 
         if (element.chord.text) {
