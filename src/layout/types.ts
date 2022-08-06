@@ -151,7 +151,6 @@ export interface Measure extends LayoutElement<LineElement> {
   box: Box;
   elements: LineElement[];
   chords: (Chord | Rest)[];
-  // TODO decorations, like time signatures, clefs, etc
 }
 
 export interface Chord extends LayoutElement<LineElement> {

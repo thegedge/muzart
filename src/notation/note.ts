@@ -177,7 +177,6 @@ export class Note {
       return "";
     }
 
-    // TODO verify all of these make sense
     switch (this.harmonic) {
       case HarmonicStyle.Natural:
         return "N.H.";

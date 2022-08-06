@@ -71,7 +71,7 @@ export class SamplerInstrument implements Instrument {
 
   playNote(note: notation.Note, tempo: number, startTimeFromNow?: number, ignoreTies = false): number | undefined {
     if (note.dead) {
-      // TODO produce some percussive sound
+      // TODO produce some percussive-y sound
       return;
     }
 

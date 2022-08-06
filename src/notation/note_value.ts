@@ -131,6 +131,7 @@ export class NoteValue {
         return 128;
     }
   }
+
   /**
    * Convert this duration to a decimal, factoring in dots and tuplet values.
    *
@@ -138,8 +139,6 @@ export class NoteValue {
    * A single dotted half note would be 0.75.
    */
   toDecimal(): number {
-    // TODO everything in here assumes simple metre
-
     let denominator = 0;
     switch (this.name) {
       case NoteValueName.Whole:
