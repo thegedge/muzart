@@ -1,13 +1,13 @@
-import { clone, last } from "lodash";
-import types from ".";
+import { last } from "lodash";
 import * as notation from "../notation";
-import { DEFAULT_MARGINS, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH, LINE_MARGIN, STAFF_LINE_HEIGHT } from "./constants";
+import { DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH, STAFF_LINE_HEIGHT } from "./constants";
 import { Measure } from "./elements/Measure";
+import { Page } from "./elements/Page";
 import { PageLine } from "./elements/PageLine";
 import { Text } from "./elements/Text";
 import { FlexGroupElement } from "./layouts/FlexGroup";
 import { SimpleGroup } from "./layouts/SimpleGroup";
-import { Group, LineElement, Page, PageElement, Part, Score } from "./types";
+import { Group, LineElement, PageElement, Part, Score } from "./types";
 import { Box } from "./utils/Box";
 
 /**
@@ -38,16 +38,13 @@ export const PAGE_MARGIN = 0.5;
 
 function layOutPart(score: notation.Score, part: notation.Part): Part {
   const measures = part.measures;
-  const margins = DEFAULT_MARGINS;
-  const contentWidth = DEFAULT_PAGE_WIDTH - margins.left - margins.right;
-  const contentHeight = DEFAULT_PAGE_HEIGHT - margins.top - margins.bottom;
-  const pageContentBox = new Box(margins.left, margins.top, contentWidth, contentHeight);
   const pages: Page[] = [];
 
-  let pageGroup = new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical", gap: LINE_MARGIN });
+  let page = new Page(new Box(0, 0, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT));
 
+  const contentWidth = page.content.box.width;
   const header = partHeader(score, part, contentWidth);
-  pageGroup.addElement(header, { factor: 0 });
+  page.content.addElement(header, { factor: 0 });
 
   let isFirstLine = true;
   let line = new PageLine(new Box(0, 0, contentWidth, 0), part.lineCount);
@@ -68,9 +65,11 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     } else {
       line.layout();
 
-      if (!pageGroup.tryAddElement(line, { factor: null })) {
-        pageGroup = startNewPage(pages, pageContentBox, pageGroup);
-        pageGroup.addElement(line);
+      if (!page.content.tryAddElement(line, { factor: null })) {
+        page.content.layout();
+        pages.push(page);
+        page = new Page(new Box(0, page.box.bottom + PAGE_MARGIN, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT));
+        page.content.addElement(line);
       }
 
       line = new PageLine(new Box(0, 0, contentWidth, 0), part.lineCount);
@@ -85,24 +84,16 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   if (line.elements.length > 0) {
     line.layout();
 
-    if (!pageGroup.tryAddElement(line)) {
-      pageGroup = startNewPage(pages, pageContentBox, pageGroup);
-      pageGroup.addElement(line);
+    if (!page.content.tryAddElement(line)) {
+      page.content.layout();
+      pages.push(page);
+      page = new Page(new Box(0, page.box.bottom + PAGE_MARGIN, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT));
+      page.content.addElement(line);
     }
   }
 
-  if (pageGroup.elements.length > 0) {
-    pageGroup.layout(false);
-
-    const page: Page = {
-      type: "Page",
-      content: pageGroup,
-      box: new Box(0, pages.length * (DEFAULT_PAGE_HEIGHT + PAGE_MARGIN), DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT),
-      measures: measureElements(pageGroup.elements),
-    };
-
-    pageGroup.parent = page;
-
+  if (page.content.elements.length > 0) {
+    page.content.layout(false);
     pages.push(page);
   }
 
@@ -120,32 +111,6 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   }
 
   return partLayout;
-}
-
-function startNewPage(pages: Page[], pageContentBox: Box, pageGroup: FlexGroupElement<PageElement>) {
-  pageGroup.layout();
-
-  const page: Page = {
-    type: "Page",
-    content: pageGroup,
-    box: new Box(0, pages.length * (DEFAULT_PAGE_HEIGHT + PAGE_MARGIN), DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT),
-    measures: measureElements(pageGroup.elements),
-  };
-
-  pageGroup.parent = page;
-  pages.push(page);
-
-  return new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical", gap: LINE_MARGIN });
-}
-
-function measureElements(pageElements: PageElement[]): types.Measure[] {
-  return pageElements.flatMap((e) => {
-    if (e.type != "PageLine") {
-      return [];
-    }
-
-    return e.measures;
-  });
 }
 
 function partHeader(score: notation.Score, part: notation.Part, contentWidth: number): Group<PageElement> {
