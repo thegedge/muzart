@@ -16,7 +16,7 @@ import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
 import { GridGroup } from "../layouts/GridGroup";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
 import { SimpleGroup } from "../layouts/SimpleGroup";
-import { Chord, Line, LineElement, Measure, Page, Rest, Text } from "../types";
+import { Chord, LineElement, Measure, Page, Rest, Text } from "../types";
 import { minMap, runs } from "../utils";
 import { Box } from "../utils/Box";
 import { Arc } from "./Arc";
@@ -25,6 +25,7 @@ import { Beam } from "./Beam";
 import { Bend } from "./Bend";
 import { ChordDiagram } from "./ChordDiagram";
 import { Dot } from "./Dot";
+import { Line } from "./Line";
 import { Space } from "./Space";
 
 // TODO break this file up into smaller bits (it's a bit slow to typecheck/format)
@@ -120,12 +121,11 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
 
     this.addElement(tabGroup, { factor: null });
 
-    this.staffLines = range(this.numStaffLines).map((_index) => ({
-      type: "Line",
-      parent: this,
-      box: new Box(0, 0, 0, 0),
-      color: "#888888",
-    }));
+    this.staffLines = range(this.numStaffLines).map((_index) => {
+      const line = new Line(Box.empty(), "#888888");
+      line.parent = this;
+      return line;
+    });
 
     this.aboveStaffLayout.parent = this;
     this.staffLayout.parent = this;
