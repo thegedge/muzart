@@ -29,6 +29,7 @@ import { Line } from "./Line";
 import { Slide } from "./Slide";
 import { Space } from "./Space";
 import { Stem } from "./Stem";
+import { Stroke } from "./Stroke";
 
 // TODO break this file up into smaller bits (it's a bit slow to typecheck/format)
 
@@ -576,19 +577,12 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
       if (element.chord.stroke) {
         // TODO this doesn't look right (too wide) when chord contains notes fretted at 10+. I don't think there's
         //  any straightforward way to deal with this right now, so just gonna deal with it.
-        this.aboveStaffLayout.addElement(
-          {
-            type: "Stroke",
-            box: new Box(0, 0, chordWidth(1), STAFF_LINE_HEIGHT),
-            stroke: element.chord.stroke,
-          },
-          {
-            startColumn: index + 1,
-            endColumn: index + 1,
-            halign: "middle",
-            valign: "end",
-          }
-        );
+        this.aboveStaffLayout.addElement(new Stroke(element.chord.stroke), {
+          startColumn: index + 1,
+          endColumn: index + 1,
+          halign: "middle",
+          valign: "end",
+        });
       }
 
       if (element.chord.tapped) {
