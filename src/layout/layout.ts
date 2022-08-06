@@ -1,11 +1,12 @@
 import { clone, last } from "lodash";
+import types from ".";
 import * as notation from "../notation";
 import { DEFAULT_MARGINS, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH, LINE_MARGIN, STAFF_LINE_HEIGHT } from "./constants";
-import { Measure as MeasureLayout } from "./elements/Measure";
+import { Measure } from "./elements/Measure";
 import { PageLine } from "./elements/PageLine";
 import { FlexGroupElement } from "./layouts/FlexGroup";
 import { SimpleGroup } from "./layouts/SimpleGroup";
-import { Group, LineElement, Measure, Page, PageElement, Part, Score, Text } from "./types";
+import { Group, LineElement, Page, PageElement, Part, Score, Text } from "./types";
 import { Box } from "./utils/Box";
 
 /**
@@ -50,7 +51,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   let isFirstLine = true;
   let line = new PageLine(new Box(0, 0, contentWidth, 0), part.lineCount);
   for (const measureToLayOut of measures) {
-    const measure: Measure = new MeasureLayout(part, measureToLayOut);
+    const measure = new Measure(part, measureToLayOut);
 
     // Determine if we need to be on a new line.
     //
@@ -136,7 +137,7 @@ function startNewPage(pages: Page[], pageContentBox: Box, pageGroup: FlexGroupEl
   return new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical", gap: LINE_MARGIN });
 }
 
-function measureElements(pageElements: PageElement[]): Measure[] {
+function measureElements(pageElements: PageElement[]): types.Measure[] {
   return pageElements.flatMap((e) => {
     if (e.type != "PageLine") {
       return [];

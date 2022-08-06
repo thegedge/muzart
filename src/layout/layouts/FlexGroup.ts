@@ -139,9 +139,10 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends Layo
       element.box[this.startAttribute] = start;
       if (props.factor) {
         element.box[this.dimensionAttribute] += extraSpace * (props.factor / factorsSum);
-        if (element.layout) {
-          element.layout();
-        }
+      }
+
+      if (element.layout) {
+        element.layout();
       }
 
       start += element.box[this.dimensionAttribute] + this.gap;
