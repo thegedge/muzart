@@ -180,6 +180,7 @@ export interface Stem extends LayoutElement<LineElement> {
 
 export interface Beam extends LayoutElement<LineElement> {
   type: "Beam";
+  size: number;
 }
 
 export interface Dot extends LayoutElement<LineElement> {

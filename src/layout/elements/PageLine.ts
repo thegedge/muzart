@@ -830,6 +830,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
         this.belowStaffLayout.addElement({
           type: "Beam",
           box: new Box(left, y, right - left, BEAM_HEIGHT),
+          size: BEAM_HEIGHT,
         });
       }
 
