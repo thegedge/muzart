@@ -19,6 +19,7 @@ import { SimpleGroup } from "../layouts/SimpleGroup";
 import { Beam, Chord, Line, LineElement, Measure, Page, Rest, Space, Text } from "../types";
 import { minMap, runs } from "../utils";
 import { Box } from "../utils/Box";
+import { BarLine } from "./BarLine";
 
 // TODO break this file up into smaller bits (it's a bit slow to typecheck/format)
 
@@ -47,19 +48,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
   }
 
   addBarLine() {
-    this.addElement(
-      {
-        type: "BarLine",
-        box: new Box(
-          0,
-          0.5 * STAFF_LINE_HEIGHT,
-          LINE_STROKE_WIDTH,
-          ((this.numStaffLines || 6) - 1) * STAFF_LINE_HEIGHT
-        ),
-        strokeSize: LINE_STROKE_WIDTH,
-      },
-      { factor: null }
-    );
+    this.addElement(new BarLine(this.numStaffLines || 6), { factor: null });
   }
 
   reset() {
