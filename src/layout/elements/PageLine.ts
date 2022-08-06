@@ -15,7 +15,8 @@ import { AnchoredGroup } from "../layouts/AnchoredGroup";
 import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
 import { GridGroup } from "../layouts/GridGroup";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
-import { Chord, Line, LineElement, Measure, Page, Rest, Space, Text } from "../types";
+import { SimpleGroup } from "../layouts/SimpleGroup";
+import { Beam, Chord, Line, LineElement, Measure, Page, Rest, Space, Text } from "../types";
 import { minMap, runs } from "../utils";
 import { Box } from "../utils/Box";
 
@@ -404,6 +405,29 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
               group: "lyricsAndText",
             }
           );
+        }
+
+        const tremoloPickedNote = find(element.chord.notes, "tremoloPicking");
+        if (tremoloPickedNote) {
+          const beamBoxHeight = 3 * BEAM_HEIGHT;
+          const gap = 0.5 * BEAM_HEIGHT;
+          const width = 1.2 * chordWidth(1);
+          const box = new Box(0, 0, width, beamBoxHeight + 2 * (BEAM_HEIGHT + gap));
+          const group = new SimpleGroup<Beam>(box);
+
+          // TODO are tremolo picks always three beams?
+          for (let index = 0, y = 0; index < 3; y += 1.2 * BEAM_HEIGHT + gap, ++index) {
+            group.addElement({
+              type: "Beam",
+              box: new Box(0, y, width, beamBoxHeight),
+              size: 1.2 * BEAM_HEIGHT,
+            });
+          }
+
+          this.aboveStaffLayout.addElement(group, {
+            startColumn: index + 1,
+            endColumn: index + 1,
+          });
         }
 
         const accentuatedNote = find(element.chord.notes, "accent");

@@ -107,6 +107,7 @@ export interface NoteOptions {
   palmMute?: boolean;
   staccato?: boolean;
   dynamic?: NoteDynamic;
+  tremoloPicking?: NoteValue;
 }
 
 export class Note {
@@ -142,6 +143,10 @@ export class Note {
 
   get letRing() {
     return this.get("letRing");
+  }
+
+  get tremoloPicking() {
+    return this.get("tremoloPicking");
   }
 
   get dead() {
