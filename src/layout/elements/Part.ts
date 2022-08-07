@@ -12,14 +12,17 @@ export class Part extends SimpleGroup<types.Page, "Part", types.Score> implement
     super(box);
   }
 
-  addElement(element: types.Page, stretch = true): void {
-    element.layout?.(stretch);
+  addElement(element: types.Page): void {
     this.elements.push(element);
   }
 
   layout() {
-    this.box = Box.encompass(...this.elements.map((e) => e.box))
-      .expand(PAGE_MARGIN)
-      .translate(2 * PAGE_MARGIN);
+    this.elements.reduce((y, element, index) => {
+      element.layout?.(index < this.elements.length - 1);
+      element.box.y = y;
+      return y + element.box.height + PAGE_MARGIN;
+    }, 0);
+
+    this.box = Box.encompass(...this.elements.map((e) => e.box));
   }
 }

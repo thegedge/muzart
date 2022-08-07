@@ -4,7 +4,7 @@ import { DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH, STAFF_LINE_HEIGHT } from "./co
 import { Measure } from "./elements/Measure";
 import { Page } from "./elements/Page";
 import { PageLine } from "./elements/PageLine";
-import { PAGE_MARGIN, Part } from "./elements/Part";
+import { Part } from "./elements/Part";
 import { Score } from "./elements/Score";
 import { Text } from "./elements/Text";
 import { FlexGroupElement } from "./layouts/FlexGroup";
@@ -68,7 +68,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
 
       if (!page.content.tryAddElement(line, { factor: null })) {
         layoutPart.addElement(page);
-        page = new Page(new Box(0, page.box.bottom + PAGE_MARGIN, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT));
+        page = new Page(new Box(0, 0, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT));
         page.content.addElement(line);
       }
 
@@ -86,13 +86,13 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
 
     if (!page.content.tryAddElement(line)) {
       layoutPart.addElement(page);
-      page = new Page(new Box(0, page.box.bottom + PAGE_MARGIN, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT));
+      page = new Page(new Box(0, 0, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT));
       page.content.addElement(line);
     }
   }
 
   if (page.content.elements.length > 0) {
-    layoutPart.addElement(page, false);
+    layoutPart.addElement(page);
   }
 
   return layoutPart;

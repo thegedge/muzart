@@ -95,12 +95,13 @@ const ScoreDropZone = () => {
       className="min-w-screen min-h-screen"
       onDrop={onDrop}
       onDragOver={(e) => {
-        console.info("dragging");
         e.preventDefault();
       }}
     >
       <Toolbox />
-      <Score />
+      <div className="p-16">
+        <Score />
+      </div>
     </div>
   );
 };
