@@ -1,7 +1,7 @@
 import { zip } from "lodash";
-import { wrap } from "../elements/Wrapped";
-import { HasBox, LayoutElement, Wrapped } from "../types";
-import { AbstractGroup as AbstractGroup } from "./AbstractGroup";
+import { Wrapped } from "../elements/Wrapped";
+import { HasBox, LayoutElement } from "../types";
+import { AbstractGroup } from "./AbstractGroup";
 import { MaybeLayout } from "./types";
 
 /**
@@ -26,7 +26,7 @@ export class AnchoredGroup<T extends MaybeLayout<LayoutElement>, AnchorT extends
    */
   addElement(element: T, anchor: AnchorT | null | undefined) {
     // TODO if no anchor, instead of wrapping, just use the element as is
-    const wrapped = wrap(element);
+    const wrapped = new Wrapped(element);
     wrapped.parent = this;
     this.elements.push(wrapped);
     this.anchors.push(anchor);
@@ -45,9 +45,7 @@ export class AnchoredGroup<T extends MaybeLayout<LayoutElement>, AnchorT extends
    */
   layout() {
     for (const wrapped of this.elements) {
-      if (wrapped.element.layout) {
-        wrapped.element.layout();
-      }
+      wrapped.layout();
 
       this.box = this.box.encompass(wrapped.element.box);
       wrapped.box.width = wrapped.element.box.width;

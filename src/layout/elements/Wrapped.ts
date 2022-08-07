@@ -1,12 +1,22 @@
-import { LayoutElement, Wrapped } from "..";
+import types from "..";
 import { Box } from "../utils/Box";
+import { LayoutElement } from "./LayoutElement";
 
-export function wrap<T extends LayoutElement>(element: T) {
-  const wrapped: Wrapped<T> = {
-    type: "Wrapped",
-    element,
-    box: new Box(0, 0, 0, 0),
-  };
-  element.parent = wrapped;
-  return wrapped;
+export class Wrapped<T extends types.LayoutElement<unknown>>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  extends LayoutElement<"Wrapped", any>
+  implements types.Wrapped<T>
+{
+  readonly type = "Wrapped";
+
+  constructor(readonly element: T) {
+    super(Box.empty());
+    element.parent = this;
+  }
+
+  layout() {
+    if (this.element.layout) {
+      this.element.layout();
+    }
+  }
 }

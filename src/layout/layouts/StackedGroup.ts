@@ -1,5 +1,5 @@
-import { wrap } from "../elements/Wrapped";
-import { LayoutElement, Wrapped } from "../types";
+import { Wrapped } from "../elements/Wrapped";
+import { LayoutElement } from "../types";
 import { Box } from "../utils/Box";
 import { AbstractGroup } from "./AbstractGroup";
 import { MaybeLayout } from "./types";
@@ -23,8 +23,7 @@ export class StackedGroup<T extends MaybeLayout<LayoutElement>> extends Abstract
    * @param anchor the element to anchor to
    */
   addElement(element: T) {
-    const wrapped = wrap(element);
-    wrapped.parent = this;
+    const wrapped = new Wrapped(element);
     this.elements.push(wrapped);
   }
 
@@ -41,9 +40,7 @@ export class StackedGroup<T extends MaybeLayout<LayoutElement>> extends Abstract
   layout() {
     let first = true;
     for (const wrapped of this.elements) {
-      if (wrapped.element.layout) {
-        wrapped.element.layout();
-      }
+      wrapped.layout();
 
       const spacing = first ? 0 : this.spacing;
       first = false;

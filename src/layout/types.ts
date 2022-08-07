@@ -16,6 +16,9 @@ export interface HasParent<ParentT = unknown> {
 
 export interface LayoutElement<ParentT = unknown> extends HasBox, HasParent<ParentT> {
   type: string;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  layout?: (...args: any[]) => any;
 }
 
 export interface Margins {
