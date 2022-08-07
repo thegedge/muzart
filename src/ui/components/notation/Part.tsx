@@ -6,14 +6,10 @@ import Page from "../layout/Page";
 import { PlaybackBox } from "../misc/PlaybackBox";
 import { SelectionBox } from "../misc/SelectionBox";
 
-export const Part = React.memo((props: { part: layout.Part }) => {
-  const pages = useMemo(
-    () =>
-      props.part.children.map((page, index) => {
-        return <Page key={index} page={page} />;
-      }),
-    [props.part]
-  );
+export const Part = (props: { part: layout.Part }) => {
+  const pages = useMemo(() => {
+    return props.part.children.map((page, index) => <Page key={index} page={page} />);
+  }, [props.part]);
 
   return (
     <CurrentPartContext.Provider value={props.part.part}>
@@ -24,6 +20,4 @@ export const Part = React.memo((props: { part: layout.Part }) => {
       </BoxGroup>
     </CurrentPartContext.Provider>
   );
-});
-
-Part.displayName = "Part";
+};
