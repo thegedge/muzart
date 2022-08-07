@@ -1,8 +1,7 @@
 import { every, find, last, partition, zip } from "lodash";
-import { Alignment, LayoutElement } from "../types";
-import { maxMap } from "../utils";
+import types, { Alignment } from "..";
+import { Box, maxMap } from "../utils";
 import { AbstractGroup } from "./AbstractGroup";
-import { MaybeLayout } from "./types";
 
 export interface Constraint {
   /** Column must be in the bottom row of the grid group */
@@ -24,7 +23,7 @@ export interface Constraint {
   valign?: Alignment;
 }
 
-interface Row<T extends MaybeLayout<LayoutElement>> {
+interface Row<T extends types.LayoutElement> {
   columnAvailability: boolean[];
   elements: [T, Constraint][];
   group?: string | undefined;
@@ -33,14 +32,14 @@ interface Row<T extends MaybeLayout<LayoutElement>> {
 /**
  * TBD
  */
-export class GridGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGroup<T> {
+export class GridGroup<T extends types.LayoutElement> extends AbstractGroup<T> {
   readonly type = "Group";
 
   private constraints: Constraint[] = [];
-  private leftEdges: ReadonlyArray<number> = [];
+  private leftEdges: number[] = [];
 
   constructor(private readonly spacing = 0) {
-    super();
+    super(Box.empty());
   }
 
   addElement(element: T, constraint: Constraint) {
@@ -51,8 +50,8 @@ export class GridGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGro
 
   reset() {
     super.reset();
-    this.constraints = [];
-    this.leftEdges = [];
+    this.constraints.length = 0;
+    this.leftEdges.length = 0;
   }
 
   /**

@@ -14,11 +14,17 @@ export interface HasParent<ParentT = unknown> {
   parent: LayoutElement<ParentT> | null;
 }
 
-export interface LayoutElement<ParentT = unknown> extends HasBox, HasParent<ParentT> {
-  type: string;
-
+export interface MaybeLayout<Args extends unknown[]> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  layout?: (...args: any[]) => any;
+  layout?: (...args: Args) => void;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface LayoutElement<ParentT = unknown, LayoutArgs extends unknown[] = any[]>
+  extends HasBox,
+    HasParent<ParentT>,
+    MaybeLayout<LayoutArgs> {
+  type: string;
 }
 
 export interface Margins {

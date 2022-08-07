@@ -13,13 +13,13 @@ import { TimeSignature } from "./TimeSignature";
 const MIN_NOTE_WIDTH: Inches = 0.2;
 const QUARTER_NOTE_WIDTH: Inches = 0.25;
 
-export class Measure extends FlexGroup<LineElement, LineElement> {
+export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
   readonly type = "Measure";
 
   public chords: (types.Chord | types.Rest)[] = [];
 
   constructor(readonly part: notation.Part, readonly measure: notation.Measure) {
-    super({ box: new Box(0, 0, 0, 0), axis: "horizontal" });
+    super({ box: Box.empty(), axis: "horizontal" });
 
     const spacerWidth = QUARTER_NOTE_WIDTH / 2;
     this.box.height = part.lineCount * STAFF_LINE_HEIGHT;

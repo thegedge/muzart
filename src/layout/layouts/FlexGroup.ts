@@ -1,7 +1,6 @@
 import { defaults, isNull, last, sum, zip } from "lodash";
-import { LayoutElement } from "../types";
+import types from "..";
 import { Box } from "../utils/Box";
-import { MaybeLayout } from "./types";
 
 export type FlexProps = {
   /** If `true`, don't adjust this element during `layout` */
@@ -28,8 +27,12 @@ export type FlexGroupConfig = {
  * If, after laying out the child elements, there is still space left in the box of this group, distribute that space to all
  * elements that can be stretched (flex props with a non-null factor and not fixed).
  */
-export abstract class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends LayoutElement = LayoutElement> {
-  abstract readonly type: string;
+export abstract class FlexGroup<
+  T extends types.LayoutElement,
+  Type extends string = "Group",
+  Parent extends types.LayoutElement = types.LayoutElement
+> {
+  abstract readonly type: Type;
   readonly elements: T[] = [];
 
   public parent: Parent | null = null;
@@ -61,6 +64,23 @@ export abstract class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent ext
   }
 
   /**
+   * Add an element to this flex group.
+   *
+   * @param element the element to add
+   * @param flexProps optional flex properties to associate with this element
+   */
+  addElement(element: T, flexProps?: Partial<FlexProps>): void {
+    const lastElement = last(this.elements);
+    if (lastElement) {
+      element.box[this.startAttribute] = lastElement.box[this.endAttribute] + this.gap;
+    }
+
+    element.parent = this;
+    this.elements.push(element);
+    this.flexProps.push(defaults({}, flexProps, this.defaultFlexProps));
+  }
+
+  /**
    * Try adding an element to this flex group, but only if it will fit along the main axis.
    *
    * @param element the element to add
@@ -69,6 +89,8 @@ export abstract class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent ext
    * @returns `true` if the element was added, `false` otherwise
    */
   tryAddElement(element: T, flexProps?: Partial<FlexProps>): boolean {
+    // TODO if we could configure this group with "wraps", we could get something like flex-wrap in CSS and not need `tryAddElement`
+
     const lastElement = last(this.elements);
     if (lastElement) {
       if (
@@ -85,16 +107,6 @@ export abstract class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent ext
     this.elements.push(element);
     this.flexProps.push(defaults({}, flexProps, this.defaultFlexProps));
     return true;
-  }
-
-  addElement(element: T, flexProps?: Partial<FlexProps>): void {
-    const lastElement = last(this.elements);
-    if (lastElement) {
-      element.box[this.startAttribute] = lastElement.box[this.endAttribute] + this.gap;
-    }
-    element.parent = this;
-    this.elements.push(element);
-    this.flexProps.push(defaults({}, flexProps, this.defaultFlexProps));
   }
 
   popElement(): T | undefined {
@@ -140,15 +152,13 @@ export abstract class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent ext
         element.box[this.dimensionAttribute] += extraSpace * (props.factor / factorsSum);
       }
 
-      if (element.layout) {
-        element.layout();
-      }
+      element.layout?.();
 
       start += element.box[this.dimensionAttribute] + this.gap;
     }
   }
 }
 
-export class FlexGroupElement<T extends MaybeLayout<LayoutElement>> extends FlexGroup<T> {
+export class FlexGroupElement<T extends types.LayoutElement> extends FlexGroup<T> {
   readonly type = "Group";
 }

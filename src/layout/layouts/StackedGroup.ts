@@ -1,13 +1,12 @@
+import types from "..";
 import { Wrapped } from "../elements/Wrapped";
-import { LayoutElement } from "../types";
 import { Box } from "../utils/Box";
 import { AbstractGroup } from "./AbstractGroup";
-import { MaybeLayout } from "./types";
 
 /**
  * A group that stacks its elements vertically.
  */
-export class StackedGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGroup<Wrapped<T>> {
+export class StackedGroup<T extends types.LayoutElement> extends AbstractGroup<Wrapped<T>> {
   readonly type = "Group";
 
   constructor(readonly spacing = 0, box = new Box(0, 0, 0, 0)) {
@@ -20,15 +19,11 @@ export class StackedGroup<T extends MaybeLayout<LayoutElement>> extends Abstract
    * If no anchor element given, the element will simply be positioned as normal.
    *
    * @param element the element to be laid out
-   * @param anchor the element to anchor to
    */
   addElement(element: T) {
     const wrapped = new Wrapped(element);
+    wrapped.parent = this;
     this.elements.push(wrapped);
-  }
-
-  reset() {
-    super.reset();
   }
 
   /**
@@ -38,19 +33,17 @@ export class StackedGroup<T extends MaybeLayout<LayoutElement>> extends Abstract
    * elements already laid out before calling this function.
    */
   layout() {
-    let first = true;
+    let spacing = 0;
     for (const wrapped of this.elements) {
       wrapped.layout();
-
-      const spacing = first ? 0 : this.spacing;
-      first = false;
-
       wrapped.box.y = this.box.height + spacing;
       wrapped.box.width = wrapped.element.box.width;
       wrapped.box.height = wrapped.element.box.height;
 
       this.box.height += wrapped.box.height + spacing;
       this.box.width = Math.max(this.box.width, wrapped.box.width);
+
+      spacing = this.spacing;
     }
   }
 }

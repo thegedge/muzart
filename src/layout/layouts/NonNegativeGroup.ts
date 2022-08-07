@@ -1,13 +1,12 @@
-import { LayoutElement } from "../types";
+import types from "..";
 import { AbstractGroup } from "./AbstractGroup";
-import { MaybeLayout } from "./types";
 
 /**
  * A group that lays out its elements such that all x/y coordinates are non-negative.
  *
  * This is achieved by offsetting all elements by the top-left (x,y) corner of the bounding box of all elements.
  */
-export class NonNegativeGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGroup<T> {
+export class NonNegativeGroup<T extends types.LayoutElement> extends AbstractGroup<T> {
   readonly type = "Group";
 
   addElement(element: T) {
@@ -33,13 +32,11 @@ export class NonNegativeGroup<T extends MaybeLayout<LayoutElement>> extends Abst
     }
 
     for (const element of this.elements) {
-      if (element.layout) {
-        element.layout();
-      }
-
+      element.layout?.();
       element.box = element.box.translate(-this.box.x, -this.box.y);
     }
 
-    this.box = this.box.inverse();
+    this.box.x = -this.box.x;
+    this.box.y = -this.box.y;
   }
 }

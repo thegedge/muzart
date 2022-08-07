@@ -1,20 +1,19 @@
 import { zip } from "lodash";
+import types from "..";
 import { Wrapped } from "../elements/Wrapped";
-import { HasBox, LayoutElement } from "../types";
 import { AbstractGroup } from "./AbstractGroup";
-import { MaybeLayout } from "./types";
 
 /**
  * A group that anchors its child elements to other elements.
  *
  * **Note**: Currently anchors only to the top-left corner of the anchor element.
  */
-export class AnchoredGroup<T extends MaybeLayout<LayoutElement>, AnchorT extends HasBox> extends AbstractGroup<
+export class AnchoredGroup<T extends types.LayoutElement, AnchorT extends types.HasBox> extends AbstractGroup<
   Wrapped<T>
 > {
   readonly type = "Group";
   readonly align = "end";
-  public anchors: (AnchorT | null | undefined)[] = [];
+  readonly anchors: (AnchorT | null)[] = [];
 
   /**
    * Add an element that positions itself to another, known as "anchoring".
@@ -24,7 +23,7 @@ export class AnchoredGroup<T extends MaybeLayout<LayoutElement>, AnchorT extends
    * @param element the element to be laid out
    * @param anchor the element to anchor to
    */
-  addElement(element: T, anchor: AnchorT | null | undefined) {
+  addElement(element: T, anchor: AnchorT | null) {
     // TODO if no anchor, instead of wrapping, just use the element as is
     const wrapped = new Wrapped(element);
     wrapped.parent = this;
@@ -34,7 +33,7 @@ export class AnchoredGroup<T extends MaybeLayout<LayoutElement>, AnchorT extends
 
   reset() {
     super.reset();
-    this.anchors = [];
+    this.anchors.length = 0;
   }
 
   /**

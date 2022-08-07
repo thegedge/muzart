@@ -1,15 +1,14 @@
-import { LayoutElement } from "../types";
-import { Box } from "../utils/Box";
-import { MaybeLayout } from "./types";
+import types from "..";
+import { LayoutElement } from "../elements/LayoutElement";
 
 export abstract class AbstractGroup<
-  T extends MaybeLayout<LayoutElement>,
-  ParentT extends LayoutElement = LayoutElement
-> {
-  public parent: ParentT | null = null;
-  public elements: T[] = [];
+  T extends types.LayoutElement,
+  Type extends string = "Group",
+  ParentT extends types.LayoutElement | null = types.LayoutElement
+> extends LayoutElement<Type, ParentT> {
+  abstract readonly type: Type;
 
-  constructor(public box = new Box(0, 0, 0, 0)) {}
+  elements: T[] = [];
 
   reset() {
     for (const element of this.elements) {

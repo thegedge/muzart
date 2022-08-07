@@ -5,7 +5,7 @@ import { Box } from "../utils";
 
 export const PAGE_MARGIN = 0.5;
 
-export class Part extends SimpleGroup<types.Page, types.Score> implements types.Part {
+export class Part extends SimpleGroup<types.Page, "Part", types.Score> implements types.Part {
   readonly type = "Part";
 
   constructor(box: Box, readonly part: notation.Part) {

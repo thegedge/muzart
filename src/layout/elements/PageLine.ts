@@ -39,7 +39,7 @@ import { Vibrato } from "./Vibrato";
 
 type BeatElements = types.Chord | types.Rest;
 
-export class PageLine extends AbstractGroup<LineElement, Page> {
+export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
   readonly type = "PageLine";
 
   private aboveStaffLayout: GridGroup<LineElement>;

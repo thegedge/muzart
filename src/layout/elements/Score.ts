@@ -1,11 +1,11 @@
 import types from "..";
 import * as notation from "../../notation";
+import { AbstractGroup } from "../layouts/AbstractGroup";
 import { Box } from "../utils";
-import { LayoutElement } from "./LayoutElement";
 
 export const PAGE_MARGIN = 0.5;
 
-export class Score extends LayoutElement<"Score", null> implements types.Score {
+export class Score extends AbstractGroup<types.Part, "Score", null> implements types.Score {
   readonly type = "Score";
   readonly elements: types.Part[] = [];
 
@@ -14,11 +14,14 @@ export class Score extends LayoutElement<"Score", null> implements types.Score {
   }
 
   addElement(element: types.Part): void {
-    element.layout?.();
     this.elements.push(element);
   }
 
   layout() {
+    for (const element of this.elements) {
+      element.layout?.();
+    }
+
     this.box = Box.encompass(...this.elements.map((e) => e.box)).update({ x: 0, y: 0 });
   }
 }

@@ -15,8 +15,6 @@ export class Wrapped<T extends types.LayoutElement<unknown>>
   }
 
   layout() {
-    if (this.element.layout) {
-      this.element.layout();
-    }
+    this.element.layout?.();
   }
 }
