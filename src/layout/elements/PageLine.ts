@@ -1,4 +1,4 @@
-import { clone, find, groupBy, isNumber, isUndefined, map, max, range, some } from "lodash";
+import { clone, find, groupBy, isNumber, isUndefined, map, max, memoize, range, some } from "lodash";
 import types from "..";
 import * as notation from "../../notation";
 import { AccentStyle, NoteValueName } from "../../notation";
@@ -42,12 +42,11 @@ type BeatElements = types.Chord | types.Rest;
 export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
   readonly type = "PageLine";
 
+  // TODO make these children
   private aboveStaffLayout: GridGroup<LineElement>;
   private staffLayout: FlexGroupElement<LineElement>;
   private belowStaffLayout: NonNegativeGroup<LineElement>;
   private staffLines: Line[] = [];
-
-  // TODO find a better place for these
   private staffOverlay: AnchoredGroup<LineElement, types.Measure | types.Chord>;
 
   public measures: Measure[] = [];
@@ -199,7 +198,6 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
     this.layOutSimpleAboveStaffElements();
     this.layOutBends();
 
-    // TODO figure out some place for this (size of palm mute text)
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
 
     this.addInterMeasureStaffDecorations(
@@ -502,7 +500,7 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
    * Note that these establish the right edges of the columns. That means that the column in the grid group that corresponds
    * to the element in the array we return is actually one more than the index of that element.
    */
-  private gridLayoutElements() {
+  private gridLayoutElements = memoize(() => {
     const elements = [];
     for (const measure of this.staffLayout.children) {
       if (measure.type !== "Measure") {
@@ -517,7 +515,7 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
       }
     }
     return elements;
-  }
+  });
 
   private layOutBends() {
     this.gridLayoutElements().forEach(({ element }, index) => {

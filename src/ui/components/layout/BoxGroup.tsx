@@ -8,6 +8,7 @@ export interface BoxGroupProps extends SVGProps<SVGGElement> {
   node: LayoutElement;
   scale?: number;
   forceDebug?: boolean;
+  hidden?: boolean;
 }
 
 export function BoxGroup(props: BoxGroupProps) {
@@ -16,9 +17,17 @@ export function BoxGroup(props: BoxGroupProps) {
     transforms.push(`scale(${props.scale})`);
   }
 
+  if (props.hidden) {
+    return null;
+  }
+
   return (
     <>
-      <g transform={transforms.join(" ")} {...omit(props, "node", "scale", "forceDebug")} />
+      <g
+        transform={transforms.join(" ")}
+        {...omit(props, "node", "scale", "forceDebug")}
+        opacity={props.hidden ? 0 : 100}
+      />
       <DebugBox box={props.node.box} debugType={props.node.type} />
     </>
   );
