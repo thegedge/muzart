@@ -11,7 +11,7 @@ export interface HasBox {
 }
 
 export interface HasParent<ParentT = unknown> {
-  parent?: LayoutElement<ParentT> | null;
+  parent: LayoutElement<ParentT> | null;
 }
 
 export interface LayoutElement<ParentT = unknown> extends HasBox, HasParent<ParentT> {

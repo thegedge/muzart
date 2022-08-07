@@ -209,6 +209,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
         box: new Box(0, 0, 0, baseSize),
         size: baseSize,
         value: "P.M.",
+        parent: null,
       }),
       {
         group: "dashies",
@@ -224,6 +225,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
         box: new Box(0, 0, 0, baseSize),
         size: baseSize,
         value: harmonicString,
+        parent: null,
       }),
       {
         group: "dashies",
@@ -237,6 +239,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
         box: new Box(0, 0, 0, baseSize),
         size: baseSize,
         value: "let ring",
+        parent: null,
       }),
       {
         group: "dashies",

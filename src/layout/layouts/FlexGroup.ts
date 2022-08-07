@@ -32,7 +32,7 @@ export abstract class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent ext
   abstract readonly type: string;
   readonly elements: T[] = [];
 
-  public parent?: Parent;
+  public parent: Parent | null = null;
   public box: Box;
 
   private defaultFlexProps: FlexProps;
@@ -101,7 +101,7 @@ export abstract class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent ext
     this.flexProps.pop();
     const element = this.elements.pop();
     if (element) {
-      element.parent = undefined;
+      element.parent = null;
     }
     return element;
   }
