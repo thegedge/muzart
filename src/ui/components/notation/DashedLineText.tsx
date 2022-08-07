@@ -9,13 +9,14 @@ export const DashedLineText = (props: { element: layout.DashedLineText }) => {
 
   let maybeDashedLine;
   if (textWidth < props.element.box.width) {
+    const centerY = props.element.box.height * 0.5;
     maybeDashedLine = (
       <>
         <line
           x1={Math.min(textWidth, props.element.box.width)}
           x2={props.element.box.width}
-          y1={props.element.box.height * 0.5}
-          y2={props.element.box.height * 0.5}
+          y1={centerY}
+          y2={centerY}
           stroke="#333333"
           strokeWidth={LINE_STROKE_WIDTH}
           strokeDasharray={`${12 * LINE_STROKE_WIDTH} ${4 * LINE_STROKE_WIDTH}`}
@@ -23,8 +24,8 @@ export const DashedLineText = (props: { element: layout.DashedLineText }) => {
         <line
           x1={props.element.box.width}
           x2={props.element.box.width}
-          y1={0}
-          y2={props.element.box.height}
+          y1={centerY - 0.5 * props.element.size}
+          y2={centerY + 0.5 * props.element.size}
           stroke="#333333"
           strokeWidth={LINE_STROKE_WIDTH}
         />
