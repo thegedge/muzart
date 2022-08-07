@@ -210,10 +210,7 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
         size: baseSize,
         value: "P.M.",
         parent: null,
-      }),
-      {
-        group: "dashies",
-      }
+      })
     );
 
     this.addInterMeasureStaffDecorations(
@@ -226,10 +223,7 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
         size: baseSize,
         value: harmonicString,
         parent: null,
-      }),
-      {
-        group: "dashies",
-      }
+      })
     );
 
     this.addInterMeasureStaffDecorations(
@@ -240,10 +234,7 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
         size: baseSize,
         value: "let ring",
         parent: null,
-      }),
-      {
-        group: "dashies",
-      }
+      })
     );
 
     this.addInterMeasureStaffDecorations(
