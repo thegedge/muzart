@@ -1,15 +1,11 @@
-import { last } from "lodash";
 import * as notation from "../notation";
-import { DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH, STAFF_LINE_HEIGHT } from "./constants";
+import { DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH } from "./constants";
 import { Measure } from "./elements/Measure";
 import { Page } from "./elements/Page";
 import { PageLine } from "./elements/PageLine";
 import { Part } from "./elements/Part";
+import { PartHeader } from "./elements/PartHeader";
 import { Score } from "./elements/Score";
-import { Text } from "./elements/Text";
-import { FlexGroupElement } from "./layouts/FlexGroup";
-import { SimpleGroupElement } from "./layouts/SimpleGroup";
-import { Group, LineElement, PageElement } from "./types";
 import { Box } from "./utils/Box";
 
 /**
@@ -35,8 +31,6 @@ export function layout(score: notation.Score): Score {
   }
 }
 
-// TODO decompose this more, move into other files (e.g., `Line.fromMeasures`)
-
 function layOutPart(score: notation.Score, part: notation.Part): Part {
   const measures = part.measures;
   const layoutPart = new Part(Box.empty(), part);
@@ -44,8 +38,9 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   let page = new Page(new Box(0, 0, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT));
 
   const contentWidth = page.content.box.width;
-  const header = partHeader(score, part, contentWidth);
-  page.content.addElement(header, { factor: 0 });
+  const partHeader = new PartHeader(score, part, contentWidth);
+  partHeader.layout();
+  page.content.addElement(partHeader, { factor: 0 });
 
   let isFirstLine = true;
   let line = new PageLine(new Box(0, 0, contentWidth, 0), part.lineCount);
@@ -96,98 +91,4 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   }
 
   return layoutPart;
-}
-
-function partHeader(score: notation.Score, part: notation.Part, contentWidth: number): Group<PageElement> {
-  const headerGroup = new FlexGroupElement<PageElement>({
-    box: new Box(0, 0, contentWidth, 0),
-    axis: "vertical",
-    defaultFlexProps: { factor: null },
-  });
-
-  // Lay out the composition title, composer, etc
-  if (score.title) {
-    const height = 4 * STAFF_LINE_HEIGHT;
-    headerGroup.addElement(
-      new Text({
-        box: new Box(0, 0, contentWidth, height),
-        halign: "middle",
-        size: height,
-        value: score.title,
-        style: {
-          fontFamily: "serif",
-        },
-      })
-    );
-  }
-
-  if (score.composer) {
-    const height = 1.5 * STAFF_LINE_HEIGHT;
-
-    headerGroup.addElement(
-      new Text({
-        box: new Box(0, 0, contentWidth, 2 * height),
-        halign: "end",
-        size: height,
-        value: score.composer,
-        style: {
-          fontFamily: "serif",
-        },
-      })
-    );
-  }
-
-  if (score.comments) {
-    const height = STAFF_LINE_HEIGHT;
-    for (const comment of score.comments) {
-      headerGroup.addElement(
-        new Text({
-          box: new Box(0, 0, contentWidth, 1.5 * height),
-          halign: "middle",
-          size: height,
-          value: comment,
-          style: {
-            fontFamily: "serif",
-            fontStyle: "italic",
-          },
-        })
-      );
-    }
-  }
-
-  if (part.instrument && part.instrument.tuning) {
-    // TODO show alternative name for tuning
-    const textSize = STAFF_LINE_HEIGHT;
-    const stringNumbers = ["①", "②", "③", "④", "⑤", "⑥", "⑦"].slice(0, part.lineCount).reverse();
-    const texts: Text[] = part.instrument.tuning.map(
-      (pitch, index) =>
-        new Text({
-          box: new Box(0, 0, textSize * 5, textSize),
-          size: textSize,
-          value: `${stringNumbers[index]} = ${pitch}`,
-          style: {
-            fontFamily: "serif",
-          },
-        })
-    );
-
-    const offset = Math.round(texts.length / 2);
-    for (let index = 0; index < offset; ++index) {
-      const group = new SimpleGroupElement<LineElement>(new Box(0, 0, textSize * 10, 1.3 * textSize));
-      group.addElement(texts[index]);
-
-      if (offset + index < texts.length) {
-        const text = texts[offset + index];
-        text.box.x = textSize * 5;
-        group.addElement(text);
-      }
-
-      headerGroup.addElement(group);
-    }
-  }
-
-  headerGroup.layout();
-  headerGroup.box.height = last(headerGroup.elements)?.box.bottom ?? 0;
-
-  return headerGroup;
 }
