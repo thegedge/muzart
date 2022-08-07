@@ -72,9 +72,7 @@ const ScoreDropZone = () => {
       }}
     >
       <Toolbox />
-      <div className="p-16">
-        <Score />
-      </div>
+      <Score />
     </div>
   );
 };

@@ -19,10 +19,15 @@ export class Part extends SimpleGroup<types.Page, "Part", types.Score> implement
   layout() {
     this.children.reduce((y, element, index) => {
       element.layout?.(index < this.children.length - 1);
+      element.box.x = PAGE_MARGIN;
       element.box.y = y;
       return y + element.box.height + PAGE_MARGIN;
-    }, 0);
+    }, PAGE_MARGIN);
 
     this.box = Box.encompass(...this.children.map((e) => e.box));
+    this.box.x = 0;
+    this.box.y = 0;
+    this.box.width += 2 * PAGE_MARGIN;
+    this.box.height += 2 * PAGE_MARGIN;
   }
 }
