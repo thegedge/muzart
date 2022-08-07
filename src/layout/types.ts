@@ -31,7 +31,7 @@ export interface Margins {
 export interface Score extends LayoutElement<never> {
   type: "Score";
   score: notation.Score;
-  parts: Part[];
+  elements: Part[];
 }
 
 export interface Part extends LayoutElement<Score> {

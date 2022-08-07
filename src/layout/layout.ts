@@ -5,10 +5,11 @@ import { Measure } from "./elements/Measure";
 import { Page } from "./elements/Page";
 import { PageLine } from "./elements/PageLine";
 import { PAGE_MARGIN, Part } from "./elements/Part";
+import { Score } from "./elements/Score";
 import { Text } from "./elements/Text";
 import { FlexGroupElement } from "./layouts/FlexGroup";
 import { SimpleGroupElement } from "./layouts/SimpleGroup";
-import { Group, LineElement, PageElement, Score } from "./types";
+import { Group, LineElement, PageElement } from "./types";
 import { Box } from "./utils/Box";
 
 /**
@@ -21,13 +22,14 @@ import { Box } from "./utils/Box";
 export function layout(score: notation.Score): Score {
   console.time("layout");
   try {
-    const parts = score.parts.map((part) => layOutPart(score, part));
-    return {
-      type: "Score",
-      score,
-      parts,
-      box: Box.encompass(...parts.map((p) => p.box)).update({ x: 0, y: 0 }),
-    };
+    const layoutScore = new Score(score);
+    for (const part of score.parts) {
+      const layoutPart = layOutPart(score, part);
+      layoutScore.addElement(layoutPart);
+    }
+
+    layoutScore.layout();
+    return layoutScore;
   } finally {
     console.timeEnd("layout");
   }
@@ -92,8 +94,6 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   if (page.content.elements.length > 0) {
     layoutPart.addElement(page, false);
   }
-
-  layoutPart.layout();
 
   return layoutPart;
 }

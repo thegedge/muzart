@@ -5,9 +5,6 @@ import { Box } from "../../../layout/utils/Box";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { svgBoxProps } from "../../utils/svg";
 
-const hPadding = 10 * LINE_STROKE_WIDTH;
-const vPadding = 0;
-
 export const PlaybackBox = observer(() => {
   const { selection, playback } = useApplicationState();
 
@@ -16,7 +13,7 @@ export const PlaybackBox = observer(() => {
       return Box.empty();
     }
 
-    return toAncestorCoordinateSystem(playback.currentMeasure).expand(hPadding, vPadding);
+    return toAncestorCoordinateSystem(playback.currentMeasure);
   }, [playback.currentMeasure, selection.part]);
 
   const ref = useRef<SVGRectElement>(null);

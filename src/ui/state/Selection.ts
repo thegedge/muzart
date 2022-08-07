@@ -17,7 +17,7 @@ export class Selection {
   }
 
   get part(): Part | undefined {
-    return this.score?.parts[this.partIndex];
+    return this.score?.elements[this.partIndex];
   }
 
   get page(): Page | undefined {
