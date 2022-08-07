@@ -87,7 +87,6 @@ const FretboardDiagram = (props: { diagram: Required<notation.ChordDiagram>["dia
           x2={props.box.right}
           y2={fretY + fretH * fret}
           stroke="#000000"
-          strokeWidth={LINE_STROKE_WIDTH}
         />
       ))}
       {range(numStrings).map((string) => (
@@ -98,7 +97,6 @@ const FretboardDiagram = (props: { diagram: Required<notation.ChordDiagram>["dia
           x2={props.box.x + fretW * string}
           y2={fretY + fretboardH}
           stroke="#000000"
-          strokeWidth={LINE_STROKE_WIDTH}
         />
       ))}
       {openUnplayed.map((v, index) => {

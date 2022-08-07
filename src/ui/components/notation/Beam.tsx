@@ -7,7 +7,7 @@ const BEAM_COLOR = "#333333";
 export const Beam = (props: { node: layout.Beam }): JSX.Element => {
   const beam = props.node;
   if (beam.size == beam.box.height) {
-    return <rect {...svgBoxProps(beam.box)} fill={BEAM_COLOR} stroke="transparent" />;
+    return <rect {...svgBoxProps(beam.box)} fill={BEAM_COLOR} />;
   }
 
   const x1 = beam.box.x;

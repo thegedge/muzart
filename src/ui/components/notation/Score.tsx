@@ -71,7 +71,15 @@ export const Score = observer(() => {
   };
 
   return (
-    <svg className="m-auto" style={style} viewBox={viewBox}>
+    <svg
+      className="m-auto"
+      style={style}
+      viewBox={viewBox}
+      stroke="transparent"
+      strokeWidth={LINE_STROKE_WIDTH}
+      textRendering="optimizeSpeed"
+      shapeRendering="geometricPrecision"
+    >
       <defs>
         <filter id="pageShadow">
           <feDropShadow

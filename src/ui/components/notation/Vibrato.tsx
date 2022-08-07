@@ -1,6 +1,6 @@
 import { range } from "lodash";
 import React from "react";
-import layout, { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../../layout";
+import layout, { STAFF_LINE_HEIGHT } from "../../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 
 export function Vibrato(props: { node: layout.Vibrato }) {
@@ -22,7 +22,7 @@ export function Vibrato(props: { node: layout.Vibrato }) {
 
   return (
     <BoxGroup node={props.node}>
-      <path d={path} fill="#555555" stroke="#555555" strokeWidth={LINE_STROKE_WIDTH} />
+      <path d={path} fill="#555555" stroke="#555555" />
     </BoxGroup>
   );
 }

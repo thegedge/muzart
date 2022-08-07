@@ -14,7 +14,6 @@ export function Stroke(props: { node: layout.Stroke }) {
             width={props.node.box.width}
             height={0.5 * props.node.box.height}
             fill="#000000"
-            stroke="transparent"
           />
           <line
             x1={props.node.box.x}
@@ -39,7 +38,7 @@ export function Stroke(props: { node: layout.Stroke }) {
         L ${props.node.box.centerX} ${props.node.box.y}
         L ${props.node.box.right} ${props.node.box.bottom}
       `;
-      return <path d={path} fill="none" stroke="#000000" strokeWidth={LINE_STROKE_WIDTH} />;
+      return <path d={path} fill="none" stroke="#000000" />;
     }
   }
 }

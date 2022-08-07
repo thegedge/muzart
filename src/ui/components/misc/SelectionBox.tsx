@@ -35,7 +35,6 @@ export const SelectionBox = observer(() => {
     <rect
       ref={ref}
       fill="#f0f0a055"
-      strokeWidth={LINE_STROKE_WIDTH}
       stroke="#c0c080"
       visibility={playback.playing ? "hidden" : undefined}
       {...svgBoxProps(elementBox.expand(padding))}

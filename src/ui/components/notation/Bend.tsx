@@ -11,7 +11,7 @@ export const Bend = (props: { node: layout.Bend }) => {
 
   return (
     <BoxGroup node={props.node}>
-      <path d={bendPath(points)} fill="none" stroke={BEND_COLOR} strokeWidth={LINE_STROKE_WIDTH} />
+      <path d={bendPath(points)} fill="none" stroke={BEND_COLOR} />
       {bendArrowHeads(points)}
       <text
         x={bendTextX}

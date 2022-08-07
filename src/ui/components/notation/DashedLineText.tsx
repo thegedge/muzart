@@ -18,7 +18,6 @@ export const DashedLineText = (props: { element: layout.DashedLineText }) => {
           y1={centerY}
           y2={centerY}
           stroke="#333333"
-          strokeWidth={LINE_STROKE_WIDTH}
           strokeDasharray={`${12 * LINE_STROKE_WIDTH} ${4 * LINE_STROKE_WIDTH}`}
         />
         <line
@@ -27,7 +26,6 @@ export const DashedLineText = (props: { element: layout.DashedLineText }) => {
           y1={centerY - 0.5 * props.element.size}
           y2={centerY + 0.5 * props.element.size}
           stroke="#333333"
-          strokeWidth={LINE_STROKE_WIDTH}
         />
       </>
     );
