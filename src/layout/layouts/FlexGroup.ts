@@ -28,8 +28,8 @@ export type FlexGroupConfig = {
  * If, after laying out the child elements, there is still space left in the box of this group, distribute that space to all
  * elements that can be stretched (flex props with a non-null factor and not fixed).
  */
-export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends LayoutElement = LayoutElement> {
-  readonly type: string;
+export abstract class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends LayoutElement = LayoutElement> {
+  abstract readonly type: string;
   readonly elements: T[] = [];
 
   public parent?: Parent;
@@ -46,7 +46,6 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends Layo
   constructor(config: FlexGroupConfig) {
     const { defaultFlexProps, axis } = defaults(config, { axis: "horizontal" });
 
-    this.type = "FlexGroup";
     this.gap = config.gap ?? 0;
     this.box = config.box || new Box(0, 0, 0, 0);
     this.defaultFlexProps = defaults(defaultFlexProps, { factor: 1, fixed: false });

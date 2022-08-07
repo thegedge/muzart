@@ -21,7 +21,7 @@ export class Selection {
   }
 
   get page(): Page | undefined {
-    return this.part?.pages.find((p) =>
+    return this.part?.elements.find((p) =>
       inRange(
         this.measureIndex + 1,
         p.measures[0]?.measure?.number ?? -1,

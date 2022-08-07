@@ -19,6 +19,10 @@ export class Page extends LayoutElement<"Page", types.Part> implements types.Pag
     this.content.parent = this;
   }
 
+  layout(stretch = true) {
+    this.content.layout(stretch);
+  }
+
   get measures(): types.Measure[] {
     return this.content.elements.flatMap((e) => {
       if (e.type != "PageLine") {

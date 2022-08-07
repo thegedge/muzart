@@ -86,7 +86,7 @@ export class PlaybackController {
           }
 
           if (part == this.selection.part) {
-            const pageWithMeasure = part.pages.find((page) => !!page.measures.find((m) => m.measure == measure));
+            const pageWithMeasure = part.elements.find((page) => !!page.measures.find((m) => m.measure == measure));
             this.setCurrentMeasure(pageWithMeasure?.measures.find((m) => m.measure == measure));
           }
 

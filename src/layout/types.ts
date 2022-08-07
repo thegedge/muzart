@@ -37,7 +37,7 @@ export interface Score extends LayoutElement<never> {
 export interface Part extends LayoutElement<Score> {
   type: "Part";
   part: notation.Part;
-  pages: Page[];
+  elements: Page[];
 }
 
 export type PageElement = Group<PageElement> | Space | Text | Group<LineElement> | PageLine;

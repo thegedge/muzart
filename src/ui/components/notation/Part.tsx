@@ -18,7 +18,7 @@ export const Part = (props: { part: layout.Part }) => {
 
   const pages = useMemo(
     () =>
-      props.part.pages.map((page, index) => {
+      props.part.elements.map((page, index) => {
         return <Page key={index} page={page} />;
       }),
     [props.part]

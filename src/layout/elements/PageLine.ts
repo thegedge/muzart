@@ -16,7 +16,7 @@ import { AnchoredGroup } from "../layouts/AnchoredGroup";
 import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
 import { GridGroup } from "../layouts/GridGroup";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
-import { SimpleGroup } from "../layouts/SimpleGroup";
+import { SimpleGroupElement } from "../layouts/SimpleGroup";
 import { LineElement, Measure, Page } from "../types";
 import { minMap, runs } from "../utils";
 import { Box } from "../utils/Box";
@@ -385,7 +385,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
           const gap = 0.5 * BEAM_HEIGHT;
           const width = 1.2 * chordWidth(1);
           const box = new Box(0, 0, width, beamBoxHeight + 2 * (BEAM_HEIGHT + gap));
-          const group = new SimpleGroup<Beam>(box);
+          const group = new SimpleGroupElement<Beam>(box);
 
           // TODO are tremolo picks always three beams?
           for (let index = 0, y = 0; index < 3; y += 1.2 * BEAM_HEIGHT + gap, ++index) {

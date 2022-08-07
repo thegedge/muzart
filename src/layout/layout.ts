@@ -4,10 +4,11 @@ import { DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH, STAFF_LINE_HEIGHT } from "./co
 import { Measure } from "./elements/Measure";
 import { Page } from "./elements/Page";
 import { PageLine } from "./elements/PageLine";
+import { PAGE_MARGIN, Part } from "./elements/Part";
 import { Text } from "./elements/Text";
 import { FlexGroupElement } from "./layouts/FlexGroup";
-import { SimpleGroup } from "./layouts/SimpleGroup";
-import { Group, LineElement, PageElement, Part, Score } from "./types";
+import { SimpleGroupElement } from "./layouts/SimpleGroup";
+import { Group, LineElement, PageElement, Score } from "./types";
 import { Box } from "./utils/Box";
 
 /**
@@ -32,13 +33,11 @@ export function layout(score: notation.Score): Score {
   }
 }
 
-export const PAGE_MARGIN = 0.5;
-
 // TODO decompose this more, move into other files (e.g., `Line.fromMeasures`)
 
 function layOutPart(score: notation.Score, part: notation.Part): Part {
   const measures = part.measures;
-  const pages: Page[] = [];
+  const layoutPart = new Part(Box.empty(), part);
 
   let page = new Page(new Box(0, 0, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT));
 
@@ -66,8 +65,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
       line.layout();
 
       if (!page.content.tryAddElement(line, { factor: null })) {
-        page.content.layout();
-        pages.push(page);
+        layoutPart.addElement(page);
         page = new Page(new Box(0, page.box.bottom + PAGE_MARGIN, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT));
         page.content.addElement(line);
       }
@@ -85,32 +83,19 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     line.layout();
 
     if (!page.content.tryAddElement(line)) {
-      page.content.layout();
-      pages.push(page);
+      layoutPart.addElement(page);
       page = new Page(new Box(0, page.box.bottom + PAGE_MARGIN, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT));
       page.content.addElement(line);
     }
   }
 
   if (page.content.elements.length > 0) {
-    page.content.layout(false);
-    pages.push(page);
+    layoutPart.addElement(page, false);
   }
 
-  const partLayout: Part = {
-    type: "Part",
-    part,
-    pages,
-    box: Box.encompass(...pages.map((p) => p.box))
-      .expand(PAGE_MARGIN)
-      .translate(2 * PAGE_MARGIN),
-  };
+  layoutPart.layout();
 
-  for (const page of pages) {
-    page.parent = partLayout;
-  }
-
-  return partLayout;
+  return layoutPart;
 }
 
 function partHeader(score: notation.Score, part: notation.Part, contentWidth: number): Group<PageElement> {
@@ -188,7 +173,7 @@ function partHeader(score: notation.Score, part: notation.Part, contentWidth: nu
 
     const offset = Math.round(texts.length / 2);
     for (let index = 0; index < offset; ++index) {
-      const group = new SimpleGroup<LineElement>(new Box(0, 0, textSize * 10, 1.3 * textSize));
+      const group = new SimpleGroupElement<LineElement>(new Box(0, 0, textSize * 10, 1.3 * textSize));
       group.addElement(texts[index]);
 
       if (offset + index < texts.length) {
