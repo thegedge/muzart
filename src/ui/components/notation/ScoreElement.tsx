@@ -40,7 +40,7 @@ export default function ScoreElement(props: { element: PageElement | LineElement
     case "PageLine":
       return (
         <BoxGroup node={props.element}>
-          {props.element.elements.map((e, index) => (
+          {props.element.children.map((e, index) => (
             <ScoreElement key={index} element={e} />
           ))}
         </BoxGroup>

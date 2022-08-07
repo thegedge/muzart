@@ -1,4 +1,4 @@
-import React, { createContext, Suspense, useContext, useMemo } from "react";
+import React, { createContext, Suspense, useContext, useEffect, useMemo } from "react";
 import { PlaybackController } from "../../playback/PlaybackController";
 import { Loading } from "../components/misc/Loading";
 import { Application } from "../state/Application";
@@ -28,6 +28,40 @@ export function ApplicationState(props: { children?: React.ReactNode }) {
     window.Muzart = application;
     return application;
   }, []);
+
+  useEffect(() => {
+    if (application.score != null) {
+      return;
+    }
+
+    let defaultSoundfont = import.meta.env.VITE_DEFAULT_SOUNDFONT || null;
+    if (!defaultSoundfont) {
+      return;
+    }
+
+    if (!/^https?:\/\//.test(defaultSoundfont)) {
+      defaultSoundfont = `soundfonts/${encodeURIComponent(defaultSoundfont)}`;
+    }
+
+    void application.playback.loadSoundFont(defaultSoundfont);
+  }, [application]);
+
+  useEffect(() => {
+    if (application.score != null) {
+      return;
+    }
+
+    let defaultFile = import.meta.env.VITE_DEFAULT_FILE || "Song13.gp4";
+    if (!defaultFile) {
+      return;
+    }
+
+    if (!/^https?:\/\//.test(defaultFile)) {
+      defaultFile = `songs/${encodeURIComponent(defaultFile)}`;
+    }
+
+    void application.loadScore(defaultFile);
+  }, [application]);
 
   return (
     <Suspense fallback={<Loading />}>

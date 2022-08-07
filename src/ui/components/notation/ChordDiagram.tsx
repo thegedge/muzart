@@ -3,6 +3,7 @@ import React from "react";
 import layout, { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../../layout";
 import { Box } from "../../../layout/utils/Box";
 import * as notation from "../../../notation";
+import { useCurrentPart } from "../../utils/CurrentPartContext";
 import { BoxGroup } from "../layout/BoxGroup";
 import { TextElement } from "./TextElement";
 
@@ -38,10 +39,14 @@ export const ChordDiagram = (props: { element: layout.ChordDiagram }) => {
   );
 };
 
-function FretboardDiagram(props: { diagram: Required<notation.ChordDiagram>["diagram"]; box: Box }) {
-  // TODO maybe store in a react context?
-  const numStrings = 6;
-  const numFrets = 5;
+const FretboardDiagram = (props: { diagram: Required<notation.ChordDiagram>["diagram"]; box: Box }) => {
+  const part = useCurrentPart();
+  const numStrings = part?.instrument?.tuning?.length;
+  if (!numStrings) {
+    return null;
+  }
+
+  const numFrets = 5; // TODO make this configurable
 
   const fretY = props.box.y + 1.5 * STAFF_LINE_HEIGHT;
   const fretboardH = props.box.height - 1.5 * STAFF_LINE_HEIGHT;
@@ -138,7 +143,6 @@ function FretboardDiagram(props: { diagram: Required<notation.ChordDiagram>["dia
         }
       })}
       {props.diagram.barres.map((barre, index) => {
-        // TODO make this a <path>
         const startX = (numStrings - barre.firstString - 1) * fretW;
         const endX = (numStrings - barre.lastString - 1) * fretW;
         const y = fretY + (barre.baseFret - props.diagram.baseFret + 0.5) * fretH;
@@ -158,4 +162,4 @@ function FretboardDiagram(props: { diagram: Required<notation.ChordDiagram>["dia
       })}
     </>
   );
-}
+};

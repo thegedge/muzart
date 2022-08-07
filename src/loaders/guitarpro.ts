@@ -542,12 +542,13 @@ class GuitarProLoader {
 
   readNoteEffects(): Partial<NoteOptions> {
     let vibrato = false;
-    let bend: Bend | undefined;
-    let slide: Slide | undefined;
-    let harmonic: HarmonicStyle | undefined;
     let letRing = false;
     let palmMute = false;
     let staccato = false;
+    let bend: Bend | undefined;
+    let slide: Slide | undefined;
+    let harmonic: HarmonicStyle | undefined;
+    let tremoloPicking: NoteValue | undefined;
 
     if (this.version < 4) {
       const bits1 = bits(this.cursor.nextNumber(NumberType.Uint8));
@@ -585,7 +586,7 @@ class GuitarProLoader {
       }
 
       if (hasTremoloPicking) {
-        /* const tremoloDuration = */ this.cursor.nextNumber(NumberType.Uint8);
+        tremoloPicking = this.readTremoloPicking();
       }
 
       if (hasSlide) {
@@ -610,7 +611,22 @@ class GuitarProLoader {
       bend,
       slide,
       harmonic,
+      tremoloPicking,
     };
+  }
+
+  readTremoloPicking() {
+    const duration = this.cursor.nextNumber(NumberType.Uint8);
+    switch (duration) {
+      case 1:
+        return new NoteValue(NoteValueName.Eighth);
+      case 2:
+        return new NoteValue(NoteValueName.Sixteenth);
+      case 3:
+        return new NoteValue(NoteValueName.ThirtySecond);
+      default:
+        throw new Error(`unknown tremolo picking value: ${duration}`);
+    }
   }
 
   readSlide() {

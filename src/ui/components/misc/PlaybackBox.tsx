@@ -1,12 +1,9 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useRef } from "react";
-import { LINE_STROKE_WIDTH, PAGE_MARGIN, toAncestorCoordinateSystem } from "../../../layout";
+import { LINE_STROKE_WIDTH, toAncestorCoordinateSystem } from "../../../layout";
 import { Box } from "../../../layout/utils/Box";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { svgBoxProps } from "../../utils/svg";
-
-const hPadding = 10 * LINE_STROKE_WIDTH;
-const vPadding = 0;
 
 export const PlaybackBox = observer(() => {
   const { selection, playback } = useApplicationState();
@@ -16,8 +13,7 @@ export const PlaybackBox = observer(() => {
       return Box.empty();
     }
 
-    // TODO avoid having to do this adjustment by having pages not have to offset themselves by PAGE_MARGIN (make part a group)
-    return toAncestorCoordinateSystem(playback.currentMeasure).expand(hPadding, vPadding).translate(-PAGE_MARGIN);
+    return toAncestorCoordinateSystem(playback.currentMeasure);
   }, [playback.currentMeasure, selection.part]);
 
   const ref = useRef<SVGRectElement>(null);

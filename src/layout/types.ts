@@ -11,10 +11,19 @@ export interface HasBox {
 }
 
 export interface HasParent<ParentT = unknown> {
-  parent?: LayoutElement<ParentT>;
+  parent: LayoutElement<ParentT> | null;
 }
 
-export interface LayoutElement<ParentT = unknown> extends HasBox, HasParent<ParentT> {
+export interface MaybeLayout<Args extends unknown[]> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  layout?: (...args: Args) => void;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface LayoutElement<ParentT = unknown, LayoutArgs extends unknown[] = any[]>
+  extends HasBox,
+    HasParent<ParentT>,
+    MaybeLayout<LayoutArgs> {
   type: string;
 }
 
@@ -28,13 +37,13 @@ export interface Margins {
 export interface Score extends LayoutElement<never> {
   type: "Score";
   score: notation.Score;
-  parts: Part[];
+  children: Part[];
 }
 
 export interface Part extends LayoutElement<Score> {
   type: "Part";
   part: notation.Part;
-  pages: Page[];
+  children: Page[];
 }
 
 export type PageElement = Group<PageElement> | Space | Text | Group<LineElement> | PageLine;
@@ -47,7 +56,7 @@ export interface Page extends LayoutElement<Part> {
 
 export interface PageLine extends LayoutElement<Page> {
   type: "PageLine";
-  elements: LineElement[];
+  children: LineElement[];
   measures: Measure[];
 }
 
@@ -99,7 +108,7 @@ export interface Bend extends LayoutElement<LineElement> {
 
 export interface Group<T> extends LayoutElement<unknown> {
   type: "Group";
-  elements: T[];
+  children: T[];
 }
 
 export interface ChordDiagram extends LayoutElement<LineElement> {
@@ -149,15 +158,14 @@ export interface Measure extends LayoutElement<LineElement> {
   type: "Measure";
   measure: notation.Measure;
   box: Box;
-  elements: LineElement[];
+  children: LineElement[];
   chords: (Chord | Rest)[];
-  // TODO decorations, like time signatures, clefs, etc
 }
 
 export interface Chord extends LayoutElement<LineElement> {
   type: "Chord";
   chord: notation.Chord;
-  elements: (Note | Stroke)[];
+  children: (Note | Stroke)[];
 }
 
 export interface Rest extends LayoutElement<LineElement> {
@@ -181,6 +189,7 @@ export interface Stem extends LayoutElement<LineElement> {
 
 export interface Beam extends LayoutElement<LineElement> {
   type: "Beam";
+  size: number;
 }
 
 export interface Dot extends LayoutElement<LineElement> {
@@ -202,15 +211,13 @@ export interface TimeSignature extends LayoutElement<LineElement> {
  *
  * @returns The element whose `type` matches the given `type`. If `e` itself is of the given type, `e` will be returned.
  */
-export function getAncestorOfType<T extends LayoutElement<unknown>>(
-  e: LayoutElement<unknown> | undefined,
-  type: string
-): T | undefined {
-  while (e) {
-    if (e.type == type) {
-      return e as T;
+export function getAncestorOfType<T extends LayoutElement<unknown>>(e: LayoutElement<unknown>, type: string): T | null {
+  let current: LayoutElement<unknown> | undefined | null = e;
+  while (current) {
+    if (current.type == type) {
+      return current as T;
     }
-    e = e.parent;
+    current = current.parent;
   }
-  return e;
+  return current ?? null;
 }

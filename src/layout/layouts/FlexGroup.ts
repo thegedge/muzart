@@ -1,7 +1,6 @@
 import { defaults, isNull, last, sum, zip } from "lodash";
-import { LayoutElement } from "../types";
+import types from "..";
 import { Box } from "../utils/Box";
-import { MaybeLayout } from "./types";
 
 export type FlexProps = {
   /** If `true`, don't adjust this element during `layout` */
@@ -25,14 +24,18 @@ export type FlexGroupConfig = {
 /**
  * A group that lays out objects along an axis.
  *
- * If, after laying out the child elements, there is still space left in the box of this group, distribute that space to all
- * elements that can be stretched (flex props with a non-null factor and not fixed).
+ * If, after laying out the children, there is still space left in the box of this group, distribute that space to all
+ * children that can be stretched (flex props with a non-null factor and not fixed).
  */
-export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends LayoutElement = LayoutElement> {
-  readonly type: string;
-  readonly elements: T[] = [];
+export abstract class FlexGroup<
+  T extends types.LayoutElement,
+  Type extends string = "Group",
+  Parent extends types.LayoutElement | null = types.LayoutElement
+> {
+  abstract readonly type: Type;
+  readonly children: T[] = [];
 
-  public parent?: Parent;
+  public parent: Parent | null = null;
   public box: Box;
 
   private defaultFlexProps: FlexProps;
@@ -46,7 +49,6 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends Layo
   constructor(config: FlexGroupConfig) {
     const { defaultFlexProps, axis } = defaults(config, { axis: "horizontal" });
 
-    this.type = "FlexGroup";
     this.gap = config.gap ?? 0;
     this.box = config.box || new Box(0, 0, 0, 0);
     this.defaultFlexProps = defaults(defaultFlexProps, { factor: 1, fixed: false });
@@ -62,6 +64,23 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends Layo
   }
 
   /**
+   * Add an element to this flex group.
+   *
+   * @param element the element to add
+   * @param flexProps optional flex properties to associate with this element
+   */
+  addElement(element: T, flexProps?: Partial<FlexProps>): void {
+    const lastElement = last(this.children);
+    if (lastElement) {
+      element.box[this.startAttribute] = lastElement.box[this.endAttribute] + this.gap;
+    }
+
+    element.parent = this;
+    this.children.push(element);
+    this.flexProps.push(defaults({}, flexProps, this.defaultFlexProps));
+  }
+
+  /**
    * Try adding an element to this flex group, but only if it will fit along the main axis.
    *
    * @param element the element to add
@@ -70,7 +89,9 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends Layo
    * @returns `true` if the element was added, `false` otherwise
    */
   tryAddElement(element: T, flexProps?: Partial<FlexProps>): boolean {
-    const lastElement = last(this.elements);
+    // TODO if we could configure this group with "wraps", we could get something like flex-wrap in CSS and not need `tryAddElement`
+
+    const lastElement = last(this.children);
     if (lastElement) {
       if (
         lastElement.box[this.endAttribute] + this.gap + element.box[this.dimensionAttribute] >
@@ -83,37 +104,27 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends Layo
     }
 
     element.parent = this;
-    this.elements.push(element);
+    this.children.push(element);
     this.flexProps.push(defaults({}, flexProps, this.defaultFlexProps));
     return true;
   }
 
-  addElement(element: T, flexProps?: Partial<FlexProps>): void {
-    const lastElement = last(this.elements);
-    if (lastElement) {
-      element.box[this.startAttribute] = lastElement.box[this.endAttribute] + this.gap;
-    }
-    element.parent = this;
-    this.elements.push(element);
-    this.flexProps.push(defaults({}, flexProps, this.defaultFlexProps));
-  }
-
   popElement(): T | undefined {
     this.flexProps.pop();
-    const element = this.elements.pop();
+    const element = this.children.pop();
     if (element) {
-      element.parent = undefined;
+      element.parent = null;
     }
     return element;
   }
 
   /**
-   * Reposition and scale all inner elements so that they fill this flex group's box
+   * Reposition and scale all children so that they fill this flex group's box
    *
-   * @param stretch if `true`, stretch relevant elements to fit the layout
+   * @param stretch if `true`, stretch relevant children to fit the layout
    */
   public layout(stretch = true) {
-    const zipped = zip(this.elements, this.flexProps) as [T, FlexProps][];
+    const zipped = zip(this.children, this.flexProps) as [T, FlexProps][];
     const stretchable = zipped.filter((v) => !isNull(v[1].fixed));
 
     let factorsSum = 1;
@@ -124,12 +135,12 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends Layo
         factorsSum = 1;
       }
 
-      const lastElement = last(this.elements);
+      const lastElement = last(this.children);
       if (lastElement) {
         extraSpace = this.box[this.dimensionAttribute] - lastElement.box[this.endAttribute];
 
         // When adding elements, we added the gap, so we need to take that away from the extra space too
-        extraSpace -= this.gap * (this.elements.length - 1);
+        extraSpace -= this.gap * (this.children.length - 1);
       }
     }
 
@@ -139,16 +150,15 @@ export class FlexGroup<T extends MaybeLayout<LayoutElement>, Parent extends Layo
       element.box[this.startAttribute] = start;
       if (props.factor) {
         element.box[this.dimensionAttribute] += extraSpace * (props.factor / factorsSum);
-        if (element.layout) {
-          element.layout();
-        }
       }
+
+      element.layout?.();
 
       start += element.box[this.dimensionAttribute] + this.gap;
     }
   }
 }
 
-export class FlexGroupElement<T extends MaybeLayout<LayoutElement>> extends FlexGroup<T> {
+export class FlexGroupElement<T extends types.LayoutElement> extends FlexGroup<T> {
   readonly type = "Group";
 }

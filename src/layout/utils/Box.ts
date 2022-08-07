@@ -33,13 +33,6 @@ export class Box {
   }
 
   /**
-   * Create a new box, inverting the translation of this box.
-   */
-  inverse() {
-    return new Box(-this.x, -this.y, this.width, this.height);
-  }
-
-  /**
    * Create a new box that expands in all directions by the given amount.
    */
   expand(amount: number): Box;

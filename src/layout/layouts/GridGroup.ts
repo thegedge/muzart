@@ -1,8 +1,7 @@
-import { every, find, last, partition, zip } from "lodash";
-import { Alignment, LayoutElement } from "../types";
-import { maxMap } from "../utils";
+import { every, find, last, zip } from "lodash";
+import types, { Alignment } from "..";
+import { Box, maxMap } from "../utils";
 import { AbstractGroup } from "./AbstractGroup";
-import { MaybeLayout } from "./types";
 
 export interface Constraint {
   /** Column must be in the bottom row of the grid group */
@@ -14,7 +13,7 @@ export interface Constraint {
   /** End column consumed by this element (inclusive) */
   endColumn: number;
 
-  /** An optional row key, such that only elements with the given key can be found on the same row */
+  /** An optional grouping, such only other elements with this group will end up on the same row */
   group?: string;
 
   /** If set, align the element horizontally in the cell instead of stretching */
@@ -24,35 +23,37 @@ export interface Constraint {
   valign?: Alignment;
 }
 
-interface Row<T extends MaybeLayout<LayoutElement>> {
+interface Row<T extends types.LayoutElement> {
   columnAvailability: boolean[];
   elements: [T, Constraint][];
   group?: string | undefined;
 }
 
+// TODO chord diagrams are large, so perhaps we should allow automatic spanning of multiple rows? would need a fixed row height.
+
 /**
- * TBD
+ * A group that lays its elements out in a grid pattern, dynamically creating rows such that elements don't overlap.
  */
-export class GridGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGroup<T> {
+export class GridGroup<T extends types.LayoutElement> extends AbstractGroup<T> {
   readonly type = "Group";
 
   private constraints: Constraint[] = [];
-  private leftEdges: ReadonlyArray<number> = [];
+  private leftEdges: number[] = [];
 
-  constructor(private readonly spacing = 0) {
-    super();
+  constructor(private readonly gap = 0) {
+    super(Box.empty());
   }
 
   addElement(element: T, constraint: Constraint) {
     element.parent = this;
-    this.elements.push(element);
+    this.children.push(element);
     this.constraints.push(constraint);
   }
 
   reset() {
     super.reset();
-    this.constraints = [];
-    this.leftEdges = [];
+    this.constraints.length = 0;
+    this.leftEdges.length = 0;
   }
 
   /**
@@ -87,12 +88,12 @@ export class GridGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGro
         }
       }
 
-      y += maxHeight + this.spacing;
+      y += maxHeight + this.gap;
     }
 
     this.box.x = 0;
     this.box.y = 0;
-    this.box.height = y - this.spacing;
+    this.box.height = y - this.gap;
   }
 
   private newRow(group?: string): Row<T> {
@@ -134,26 +135,28 @@ export class GridGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGro
     // TODO allow elements not in the same group to be on the same row, but push to another row if an element from the same group should go there
 
     const rows = [this.newRow()];
-    const zipped = zip(this.elements, this.constraints) as [T, Constraint][];
-    const [mustBeBottomRow, everythingElse] = partition(zipped, ([_, constraint]) => constraint.mustBeBottomRow);
-
-    if (mustBeBottomRow.length > 0) {
-      for (const [element, constraint] of mustBeBottomRow) {
-        this.addElementToRow(rows[0], element, constraint);
+    const zipped = zip(this.children, this.constraints) as [T, Constraint][]; // cast away the `undefined`, lengths are guaranteed to be the same
+    zipped.sort(([_a, constraintA], [_b, constraintB]) => {
+      const bottomA = constraintA.mustBeBottomRow;
+      const bottomB = constraintB.mustBeBottomRow;
+      if (bottomA != bottomB) {
+        return bottomA ? -1 : 1;
       }
 
-      rows[0].columnAvailability.fill(false); // ensure no one else can be on the bottom row (should they?)
-      rows.unshift(this.newRow());
-    }
+      const groupA = constraintA.group;
+      const groupB = constraintB.group;
 
-    for (const [element, constraint] of everythingElse) {
-      let row = find(rows, (row) => {
-        return (
-          constraint.group === row.group &&
-          every(row.columnAvailability.slice(constraint.startColumn, constraint.endColumn + 1))
-        );
-      });
+      if (groupA) {
+        return groupB ? groupA.localeCompare(groupB) : 1;
+      }
 
+      return groupB ? -1 : 0;
+    });
+
+    for (const [element, constraint] of zipped) {
+      const start = constraint.startColumn;
+      const end = constraint.endColumn + 1;
+      let row = find(rows, (row) => row.group == constraint.group && every(row.columnAvailability.slice(start, end)));
       if (!row) {
         row = this.newRow(constraint.group);
         rows.unshift(row);

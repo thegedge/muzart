@@ -1,11 +1,11 @@
-import { clone, last } from "lodash";
 import * as notation from "../notation";
-import { DEFAULT_MARGINS, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH, LINE_MARGIN, STAFF_LINE_HEIGHT } from "./constants";
-import { Measure as MeasureLayout } from "./elements/Measure";
+import { DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH } from "./constants";
+import { Measure } from "./elements/Measure";
+import { Page } from "./elements/Page";
 import { PageLine } from "./elements/PageLine";
-import { FlexGroupElement } from "./layouts/FlexGroup";
-import { SimpleGroup } from "./layouts/SimpleGroup";
-import { Group, LineElement, Measure, Page, PageElement, Part, Score, Text } from "./types";
+import { Part } from "./elements/Part";
+import { PartHeader } from "./elements/PartHeader";
+import { Score } from "./elements/Score";
 import { Box } from "./utils/Box";
 
 /**
@@ -18,39 +18,34 @@ import { Box } from "./utils/Box";
 export function layout(score: notation.Score): Score {
   console.time("layout");
   try {
-    const parts = score.parts.map((part) => layOutPart(score, part));
-    return {
-      type: "Score",
-      score,
-      parts,
-      box: Box.encompass(...parts.map((p) => p.box)).update({ x: 0, y: 0 }),
-    };
+    const layoutScore = new Score(score);
+    for (const part of score.parts) {
+      const layoutPart = layOutPart(score, part);
+      layoutScore.addElement(layoutPart);
+    }
+
+    layoutScore.layout();
+    return layoutScore;
   } finally {
     console.timeEnd("layout");
   }
 }
 
-export const PAGE_MARGIN = 0.5;
-
-// TODO decompose this more, move into other files (e.g., `Line.fromMeasures`)
-
 function layOutPart(score: notation.Score, part: notation.Part): Part {
   const measures = part.measures;
-  const margins = DEFAULT_MARGINS;
-  const contentWidth = DEFAULT_PAGE_WIDTH - margins.left - margins.right;
-  const contentHeight = DEFAULT_PAGE_HEIGHT - margins.top - margins.bottom;
-  const pageContentBox = new Box(margins.left, margins.top, contentWidth, contentHeight);
-  const pages: Page[] = [];
+  const layoutPart = new Part(Box.empty(), part);
 
-  let pageGroup = new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical", gap: LINE_MARGIN });
+  let page = new Page(new Box(0, 0, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT));
 
-  const header = partHeader(score, part, contentWidth);
-  pageGroup.addElement(header, { factor: 0 });
+  const contentWidth = page.content.box.width;
+  const partHeader = new PartHeader(score, part, contentWidth);
+  partHeader.layout();
+  page.content.addElement(partHeader, { factor: 0 });
 
   let isFirstLine = true;
   let line = new PageLine(new Box(0, 0, contentWidth, 0), part.lineCount);
   for (const measureToLayOut of measures) {
-    const measure: Measure = new MeasureLayout(part, measureToLayOut);
+    const measure = new Measure(part, measureToLayOut);
 
     // Determine if we need to be on a new line.
     //
@@ -66,9 +61,10 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     } else {
       line.layout();
 
-      if (!pageGroup.tryAddElement(line, { factor: null })) {
-        pageGroup = startNewPage(pages, pageContentBox, pageGroup);
-        pageGroup.addElement(line);
+      if (!page.content.tryAddElement(line, { factor: null })) {
+        layoutPart.addElement(page);
+        page = new Page(new Box(0, 0, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT));
+        page.content.addElement(line);
       }
 
       line = new PageLine(new Box(0, 0, contentWidth, 0), part.lineCount);
@@ -80,157 +76,19 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
 
   // TODO a lot of code here is shared with the loop above
 
-  if (line.elements.length > 0) {
+  if (line.children.length > 0) {
     line.layout();
 
-    if (!pageGroup.tryAddElement(line)) {
-      pageGroup = startNewPage(pages, pageContentBox, pageGroup);
-      pageGroup.addElement(line);
+    if (!page.content.tryAddElement(line)) {
+      layoutPart.addElement(page);
+      page = new Page(new Box(0, 0, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT));
+      page.content.addElement(line);
     }
   }
 
-  if (pageGroup.elements.length > 0) {
-    pageGroup.layout(false);
-
-    const page: Page = {
-      type: "Page",
-      content: pageGroup,
-      box: new Box(0, pages.length * (DEFAULT_PAGE_HEIGHT + PAGE_MARGIN), DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT),
-      measures: measureElements(pageGroup.elements),
-    };
-
-    pageGroup.parent = page;
-
-    pages.push(page);
+  if (page.content.children.length > 0) {
+    layoutPart.addElement(page);
   }
 
-  const partLayout: Part = {
-    type: "Part",
-    part,
-    pages,
-    box: Box.encompass(...pages.map((p) => p.box))
-      .expand(PAGE_MARGIN)
-      .translate(2 * PAGE_MARGIN),
-  };
-
-  for (const page of pages) {
-    page.parent = partLayout;
-  }
-
-  return partLayout;
-}
-
-function startNewPage(pages: Page[], pageContentBox: Box, pageGroup: FlexGroupElement<PageElement>) {
-  pageGroup.layout();
-
-  const page: Page = {
-    type: "Page",
-    content: pageGroup,
-    box: new Box(0, pages.length * (DEFAULT_PAGE_HEIGHT + PAGE_MARGIN), DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT),
-    measures: measureElements(pageGroup.elements),
-  };
-
-  pageGroup.parent = page;
-  pages.push(page);
-
-  return new FlexGroupElement<PageElement>({ box: clone(pageContentBox), axis: "vertical", gap: LINE_MARGIN });
-}
-
-function measureElements(pageElements: PageElement[]): Measure[] {
-  return pageElements.flatMap((e) => {
-    if (e.type != "PageLine") {
-      return [];
-    }
-
-    return e.measures;
-  });
-}
-
-function partHeader(score: notation.Score, part: notation.Part, contentWidth: number): Group<PageElement> {
-  const headerGroup = new FlexGroupElement<PageElement>({
-    box: new Box(0, 0, contentWidth, 0),
-    axis: "vertical",
-    defaultFlexProps: { factor: null },
-  });
-
-  // Lay out the composition title, composer, etc
-  if (score.title) {
-    const height = 4 * STAFF_LINE_HEIGHT;
-    headerGroup.addElement({
-      type: "Text",
-      box: new Box(0, 0, contentWidth, height),
-      halign: "middle",
-      size: height,
-      value: score.title,
-      style: {
-        fontFamily: "serif",
-      },
-    });
-  }
-
-  if (score.composer) {
-    const height = 1.5 * STAFF_LINE_HEIGHT;
-
-    headerGroup.addElement({
-      type: "Text",
-      box: new Box(0, 0, contentWidth, 2 * height),
-      halign: "end",
-      size: height,
-      value: score.composer,
-      style: {
-        fontFamily: "serif",
-      },
-    });
-  }
-
-  if (score.comments) {
-    const height = STAFF_LINE_HEIGHT;
-    for (const comment of score.comments) {
-      headerGroup.addElement({
-        type: "Text",
-        box: new Box(0, 0, contentWidth, 1.5 * height),
-        halign: "middle",
-        size: height,
-        value: comment,
-        style: {
-          fontFamily: "serif",
-          fontStyle: "italic",
-        },
-      });
-    }
-  }
-
-  if (part.instrument && part.instrument.tuning) {
-    // TODO show alternative name for tuning
-    const textSize = STAFF_LINE_HEIGHT;
-    const stringNumbers = ["①", "②", "③", "④", "⑤", "⑥", "⑦"].slice(0, part.lineCount).reverse();
-    const texts: Text[] = part.instrument.tuning.map((pitch, index) => ({
-      type: "Text",
-      box: new Box(0, 0, textSize * 5, textSize),
-      size: textSize,
-      value: `${stringNumbers[index]} = ${pitch}`,
-      style: {
-        fontFamily: "serif",
-      },
-    }));
-
-    const offset = Math.round(texts.length / 2);
-    for (let index = 0; index < offset; ++index) {
-      const group = new SimpleGroup<LineElement>(new Box(0, 0, textSize * 10, 1.3 * textSize));
-      group.addElement(texts[index]);
-
-      if (offset + index < texts.length) {
-        const text = texts[offset + index];
-        text.box.x = textSize * 5;
-        group.addElement(text);
-      }
-
-      headerGroup.addElement(group);
-    }
-  }
-
-  headerGroup.layout();
-  headerGroup.box.height = last(headerGroup.elements)?.box.bottom ?? 0;
-
-  return headerGroup;
+  return layoutPart;
 }

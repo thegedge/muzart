@@ -1,20 +1,19 @@
 import { zip } from "lodash";
-import { wrap } from "../elements/Wrapped";
-import { HasBox, LayoutElement, Wrapped } from "../types";
-import { AbstractGroup as AbstractGroup } from "./AbstractGroup";
-import { MaybeLayout } from "./types";
+import types from "..";
+import { Wrapped } from "../elements/Wrapped";
+import { AbstractGroup } from "./AbstractGroup";
 
 /**
  * A group that anchors its child elements to other elements.
  *
  * **Note**: Currently anchors only to the top-left corner of the anchor element.
  */
-export class AnchoredGroup<T extends MaybeLayout<LayoutElement>, AnchorT extends HasBox> extends AbstractGroup<
+export class AnchoredGroup<T extends types.LayoutElement, AnchorT extends types.HasBox> extends AbstractGroup<
   Wrapped<T>
 > {
   readonly type = "Group";
   readonly align = "end";
-  public anchors: (AnchorT | null | undefined)[] = [];
+  readonly anchors: (AnchorT | null)[] = [];
 
   /**
    * Add an element that positions itself to another, known as "anchoring".
@@ -24,37 +23,35 @@ export class AnchoredGroup<T extends MaybeLayout<LayoutElement>, AnchorT extends
    * @param element the element to be laid out
    * @param anchor the element to anchor to
    */
-  addElement(element: T, anchor: AnchorT | null | undefined) {
+  addElement(element: T, anchor: AnchorT | null) {
     // TODO if no anchor, instead of wrapping, just use the element as is
-    const wrapped = wrap(element);
+    const wrapped = new Wrapped(element);
     wrapped.parent = this;
-    this.elements.push(wrapped);
+    this.children.push(wrapped);
     this.anchors.push(anchor);
   }
 
   reset() {
     super.reset();
-    this.anchors = [];
+    this.anchors.length = 0;
   }
 
   /**
-   * Lay out the elements in this group.
+   * Lay out this group's children.
    *
-   * The elements will use the current `box` of their respective anchor elements, so it's important to have the anchor
+   * The children will use the current `box` of their respective anchor elements, so it's important to have the anchor
    * elements already laid out before calling this function.
    */
   layout() {
-    for (const wrapped of this.elements) {
-      if (wrapped.element.layout) {
-        wrapped.element.layout();
-      }
+    for (const wrapped of this.children) {
+      wrapped.layout();
 
       this.box = this.box.encompass(wrapped.element.box);
       wrapped.box.width = wrapped.element.box.width;
       wrapped.box.height = wrapped.element.box.height;
     }
 
-    for (const [wrapped, anchor] of zip(this.elements, this.anchors)) {
+    for (const [wrapped, anchor] of zip(this.children, this.anchors)) {
       if (wrapped) {
         wrapped.box.x = anchor ? anchor.box.x : 0;
         wrapped.box.y = this.align === "end" ? this.box.height - wrapped.box.height : 0;

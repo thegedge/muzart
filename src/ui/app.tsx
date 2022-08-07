@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useEffect } from "react";
 import { determineScoreType, getFilenameAndMimeType, ScoreDataType } from "../loaders";
 import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -31,32 +30,6 @@ export default function App() {
 
 const ScoreDropZone = () => {
   const application = useApplicationState();
-
-  useEffect(() => {
-    let defaultSoundfont = import.meta.env.VITE_DEFAULT_SOUNDFONT || null;
-    if (!defaultSoundfont) {
-      return;
-    }
-
-    if (!/^https?:\/\//.test(defaultSoundfont)) {
-      defaultSoundfont = `soundfonts/${encodeURIComponent(defaultSoundfont)}`;
-    }
-
-    void application.playback.loadSoundFont(defaultSoundfont);
-  }, [application]);
-
-  useEffect(() => {
-    let defaultFile = import.meta.env.VITE_DEFAULT_FILE || "Song13.gp4";
-    if (!defaultFile) {
-      return;
-    }
-
-    if (!/^https?:\/\//.test(defaultFile)) {
-      defaultFile = `songs/${encodeURIComponent(defaultFile)}`;
-    }
-
-    void application.loadScore(defaultFile);
-  }, [application]);
 
   const onDrop = (event: React.DragEvent<Element>) => {
     event.preventDefault();
@@ -95,12 +68,13 @@ const ScoreDropZone = () => {
       className="min-w-screen min-h-screen"
       onDrop={onDrop}
       onDragOver={(e) => {
-        console.info("dragging");
         e.preventDefault();
       }}
     >
       <Toolbox />
-      <Score />
+      <div className="p-16">
+        <Score />
+      </div>
     </div>
   );
 };

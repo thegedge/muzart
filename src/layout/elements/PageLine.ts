@@ -1,4 +1,5 @@
 import { clone, find, groupBy, isNumber, isUndefined, map, max, range, some } from "lodash";
+import types from "..";
 import * as notation from "../../notation";
 import { AccentStyle, NoteValueName } from "../../notation";
 import {
@@ -15,13 +16,30 @@ import { AnchoredGroup } from "../layouts/AnchoredGroup";
 import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
 import { GridGroup } from "../layouts/GridGroup";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
-import { Chord, Line, LineElement, Measure, Page, Rest, Space, Text } from "../types";
+import { SimpleGroupElement } from "../layouts/SimpleGroup";
+import { LineElement, Measure, Page } from "../types";
 import { minMap, runs } from "../utils";
 import { Box } from "../utils/Box";
+import { Arc } from "./Arc";
+import { BarLine } from "./BarLine";
+import { Beam } from "./Beam";
+import { Bend } from "./Bend";
+import { Chord } from "./Chord";
+import { ChordDiagram } from "./ChordDiagram";
+import { Dot } from "./Dot";
+import { Line } from "./Line";
+import { Slide } from "./Slide";
+import { Space } from "./Space";
+import { Stem } from "./Stem";
+import { Stroke } from "./Stroke";
+import { Text } from "./Text";
+import { Vibrato } from "./Vibrato";
 
 // TODO break this file up into smaller bits (it's a bit slow to typecheck/format)
 
-export class PageLine extends AbstractGroup<LineElement, Page> {
+type BeatElements = types.Chord | types.Rest;
+
+export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
   readonly type = "PageLine";
 
   private aboveStaffLayout: GridGroup<LineElement>;
@@ -30,7 +48,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
   private staffLines: Line[] = [];
 
   // TODO find a better place for these
-  private staffOverlay: AnchoredGroup<LineElement, Measure | Chord>;
+  private staffOverlay: AnchoredGroup<LineElement, types.Measure | types.Chord>;
 
   public measures: Measure[] = [];
 
@@ -46,19 +64,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
   }
 
   addBarLine() {
-    this.addElement(
-      {
-        type: "BarLine",
-        box: new Box(
-          0,
-          0.5 * STAFF_LINE_HEIGHT,
-          LINE_STROKE_WIDTH,
-          ((this.numStaffLines || 6) - 1) * STAFF_LINE_HEIGHT
-        ),
-        strokeSize: LINE_STROKE_WIDTH,
-      },
-      { factor: null }
-    );
+    this.addElement(new BarLine(this.numStaffLines || 6), { factor: null });
   }
 
   reset() {
@@ -76,73 +82,57 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
       axis: "vertical",
     });
 
-    tabGroup.addElement({
-      type: "Space",
-      box: new Box(0, 0, tabWidth, LINE_STROKE_WIDTH),
-    });
+    tabGroup.addElement(Space.fromDimensions(tabWidth, LINE_STROKE_WIDTH));
 
     tabGroup.addElement(
-      {
-        type: "Text",
+      Text.centered({
         box: new Box(0, 0, tabWidth, tabTextSize),
-        halign: "middle",
-        valign: "middle",
         size: tabTextSize,
         value: "T",
         style: { userSelect: "none" },
-      },
+      }),
       { factor: null }
     );
 
     tabGroup.addElement(
-      {
-        type: "Text",
+      Text.centered({
         box: new Box(0, 0, tabWidth, tabTextSize),
-        halign: "middle",
-        valign: "middle",
         size: tabTextSize,
         value: "A",
         style: { userSelect: "none" },
-      },
+      }),
       { factor: null }
     );
 
     tabGroup.addElement(
-      {
-        type: "Text",
+      Text.centered({
         box: new Box(0, 0, tabWidth, tabTextSize),
-        halign: "middle",
-        valign: "middle",
         size: tabTextSize,
         value: "B",
         style: { userSelect: "none" },
-      },
+      }),
       { factor: null }
     );
 
-    tabGroup.addElement({
-      type: "Space",
-      box: new Box(0, 0, tabWidth, LINE_STROKE_WIDTH),
-    });
+    tabGroup.addElement(Space.fromDimensions(tabWidth, LINE_STROKE_WIDTH));
 
     // Num staff lines doesn't change, so we can do this once and call it a day
     tabGroup.layout();
 
     this.addElement(tabGroup, { factor: null });
 
-    this.staffLines = range(this.numStaffLines).map((_index) => ({
-      type: "Line",
-      parent: this,
-      box: new Box(0, 0, 0, 0),
-      color: "#888888",
-    }));
+    this.staffLines = range(this.numStaffLines).map((_index) => {
+      const line = new Line(Box.empty(), "#888888");
+      line.parent = this;
+      return line;
+    });
 
     this.aboveStaffLayout.parent = this;
     this.staffLayout.parent = this;
     this.belowStaffLayout.parent = this;
     this.staffOverlay.parent = this;
 
-    this.elements = (this.staffLines as LineElement[]).concat([
+    this.children = (this.staffLines as LineElement[]).concat([
       this.aboveStaffLayout,
       this.staffLayout,
       this.belowStaffLayout,
@@ -167,7 +157,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
 
   layout() {
     this.staffLayout.layout();
-    this.staffLayout.box.height = max(map(this.staffLayout.elements, "box.height"));
+    this.staffLayout.box.height = max(map(this.staffLayout.children, "box.height"));
 
     this.layOutStaffOverlay();
 
@@ -188,13 +178,13 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
       line.box.y = this.staffLayout.box.y + (index + 0.5) * STAFF_LINE_HEIGHT;
     });
 
-    this.box.width = max(map(this.elements, "box.width"));
+    this.box.width = max(map(this.children, "box.width"));
     this.box.height = this.belowStaffLayout.box.bottom;
   }
 
   private addBelowStaffElements() {
     this.belowStaffLayout.reset();
-    for (const lineChild of this.staffLayout.elements) {
+    for (const lineChild of this.staffLayout.children) {
       if (lineChild.type !== "Measure") {
         continue;
       }
@@ -219,10 +209,8 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
         box: new Box(0, 0, 0, baseSize),
         size: baseSize,
         value: "P.M.",
-      }),
-      {
-        group: "dashies",
-      }
+        parent: null,
+      })
     );
 
     this.addInterMeasureStaffDecorations(
@@ -234,10 +222,8 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
         box: new Box(0, 0, 0, baseSize),
         size: baseSize,
         value: harmonicString,
-      }),
-      {
-        group: "dashies",
-      }
+        parent: null,
+      })
     );
 
     this.addInterMeasureStaffDecorations(
@@ -247,18 +233,13 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
         box: new Box(0, 0, 0, baseSize),
         size: baseSize,
         value: "let ring",
-      }),
-      {
-        group: "dashies",
-      }
+        parent: null,
+      })
     );
 
     this.addInterMeasureStaffDecorations(
       (chord: notation.Chord) => some(chord.notes, "vibrato"),
-      (_vibrato: boolean, _amount: number) => ({
-        type: "Vibrato",
-        box: new Box(0, 0, 0, STAFF_LINE_HEIGHT),
-      }),
+      (_vibrato: boolean, _amount: number) => new Vibrato(),
       {
         includeChordSpacer: true,
       }
@@ -288,7 +269,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
     let amount = 0;
 
     this.gridLayoutElements().forEach(({ element }, index) => {
-      if (element.type === "Space") {
+      if (element.type == "Space") {
         return;
       }
 
@@ -345,18 +326,16 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
       const measure = measureElements[0].measure.measure;
 
       this.aboveStaffLayout.addElement(
-        {
-          type: "Text",
+        new Text({
+          value: measure.number.toString(),
+          size: numberSize,
           halign: firstMeasure ? "start" : "middle",
           valign: "end",
-          box: new Box(0, 0, 0, numberSize),
-          size: numberSize,
-          value: measure.number.toString(),
           style: {
             userSelect: "none",
             fill: "#888888",
           },
-        },
+        }),
         {
           mustBeBottomRow: true,
           startColumn: measureStartColumn - 1, // this is the empty spacer at the end of the measure
@@ -372,38 +351,45 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
         // TODO pre-process chord diagrams and lift them to the top of the diagram, instead of on a per-line basis
         if (element.chord.chordDiagram) {
           const diagram = element.chord.chordDiagram;
-          const height = (diagram.diagram ? 7 : 1) * STAFF_LINE_HEIGHT;
-          this.aboveStaffLayout.addElement(
-            {
-              type: "ChordDiagram",
-              box: new Box(0, 0, 0, height),
-              diagram,
-            },
-            {
-              startColumn: index + 1,
-              endColumn: index + 1,
-              group: "chords",
-            }
-          );
+          this.aboveStaffLayout.addElement(new ChordDiagram(diagram), {
+            startColumn: index + 1,
+            endColumn: index + 1,
+            group: "chords",
+          });
         }
 
         if (element.chord.text) {
           this.aboveStaffLayout.addElement(
-            {
-              type: "Text",
-              box: new Box(0, 0, 0, baseSize),
+            new Text({
               size: baseSize,
               value: element.chord.text,
-              style: {
-                fontStyle: "italic",
-              },
-            },
+              style: { fontStyle: "italic" },
+            }),
             {
               startColumn: index + 1,
               endColumn: index + 2,
               group: "lyricsAndText",
             }
           );
+        }
+
+        const tremoloPickedNote = find(element.chord.notes, "tremoloPicking");
+        if (tremoloPickedNote) {
+          const beamBoxHeight = 3 * BEAM_HEIGHT;
+          const gap = 0.5 * BEAM_HEIGHT;
+          const width = 1.2 * chordWidth(1);
+          const box = new Box(0, 0, width, beamBoxHeight + 2 * (BEAM_HEIGHT + gap));
+          const group = new SimpleGroupElement<Beam>(box);
+
+          // TODO are tremolo picks always three beams?
+          for (let index = 0, y = 0; index < 3; y += 1.2 * BEAM_HEIGHT + gap, ++index) {
+            group.addElement(new Beam(new Box(0, y, width, beamBoxHeight), 1.2 * BEAM_HEIGHT));
+          }
+
+          this.aboveStaffLayout.addElement(group, {
+            startColumn: index + 1,
+            endColumn: index + 1,
+          });
         }
 
         const accentuatedNote = find(element.chord.notes, "accent");
@@ -420,34 +406,24 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
 
           if (accentString) {
             const accentSize = baseSize * 1.5;
-            this.aboveStaffLayout.addElement(
-              {
-                type: "Text",
-                box: new Box(0, 0, 0, accentSize),
-                size: accentSize,
-                value: accentString,
-              },
-              {
-                startColumn: index + 1,
-                endColumn: index + 1,
-              }
-            );
+            this.aboveStaffLayout.addElement(new Text({ size: accentSize, value: accentString }), {
+              startColumn: index + 1,
+              endColumn: index + 1,
+            });
           }
         }
       }
 
       if (measure.staffDetails.tempo?.changed) {
         this.aboveStaffLayout.addElement(
-          {
-            type: "Text",
-            box: new Box(0, 0, 0, tempoSize),
+          new Text({
             size: tempoSize,
             value: `♩﹦${measure.staffDetails.tempo.value}`,
             style: {
               userSelect: "none",
               fontWeight: "bold",
             },
-          },
+          }),
           {
             startColumn: measureStartColumn,
             endColumn: measureStartColumn + 1,
@@ -456,16 +432,14 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
 
         if (measure.marker) {
           this.aboveStaffLayout.addElement(
-            {
-              type: "Text",
-              box: new Box(0, 0, 0, baseSize),
+            new Text({
               size: baseSize,
               value: measure.marker.text,
               style: {
                 fontWeight: "bold",
                 fill: measure.marker.color,
               },
-            },
+            }),
             {
               startColumn: measureStartColumn,
               endColumn: measureStartColumn + 1,
@@ -478,8 +452,8 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
     }
   }
 
-  private stemAndBeam(measureElement: Measure) {
-    const beats = this.groupElementsOnBeat(measureElement.measure, measureElement.elements);
+  private stemAndBeam(measureElement: types.Measure) {
+    const beats = this.groupElementsOnBeat(measureElement.measure, measureElement.children);
     for (const beat of beats) {
       const firstElement = beat[0];
       if (!firstElement) {
@@ -493,7 +467,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
     }
   }
 
-  private numBeams(element: Chord | Rest) {
+  private numBeams(element: BeatElements) {
     switch (element.chord.value.name) {
       case NoteValueName.Whole:
         return -2;
@@ -514,9 +488,9 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
     }
   }
 
-  private elementOffset(element: Chord | Rest) {
-    if (element.type === "Chord" && element.elements.length > 0) {
-      return element.box.x + element.elements[0].box.centerX;
+  private elementOffset(element: BeatElements) {
+    if (element.type === "Chord" && element.children.length > 0) {
+      return element.box.x + element.children[0].box.centerX;
     }
     // TODO need to figure out how to best center in a rest
     return element.box.x + 0.4 * STAFF_LINE_HEIGHT;
@@ -530,12 +504,12 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
    */
   private gridLayoutElements() {
     const elements = [];
-    for (const measure of this.staffLayout.elements) {
+    for (const measure of this.staffLayout.children) {
       if (measure.type !== "Measure") {
         continue;
       }
 
-      for (const measureChild of measure.elements) {
+      for (const measureChild of measure.children) {
         elements.push({
           element: measureChild,
           measure,
@@ -553,20 +527,12 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
 
       for (const note of element.chord.notes) {
         if (note.bend) {
-          this.aboveStaffLayout.addElement(
-            {
-              type: "Bend",
-              box: new Box(0, 0, 0, 2.5 * STAFF_LINE_HEIGHT),
-              bend: note.bend,
-              descent: ((note.placement?.string || 1) - 0.5) * STAFF_LINE_HEIGHT,
-            },
-            {
-              startColumn: index + 1,
-              // TODO if a note tie, should go to the end of the tie
-              endColumn: index + 2,
-              mustBeBottomRow: true,
-            }
-          );
+          this.aboveStaffLayout.addElement(new Bend(note.bend, note), {
+            startColumn: index + 1,
+            // TODO if a note tie, should go to the end of the tie
+            endColumn: index + 2,
+            mustBeBottomRow: true,
+          });
         }
       }
     });
@@ -581,32 +547,24 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
       if (element.chord.stroke) {
         // TODO this doesn't look right (too wide) when chord contains notes fretted at 10+. I don't think there's
         //  any straightforward way to deal with this right now, so just gonna deal with it.
-        this.aboveStaffLayout.addElement(
-          {
-            type: "Stroke",
-            box: new Box(0, 0, chordWidth(1), STAFF_LINE_HEIGHT),
-            stroke: element.chord.stroke,
-          },
-          {
-            startColumn: index + 1,
-            endColumn: index + 1,
-            halign: "middle",
-            valign: "end",
-          }
-        );
+        this.aboveStaffLayout.addElement(new Stroke(element.chord.stroke), {
+          startColumn: index + 1,
+          endColumn: index + 1,
+          halign: "middle",
+          valign: "end",
+        });
       }
 
       if (element.chord.tapped) {
         // TODO this doesn't look right (too wide) when chord contains notes fretted at 10+. I don't think there's
         //  any straightforward way to deal with this right now, so just gonna deal with it.
         this.aboveStaffLayout.addElement(
-          {
-            type: "Text",
+          new Text({
             box: new Box(0, 0, 0, STAFF_LINE_HEIGHT),
             size: STAFF_LINE_HEIGHT,
             value: "T",
             halign: "middle",
-          },
+          }),
           {
             startColumn: index + 1,
             endColumn: index + 1,
@@ -654,16 +612,15 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
           }
 
           this.staffOverlay.addElement(
-            {
-              type: "Slide",
-              box: new Box(
+            new Slide(
+              new Box(
                 x,
                 measure.box.y + element.box.y + STAFF_LINE_HEIGHT * ((note.placement?.string || 1) - 1) + yoffset,
                 w,
                 STAFF_LINE_HEIGHT - 2 * yoffset
               ),
-              upwards: note.slide.upwards,
-            },
+              note.slide.upwards
+            ),
             null
           );
         }
@@ -683,16 +640,14 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
         // If the very first chord in the line has a tie, create an arc to show that
         if (note.tie?.previous && index === 0) {
           this.staffOverlay.addElement(
-            {
-              type: "Arc",
-              box: new Box(
+            new Arc(
+              new Box(
                 measure.box.x,
                 measure.box.y + element.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
                 0.16,
                 STAFF_LINE_HEIGHT * 0.5
-              ),
-              orientation: "below",
-            },
+              )
+            ),
             null
           );
         }
@@ -715,16 +670,14 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
           }
 
           this.staffOverlay.addElement(
-            {
-              type: "Arc",
-              box: new Box(
+            new Arc(
+              new Box(
                 x,
                 measure.box.y + element.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
                 width,
                 STAFF_LINE_HEIGHT * 0.5
-              ),
-              orientation: "below",
-            },
+              )
+            ),
             null
           );
         }
@@ -735,27 +688,26 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
   // TODO there's a lot of "behavioural coupling" between these methods. For example, `layOutBeams` is aware of how tall
   //      stems are, and similarly for `layOutDots`.
 
-  private layOutStems(measureBox: Box, beatElements: (Chord | Rest)[]) {
+  private layOutStems(measureBox: Box, beatElements: BeatElements[]) {
     for (const beatElement of beatElements) {
       if (beatElement.type !== "Chord") {
         continue;
       }
 
-      if (beatElement?.chord.value.name === NoteValueName.Whole) {
+      if (beatElement.chord.value.name === NoteValueName.Whole) {
         continue;
       }
 
       // Half notes have a shorter stem on tablature
       const y = this.numBeams(beatElement) < 0 ? STAFF_LINE_HEIGHT * 2 : STAFF_LINE_HEIGHT;
 
-      this.belowStaffLayout.addElement({
-        type: "Stem",
-        box: new Box(measureBox.x + this.elementOffset(beatElement), y, beatElement.box.width, STEM_HEIGHT - y),
-      });
+      this.belowStaffLayout.addElement(
+        new Stem(new Box(measureBox.x + this.elementOffset(beatElement), y, beatElement.box.width, STEM_HEIGHT - y))
+      );
     }
   }
 
-  private layOutDots(measureBox: Box, beatElements: (Chord | Rest)[]) {
+  private layOutDots(measureBox: Box, beatElements: BeatElements[]) {
     for (const beatElement of beatElements) {
       if (beatElement.chord.value.dots > 0) {
         // TODO more than one dot
@@ -769,15 +721,12 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
           y -= 0.5 * BEAM_HEIGHT * (this.numBeams(beatElement) - 1);
         }
 
-        this.belowStaffLayout.addElement({
-          type: "Dot",
-          box: new Box(measureBox.x + this.elementOffset(beatElement), y, DOT_SIZE, DOT_SIZE),
-        });
+        this.belowStaffLayout.addElement(new Dot(measureBox.x + this.elementOffset(beatElement), y));
       }
     }
   }
 
-  private layOutTuplets(measureBox: Box, beatElements: (Chord | Rest)[]) {
+  private layOutTuplets(measureBox: Box, beatElements: BeatElements[]) {
     // TODO "bracket" multiple notes in a row, e.g., └─ 3 ─┘. It's a little challenging though, because there are
     //  a lot of special cases:
     //     1. If the entire beat is the same tuplet value, and it's beamed, no bracketing
@@ -788,19 +737,18 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
       const tuplet = noteWithTuplet?.value.tuplet;
       if (tuplet) {
         const y = STEM_HEIGHT + BEAM_HEIGHT;
-        this.belowStaffLayout.addElement({
-          type: "Text",
-          box: new Box(measureBox.x + beatElement.box.x, y, beatElement.box.width, TUPLET_SIZE),
-          value: String(tuplet.n),
-          size: TUPLET_SIZE,
-          halign: "middle",
-          valign: "middle",
-        });
+        this.belowStaffLayout.addElement(
+          Text.centered({
+            box: new Box(measureBox.x + beatElement.box.x, y, beatElement.box.width, TUPLET_SIZE),
+            value: String(tuplet.n),
+            size: TUPLET_SIZE,
+          })
+        );
       }
     }
   }
 
-  private layOutBeams(measureBox: Box, beatElements: (Chord | Rest)[]) {
+  private layOutBeams(measureBox: Box, beatElements: BeatElements[]) {
     // TODO draw dots
 
     let y = STEM_HEIGHT - BEAM_HEIGHT;
@@ -827,10 +775,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
           }
         }
 
-        this.belowStaffLayout.addElement({
-          type: "Beam",
-          box: new Box(left, y, right - left, BEAM_HEIGHT),
-        });
+        this.belowStaffLayout.addElement(new Beam(new Box(left, y, right - left, BEAM_HEIGHT)));
       }
 
       // Decrement all the beam counts, since we just drew one. No worries about some going into the negatives.
@@ -839,7 +784,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
     }
   }
 
-  private groupElementsOnBeat(measure: notation.Measure, elements: LineElement[]) {
+  private groupElementsOnBeat(measure: notation.Measure, line: LineElement[]) {
     let beatAmount = 0.25; // TODO What do default to? Currently assuming quarter beat, hence 0.25.
     const timeBeat = measure.staffDetails.time?.value?.toBeat();
     if (timeBeat) {
@@ -851,7 +796,7 @@ export class PageLine extends AbstractGroup<LineElement, Page> {
     const beatElements = [];
     let currentBeatElements = [];
     let currentAmount = beatAmount;
-    for (const measureChild of elements) {
+    for (const measureChild of line) {
       if (measureChild.type !== "Chord") {
         continue;
       }

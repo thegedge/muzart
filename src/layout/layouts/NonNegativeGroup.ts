@@ -1,19 +1,18 @@
-import { LayoutElement } from "../types";
+import types from "..";
 import { AbstractGroup } from "./AbstractGroup";
-import { MaybeLayout } from "./types";
 
 /**
- * A group that lays out its elements such that all x/y coordinates are non-negative.
+ * A group that lays out its children such that all x/y coordinates are non-negative.
  *
- * This is achieved by offsetting all elements by the top-left (x,y) corner of the bounding box of all elements.
+ * This is achieved by offsetting all children by the top-left (x,y) corner of the bounding box of all children.
  */
-export class NonNegativeGroup<T extends MaybeLayout<LayoutElement>> extends AbstractGroup<T> {
+export class NonNegativeGroup<T extends types.LayoutElement> extends AbstractGroup<T> {
   readonly type = "Group";
 
   addElement(element: T) {
     element.parent = this;
     this.box = this.box.encompass(element.box);
-    this.elements.push(element);
+    this.children.push(element);
   }
 
   reset() {
@@ -23,23 +22,21 @@ export class NonNegativeGroup<T extends MaybeLayout<LayoutElement>> extends Abst
   }
 
   /**
-   * Lay out the elements.
+   * Lay out the children.
    *
-   * If this box's top left corner isn't at the origin, translate all elements and this box to the origin.
+   * If this box's top left corner isn't at the origin, translate all children and this box to the origin.
    */
   layout() {
     if (this.box.x === 0 && this.box.y === 0) {
       return;
     }
 
-    for (const element of this.elements) {
-      if (element.layout) {
-        element.layout();
-      }
-
+    for (const element of this.children) {
+      element.layout?.();
       element.box = element.box.translate(-this.box.x, -this.box.y);
     }
 
-    this.box = this.box.inverse();
+    this.box.x = -this.box.x;
+    this.box.y = -this.box.y;
   }
 }

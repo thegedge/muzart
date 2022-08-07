@@ -1,6 +1,5 @@
 import React from "react";
-import layout, { LINE_STROKE_WIDTH } from "../../../layout";
-import { Box } from "../../../layout/utils/Box";
+import layout, { Box, LINE_STROKE_WIDTH } from "../../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 import { TextElement } from "./TextElement";
 
@@ -36,9 +35,11 @@ export const DashedLineText = (props: { element: layout.DashedLineText }) => {
   return (
     <BoxGroup node={props.element}>
       <TextElement
-        box={new Box(0, 0, textWidth, props.element.size)}
+        box={new Box(0, 0, props.element.box.width, props.element.box.height)}
         size={props.element.size}
         text={props.element.value}
+        halign="start"
+        valign="middle"
         style={{ fill: "#333333" }}
       />
       {maybeDashedLine}

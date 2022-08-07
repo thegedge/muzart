@@ -73,7 +73,7 @@ export class PlaybackController {
       const playNextMeasure = () => {
         let tempo: number | undefined;
 
-        score.parts.forEach((part, partIndex) => {
+        score.children.forEach((part, partIndex) => {
           if (part.part.instrument?.type == "percussion") {
             // TODO implement
             return;
@@ -86,7 +86,7 @@ export class PlaybackController {
           }
 
           if (part == this.selection.part) {
-            const pageWithMeasure = part.pages.find((page) => !!page.measures.find((m) => m.measure == measure));
+            const pageWithMeasure = part.children.find((page) => !!page.measures.find((m) => m.measure == measure));
             this.setCurrentMeasure(pageWithMeasure?.measures.find((m) => m.measure == measure));
           }
 
@@ -152,7 +152,7 @@ export class PlaybackController {
   }
 
   private instrumentForPart(partIndex: number): Instrument | null {
-    const part = this.selection.score?.parts[partIndex]?.part;
+    const part = this.selection.score?.children[partIndex]?.part;
     if (!this.soundFont || !part?.instrument) {
       return null;
     }

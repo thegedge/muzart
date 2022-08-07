@@ -107,6 +107,7 @@ export interface NoteOptions {
   palmMute?: boolean;
   staccato?: boolean;
   dynamic?: NoteDynamic;
+  tremoloPicking?: NoteValue;
 }
 
 export class Note {
@@ -144,6 +145,10 @@ export class Note {
     return this.get("letRing");
   }
 
+  get tremoloPicking() {
+    return this.get("tremoloPicking");
+  }
+
   get dead() {
     return this.options.dead;
   }
@@ -177,7 +182,6 @@ export class Note {
       return "";
     }
 
-    // TODO verify all of these make sense
     switch (this.harmonic) {
       case HarmonicStyle.Natural:
         return "N.H.";
