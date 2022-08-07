@@ -33,7 +33,7 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
       this.box.width += timeSig.box.width;
     }
 
-    this.addElement(Space.fromDimensions(0.5 * spacerWidth, spacerWidth), { factor: null });
+    this.addElement(Space.fromDimensions(spacerWidth, spacerWidth), { factor: null });
     this.box.width += spacerWidth;
 
     // TODO if just a single whole rest, put in center
