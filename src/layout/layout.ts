@@ -76,7 +76,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
 
   // TODO a lot of code here is shared with the loop above
 
-  if (line.elements.length > 0) {
+  if (line.children.length > 0) {
     line.layout();
 
     if (!page.content.tryAddElement(line)) {
@@ -86,7 +86,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     }
   }
 
-  if (page.content.elements.length > 0) {
+  if (page.content.children.length > 0) {
     layoutPart.addElement(page);
   }
 

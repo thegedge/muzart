@@ -24,7 +24,7 @@ export class Page extends LayoutElement<"Page", types.Part> implements types.Pag
   }
 
   get measures(): types.Measure[] {
-    return this.content.elements.flatMap((e) => {
+    return this.content.children.flatMap((e) => {
       if (e.type != "PageLine") {
         return [];
       }

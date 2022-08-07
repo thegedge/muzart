@@ -24,8 +24,8 @@ export type FlexGroupConfig = {
 /**
  * A group that lays out objects along an axis.
  *
- * If, after laying out the child elements, there is still space left in the box of this group, distribute that space to all
- * elements that can be stretched (flex props with a non-null factor and not fixed).
+ * If, after laying out the children, there is still space left in the box of this group, distribute that space to all
+ * children that can be stretched (flex props with a non-null factor and not fixed).
  */
 export abstract class FlexGroup<
   T extends types.LayoutElement,
@@ -33,7 +33,7 @@ export abstract class FlexGroup<
   Parent extends types.LayoutElement | null = types.LayoutElement
 > {
   abstract readonly type: Type;
-  readonly elements: T[] = [];
+  readonly children: T[] = [];
 
   public parent: Parent | null = null;
   public box: Box;
@@ -70,13 +70,13 @@ export abstract class FlexGroup<
    * @param flexProps optional flex properties to associate with this element
    */
   addElement(element: T, flexProps?: Partial<FlexProps>): void {
-    const lastElement = last(this.elements);
+    const lastElement = last(this.children);
     if (lastElement) {
       element.box[this.startAttribute] = lastElement.box[this.endAttribute] + this.gap;
     }
 
     element.parent = this;
-    this.elements.push(element);
+    this.children.push(element);
     this.flexProps.push(defaults({}, flexProps, this.defaultFlexProps));
   }
 
@@ -91,7 +91,7 @@ export abstract class FlexGroup<
   tryAddElement(element: T, flexProps?: Partial<FlexProps>): boolean {
     // TODO if we could configure this group with "wraps", we could get something like flex-wrap in CSS and not need `tryAddElement`
 
-    const lastElement = last(this.elements);
+    const lastElement = last(this.children);
     if (lastElement) {
       if (
         lastElement.box[this.endAttribute] + this.gap + element.box[this.dimensionAttribute] >
@@ -104,14 +104,14 @@ export abstract class FlexGroup<
     }
 
     element.parent = this;
-    this.elements.push(element);
+    this.children.push(element);
     this.flexProps.push(defaults({}, flexProps, this.defaultFlexProps));
     return true;
   }
 
   popElement(): T | undefined {
     this.flexProps.pop();
-    const element = this.elements.pop();
+    const element = this.children.pop();
     if (element) {
       element.parent = null;
     }
@@ -119,12 +119,12 @@ export abstract class FlexGroup<
   }
 
   /**
-   * Reposition and scale all inner elements so that they fill this flex group's box
+   * Reposition and scale all children so that they fill this flex group's box
    *
-   * @param stretch if `true`, stretch relevant elements to fit the layout
+   * @param stretch if `true`, stretch relevant children to fit the layout
    */
   public layout(stretch = true) {
-    const zipped = zip(this.elements, this.flexProps) as [T, FlexProps][];
+    const zipped = zip(this.children, this.flexProps) as [T, FlexProps][];
     const stretchable = zipped.filter((v) => !isNull(v[1].fixed));
 
     let factorsSum = 1;
@@ -135,12 +135,12 @@ export abstract class FlexGroup<
         factorsSum = 1;
       }
 
-      const lastElement = last(this.elements);
+      const lastElement = last(this.children);
       if (lastElement) {
         extraSpace = this.box[this.dimensionAttribute] - lastElement.box[this.endAttribute];
 
         // When adding elements, we added the gap, so we need to take that away from the extra space too
-        extraSpace -= this.gap * (this.elements.length - 1);
+        extraSpace -= this.gap * (this.children.length - 1);
       }
     }
 

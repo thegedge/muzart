@@ -13,7 +13,7 @@ export interface Constraint {
   /** End column consumed by this element (inclusive) */
   endColumn: number;
 
-  /** An optional row key, such that only elements with the given key can be found on the same row */
+  /** An optional row key, such that only children with the given key can be found on the same row */
   group?: string;
 
   /** If set, align the element horizontally in the cell instead of stretching */
@@ -44,7 +44,7 @@ export class GridGroup<T extends types.LayoutElement> extends AbstractGroup<T> {
 
   addElement(element: T, constraint: Constraint) {
     element.parent = this;
-    this.elements.push(element);
+    this.children.push(element);
     this.constraints.push(constraint);
   }
 
@@ -133,7 +133,7 @@ export class GridGroup<T extends types.LayoutElement> extends AbstractGroup<T> {
     // TODO allow elements not in the same group to be on the same row, but push to another row if an element from the same group should go there
 
     const rows = [this.newRow()];
-    const zipped = zip(this.elements, this.constraints) as [T, Constraint][];
+    const zipped = zip(this.children, this.constraints) as [T, Constraint][];
     const [mustBeBottomRow, everythingElse] = partition(zipped, ([_, constraint]) => constraint.mustBeBottomRow);
 
     if (mustBeBottomRow.length > 0) {

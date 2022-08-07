@@ -132,7 +132,7 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
     this.belowStaffLayout.parent = this;
     this.staffOverlay.parent = this;
 
-    this.elements = (this.staffLines as LineElement[]).concat([
+    this.children = (this.staffLines as LineElement[]).concat([
       this.aboveStaffLayout,
       this.staffLayout,
       this.belowStaffLayout,
@@ -157,7 +157,7 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
 
   layout() {
     this.staffLayout.layout();
-    this.staffLayout.box.height = max(map(this.staffLayout.elements, "box.height"));
+    this.staffLayout.box.height = max(map(this.staffLayout.children, "box.height"));
 
     this.layOutStaffOverlay();
 
@@ -178,13 +178,13 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
       line.box.y = this.staffLayout.box.y + (index + 0.5) * STAFF_LINE_HEIGHT;
     });
 
-    this.box.width = max(map(this.elements, "box.width"));
+    this.box.width = max(map(this.children, "box.width"));
     this.box.height = this.belowStaffLayout.box.bottom;
   }
 
   private addBelowStaffElements() {
     this.belowStaffLayout.reset();
-    for (const lineChild of this.staffLayout.elements) {
+    for (const lineChild of this.staffLayout.children) {
       if (lineChild.type !== "Measure") {
         continue;
       }
@@ -462,7 +462,7 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
   }
 
   private stemAndBeam(measureElement: types.Measure) {
-    const beats = this.groupElementsOnBeat(measureElement.measure, measureElement.elements);
+    const beats = this.groupElementsOnBeat(measureElement.measure, measureElement.children);
     for (const beat of beats) {
       const firstElement = beat[0];
       if (!firstElement) {
@@ -498,8 +498,8 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
   }
 
   private elementOffset(element: BeatElements) {
-    if (element.type === "Chord" && element.elements.length > 0) {
-      return element.box.x + element.elements[0].box.centerX;
+    if (element.type === "Chord" && element.children.length > 0) {
+      return element.box.x + element.children[0].box.centerX;
     }
     // TODO need to figure out how to best center in a rest
     return element.box.x + 0.4 * STAFF_LINE_HEIGHT;
@@ -513,12 +513,12 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
    */
   private gridLayoutElements() {
     const elements = [];
-    for (const measure of this.staffLayout.elements) {
+    for (const measure of this.staffLayout.children) {
       if (measure.type !== "Measure") {
         continue;
       }
 
-      for (const measureChild of measure.elements) {
+      for (const measureChild of measure.children) {
         elements.push({
           element: measureChild,
           measure,
@@ -793,7 +793,7 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
     }
   }
 
-  private groupElementsOnBeat(measure: notation.Measure, elements: LineElement[]) {
+  private groupElementsOnBeat(measure: notation.Measure, line: LineElement[]) {
     let beatAmount = 0.25; // TODO What do default to? Currently assuming quarter beat, hence 0.25.
     const timeBeat = measure.staffDetails.time?.value?.toBeat();
     if (timeBeat) {
@@ -805,7 +805,7 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
     const beatElements = [];
     let currentBeatElements = [];
     let currentAmount = beatAmount;
-    for (const measureChild of elements) {
+    for (const measureChild of line) {
       if (measureChild.type !== "Chord") {
         continue;
       }

@@ -6,7 +6,7 @@ import { Note } from "./Note";
 
 export class Chord extends LayoutElement<"Chord", types.LineElement> implements types.Chord {
   readonly type = "Chord";
-  readonly elements: (types.Note | types.Stroke)[] = [];
+  readonly children: (types.Note | types.Stroke)[] = [];
 
   constructor(readonly chord: notation.Chord) {
     // TODO use num staff lines from ancestor
@@ -14,7 +14,7 @@ export class Chord extends LayoutElement<"Chord", types.LineElement> implements 
     const noteWidth = chordWidth(maxNoteChars);
     super(new Box(0, 0, noteWidth, 6 * STAFF_LINE_HEIGHT));
 
-    this.elements = this.chord.notes.map((note) => {
+    this.children = this.chord.notes.map((note) => {
       const noteY = note.placement ? (note.placement.string - 1) * STAFF_LINE_HEIGHT : 0;
       const noteElement = new Note(new Box(0, noteY, noteWidth, STAFF_LINE_HEIGHT), note);
       noteElement.parent = this;

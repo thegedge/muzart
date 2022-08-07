@@ -17,11 +17,11 @@ export class Selection {
   }
 
   get part(): Part | undefined {
-    return this.score?.elements[this.partIndex];
+    return this.score?.children[this.partIndex];
   }
 
   get page(): Page | undefined {
-    return this.part?.elements.find((p) =>
+    return this.part?.children.find((p) =>
       inRange(
         this.measureIndex + 1,
         p.measures[0]?.measure?.number ?? -1,
@@ -49,7 +49,7 @@ export class Selection {
     }
 
     // Need the `as` here because TS doesn't understand that the type check internally prevents returning anything else
-    return this.chord?.elements.find(
+    return this.chord?.children.find(
       (note) => note.type == "Note" && note.note.placement?.string == this.noteIndex + 1
     ) as Note | undefined;
   }
@@ -82,7 +82,7 @@ export class Selection {
         if (chord.type == "Rest") {
           this.element = chord;
         } else {
-          this.element = chord.elements[this.noteIndex];
+          this.element = chord.children[this.noteIndex];
         }
       }
     }

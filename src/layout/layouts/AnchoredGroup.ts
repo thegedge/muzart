@@ -27,7 +27,7 @@ export class AnchoredGroup<T extends types.LayoutElement, AnchorT extends types.
     // TODO if no anchor, instead of wrapping, just use the element as is
     const wrapped = new Wrapped(element);
     wrapped.parent = this;
-    this.elements.push(wrapped);
+    this.children.push(wrapped);
     this.anchors.push(anchor);
   }
 
@@ -37,13 +37,13 @@ export class AnchoredGroup<T extends types.LayoutElement, AnchorT extends types.
   }
 
   /**
-   * Lay out the elements in this group.
+   * Lay out this group's children.
    *
-   * The elements will use the current `box` of their respective anchor elements, so it's important to have the anchor
+   * The children will use the current `box` of their respective anchor elements, so it's important to have the anchor
    * elements already laid out before calling this function.
    */
   layout() {
-    for (const wrapped of this.elements) {
+    for (const wrapped of this.children) {
       wrapped.layout();
 
       this.box = this.box.encompass(wrapped.element.box);
@@ -51,7 +51,7 @@ export class AnchoredGroup<T extends types.LayoutElement, AnchorT extends types.
       wrapped.box.height = wrapped.element.box.height;
     }
 
-    for (const [wrapped, anchor] of zip(this.elements, this.anchors)) {
+    for (const [wrapped, anchor] of zip(this.children, this.anchors)) {
       if (wrapped) {
         wrapped.box.x = anchor ? anchor.box.x : 0;
         wrapped.box.y = this.align === "end" ? this.box.height - wrapped.box.height : 0;

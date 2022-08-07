@@ -10,12 +10,12 @@ export abstract class SimpleGroup<
   ParentT extends types.LayoutElement | null = types.LayoutElement
 > extends AbstractGroup<T, Type, ParentT> {
   addElement(element: T) {
-    this.elements.push(element);
+    this.children.push(element);
     element.parent = this;
   }
 
   layout() {
-    for (const element of this.elements) {
+    for (const element of this.children) {
       element.layout?.();
     }
   }

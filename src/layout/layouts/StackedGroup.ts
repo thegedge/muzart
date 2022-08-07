@@ -23,7 +23,7 @@ export class StackedGroup<T extends types.LayoutElement> extends AbstractGroup<W
   addElement(element: T) {
     const wrapped = new Wrapped(element);
     wrapped.parent = this;
-    this.elements.push(wrapped);
+    this.children.push(wrapped);
   }
 
   /**
@@ -34,7 +34,7 @@ export class StackedGroup<T extends types.LayoutElement> extends AbstractGroup<W
    */
   layout() {
     let spacing = 0;
-    for (const wrapped of this.elements) {
+    for (const wrapped of this.children) {
       wrapped.layout();
       wrapped.box.y = this.box.height + spacing;
       wrapped.box.width = wrapped.element.box.width;

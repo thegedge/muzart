@@ -9,7 +9,7 @@ import { SelectionBox } from "../misc/SelectionBox";
 export const Part = React.memo((props: { part: layout.Part }) => {
   const pages = useMemo(
     () =>
-      props.part.elements.map((page, index) => {
+      props.part.children.map((page, index) => {
         return <Page key={index} page={page} />;
       }),
     [props.part]

@@ -37,13 +37,13 @@ export interface Margins {
 export interface Score extends LayoutElement<never> {
   type: "Score";
   score: notation.Score;
-  elements: Part[];
+  children: Part[];
 }
 
 export interface Part extends LayoutElement<Score> {
   type: "Part";
   part: notation.Part;
-  elements: Page[];
+  children: Page[];
 }
 
 export type PageElement = Group<PageElement> | Space | Text | Group<LineElement> | PageLine;
@@ -56,7 +56,7 @@ export interface Page extends LayoutElement<Part> {
 
 export interface PageLine extends LayoutElement<Page> {
   type: "PageLine";
-  elements: LineElement[];
+  children: LineElement[];
   measures: Measure[];
 }
 
@@ -108,7 +108,7 @@ export interface Bend extends LayoutElement<LineElement> {
 
 export interface Group<T> extends LayoutElement<unknown> {
   type: "Group";
-  elements: T[];
+  children: T[];
 }
 
 export interface ChordDiagram extends LayoutElement<LineElement> {
@@ -158,14 +158,14 @@ export interface Measure extends LayoutElement<LineElement> {
   type: "Measure";
   measure: notation.Measure;
   box: Box;
-  elements: LineElement[];
+  children: LineElement[];
   chords: (Chord | Rest)[];
 }
 
 export interface Chord extends LayoutElement<LineElement> {
   type: "Chord";
   chord: notation.Chord;
-  elements: (Note | Stroke)[];
+  children: (Note | Stroke)[];
 }
 
 export interface Rest extends LayoutElement<LineElement> {

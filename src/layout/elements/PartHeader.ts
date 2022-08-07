@@ -99,6 +99,6 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
 
   layout() {
     super.layout();
-    this.box.height = last(this.elements)?.box.bottom ?? 0;
+    this.box.height = last(this.children)?.box.bottom ?? 0;
   }
 }

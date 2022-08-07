@@ -12,6 +12,6 @@ export class Score extends SimpleGroup<types.Part, "Score", null> implements typ
 
   layout() {
     super.layout();
-    this.box = Box.encompass(...this.elements.map((e) => e.box));
+    this.box = Box.encompass(...this.children.map((e) => e.box));
   }
 }

@@ -8,14 +8,14 @@ export abstract class AbstractGroup<
 > extends LayoutElement<Type, ParentT> {
   abstract readonly type: Type;
 
-  elements: T[] = [];
+  children: T[] = [];
 
   reset() {
-    for (const element of this.elements) {
+    for (const element of this.children) {
       element.parent = null;
     }
 
-    this.elements = [];
+    this.children = [];
     this.box.width = 0;
     this.box.height = 0;
   }
