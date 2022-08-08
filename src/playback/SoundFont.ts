@@ -1,8 +1,9 @@
-import { compact, defaults } from "lodash";
+import { compact, defaults, uniqBy } from "lodash";
 import { BufferCursor, NumberType } from "../loaders/util/BufferCursor";
 import * as notation from "../notation";
 import { Instrument } from "./instruments/Instrument";
-import { SamplerInstrument } from "./instruments/SamplerInstrument";
+import { Percussion } from "./instruments/Percussion";
+import { PitchAdjustableInstrument } from "./instruments/PitchAdjustableInstrument";
 
 interface SoundFontPreset {
   name: string;
@@ -79,6 +80,9 @@ export enum SoundFontGeneratorType {
   /** Index into the instrument list */
   Instrument = 41,
 
+  /** Range of possible pitches for a sample (midi number) */
+  KeyRange = 43,
+
   /** Overriding root key for samples */
   RootKeyOverride = 58,
 
@@ -115,40 +119,57 @@ export class SoundFont {
 
   instrument(audioContext: AudioContext, instrument: notation.Instrument): Instrument {
     // TODO What are global zones? What should we do for them?
+    // TODO these are hardcoded values for percussion instruments right now (tied to the MuseScore v1.442 soundfont)
 
-    const midiPreset = instrument.midiPreset;
-    const preset = this.presets.find((preset) => preset.bank == 0 && preset.midiPreset == midiPreset);
+    let bank = 0;
+    let midiPreset = instrument.midiPreset;
+    if (instrument.type == "percussion") {
+      bank = 120;
+      midiPreset = 0;
+    }
+
+    const preset = this.presets.find((preset) => preset.bank == bank && preset.midiPreset == midiPreset);
     if (!preset) {
       throw new Error(`soundfont doesn't contain midi preset ${midiPreset}`);
     }
 
-    const zoneWithInstrument = preset.zones.find((zone) => SoundFontGeneratorType.Instrument in zone.generators);
-    if (!zoneWithInstrument) {
+    let zonesWithInstrument: SoundFontZone[] = [];
+    if (instrument.type == "percussion") {
+      zonesWithInstrument = preset.zones.filter((zone) => SoundFontGeneratorType.Instrument in zone.generators);
+    } else {
+      const zoneWithInstrument = preset.zones.find((zone) => SoundFontGeneratorType.Instrument in zone.generators);
+      if (zoneWithInstrument) {
+        zonesWithInstrument.push(zoneWithInstrument);
+      }
+    }
+
+    if (zonesWithInstrument.length == 0) {
       throw new Error(`preset ${midiPreset} doesn't have an instrument generator`);
     }
 
-    const instrumentIndex = zoneWithInstrument.generators[SoundFontGeneratorType.Instrument];
-    const sfInstrument = instrumentIndex === undefined ? undefined : this.instruments_[instrumentIndex];
-    if (!sfInstrument) {
+    const sfInstruments = compact(
+      zonesWithInstrument.map((zoneWithInstrument) => {
+        const instrumentIndex = zoneWithInstrument.generators[SoundFontGeneratorType.Instrument];
+        return instrumentIndex && this.instruments_[instrumentIndex];
+      })
+    );
+
+    if (sfInstruments.length == 0) {
       throw new Error(`preset ${midiPreset} has invalid instrument generator`);
     }
 
-    const zonesWithSamples = sfInstrument.zones.filter((zone) => SoundFontGeneratorType.SampleId in zone.generators);
-    if (!zonesWithSamples) {
-      throw new Error(`instrument for preset ${midiPreset} has no sampling generator`);
-    }
+    const sampleKeyPairs = sfInstruments.flatMap((sfInstrument) => {
+      let globalZone: SoundFontZone | undefined = sfInstrument.zones[0];
+      const hasGlobalZone = !globalZone?.generators[SoundFontGeneratorType.SampleId];
+      if (!hasGlobalZone) {
+        globalZone = undefined;
+      }
 
-    let globalZone: SoundFontZone | undefined = sfInstrument.zones[0];
-    const hasGlobalZone = !globalZone?.generators[SoundFontGeneratorType.SampleId];
-    if (!hasGlobalZone) {
-      globalZone = undefined;
-    }
-
-    const buffers = compact(
-      zonesWithSamples.map((zone): [number, SampleZone] | undefined => {
+      const zonesWithSamples = sfInstrument.zones.filter((zone) => SoundFontGeneratorType.SampleId in zone.generators);
+      return zonesWithSamples.map((zone): [number, SampleZone] | undefined => {
         const sampleIndex = zone.generators[SoundFontGeneratorType.SampleId];
         if (!sampleIndex) {
-          return;
+          return undefined;
         }
 
         const sampleInfo = this.samples[sampleIndex];
@@ -156,12 +177,12 @@ export class SoundFont {
         const sampleRate = sampleInfo.sampleRate;
 
         try {
+          // TODO this is potentially wasteful, if multiply of the same key, given the uniqBy below
           const buffer = audioContext.createBuffer(1, length, sampleRate);
           buffer.copyToChannel(this.sampleData.subarray(sampleInfo.start, sampleInfo.end), 0);
 
-          const pitch = zone.generators[SoundFontGeneratorType.RootKeyOverride] ?? sampleInfo.originalPitch;
           return [
-            pitch,
+            zone.generators[SoundFontGeneratorType.RootKeyOverride] ?? sampleInfo.originalPitch,
             {
               ...sampleInfo,
               buffer,
@@ -172,10 +193,19 @@ export class SoundFont {
         } catch (error) {
           console.error(`couldn't create instrument buffer: ${error}`);
         }
-      })
-    );
+      });
+    });
 
-    return new SamplerInstrument({ buffers, instrument, context: audioContext });
+    const buffers = uniqBy(compact(sampleKeyPairs), "[0]");
+    if (buffers.length == 0) {
+      throw new Error(`instrument for preset ${midiPreset} has no samples`);
+    }
+
+    if (instrument.type == "regular") {
+      return new PitchAdjustableInstrument({ buffers, instrument, context: audioContext });
+    } else {
+      return new Percussion({ buffers, instrument, context: audioContext });
+    }
   }
 
   get instruments() {
