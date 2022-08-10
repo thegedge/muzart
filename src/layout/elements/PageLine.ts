@@ -11,14 +11,13 @@ import {
   STEM_HEIGHT,
   TUPLET_SIZE,
 } from "../constants";
-import { AbstractGroup } from "../layouts/AbstractGroup";
 import { AnchoredGroup } from "../layouts/AnchoredGroup";
 import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
 import { GridGroup } from "../layouts/GridGroup";
 import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
-import { SimpleGroupElement } from "../layouts/SimpleGroup";
+import { SimpleGroup, SimpleGroupElement } from "../layouts/SimpleGroup";
 import { LineElement, Measure, Page } from "../types";
-import { minMap, runs } from "../utils";
+import { maxMap, minMap, runs } from "../utils";
 import { Box } from "../utils/Box";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
@@ -39,7 +38,7 @@ import { Vibrato } from "./Vibrato";
 
 type BeatElements = types.Chord | types.Rest;
 
-export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
+export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
   readonly type = "PageLine";
 
   // TODO make these children
@@ -72,6 +71,19 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
   }
 
   private initializeElements() {
+    this.staffLines = range(this.numStaffLines).map((_index) => {
+      const line = new Line(Box.empty(), "#888888");
+      super.addElement(line);
+      return line;
+    });
+
+    super.addElement(this.aboveStaffLayout);
+    super.addElement(this.staffLayout);
+    super.addElement(this.belowStaffLayout);
+    super.addElement(this.staffOverlay);
+
+    // TODO maybe make above/below staff their own classes? Would make this file leaner.
+
     this.addBarLine();
 
     const tabTextSize = 0.25 * this.numStaffLines * STAFF_LINE_HEIGHT;
@@ -119,24 +131,6 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
     tabGroup.layout();
 
     this.addElement(tabGroup, { factor: null });
-
-    this.staffLines = range(this.numStaffLines).map((_index) => {
-      const line = new Line(Box.empty(), "#888888");
-      line.parent = this;
-      return line;
-    });
-
-    this.aboveStaffLayout.parent = this;
-    this.staffLayout.parent = this;
-    this.belowStaffLayout.parent = this;
-    this.staffOverlay.parent = this;
-
-    this.children = (this.staffLines as LineElement[]).concat([
-      this.aboveStaffLayout,
-      this.staffLayout,
-      this.belowStaffLayout,
-      this.staffOverlay,
-    ]);
   }
 
   addElement(element: LineElement, flexProps?: Partial<FlexProps>) {
@@ -177,7 +171,7 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
       line.box.y = this.staffLayout.box.y + (index + 0.5) * STAFF_LINE_HEIGHT;
     });
 
-    this.box.width = max(map(this.children, "box.width"));
+    this.box.width = maxMap(this.children, (e) => e.box.width) ?? 0;
     this.box.height = this.belowStaffLayout.box.bottom;
   }
 
@@ -747,8 +741,6 @@ export class PageLine extends AbstractGroup<LineElement, "PageLine", Page> {
   }
 
   private layOutBeams(measureBox: Box, beatElements: BeatElements[]) {
-    // TODO draw dots
-
     let y = STEM_HEIGHT - BEAM_HEIGHT;
     const beamCounts = beatElements.map((element) => this.numBeams(element));
     // eslint-disable-next-line no-constant-condition
