@@ -28,6 +28,12 @@ export default defineConfig(async ({ mode }) => {
       },
     },
 
+    esbuild: {
+      logOverride: {
+        "this-is-undefined-in-esm": "silent",
+      },
+    },
+
     plugins: [preact()],
 
     server: {
