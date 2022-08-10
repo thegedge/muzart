@@ -1,4 +1,4 @@
-import react from "@vitejs/plugin-react";
+import preact from "@preact/preset-vite";
 import fs from "node:fs/promises";
 import { TlsOptions } from "node:tls";
 import { defineConfig } from "vite";
@@ -21,7 +21,14 @@ export default defineConfig(async ({ mode }) => {
   }
 
   return {
-    plugins: [react()],
+    resolve: {
+      alias: {
+        "react": "preact/compat",
+        "react-dom": "preact/compat",
+      },
+    },
+
+    plugins: [preact()],
 
     server: {
       port: 3001,
