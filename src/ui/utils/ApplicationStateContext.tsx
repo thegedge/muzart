@@ -1,3 +1,4 @@
+import { ComponentChildren } from "preact";
 import React, { createContext, Suspense, useContext, useEffect, useMemo } from "react";
 import { PlaybackController } from "../../playback/PlaybackController";
 import { Loading } from "../components/misc/Loading";
@@ -20,7 +21,7 @@ export function useApplicationState(): Application {
   return state;
 }
 
-export function ApplicationState(props: { children?: React.ReactNode }) {
+export function ApplicationState(props: { children?: ComponentChildren }) {
   const application = useMemo(() => {
     const selection = new Selection();
     const playback = new PlaybackController(selection);

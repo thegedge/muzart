@@ -1,14 +1,16 @@
 import { omit } from "lodash";
-import React, { SVGProps } from "react";
+import { JSX } from "preact";
+import React from "react";
 import { LayoutElement } from "../../../layout";
 import { svgPositionTransform } from "../../utils/svg";
 import { DebugBox } from "./DebugBox";
 
-export interface BoxGroupProps extends SVGProps<SVGGElement> {
+export interface BoxGroupProps extends JSX.SVGAttributes<SVGGElement> {
   node: LayoutElement;
   scale?: number;
   forceDebug?: boolean;
   hidden?: boolean;
+  onClick?: (event: MouseEvent) => void;
 }
 
 export function BoxGroup(props: BoxGroupProps) {
@@ -23,6 +25,7 @@ export function BoxGroup(props: BoxGroupProps) {
 
   return (
     <>
+      <rect></rect>
       <g
         transform={transforms.join(" ")}
         {...omit(props, "node", "scale", "forceDebug")}

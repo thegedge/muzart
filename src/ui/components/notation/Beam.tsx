@@ -4,7 +4,7 @@ import { svgBoxProps } from "../../utils/svg";
 
 const BEAM_COLOR = "#333333";
 
-export const Beam = (props: { node: layout.Beam }): JSX.Element => {
+export const Beam = (props: { node: layout.Beam }) => {
   const beam = props.node;
   if (beam.size == beam.box.height) {
     return <rect {...svgBoxProps(beam.box)} fill={BEAM_COLOR} />;

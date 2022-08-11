@@ -1,4 +1,4 @@
-import React from "react";
+import React, { JSX } from "react";
 import { LineElement, PageElement } from "../../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 import { Arc } from "./Arc";
@@ -19,7 +19,7 @@ import { TimeSignature } from "./TimeSignature";
 import { Vibrato } from "./Vibrato";
 import { WrappedElement } from "./WrappedElement";
 
-export default function ScoreElement(props: { element: PageElement | LineElement }): React.ReactElement {
+export default function ScoreElement(props: { element: PageElement | LineElement }): JSX.Element {
   switch (props.element.type) {
     case "Arc":
       return <Arc element={props.element} />;

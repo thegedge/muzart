@@ -1,5 +1,5 @@
 import { pick } from "lodash";
-import { CSSProperties, SVGAttributes } from "react";
+import { CSSProperties, JSX } from "react";
 import { HasBox, Margins } from "../../layout/types";
 import { Box } from "../../layout/utils/Box";
 
@@ -32,14 +32,14 @@ export function marginProps(margins: Margins): Partial<CSSProperties> {
 // SVG props
 //
 
-export function svgSizeProps(box: Box | HasBox): Partial<SVGAttributes<SVGElement>> {
+export function svgSizeProps(box: Box | HasBox): Partial<Pick<JSX.SVGAttributes, "width" | "height">> {
   if ("box" in box) {
     box = box.box;
   }
   return { width: box.width, height: box.height };
 }
 
-export function svgPositionProps(box: Box | HasBox): Partial<SVGAttributes<SVGElement>> {
+export function svgPositionProps(box: Box | HasBox): Partial<Pick<JSX.SVGAttributes, "x" | "y">> {
   if ("box" in box) {
     box = box.box;
   }
@@ -53,7 +53,7 @@ export function svgPositionTransform(box: Box | HasBox): string {
   return `translate(${box.x}, ${box.y})`;
 }
 
-export function svgBoxProps(box: Box | HasBox): Partial<SVGAttributes<SVGElement>> {
+export function svgBoxProps(box: Box | HasBox) {
   if ("box" in box) {
     box = box.box;
   }

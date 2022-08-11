@@ -1,4 +1,4 @@
-import React from "react";
+import React, { JSX } from "react";
 import layout, { LINE_STROKE_WIDTH } from "../../../layout";
 import { StrokeDirection } from "../../../notation";
 

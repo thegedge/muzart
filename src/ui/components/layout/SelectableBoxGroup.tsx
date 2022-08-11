@@ -4,12 +4,11 @@ import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { BoxGroup, BoxGroupProps } from "./BoxGroup";
 
 export const SelectableBoxGroup = observer((props: BoxGroupProps) => {
-  const { onClick: onClickProp } = props;
   const { selection } = useApplicationState();
 
-  const onClick = (event: React.MouseEvent<SVGGElement>) => {
+  const onClick = (event: MouseEvent) => {
     selection.setFor(props.node);
-    onClickProp?.(event);
+    props.onClick?.(event);
   };
 
   return <BoxGroup {...props} onClick={onClick} />;

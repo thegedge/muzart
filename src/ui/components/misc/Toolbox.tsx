@@ -18,12 +18,12 @@ export const Toolbox = observer(function Toolbox(_props: Record<string, never>) 
   }
 
   const onPartChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    selection.update({ partIndex: event.target.selectedIndex });
+    selection.update({ partIndex: event.currentTarget.selectedIndex });
     setMidiInstrument(selection.part?.part.instrument?.midiPreset);
   };
 
   const onInstrumentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setMidiInstrument(parseInt(event.target.value));
+    setMidiInstrument(parseInt(event.currentTarget.value));
   };
 
   const onDebugToggled = (event: React.ChangeEvent<HTMLInputElement>) => {

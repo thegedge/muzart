@@ -1,8 +1,8 @@
 import { action, makeObservable, observable } from "mobx";
-import { CSSProperties } from "react";
+import { JSX } from "react";
 import { LINE_STROKE_WIDTH } from "../../layout";
 
-type DebugParams = Pick<CSSProperties, "stroke" | "strokeDasharray" | "strokeWidth" | "fill">;
+type DebugParams = Pick<JSX.SVGAttributes, "stroke" | "strokeDasharray" | "strokeWidth" | "fill">;
 
 export class DebugContext {
   public enabled = false;

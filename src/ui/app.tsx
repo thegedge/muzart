@@ -31,8 +31,11 @@ export default function App() {
 const ScoreDropZone = () => {
   const application = useApplicationState();
 
-  const onDrop = (event: React.DragEvent<Element>) => {
+  const onDrop = (event: DragEvent) => {
     event.preventDefault();
+    if (!event.dataTransfer) {
+      return;
+    }
 
     const sources: File[] = [];
     if (event.dataTransfer.items) {
