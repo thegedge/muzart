@@ -1,6 +1,5 @@
 import { zip } from "lodash";
 import types from "..";
-import { Wrapped } from "../elements/Wrapped";
 import { AbstractGroup } from "./AbstractGroup";
 
 /**
@@ -8,9 +7,7 @@ import { AbstractGroup } from "./AbstractGroup";
  *
  * **Note**: Currently anchors only to the top-left corner of the anchor element.
  */
-export class AnchoredGroup<T extends types.LayoutElement, AnchorT extends types.HasBox> extends AbstractGroup<
-  Wrapped<T>
-> {
+export class AnchoredGroup<T extends types.LayoutElement, AnchorT extends types.HasBox> extends AbstractGroup<T> {
   readonly type = "Group";
   readonly align = "end";
   readonly anchors: (AnchorT | null)[] = [];
@@ -24,10 +21,8 @@ export class AnchoredGroup<T extends types.LayoutElement, AnchorT extends types.
    * @param anchor the element to anchor to
    */
   addElement(element: T, anchor: AnchorT | null) {
-    // TODO if no anchor, instead of wrapping, just use the element as is
-    const wrapped = new Wrapped(element);
-    wrapped.parent = this;
-    this.children.push(wrapped);
+    element.parent = this;
+    this.children.push(element);
     this.anchors.push(anchor);
   }
 
@@ -43,18 +38,15 @@ export class AnchoredGroup<T extends types.LayoutElement, AnchorT extends types.
    * elements already laid out before calling this function.
    */
   layout() {
-    for (const wrapped of this.children) {
-      wrapped.layout();
-
-      this.box = this.box.encompass(wrapped.element.box);
-      wrapped.box.width = wrapped.element.box.width;
-      wrapped.box.height = wrapped.element.box.height;
+    for (const child of this.children) {
+      child.layout?.();
+      this.box = this.box.encompass(child.box);
     }
 
-    for (const [wrapped, anchor] of zip(this.children, this.anchors)) {
-      if (wrapped) {
-        wrapped.box.x = anchor ? anchor.box.x : 0;
-        wrapped.box.y = this.align === "end" ? this.box.height - wrapped.box.height : 0;
+    for (const [child, anchor] of zip(this.children, this.anchors)) {
+      if (child) {
+        child.box.x = anchor ? anchor.box.x : 0;
+        child.box.y = this.align === "end" ? this.box.height - child.box.height : 0;
       }
     }
   }
