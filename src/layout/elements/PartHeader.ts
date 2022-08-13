@@ -1,14 +1,21 @@
-import { last } from "lodash";
-import types, { Box, LineElement, STAFF_LINE_HEIGHT } from "..";
+import { compact, last, uniqBy } from "lodash";
+import types, { Box, DEFAULT_MARGIN, LineElement, LINE_MARGIN, STAFF_LINE_HEIGHT } from "..";
 import * as notation from "../../notation";
-import { FlexGroup } from "../layouts/FlexGroup";
+import { FlexGroup, FlexGroupElement } from "../layouts/FlexGroup";
 import { SimpleGroupElement } from "../layouts/SimpleGroup";
+import { ChordDiagram } from "./ChordDiagram";
+import { Space } from "./Space";
 import { Text } from "./Text";
+
+// TODO show chord diagrams
 
 export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part> implements types.LayoutElement {
   readonly type = "Group";
 
-  constructor(score: notation.Score, part: notation.Part, contentWidth: number) {
+  /** If true, show chord diagrams for all chords used in the tab  */
+  readonly summarizeChords = true;
+
+  constructor(readonly score: notation.Score, readonly part: notation.Part, readonly contentWidth: number) {
     super({
       box: new Box(0, 0, contentWidth, 0),
       axis: "vertical",
@@ -66,7 +73,9 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       }
     }
 
-    if (part.instrument && part.instrument.tuning) {
+    this.maybeAddChordDiagrams();
+
+    if (part.instrument?.tuning) {
       // TODO show alternative name for tuning
       const textSize = STAFF_LINE_HEIGHT;
       const stringNumbers = ["①", "②", "③", "④", "⑤", "⑥", "⑦"].slice(0, part.lineCount).reverse();
@@ -96,6 +105,38 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
         this.addElement(group);
       }
     }
+  }
+
+  maybeAddChordDiagrams() {
+    if (!this.summarizeChords) {
+      return;
+    }
+
+    // Get all unique chord diagrams
+    const allDiagrams = this.part.measures.flatMap((measure) => {
+      return compact(measure.chords.map((chord) => (chord.chordDiagram?.diagram ? chord.chordDiagram : null)));
+    });
+
+    const uniqueDiagrams = uniqBy(allDiagrams, (diagram) => JSON.stringify(diagram));
+    if (uniqueDiagrams.length == 0) {
+      return;
+    }
+
+    const group = new FlexGroupElement<ChordDiagram>({
+      axis: "horizontal",
+      box: new Box(0, 0, this.contentWidth, 1),
+      gap: 0.5 * DEFAULT_MARGIN,
+      defaultFlexProps: { factor: null },
+      mainAxisSpaceDistribution: "center",
+      wrap: true,
+    });
+
+    for (const diagram of uniqueDiagrams) {
+      group.addElement(new ChordDiagram(diagram));
+    }
+
+    this.addElement(Space.fromDimensions(1, 0.5 * LINE_MARGIN));
+    this.addElement(group);
   }
 
   layout() {

@@ -19,13 +19,14 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
   public chords: (types.Chord | types.Rest)[] = [];
 
   constructor(readonly part: notation.Part, readonly measure: notation.Measure) {
-    super({ box: Box.empty(), axis: "horizontal" });
+    super({ box: Box.empty(), axis: "horizontal", crossAxisAlignment: "center" });
 
+    const spacerHeight = 2 * STAFF_LINE_HEIGHT;
     const spacerWidth = QUARTER_NOTE_WIDTH / 2;
     this.box.height = part.lineCount * STAFF_LINE_HEIGHT;
 
     if (measure.staffDetails.time?.changed) {
-      this.addElement(Space.fromDimensions(0.5 * spacerWidth, spacerWidth), { factor: null });
+      this.addElement(Space.fromDimensions(0.5 * spacerWidth, spacerHeight), { factor: null });
       this.box.width += 0.5 * spacerWidth;
 
       const timeSig = new TimeSignature(measure.staffDetails.time.value);
@@ -33,7 +34,7 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
       this.box.width += timeSig.box.width;
     }
 
-    this.addElement(Space.fromDimensions(spacerWidth, spacerWidth), { factor: null });
+    this.addElement(Space.fromDimensions(spacerWidth, spacerHeight), { factor: null });
     this.box.width += spacerWidth;
 
     // TODO if just a single whole rest, put in center
@@ -49,11 +50,11 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
       }
 
       this.box.width += width;
-      this.addElement(Space.fromDimensions(width, 1), { factor: width });
+      this.addElement(Space.fromDimensions(width, spacerHeight), { factor: width });
     }
 
     // An empty spacer where, used to help us place the measure number
-    this.addElement(Space.fromDimensions(0, 0), { factor: null });
+    this.addElement(Space.fromDimensions(0, spacerHeight), { factor: null });
   }
 
   tryAddElement(element: LineElement, flexProps?: Partial<FlexProps>) {
@@ -66,7 +67,7 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
     return wasAdded;
   }
 
-  addElement(element: LineElement, flexProps?: Partial<FlexProps>) {
+  override addElement(element: LineElement, flexProps?: Partial<FlexProps>) {
     super.addElement(element, flexProps);
     if (element instanceof Rest || element instanceof Chord) {
       this.chords.push(element);

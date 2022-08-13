@@ -41,6 +41,9 @@ type BeatElements = types.Chord | types.Rest;
 export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
   readonly type = "PageLine";
 
+  /** If true, show chord diagrams in the above staff area. Otherwise, just show the name. */
+  readonly showChordDiagrams = false;
+
   // TODO make these children
   private aboveStaffLayout: GridGroup<LineElement>;
   private staffLayout: FlexGroupElement<LineElement>;
@@ -55,7 +58,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
 
     this.staffOverlay = new AnchoredGroup();
     this.aboveStaffLayout = new GridGroup(STAFF_LINE_HEIGHT * 0.25);
-    this.staffLayout = new FlexGroupElement<LineElement>({ box: clone(box) });
+    this.staffLayout = new FlexGroupElement<LineElement>({ box: clone(box), crossAxisAlignment: "center" });
     this.belowStaffLayout = new NonNegativeGroup();
 
     this.initializeElements();
@@ -340,14 +343,27 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
           continue;
         }
 
-        // TODO pre-process chord diagrams and lift them to the top of the diagram, instead of on a per-line basis
         if (element.chord.chordDiagram) {
-          const diagram = element.chord.chordDiagram;
-          this.aboveStaffLayout.addElement(new ChordDiagram(diagram), {
-            startColumn: index + 1,
-            endColumn: index + 1,
-            group: "chords",
-          });
+          if (this.showChordDiagrams) {
+            const diagram = element.chord.chordDiagram;
+            this.aboveStaffLayout.addElement(new ChordDiagram(diagram), {
+              startColumn: index + 1,
+              endColumn: index + 1,
+              group: "chords",
+            });
+          } else {
+            this.aboveStaffLayout.addElement(
+              Text.centered({
+                size: baseSize,
+                value: element.chord.chordDiagram.name,
+              }),
+              {
+                startColumn: index + 1,
+                endColumn: index + 1,
+                group: "chords",
+              }
+            );
+          }
         }
 
         if (element.chord.text) {
