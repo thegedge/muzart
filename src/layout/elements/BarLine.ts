@@ -7,6 +7,6 @@ export class BarLine extends LayoutElement<"BarLine", types.LineElement> impleme
   readonly type = "BarLine";
 
   constructor(numStaffLines: number, readonly strokeSize = LINE_STROKE_WIDTH) {
-    super(new Box(0, 0.5 * STAFF_LINE_HEIGHT, strokeSize, (numStaffLines - 1) * STAFF_LINE_HEIGHT));
+    super(new Box(0, 0, strokeSize, (numStaffLines - 1) * STAFF_LINE_HEIGHT));
   }
 }

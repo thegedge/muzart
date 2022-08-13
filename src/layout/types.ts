@@ -46,7 +46,7 @@ export interface Part extends LayoutElement<Score> {
   children: Page[];
 }
 
-export type PageElement = Group<PageElement> | Space | Text | Group<LineElement> | PageLine;
+export type PageElement = Group<PageElement> | ChordDiagram | Space | Text | Group<LineElement> | PageLine;
 
 export interface Page extends LayoutElement<Part> {
   type: "Page";
@@ -114,6 +114,7 @@ export interface Group<T> extends LayoutElement<unknown> {
 export interface ChordDiagram extends LayoutElement<LineElement> {
   type: "ChordDiagram";
   diagram: notation.ChordDiagram;
+  textSize: number;
 }
 
 export interface Line extends LayoutElement<PageLine> {

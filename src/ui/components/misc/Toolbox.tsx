@@ -31,8 +31,8 @@ export const Toolbox = observer(function Toolbox(_props: Record<string, never>) 
   };
 
   return (
-    <div className="sticky top-4 h-0">
-      <div className="max-w-max flex flex-row items-center bg-black bg-opacity-80 rounded-xl px-2 py-4 absolute right-4 text-gray-400 divide-x space-x-2">
+    <div className="sticky top-0 right-0 h-0">
+      <div className="max-w-max flex flex-row items-center bg-black bg-opacity-80 rounded-xl px-4 py-4 m-4 absolute right-4 text-gray-400 divide-x space-x-2">
         <div className="px-2">
           <input type="checkbox" name="debug" onChange={onDebugToggled} /> <label htmlFor="debug">Debug</label>
         </div>

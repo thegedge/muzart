@@ -6,10 +6,12 @@ import { LayoutElement } from "./LayoutElement";
 export class ChordDiagram extends LayoutElement<"ChordDiagram", types.LineElement> implements types.ChordDiagram {
   readonly type = "ChordDiagram";
 
+  readonly textSize = 0.8 * STAFF_LINE_HEIGHT;
+
   constructor(readonly diagram: notation.ChordDiagram) {
     const height = (diagram ? 7 : 1) * STAFF_LINE_HEIGHT;
 
     // TODO default width, ignoring its placement in the above staff layout
-    super(new Box(0, 0, 0, height));
+    super(new Box(0, 0, 4 * STAFF_LINE_HEIGHT, height));
   }
 }
