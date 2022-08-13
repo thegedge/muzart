@@ -1,4 +1,4 @@
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, JSX } from "react";
 import { Alignment } from "../../../layout";
 import { Box } from "../../../layout/utils/Box";
 import { svgBoxProps } from "../../utils/svg";
@@ -14,26 +14,30 @@ export function TextElement(props: {
   style?: CSSProperties;
 }) {
   let x;
+  let textAnchor: JSX.SVGAttributes["textAnchor"];
   switch (props.halign || "start") {
     case "start":
       x = props.box.x;
+      textAnchor = "start";
       break;
-    case "middle":
+    case "center":
       x = props.box.centerX;
+      textAnchor = "middle";
       break;
     case "end":
       x = props.box.right;
+      textAnchor = "end";
       break;
   }
 
-  let dominantBaseline;
   let y;
+  let dominantBaseline: JSX.SVGAttributes["dominantBaseline"];
   switch (props.valign || "start") {
     case "start":
       y = props.box.y;
       dominantBaseline = "hanging";
       break;
-    case "middle":
+    case "center":
       y = props.box.centerY;
       dominantBaseline = "central";
       break;
@@ -51,7 +55,7 @@ export function TextElement(props: {
         x={x}
         y={y}
         dominantBaseline={dominantBaseline}
-        textAnchor={props.halign}
+        textAnchor={textAnchor}
         style={{ fontSize: props.size, ...props.style }}
       >
         {props.text}

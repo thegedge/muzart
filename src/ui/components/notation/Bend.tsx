@@ -17,7 +17,7 @@ export const Bend = (props: { node: layout.Bend }) => {
         x={bendTextX}
         y={0.1 * STAFF_LINE_HEIGHT}
         dominantBaseline="hanging"
-        textAnchor="middle"
+        textAnchor="center"
         fontSize={0.9 * STAFF_LINE_HEIGHT}
         fill={BEND_COLOR}
       >

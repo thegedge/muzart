@@ -21,7 +21,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       this.addElement(
         new Text({
           box: new Box(0, 0, contentWidth, height),
-          halign: "middle",
+          halign: "center",
           size: height,
           value: score.title,
           style: {
@@ -53,7 +53,8 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
         this.addElement(
           new Text({
             box: new Box(0, 0, contentWidth, 1.5 * height),
-            halign: "middle",
+            halign: "center",
+            valign: "start",
             size: height,
             value: comment,
             style: {

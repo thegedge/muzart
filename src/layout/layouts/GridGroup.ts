@@ -79,7 +79,7 @@ export class GridGroup<T extends types.LayoutElement> extends AbstractGroup<T> {
           case "start":
             element.box.y = y;
             break;
-          case "middle":
+          case "center":
             element.box.y = y + 0.5 * (maxHeight - element.box.height);
             break;
           case "end":
@@ -116,7 +116,7 @@ export class GridGroup<T extends types.LayoutElement> extends AbstractGroup<T> {
       case "start":
         element.box.x = left;
         break;
-      case "middle":
+      case "center":
         element.box.x = 0.5 * (right + left - element.box.width);
         break;
       case "end":

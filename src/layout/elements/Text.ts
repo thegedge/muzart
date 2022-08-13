@@ -14,7 +14,7 @@ interface TextOptions {
 
 export class Text extends LayoutElement<"Text", types.PageElement | types.LineElement> implements types.Text {
   static centered(options: TextOptions) {
-    return new Text({ ...options, halign: "middle", valign: "middle" });
+    return new Text({ ...options, halign: "center", valign: "center" });
   }
 
   readonly type = "Text";

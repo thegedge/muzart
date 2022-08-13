@@ -23,7 +23,7 @@ export class DebugContext {
 
   paramsForType(type: string): DebugParams {
     // TODO make it possible to configure this elsewhere
-    // if (type !== "Chord" && type !== "Rest" && type !== "Space") {
+    // if (type !== "Measure" && type != "TimeSignature") {
     //   return {
     //     fill: "none",
     //   };

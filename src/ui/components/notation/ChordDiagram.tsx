@@ -31,7 +31,7 @@ export const ChordDiagram = (props: { element: layout.ChordDiagram }) => {
         size={STAFF_LINE_HEIGHT}
         box={textBox}
         text={props.element.diagram.name}
-        halign="middle"
+        halign="center"
         style={{ fontWeight: "bold" }}
       />
       {diagram}
@@ -67,8 +67,8 @@ const FretboardDiagram = (props: { diagram: Required<notation.ChordDiagram>["dia
           text={props.diagram.baseFret.toString()}
           box={new Box(props.box.x - STAFF_LINE_HEIGHT, fretY, textSize, textSize)}
           size={textSize}
-          halign="middle"
-          valign="middle"
+          halign="center"
+          valign="center"
         />
       )}
       <line
@@ -120,7 +120,7 @@ const FretboardDiagram = (props: { diagram: Required<notation.ChordDiagram>["dia
           <TextElement
             key={index}
             box={new Box(props.box.x + (numStrings - index - 1.5) * fretW, props.box.y, fretW, STAFF_LINE_HEIGHT)}
-            halign="middle"
+            halign="center"
             valign="end"
             size={textSize}
             text={text}

@@ -23,9 +23,9 @@ export function BoxGroup(props: BoxGroupProps) {
     return null;
   }
 
+  // TODO Maybe a clip-path (possibly on/off debug mode) to hide any overflow
   return (
     <>
-      <rect></rect>
       <g
         transform={transforms.join(" ")}
         {...omit(props, "node", "scale", "forceDebug")}

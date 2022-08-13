@@ -38,7 +38,7 @@ export const DashedLineText = (props: { element: layout.DashedLineText }) => {
         size={props.element.size}
         text={props.element.value}
         halign="start"
-        valign="middle"
+        valign="center"
         style={{ fill: "#333333" }}
       />
       {maybeDashedLine}

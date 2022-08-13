@@ -24,8 +24,8 @@ export const Note = React.memo(function Note(props: { note: layout.Note }) {
     <SelectableBoxGroup node={props.note} onClick={playNote}>
       <TextElement
         box={new Box(0, 0, props.note.box.width, props.note.box.height)}
-        halign="middle"
-        valign="middle"
+        halign="center"
+        valign="center"
         size={props.note.box.height}
         text={text}
         style={{ userSelect: "none", cursor: "pointer" }}

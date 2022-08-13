@@ -3,7 +3,7 @@ import * as notation from "../notation";
 import { Box } from "./utils/Box";
 
 export type Inches = number;
-export type Alignment = "start" | "middle" | "end";
+export type Alignment = "start" | "center" | "end";
 export type VerticalOrientation = "above" | "below";
 
 export interface HasBox {

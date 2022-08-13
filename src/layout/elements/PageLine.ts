@@ -321,7 +321,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
         new Text({
           value: measure.number.toString(),
           size: numberSize,
-          halign: firstMeasure ? "start" : "middle",
+          halign: firstMeasure ? "start" : "center",
           valign: "end",
           style: {
             userSelect: "none",
@@ -542,7 +542,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
         this.aboveStaffLayout.addElement(new Stroke(element.chord.stroke), {
           startColumn: index + 1,
           endColumn: index + 1,
-          halign: "middle",
+          halign: "center",
           valign: "end",
         });
       }
@@ -555,7 +555,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
             box: new Box(0, 0, 0, STAFF_LINE_HEIGHT),
             size: STAFF_LINE_HEIGHT,
             value: "T",
-            halign: "middle",
+            halign: "center",
           }),
           {
             startColumn: index + 1,
