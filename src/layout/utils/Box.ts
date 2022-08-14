@@ -10,7 +10,7 @@ export class Box {
    * Compute a box that encompasses all of the given boxes.
    */
   static encompass(...boxes: Box[]) {
-    return boxes.reduce((encompassBox, box) => encompassBox.encompass(box));
+    return boxes.reduce((encompassBox, box) => encompassBox.encompass(box), Box.empty());
   }
 
   constructor(public x: number, public y: number, public width: number, public height: number) {}
