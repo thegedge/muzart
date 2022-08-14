@@ -19,22 +19,29 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
   public chords: (types.Chord | types.Rest)[] = [];
 
   constructor(readonly part: notation.Part, readonly measure: notation.Measure) {
-    super({ box: Box.empty(), axis: "horizontal", crossAxisAlignment: "center" });
+    super({
+      box: Box.empty(),
+      axis: "horizontal",
+      crossAxisAlignment: "center",
+      defaultFlexProps: {
+        factor: null,
+      },
+    });
 
     const spacerHeight = 2 * STAFF_LINE_HEIGHT;
     const spacerWidth = QUARTER_NOTE_WIDTH / 2;
     this.box.height = part.lineCount * STAFF_LINE_HEIGHT;
 
     if (measure.staffDetails.time?.changed) {
-      this.addElement(Space.fromDimensions(0.5 * spacerWidth, spacerHeight), { factor: null });
+      this.addElement(Space.fromDimensions(0.5 * spacerWidth, spacerHeight));
       this.box.width += 0.5 * spacerWidth;
 
       const timeSig = new TimeSignature(measure.staffDetails.time.value);
-      this.addElement(timeSig, { factor: null });
+      this.addElement(timeSig);
       this.box.width += timeSig.box.width;
     }
 
-    this.addElement(Space.fromDimensions(spacerWidth, spacerHeight), { factor: null });
+    this.addElement(Space.fromDimensions(spacerWidth, spacerHeight));
     this.box.width += spacerWidth;
 
     // TODO if just a single whole rest, put in center
@@ -42,11 +49,11 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
     for (const chord of measure.chords) {
       let width = widthForValue(chord.value);
       if (chord.rest) {
-        this.addElement(new Rest(chord, part.lineCount * STAFF_LINE_HEIGHT), { factor: null });
+        this.addElement(new Rest(chord, part.lineCount * STAFF_LINE_HEIGHT));
       } else {
         const hasBend = chord.notes.some((n) => !!n.bend);
         width *= hasBend ? 2 : 1;
-        this.addElement(new Chord(chord), { factor: null });
+        this.addElement(new Chord(chord));
       }
 
       this.box.width += width;
@@ -54,7 +61,7 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
     }
 
     // An empty spacer where, used to help us place the measure number
-    this.addElement(Space.fromDimensions(0, spacerHeight), { factor: null });
+    this.addElement(Space.fromDimensions(0, spacerHeight));
   }
 
   tryAddElement(element: LineElement, flexProps?: Partial<FlexProps>) {
