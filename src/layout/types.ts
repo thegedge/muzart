@@ -80,13 +80,7 @@ export type LineElement =
   | Stem
   | Text
   | TimeSignature
-  | Vibrato
-  | Wrapped<LineElement>;
-
-export interface Wrapped<T extends LayoutElement<unknown>> extends LayoutElement<unknown> {
-  type: "Wrapped";
-  element: T;
-}
+  | Vibrato;
 
 export interface Arc extends LayoutElement<LineElement> {
   type: "Arc";

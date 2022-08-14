@@ -17,7 +17,6 @@ import { Stroke } from "./Stroke";
 import { TextElement } from "./TextElement";
 import { TimeSignature } from "./TimeSignature";
 import { Vibrato } from "./Vibrato";
-import { WrappedElement } from "./WrappedElement";
 
 export default function ScoreElement(props: { element: PageElement | LineElement }): JSX.Element {
   switch (props.element.type) {
@@ -78,7 +77,5 @@ export default function ScoreElement(props: { element: PageElement | LineElement
       return <TimeSignature node={props.element} />;
     case "Vibrato":
       return <Vibrato node={props.element} />;
-    case "Wrapped":
-      return <WrappedElement node={props.element} />;
   }
 }
