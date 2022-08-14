@@ -5,7 +5,7 @@ import { LINE_STROKE_WIDTH } from "../../layout";
 type DebugParams = Pick<JSX.SVGAttributes, "stroke" | "strokeDasharray" | "strokeWidth" | "fill">;
 
 export class DebugContext {
-  public enabled = false;
+  public enabled = import.meta.env.VITE_DEBUG_APP == "1";
 
   private index = 0;
   private colorMap = new Map<string, DebugParams>();
