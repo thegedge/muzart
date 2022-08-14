@@ -1,5 +1,5 @@
 import { compact, last, uniqBy } from "lodash";
-import types, { Box, DEFAULT_MARGIN, LineElement, LINE_MARGIN, STAFF_LINE_HEIGHT } from "..";
+import types, { Box, DEFAULT_MARGIN, DEFAULT_SERIF_FONT_FAMILY, LineElement, LINE_MARGIN, STAFF_LINE_HEIGHT } from "..";
 import * as notation from "../../notation";
 import { FlexGroup, FlexGroupElement } from "../layouts/FlexGroup";
 import { SimpleGroupElement } from "../layouts/SimpleGroup";
@@ -30,7 +30,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
           size: height,
           value: score.title,
           style: {
-            fontFamily: "serif",
+            fontFamily: DEFAULT_SERIF_FONT_FAMILY,
           },
         })
       );
@@ -46,7 +46,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
           size: height,
           value: score.composer,
           style: {
-            fontFamily: "serif",
+            fontFamily: DEFAULT_SERIF_FONT_FAMILY,
           },
         })
       );
@@ -63,7 +63,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
             size: height,
             value: comment,
             style: {
-              fontFamily: "serif",
+              fontFamily: DEFAULT_SERIF_FONT_FAMILY,
               fontStyle: "italic",
             },
           })
@@ -84,7 +84,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
             size: textSize,
             value: `${stringNumbers[index]} = ${pitch}`,
             style: {
-              fontFamily: "serif",
+              fontFamily: DEFAULT_SERIF_FONT_FAMILY,
             },
           })
       );

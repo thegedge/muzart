@@ -1,6 +1,6 @@
 import { range } from "lodash";
 import React from "react";
-import layout, { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../../layout";
+import layout, { DEFAULT_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../../layout";
 import { Box } from "../../../layout/utils/Box";
 import { useCurrentPart } from "../../utils/CurrentPartContext";
 import { BoxGroup } from "../layout/BoxGroup";
@@ -32,7 +32,7 @@ export const ChordDiagram = (props: { element: layout.ChordDiagram }) => {
         box={textBox}
         text={props.element.diagram.name}
         halign="center"
-        style={{ fontFamily: "serif" }}
+        style={{ fontFamily: DEFAULT_SERIF_FONT_FAMILY }}
       />
       {diagram}
     </BoxGroup>
@@ -130,7 +130,7 @@ const FretboardDiagram = (props: { diagram: layout.ChordDiagram; box: Box }) => 
             valign="end"
             size={textSize}
             text={text}
-            style={{ fontFamily: "serif" }}
+            style={{ fontFamily: DEFAULT_SERIF_FONT_FAMILY }}
           />
         );
       })}

@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
 import { createKeybindingsHandler } from "tinykeys";
-import { LINE_STROKE_WIDTH } from "../../../layout/constants";
+import { DEFAULT_SANS_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH } from "../../../layout/constants";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { PageCallout } from "../layout/PageCallout";
 import { Loading } from "../misc/Loading";
@@ -73,6 +73,7 @@ export const Score = observer(() => {
   return (
     <svg
       className="m-auto"
+      fontFamily={DEFAULT_SANS_SERIF_FONT_FAMILY}
       shapeRendering="geometricPrecision"
       style={style}
       stroke="transparent"
