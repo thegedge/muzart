@@ -1,6 +1,6 @@
 import types from "..";
 import * as notation from "../../notation";
-import { NoteValue } from "../../notation";
+import { NoteValue, NoteValueName } from "../../notation";
 import { STAFF_LINE_HEIGHT } from "../constants";
 import { FlexGroup, FlexProps } from "../layouts/FlexGroup";
 import { Inches, LineElement } from "../types";
@@ -28,23 +28,24 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
       },
     });
 
+    const singleWholeRest =
+      measure.chords.length == 1 && measure.chords[0].rest && measure.chords[0].value.name == NoteValueName.Whole;
     const spacerHeight = 2 * STAFF_LINE_HEIGHT;
     const spacerWidth = QUARTER_NOTE_WIDTH / 2;
     this.box.height = part.lineCount * STAFF_LINE_HEIGHT;
 
     if (measure.staffDetails.time?.changed) {
-      this.addElement(Space.fromDimensions(0.5 * spacerWidth, spacerHeight));
-      this.box.width += 0.5 * spacerWidth;
-
       const timeSig = new TimeSignature(measure.staffDetails.time.value);
+      this.addElement(Space.fromDimensions(0.5 * spacerWidth, spacerHeight));
       this.addElement(timeSig);
-      this.box.width += timeSig.box.width;
     }
 
-    this.addElement(Space.fromDimensions(spacerWidth, spacerHeight));
-    this.box.width += spacerWidth;
-
-    // TODO if just a single whole rest, put in center
+    if (singleWholeRest) {
+      // If just a single whole rest, make this spacer stretchable to "center" the rest
+      this.addElement(Space.fromDimensions(2 * spacerWidth, spacerHeight), { factor: 1 });
+    } else {
+      this.addElement(Space.fromDimensions(spacerWidth, spacerHeight));
+    }
 
     for (const chord of measure.chords) {
       let width = widthForValue(chord.value);
@@ -56,20 +57,24 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
         this.addElement(new Chord(chord));
       }
 
-      this.box.width += width;
-      this.addElement(Space.fromDimensions(width, spacerHeight), { factor: width });
+      if (singleWholeRest) {
+        this.addElement(Space.fromDimensions(2 * spacerWidth, spacerHeight), { factor: 1 });
+      } else {
+        this.addElement(Space.fromDimensions(width, spacerHeight), { factor: width });
+      }
     }
 
     // An empty spacer where, used to help us place the measure number
     this.addElement(Space.fromDimensions(0, spacerHeight));
   }
 
-  tryAddElement(element: LineElement, flexProps?: Partial<FlexProps>) {
+  override tryAddElement(element: LineElement, flexProps?: Partial<FlexProps>) {
     const wasAdded = super.tryAddElement(element, flexProps);
     if (wasAdded) {
       if (element instanceof Rest || element instanceof Chord) {
         this.chords.push(element);
       }
+      this.box.width += element.box.width;
     }
     return wasAdded;
   }
@@ -79,6 +84,7 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
     if (element instanceof Rest || element instanceof Chord) {
       this.chords.push(element);
     }
+    this.box.width += element.box.width;
   }
 }
 

@@ -208,7 +208,6 @@ export abstract class FlexGroup<
         childrenForLine.push(...childrenWithProps.splice(0, childrenWithProps.length));
       }
 
-      // First determine what additional space we have to distribute
       const childrenWidth = childrenForLine.reduce((width, v) => width + v[0].box[this.dimensionAttribute.main], 0);
       const factorsSum = sum(childrenForLine.map((v) => v[1].factor ?? 0));
       const extraSpace =
@@ -216,6 +215,8 @@ export abstract class FlexGroup<
 
       let mainAxisStart: number;
       if (factorsSum == 0) {
+        // Space distribution only makes sense when there's no stretchable items (i.e., factorsSum == 0) because otherwise
+        // we'll consume all the extra space and want the first child to be at 0.
         switch (this.mainAxisSpaceDistribution) {
           case "start":
             mainAxisStart = 0;

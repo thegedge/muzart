@@ -40,7 +40,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   const contentWidth = page.content.box.width;
   const partHeader = new PartHeader(score, part, contentWidth);
   partHeader.layout();
-  page.content.addElement(partHeader, { factor: 0 });
+  page.content.addElement(partHeader, { factor: null });
 
   let isFirstLine = true;
   let line = new PageLine(new Box(0, 0, contentWidth, 0), part.lineCount);
