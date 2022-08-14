@@ -2,7 +2,7 @@ import * as notation from "../notation";
 import { DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH } from "./constants";
 import { Measure } from "./elements/Measure";
 import { Page } from "./elements/Page";
-import { PageLine } from "./elements/PageLine";
+import { PageLine } from "./elements/pageline/PageLine";
 import { Part } from "./elements/Part";
 import { PartHeader } from "./elements/PartHeader";
 import { Score } from "./elements/Score";
