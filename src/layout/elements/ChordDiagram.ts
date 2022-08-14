@@ -6,7 +6,7 @@ import { LayoutElement } from "./LayoutElement";
 export class ChordDiagram extends LayoutElement<"ChordDiagram", types.LineElement> implements types.ChordDiagram {
   readonly type = "ChordDiagram";
 
-  readonly textSize = 0.8 * STAFF_LINE_HEIGHT;
+  readonly textSize = 1.25 * STAFF_LINE_HEIGHT;
 
   constructor(readonly diagram: notation.ChordDiagram) {
     const height = (diagram ? 7 : 1) * STAFF_LINE_HEIGHT;

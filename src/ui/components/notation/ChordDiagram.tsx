@@ -32,7 +32,7 @@ export const ChordDiagram = (props: { element: layout.ChordDiagram }) => {
         box={textBox}
         text={props.element.diagram.name}
         halign="center"
-        style={{ fontWeight: "bold" }}
+        style={{ fontFamily: "serif" }}
       />
       {diagram}
     </BoxGroup>
@@ -105,13 +105,15 @@ const FretboardDiagram = (props: { diagram: layout.ChordDiagram; box: Box }) => 
       ))}
       {openUnplayed.map((v, index) => {
         let text;
+        let height = STAFF_LINE_HEIGHT;
         switch (v) {
           case undefined:
           case -1: {
-            text = "✗";
+            text = "×";
             break;
           }
           case 0: {
+            height *= 0.94; // this character is set a little lower, so bring it up some to align nicely with the '×'
             text = "○";
             break;
           }
@@ -123,11 +125,12 @@ const FretboardDiagram = (props: { diagram: layout.ChordDiagram; box: Box }) => 
         return (
           <TextElement
             key={index}
-            box={new Box(props.box.x + (numStrings - index - 1.5) * fretW, props.box.y, fretW, STAFF_LINE_HEIGHT)}
+            box={new Box(props.box.x + (numStrings - index - 1.5) * fretW, props.box.y, fretW, height)}
             halign="center"
             valign="end"
             size={textSize}
             text={text}
+            style={{ fontFamily: "serif" }}
           />
         );
       })}
