@@ -88,52 +88,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
     // TODO maybe make above/below staff their own classes? Would make this file leaner.
 
     this.addBarLine();
-
-    const tabTextSize = 0.25 * this.numStaffLines * STAFF_LINE_HEIGHT;
-    const tabWidth = 2 * STAFF_LINE_HEIGHT;
-    const tabGroup = new FlexGroupElement<Text | Space>({
-      box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, tabWidth, STAFF_LINE_HEIGHT * (this.numStaffLines - 1)),
-      axis: "vertical",
-    });
-
-    tabGroup.addElement(Space.fromDimensions(tabWidth, LINE_STROKE_WIDTH));
-
-    tabGroup.addElement(
-      Text.centered({
-        box: new Box(0, 0, tabWidth, tabTextSize),
-        size: tabTextSize,
-        value: "T",
-        style: { userSelect: "none" },
-      }),
-      { factor: null }
-    );
-
-    tabGroup.addElement(
-      Text.centered({
-        box: new Box(0, 0, tabWidth, tabTextSize),
-        size: tabTextSize,
-        value: "A",
-        style: { userSelect: "none" },
-      }),
-      { factor: null }
-    );
-
-    tabGroup.addElement(
-      Text.centered({
-        box: new Box(0, 0, tabWidth, tabTextSize),
-        size: tabTextSize,
-        value: "B",
-        style: { userSelect: "none" },
-      }),
-      { factor: null }
-    );
-
-    tabGroup.addElement(Space.fromDimensions(tabWidth, LINE_STROKE_WIDTH));
-
-    // Num staff lines doesn't change, so we can do this once and call it a day
-    tabGroup.layout();
-
-    this.addElement(tabGroup, { factor: null });
+    this.addElement(this.createTabGroup(), { factor: null });
   }
 
   addElement(element: LineElement, flexProps?: Partial<FlexProps>) {
@@ -176,6 +131,33 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
 
     this.box.width = maxMap(this.children, (e) => e.box.width) ?? 0;
     this.box.height = this.belowStaffLayout.box.bottom;
+  }
+
+  private createTabGroup() {
+    const size = 0.25 * this.numStaffLines * STAFF_LINE_HEIGHT;
+    const width = 2 * STAFF_LINE_HEIGHT;
+
+    const group = new FlexGroupElement<Text | Space>({
+      box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, width, STAFF_LINE_HEIGHT * (this.numStaffLines - 1)),
+      axis: "vertical",
+      mainAxisSpaceDistribution: "center",
+    });
+
+    for (const value of ["T", "A", "B"]) {
+      group.addElement(
+        Text.centered({
+          box: new Box(0, 0, width, size),
+          size,
+          value,
+          style: {
+            userSelect: "none",
+          },
+        }),
+        { factor: null }
+      );
+    }
+
+    return group;
   }
 
   private addBelowStaffElements() {
