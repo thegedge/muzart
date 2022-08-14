@@ -61,7 +61,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     } else {
       line.layout();
 
-      if (!page.content.tryAddElement(line, { factor: null })) {
+      if (!page.content.tryAddElement(line)) {
         layoutPart.addElement(page);
         page = new Page(new Box(0, 0, DEFAULT_PAGE_WIDTH, DEFAULT_PAGE_HEIGHT));
         page.content.addElement(line);

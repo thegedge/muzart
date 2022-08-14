@@ -19,8 +19,8 @@ export class Page extends LayoutElement<"Page", types.Part> implements types.Pag
     this.content.parent = this;
   }
 
-  layout(stretch = true) {
-    this.content.layout(stretch);
+  layout() {
+    this.content.layout();
   }
 
   get measures(): types.Measure[] {

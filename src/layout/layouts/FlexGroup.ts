@@ -170,14 +170,10 @@ export abstract class FlexGroup<
     return element;
   }
 
-  // TODO now we have space distribution, stretch param unnecessary
-
   /**
    * Reposition and scale all children so that they fill this flex group's box
-   *
-   * @param stretch if `true`, stretch relevant children to fit the layout
    */
-  public layout(stretch = true) {
+  public layout() {
     if (this.children.length == 0) {
       return;
     }
@@ -213,25 +209,26 @@ export abstract class FlexGroup<
       }
 
       // First determine what additional space we have to distribute
-      let factorsSum = 0;
-      let extraSpace = 0;
-      if (stretch) {
-        const childrenWidth = childrenForLine.reduce((width, v) => width + v[0].box[this.dimensionAttribute.main], 0);
-        extraSpace = this.box[this.dimensionAttribute.main] - childrenWidth - (childrenForLine.length - 1) * this.gap;
-        factorsSum = sum(childrenForLine.map((v) => v[1].factor ?? 0)) || 1;
-      }
+      const childrenWidth = childrenForLine.reduce((width, v) => width + v[0].box[this.dimensionAttribute.main], 0);
+      const factorsSum = sum(childrenForLine.map((v) => v[1].factor ?? 0));
+      const extraSpace =
+        this.box[this.dimensionAttribute.main] - childrenWidth - (childrenForLine.length - 1) * this.gap;
 
       let mainAxisStart: number;
-      switch (this.mainAxisSpaceDistribution) {
-        case "start":
-          mainAxisStart = 0;
-          break;
-        case "center":
-          mainAxisStart = 0.5 * extraSpace;
-          break;
-        case "end":
-          mainAxisStart = extraSpace;
-          break;
+      if (factorsSum == 0) {
+        switch (this.mainAxisSpaceDistribution) {
+          case "start":
+            mainAxisStart = 0;
+            break;
+          case "center":
+            mainAxisStart = 0.5 * extraSpace;
+            break;
+          case "end":
+            mainAxisStart = extraSpace;
+            break;
+        }
+      } else {
+        mainAxisStart = 0;
       }
 
       // Adjust main axis attributes
