@@ -12,8 +12,7 @@ export class TimeSignature extends LayoutElement<"TimeSignature", Measure> imple
     const topDigits = digits(timeSignature.count);
     const bottomDigits = digits(timeSignature.value.toNumber());
     const width = STAFF_LINE_HEIGHT * 2 * Math.max(topDigits.length, bottomDigits.length);
-
-    // Add a line stroke width for the slightest amount of "padding" between the digits
-    super(new Box(0, 0, width, 4 * STAFF_LINE_HEIGHT + LINE_STROKE_WIDTH));
+    const gap = 4 * LINE_STROKE_WIDTH;
+    super(new Box(0, 0, width, 4 * STAFF_LINE_HEIGHT + gap));
   }
 }
