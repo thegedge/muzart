@@ -4,7 +4,7 @@ import layout, { STAFF_LINE_HEIGHT } from "../../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 
 export function Vibrato(props: { node: layout.Vibrato }) {
-  const startX = 0.5 * STAFF_LINE_HEIGHT;
+  const startX = 0.2 * STAFF_LINE_HEIGHT;
   const startY = 0.6 * props.node.box.height;
   const amplitude = 0.3 * STAFF_LINE_HEIGHT;
   const wavelength = 0.3 * STAFF_LINE_HEIGHT;
