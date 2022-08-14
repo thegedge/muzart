@@ -131,7 +131,7 @@ export abstract class SamplerInstrument implements Instrument {
   protected createGainNode(note: Note) {
     const volume = this.context.createGain();
 
-    let value = this.instrument.volume * 0.05;
+    let value = this.instrument.volume * 0.2;
     switch (note.dynamic) {
       case NoteDynamic.Pianississimo:
         value *= 0.1;
