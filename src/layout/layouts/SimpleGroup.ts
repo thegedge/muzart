@@ -1,8 +1,8 @@
-import types from "..";
+import types, { Box } from "..";
 import { AbstractGroup } from "./AbstractGroup";
 
 /**
- * A group that doesn't have any layout, but will ensure an element is laid out when
+ * A group that lays out all of its children, adjusting its own box to have dimensions that encompass all children.
  */
 export abstract class SimpleGroup<
   T extends types.LayoutElement,
@@ -15,9 +15,14 @@ export abstract class SimpleGroup<
   }
 
   layout() {
-    for (const element of this.children) {
-      element.layout?.();
+    let encompassing = Box.empty();
+    for (const child of this.children) {
+      child.layout?.();
+      encompassing = encompassing.encompass(child.box);
     }
+
+    this.box.width = encompassing.width;
+    this.box.height = encompassing.height;
   }
 }
 

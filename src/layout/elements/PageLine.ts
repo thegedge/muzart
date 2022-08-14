@@ -1,4 +1,4 @@
-import { clone, find, groupBy, isNumber, isUndefined, map, max, memoize, range, some } from "lodash";
+import { clone, find, groupBy, isNumber, isUndefined, memoize, range, some } from "lodash";
 import types from "..";
 import * as notation from "../../notation";
 import { AccentStyle, NoteValueName } from "../../notation";
@@ -14,7 +14,6 @@ import {
 import { AnchoredGroup } from "../layouts/AnchoredGroup";
 import { FlexGroupElement, FlexProps } from "../layouts/FlexGroup";
 import { GridGroup } from "../layouts/GridGroup";
-import { NonNegativeGroup } from "../layouts/NonNegativeGroup";
 import { SimpleGroup, SimpleGroupElement } from "../layouts/SimpleGroup";
 import { LineElement, Measure, Page } from "../types";
 import { maxMap, minMap, runs } from "../utils";
@@ -59,7 +58,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
     this.staffOverlay = new AnchoredGroup();
     this.aboveStaffLayout = new GridGroup(STAFF_LINE_HEIGHT * 0.25);
     this.staffLayout = new FlexGroupElement<LineElement>({ box: box.clone(), crossAxisAlignment: "center" });
-    this.belowStaffLayout = new NonNegativeGroup();
+    this.belowStaffLayout = new SimpleGroupElement();
 
     this.initializeElements();
   }
@@ -108,7 +107,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
 
   layout() {
     this.staffLayout.layout();
-    this.staffLayout.box.height = max(map(this.staffLayout.children, "box.height"));
+    this.staffLayout.box.height = maxMap(this.staffLayout.children, (c) => c.box.height) ?? 0;
 
     this.layOutStaffOverlay();
 

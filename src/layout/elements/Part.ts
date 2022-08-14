@@ -23,7 +23,7 @@ export class Part extends SimpleGroup<types.Page, "Part", types.Score> implement
     this.box = Box.encompass(...this.children.map((e) => e.box));
     this.box.x = 0;
     this.box.y = 0;
-    this.box.width += 2 * PAGE_MARGIN;
-    this.box.height += 2 * PAGE_MARGIN;
+    this.box.width += PAGE_MARGIN;
+    this.box.height += PAGE_MARGIN;
   }
 }

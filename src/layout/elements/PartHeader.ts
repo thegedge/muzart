@@ -1,4 +1,4 @@
-import { compact, last, uniqBy } from "lodash";
+import { compact, uniqBy } from "lodash";
 import types, { Box, DEFAULT_MARGIN, DEFAULT_SERIF_FONT_FAMILY, LineElement, LINE_MARGIN, STAFF_LINE_HEIGHT } from "..";
 import * as notation from "../../notation";
 import { FlexGroup, FlexGroupElement } from "../layouts/FlexGroup";
@@ -80,9 +80,10 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       const texts: Text[] = part.instrument.tuning.map(
         (pitch, index) =>
           new Text({
-            box: new Box(0, 0, textSize * 5, textSize),
+            box: new Box(0, 0, textSize * 5, textSize * 1.3),
             size: textSize,
             value: `${stringNumbers[index]} = ${pitch}`,
+            valign: "center",
             style: {
               fontFamily: DEFAULT_SERIF_FONT_FAMILY,
             },
@@ -138,7 +139,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
   }
 
   layout() {
+    this.box.height = this.children.reduce((h, c) => h + c.box.height, 0);
     super.layout();
-    this.box.height = last(this.children)?.box.bottom ?? 0;
   }
 }
