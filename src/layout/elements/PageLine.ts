@@ -58,7 +58,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
 
     this.staffOverlay = new AnchoredGroup();
     this.aboveStaffLayout = new GridGroup(STAFF_LINE_HEIGHT * 0.25);
-    this.staffLayout = new FlexGroupElement<LineElement>({ box: clone(box), crossAxisAlignment: "center" });
+    this.staffLayout = new FlexGroupElement<LineElement>({ box: box.clone(), crossAxisAlignment: "center" });
     this.belowStaffLayout = new NonNegativeGroup();
 
     this.initializeElements();
