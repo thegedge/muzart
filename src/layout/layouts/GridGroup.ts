@@ -1,4 +1,4 @@
-import { every, find, last, zip } from "lodash";
+import { every, last, zip } from "lodash";
 import types, { Alignment } from "..";
 import { Box, maxMap } from "../utils";
 import { AbstractGroup } from "./AbstractGroup";
@@ -26,10 +26,7 @@ export interface Constraint {
 interface Row<T extends types.LayoutElement> {
   columnAvailability: boolean[];
   elements: [T, Constraint][];
-  group?: string | undefined;
 }
-
-// TODO chord diagrams are large, so perhaps we should allow automatic spanning of multiple rows? would need a fixed row height.
 
 /**
  * A group that lays its elements out in a grid pattern, dynamically creating rows such that elements don't overlap.
@@ -96,11 +93,10 @@ export class GridGroup<T extends types.LayoutElement> extends AbstractGroup<T> {
     this.box.height = y - this.gap;
   }
 
-  private newRow(group?: string): Row<T> {
+  private newRow(): Row<T> {
     return {
       columnAvailability: new Array(this.leftEdges.length).fill(true),
       elements: [],
-      group,
     };
   }
 
@@ -131,10 +127,9 @@ export class GridGroup<T extends types.LayoutElement> extends AbstractGroup<T> {
   }
 
   private determineRows() {
-    // TODO validate indices in constraints against `this.edges.length`
-    // TODO allow elements not in the same group to be on the same row, but push to another row if an element from the same group should go there
-
-    const rows = [this.newRow()];
+    // Order elements such that mustBeBottomRow comes first, then grouped elements, then everything else. This ensures
+    // mustBeBottom row elements are on the bottom row, grouped elements prefer being on the same row, and everything
+    // else fills in the gaps.
     const zipped = zip(this.children, this.constraints) as [T, Constraint][]; // cast away the `undefined`, lengths are guaranteed to be the same
     zipped.sort(([_a, constraintA], [_b, constraintB]) => {
       const bottomA = constraintA.mustBeBottomRow;
@@ -145,7 +140,6 @@ export class GridGroup<T extends types.LayoutElement> extends AbstractGroup<T> {
 
       const groupA = constraintA.group;
       const groupB = constraintB.group;
-
       if (groupA) {
         return groupB ? groupA.localeCompare(groupB) : 1;
       }
@@ -153,18 +147,25 @@ export class GridGroup<T extends types.LayoutElement> extends AbstractGroup<T> {
       return groupB ? -1 : 0;
     });
 
+    const bottomRow = this.newRow();
+    const rows: Row<T>[] = [];
     for (const [element, constraint] of zipped) {
+      if (constraint.mustBeBottomRow) {
+        this.addElementToRow(bottomRow, element, constraint);
+        continue;
+      }
+
       const start = constraint.startColumn;
       const end = constraint.endColumn + 1;
-      let row = find(rows, (row) => row.group == constraint.group && every(row.columnAvailability.slice(start, end)));
+      let row = rows.find((row) => every(row.columnAvailability.slice(start, end)));
       if (!row) {
-        row = this.newRow(constraint.group);
-        rows.unshift(row);
+        row = this.newRow();
+        rows.push(row);
       }
 
       this.addElementToRow(row, element, constraint);
     }
 
-    return rows;
+    return [...rows.reverse(), bottomRow];
   }
 }
