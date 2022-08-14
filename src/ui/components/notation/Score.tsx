@@ -64,7 +64,7 @@ export const Score = observer(() => {
   }
 
   const partBox = selection.part.box;
-  const viewBox = `0 0 ${partBox.width} ${partBox.height}`;
+  const viewBox = `${partBox.x} ${partBox.y} ${partBox.width} ${partBox.height}`;
   const style = {
     width: `${partBox.width * BASE_SCALE}rem`,
     height: `${partBox.height * BASE_SCALE}rem`,

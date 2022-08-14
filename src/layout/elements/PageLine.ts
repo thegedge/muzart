@@ -47,7 +47,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
   // TODO make these children
   private aboveStaffLayout: GridGroup<LineElement>;
   private staffLayout: FlexGroupElement<LineElement>;
-  private belowStaffLayout: NonNegativeGroup<LineElement>;
+  private belowStaffLayout: SimpleGroup<LineElement>;
   private staffLines: Line[] = [];
   private staffOverlay: AnchoredGroup<LineElement, types.Measure | types.Chord>;
 
@@ -690,10 +690,14 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
 
       // Half notes have a shorter stem on tablature
       const y = this.numBeams(beatElement) < 0 ? STAFF_LINE_HEIGHT * 2 : STAFF_LINE_HEIGHT;
-
-      this.belowStaffLayout.addElement(
-        new Stem(new Box(measureBox.x + this.elementOffset(beatElement), y, beatElement.box.width, STEM_HEIGHT - y))
+      const stemBox = new Box(
+        measureBox.x + this.elementOffset(beatElement),
+        y,
+        0.5 * beatElement.box.width, // half because the elementOffset is at centerX. Otherwise the below staff container will overflow the line.
+        STEM_HEIGHT - y
       );
+
+      this.belowStaffLayout.addElement(new Stem(stemBox));
     }
   }
 

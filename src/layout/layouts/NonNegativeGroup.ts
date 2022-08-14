@@ -1,6 +1,8 @@
 import types from "..";
 import { AbstractGroup } from "./AbstractGroup";
 
+// TODO I hate this group, figure out how to get rid of it
+
 /**
  * A group that lays out its children such that all x/y coordinates are non-negative.
  *
