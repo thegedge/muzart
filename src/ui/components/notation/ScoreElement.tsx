@@ -12,7 +12,6 @@ import { Measure } from "./Measure";
 import { Note } from "./Note";
 import { Rest } from "./Rest";
 import { Slide } from "./Slide";
-import { Stem } from "./Stem";
 import { Stroke } from "./Stroke";
 import { TextElement } from "./TextElement";
 import { TimeSignature } from "./TimeSignature";
@@ -69,8 +68,6 @@ export default function ScoreElement(props: { element: PageElement | LineElement
       return <Slide node={props.element} />;
     case "Space":
       return <BoxGroup node={props.element} />;
-    case "Stem":
-      return <Stem node={props.element} />;
     case "Text":
       return <TextElement {...props.element} text={props.element.value} />;
     case "TimeSignature":

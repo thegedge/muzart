@@ -1,11 +1,20 @@
-import types, { BEAM_HEIGHT, Box, DOT_SIZE, runs, STAFF_LINE_HEIGHT, STEM_HEIGHT, TUPLET_SIZE } from "../..";
+import types, {
+  BEAM_HEIGHT,
+  Box,
+  DOT_SIZE,
+  runs,
+  STAFF_LINE_HEIGHT,
+  STEM_BEAM_COLOR,
+  STEM_HEIGHT,
+  TUPLET_SIZE,
+} from "../..";
 import * as notation from "../../../notation";
 import { NoteValueName } from "../../../notation";
 import { SimpleGroupElement } from "../../layouts/SimpleGroup";
 import { LineElement, Measure } from "../../types";
 import { Beam } from "../Beam";
 import { Dot } from "../Dot";
-import { Stem } from "../Stem";
+import { Line } from "../Line";
 import { Text } from "../Text";
 
 type BeatElements = types.Chord | types.Rest;
@@ -76,14 +85,9 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
 
       // Half notes have a shorter stem on tablature
       const y = this.numBeams(beatElement) < 0 ? STAFF_LINE_HEIGHT * 2 : STAFF_LINE_HEIGHT;
-      const stemBox = new Box(
-        measureBox.x + this.elementOffset(beatElement),
-        y,
-        0.5 * beatElement.box.width, // half because the elementOffset is at centerX. Otherwise the below staff container will overflow the line.
-        STEM_HEIGHT - y
-      );
+      const stemBox = new Box(measureBox.x + this.elementOffset(beatElement), y, 0, STEM_HEIGHT - y);
 
-      this.addElement(new Stem(stemBox));
+      this.addElement(new Line(stemBox, STEM_BEAM_COLOR));
     }
   }
 

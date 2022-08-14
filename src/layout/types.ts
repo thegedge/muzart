@@ -77,7 +77,6 @@ export type LineElement =
   | Rest
   | Slide
   | Space
-  | Stem
   | Text
   | TimeSignature
   | Vibrato;
@@ -176,10 +175,6 @@ export interface Note extends LayoutElement<LineElement> {
 export interface Slide extends LayoutElement<LineElement> {
   type: "Slide";
   upwards: boolean;
-}
-
-export interface Stem extends LayoutElement<LineElement> {
-  type: "Stem";
 }
 
 export interface Beam extends LayoutElement<LineElement> {
