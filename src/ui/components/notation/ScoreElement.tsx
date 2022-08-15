@@ -45,16 +45,13 @@ export default function ScoreElement(props: { element: PageElement | LineElement
       );
     case "Line":
       return (
-        <>
-          <BoxGroup node={props.element} forceDebug />
-          <line
-            x1={props.element.box.x}
-            y1={props.element.box.y}
-            x2={props.element.box.right}
-            y2={props.element.box.bottom}
-            stroke={props.element.color}
-          />
-        </>
+        <line
+          x1={props.element.box.x}
+          y1={props.element.box.y}
+          x2={props.element.box.right}
+          y2={props.element.box.bottom}
+          stroke={props.element.color}
+        />
       );
     case "Measure":
       return <Measure measure={props.element} />;
