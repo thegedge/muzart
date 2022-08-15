@@ -49,7 +49,7 @@ export type FlexGroupConfig = {
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
    */
-  crossAxisAlignment: Alignment; // TODO other alignments
+  crossAxisAlignment: Alignment;
 };
 
 /**

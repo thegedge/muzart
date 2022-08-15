@@ -74,8 +74,6 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     }
   }
 
-  // TODO a lot of code here is shared with the loop above
-
   if (line.children.length > 0) {
     line.layout();
 

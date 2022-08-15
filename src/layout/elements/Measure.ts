@@ -64,6 +64,9 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
       }
     }
 
+    // TODO the spacing isn't perfect here. Sometimes the left chord is too close the barline, and sometimes the
+    //      right-hand side is too close. Generally things look good, but sometimes it's unbalanced.
+
     // An empty spacer where, used to help us place the measure number
     this.addElement(Space.fromDimensions(0, spacerHeight));
   }

@@ -173,8 +173,6 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
       beatAmount = timeBeat.value.toDecimal() * timeBeat.count;
     }
 
-    // TODO determine if a general partition-y function is good here
-
     const beatElements = [];
     let currentBeatElements = [];
     let currentAmount = beatAmount;

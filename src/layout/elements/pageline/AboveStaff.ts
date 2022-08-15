@@ -336,8 +336,6 @@ export class AboveStaff extends GridGroup<LineElement> {
       }
 
       if (element.chord.tapped) {
-        // TODO this doesn't look right (too wide) when chord contains notes fretted at 10+. I don't think there's
-        //  any straightforward way to deal with this right now, so just gonna deal with it.
         this.addElement(
           new Text({
             box: new Box(0, 0, 0, STAFF_LINE_HEIGHT),

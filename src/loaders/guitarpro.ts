@@ -174,6 +174,8 @@ class GuitarProLoader {
   }
 
   readMeasureData(defaultTimeSignature: TimeSignature): MeasureData {
+    // TODO show repeats
+
     const bits1 = bits(this.cursor.nextNumber(NumberType.Uint8));
     const [
       _doubleBar,
@@ -250,6 +252,8 @@ class GuitarProLoader {
         return Pitch.fromMidi(value);
       })
       .slice(0, numStrings);
+
+    // TODO show capo fret
 
     const midiPort = this.cursor.nextNumber(NumberType.Uint32);
     const midiChannel = this.cursor.nextNumber(NumberType.Uint32);
@@ -552,6 +556,10 @@ class GuitarProLoader {
 
     if (this.version < 4) {
       const bits1 = bits(this.cursor.nextNumber(NumberType.Uint8));
+
+      // TODO show hammer ons and pull offs
+      // TODO show grace notes
+      // TODO show staccato
 
       let _unused, hasGraceNote, hasSlide, _isHammerOnPullOff, hasBend;
       [_unused, _unused, _unused, hasGraceNote, letRing, hasSlide, _isHammerOnPullOff, hasBend] = bits1;

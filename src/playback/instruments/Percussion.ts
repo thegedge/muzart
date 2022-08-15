@@ -13,7 +13,6 @@ export class Percussion extends SamplerInstrument {
 
   playNote(note: notation.Note, tempo: number, startTimeFromNow?: number): number | undefined {
     if (note.dead) {
-      // TODO produce some percussive-y sound
       return;
     }
 

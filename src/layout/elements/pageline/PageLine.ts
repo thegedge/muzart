@@ -13,10 +13,11 @@ import { AboveStaff } from "./AboveStaff";
 import { BelowStaff } from "./BelowStaff";
 import { StaffOverlay } from "./StaffOverlay";
 
+// TODO this is almost a vertical flexgroup, if we could figure out what to do with the staff overlay
+
 export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
   readonly type = "PageLine";
 
-  // TODO make these children
   private aboveStaffLayout: AboveStaff;
   private staffLayout: FlexGroupElement<LineElement>;
   private belowStaff: BelowStaff;
