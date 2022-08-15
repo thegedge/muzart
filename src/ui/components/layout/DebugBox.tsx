@@ -6,6 +6,10 @@ import { svgBoxProps } from "../../utils/svg";
 
 export const DebugBox = observer(function DebugBox(props: { box: Box; debugType: string }) {
   const { debug } = useApplicationState();
+  if (!debug.enabled) {
+    return null;
+  }
+
   const debugParams = useMemo(() => debug.paramsForType(props.debugType), [props.debugType]);
-  return <rect {...svgBoxProps(props.box)} {...debugParams} visibility={debug.enabled ? undefined : "hidden"} />;
+  return <rect {...svgBoxProps(props.box)} {...debugParams} />;
 });
