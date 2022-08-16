@@ -553,16 +553,16 @@ class GuitarProLoader {
     let slide: Slide | undefined;
     let harmonic: HarmonicStyle | undefined;
     let tremoloPicking: NoteValue | undefined;
+    let hammerOnPullOff: boolean | undefined;
 
     if (this.version < 4) {
       const bits1 = bits(this.cursor.nextNumber(NumberType.Uint8));
 
-      // TODO show hammer ons and pull offs
       // TODO show grace notes
       // TODO show staccato
 
-      let _unused, hasGraceNote, hasSlide, _isHammerOnPullOff, hasBend;
-      [_unused, _unused, _unused, hasGraceNote, letRing, hasSlide, _isHammerOnPullOff, hasBend] = bits1;
+      let _unused, hasGraceNote, hasSlide, hasBend;
+      [_unused, _unused, _unused, hasGraceNote, letRing, hasSlide, hammerOnPullOff, hasBend] = bits1;
 
       if (hasBend) {
         bend = this.readBend();
@@ -581,8 +581,8 @@ class GuitarProLoader {
       const bits1 = bits(this.cursor.nextNumber(NumberType.Uint8));
       const bits2 = bits(this.cursor.nextNumber(NumberType.Uint8));
 
-      let _unused, hasGraceNote, _isHammerOnPullOff, hasBend, hasTrill, hasHarmonics, hasSlide, hasTremoloPicking;
-      [_unused, _unused, _unused, hasGraceNote, letRing, _unused, _isHammerOnPullOff, hasBend] = bits1;
+      let _unused, hasGraceNote, hasBend, hasTrill, hasHarmonics, hasSlide, hasTremoloPicking;
+      [_unused, _unused, _unused, hasGraceNote, letRing, _unused, hammerOnPullOff, hasBend] = bits1;
       [_unused, vibrato, hasTrill, hasHarmonics, hasSlide, hasTremoloPicking, palmMute, staccato] = bits2;
 
       if (hasBend) {
@@ -620,6 +620,7 @@ class GuitarProLoader {
       slide,
       harmonic,
       tremoloPicking,
+      hammerOnPullOff,
     };
   }
 

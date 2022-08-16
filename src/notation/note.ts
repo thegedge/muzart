@@ -108,6 +108,7 @@ export interface NoteOptions {
   staccato?: boolean;
   dynamic?: NoteDynamic;
   tremoloPicking?: NoteValue;
+  hammerOnPullOff?: boolean;
 }
 
 export class Note {
@@ -175,6 +176,10 @@ export class Note {
 
   get dynamic() {
     return this.get("dynamic");
+  }
+
+  get hammerOnPullOff() {
+    return this.options.hammerOnPullOff;
   }
 
   get harmonicString() {

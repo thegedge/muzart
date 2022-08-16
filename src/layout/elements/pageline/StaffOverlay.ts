@@ -17,9 +17,58 @@ export class StaffOverlay extends SimpleGroupElement<LineElement> {
   }
 
   layout() {
-    this.layOutArcs();
+    this.layOutTies();
     this.layOutSlides();
+    this.layOutHammerOnPullOffs();
     super.layout();
+  }
+
+  private layOutHammerOnPullOffs() {
+    // TODO we only draw these between adjacent chords, but nice-looking tabs typically draw runs of these as one
+    // TODO tabs sometimes put a P/H above to indicate whether it's a hammer on or pull off
+
+    this.staffElements.forEach(({ element, measure }, index) => {
+      if (element.type !== "Chord" || !element.chord) {
+        return;
+      }
+
+      for (const note of element.chord.notes) {
+        if (!note.hammerOnPullOff) {
+          continue;
+        }
+
+        const x = measure.box.x + element.box.centerX;
+
+        // Find the next chord that we're sliding into
+        let nextElemIndex = index + 1;
+        let w = STAFF_LINE_HEIGHT;
+        if (nextElemIndex < this.staffElements.length) {
+          w = 0.5 * element.box.width;
+          do {
+            const elem = this.staffElements[nextElemIndex].element;
+            if (elem.type === "Chord") {
+              w += 0.5 * elem.box.width;
+              break;
+            }
+
+            nextElemIndex += 1;
+            w += elem.box.width;
+          } while (nextElemIndex < this.staffElements.length);
+        }
+
+        this.addElement(
+          new Arc(
+            new Box(
+              x,
+              measure.box.y + element.box.y + STAFF_LINE_HEIGHT * ((note.placement?.string || 1) - 1.6),
+              w,
+              0.7 * STAFF_LINE_HEIGHT
+            ),
+            "above"
+          )
+        );
+      }
+    });
   }
 
   private layOutSlides() {
@@ -87,7 +136,7 @@ export class StaffOverlay extends SimpleGroupElement<LineElement> {
     });
   }
 
-  private layOutArcs() {
+  private layOutTies() {
     // TODO unfortunate to have to do this `as`, but we want to make the `forEach` function below simpler by only considering chords
     const chords = this.staffElements.filter(({ element }) => element.type === "Chord") as {
       element: Chord;
