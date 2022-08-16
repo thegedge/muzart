@@ -30,39 +30,59 @@ export class StaffOverlay extends SimpleGroupElement<LineElement> {
       }
 
       for (const note of element.chord.notes) {
-        if (note.slide) {
-          let x, w;
-          switch (note.slide.type) {
-            case notation.SlideType.ShiftSlide:
-            case notation.SlideType.LegatoSlide:
-              x = measure.box.x + element.box.right;
-              // TODO this doesn't deal with crossing barlines
-              w = this.staffElements[index + 1].element.box.width;
-              break;
-            case notation.SlideType.SlideIntoFromAbove:
-            case notation.SlideType.SlideIntoFromBelow:
-              w = STAFF_LINE_HEIGHT;
-              x = measure.box.x + element.box.x - w;
-              break;
-            case notation.SlideType.SlideOutDownwards:
-            case notation.SlideType.SlideOutUpwards:
-              x = measure.box.x + element.box.right;
-              w = STAFF_LINE_HEIGHT;
-              break;
-          }
-
-          this.addElement(
-            new Slide(
-              new Box(
-                x,
-                measure.box.y + element.box.y + STAFF_LINE_HEIGHT * ((note.placement?.string || 1) - 1) + yoffset,
-                w,
-                STAFF_LINE_HEIGHT - 2 * yoffset
-              ),
-              note.slide.upwards
-            )
-          );
+        if (!note.slide) {
+          continue;
         }
+
+        let x, w;
+        switch (note.slide.type) {
+          case notation.SlideType.ShiftSlide:
+          case notation.SlideType.LegatoSlide: {
+            x = measure.box.x + element.box.right;
+
+            // Find the next chord that we're sliding into
+            let nextElemIndex = index + 1;
+            if (nextElemIndex == this.staffElements.length) {
+              w = STAFF_LINE_HEIGHT;
+            } else {
+              w = 0;
+              do {
+                const elem = this.staffElements[nextElemIndex].element;
+                if (elem.type === "Chord") {
+                  break;
+                }
+
+                nextElemIndex += 1;
+                w += elem.box.width;
+              } while (nextElemIndex < this.staffElements.length);
+            }
+            break;
+          }
+          case notation.SlideType.SlideIntoFromAbove:
+          case notation.SlideType.SlideIntoFromBelow: {
+            w = STAFF_LINE_HEIGHT;
+            x = measure.box.x + element.box.x - w;
+            break;
+          }
+          case notation.SlideType.SlideOutDownwards:
+          case notation.SlideType.SlideOutUpwards: {
+            x = measure.box.x + element.box.right;
+            w = STAFF_LINE_HEIGHT;
+            break;
+          }
+        }
+
+        this.addElement(
+          new Slide(
+            new Box(
+              x,
+              measure.box.y + element.box.y + STAFF_LINE_HEIGHT * ((note.placement?.string || 1) - 1) + yoffset,
+              w,
+              STAFF_LINE_HEIGHT - 2 * yoffset
+            ),
+            note.slide.upwards
+          )
+        );
       }
     });
   }
