@@ -56,7 +56,12 @@ export class PitchAdjustableInstrument extends SamplerInstrument {
 
         //---------------------------------------------------------------------------------------------
 
-        source.start(when, 0, !ignoreTies && note.tie ? undefined : duration);
+        if (!ignoreTies && note.tie) {
+          source.start(when, 0);
+        } else {
+          volume.gain.setTargetAtTime(0, when + duration - 0.02, 0.025);
+          source.start(when, 0, duration + 0.05);
+        }
         this.addActiveSource(source, volume, note.pitch.toMidi());
       } else if (tieType == "stop") {
         const pitch = note.get("pitch", true);
@@ -66,7 +71,8 @@ export class PitchAdjustableInstrument extends SamplerInstrument {
           if (sources) {
             // TODO we may want to target one specific source, not all, so perhaps tie these things to notes
             for (const source of sources) {
-              source.audio.stop(when + duration);
+              source.volume.gain.setTargetAtTime(0, when + duration - 0.02, 0.025);
+              source.audio.stop(when + duration + 0.05);
             }
           }
         }
