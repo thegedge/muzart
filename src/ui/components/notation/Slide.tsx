@@ -10,10 +10,10 @@ export function Slide(props: { node: layout.Slide }) {
       type: "Arc",
       parent: props.node.parent,
       box: new Box(
-        -0.5 * STAFF_LINE_HEIGHT,
+        -0.2 * STAFF_LINE_HEIGHT,
         props.node.box.height + 0.1 * STAFF_LINE_HEIGHT,
-        props.node.box.width + STAFF_LINE_HEIGHT,
-        0.8 * STAFF_LINE_HEIGHT
+        props.node.box.width + 0.4 * STAFF_LINE_HEIGHT,
+        0.6 * STAFF_LINE_HEIGHT
       ),
       orientation: props.node.upwards ? "below" : "above",
     }),
