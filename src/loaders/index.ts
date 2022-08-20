@@ -108,12 +108,13 @@ function propagateStaffDetails(score: Score): void {
 
 function linkTiedNotes(score: Score): void {
   for (const part of score.parts) {
-    // TODO copy + reverse is not the most performant way to iterate in reverse
     const trackedNotes: (Note | undefined)[] = range(part.lineCount).map(() => undefined);
     const trackedChords: (Chord | undefined)[] = range(part.lineCount).map(() => undefined);
 
-    for (const measure of Array.from(part.measures).reverse()) {
-      for (const chord of Array.from(measure.chords).reverse()) {
+    for (let measureIndex = part.measures.length - 1; measureIndex >= 0; --measureIndex) {
+      const measure = part.measures[measureIndex];
+      for (let chordIndex = measure.chords.length - 1; chordIndex >= 0; --chordIndex) {
+        const chord = measure.chords[chordIndex];
         for (const note of chord.notes) {
           // TODO General scores don't have a placement, so need to track note pitch
           if (!note.placement) {
