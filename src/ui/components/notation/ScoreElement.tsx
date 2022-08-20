@@ -8,7 +8,6 @@ import { Bend } from "./Bend";
 import { ChordDiagram } from "./ChordDiagram";
 import { DashedLineText } from "./DashedLineText";
 import { Dot } from "./Dot";
-import { Measure } from "./Measure";
 import { Note } from "./Note";
 import { Rest } from "./Rest";
 import { Slide } from "./Slide";
@@ -35,7 +34,9 @@ export const ScoreElement = (props: { element: PageElement | LineElement }): JSX
       return <Dot node={props.element} />;
     case "Chord":
     case "Group":
+    case "Measure":
     case "PageLine":
+      // Index keys probably aren't going to be the best here, especially once we support editing
       return (
         <BoxGroup node={props.element}>
           {props.element.children.map((e, index) => (
@@ -53,8 +54,6 @@ export const ScoreElement = (props: { element: PageElement | LineElement }): JSX
           stroke={props.element.color}
         />
       );
-    case "Measure":
-      return <Measure measure={props.element} />;
     case "Note":
       return <Note note={props.element} />;
     case "Stroke":
