@@ -24,7 +24,7 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
       axis: "horizontal",
       crossAxisAlignment: "center",
       defaultFlexProps: {
-        factor: null,
+        factor: 0,
       },
     });
 

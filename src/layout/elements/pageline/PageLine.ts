@@ -38,7 +38,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
   }
 
   addBarLine() {
-    this.addElement(new BarLine(this.numStaffLines || 6), { factor: null });
+    this.addElement(new BarLine(this.numStaffLines || 6), { factor: 0 });
   }
 
   reset() {
@@ -59,7 +59,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
     super.addElement(this.staffOverlay);
 
     this.addBarLine();
-    this.addElement(this.createTabGroup(), { factor: null });
+    this.addElement(this.createTabGroup(), { factor: 0 });
   }
 
   addElement(element: LineElement, flexProps?: Partial<FlexProps>) {
@@ -114,6 +114,9 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
       box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, width, STAFF_LINE_HEIGHT * (this.numStaffLines - 1)),
       axis: "vertical",
       mainAxisSpaceDistribution: "center",
+      defaultFlexProps: {
+        factor: 0,
+      },
     });
 
     for (const value of ["T", "A", "B"]) {
@@ -125,8 +128,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
           style: {
             userSelect: "none",
           },
-        }),
-        { factor: null }
+        })
       );
     }
 

@@ -3,12 +3,8 @@ import types, { Alignment } from "..";
 import { Box } from "../utils/Box";
 
 export type FlexProps = {
-  /**
-   * The stretch factor, which impacts how this element's dimensions will be stretched along the main axis.
-   *
-   * If null, no stretching. Otherwise, the basis will act as a "weight" in the
-   */
-  factor: number | null;
+  /** The stretch factor, which impacts how this element's dimensions will be stretched along the main axis. */
+  factor: number;
 
   /** @private */
   originalBox: Box;
@@ -17,24 +13,16 @@ export type FlexProps = {
 export type FlexGroupConfig = {
   box: Box;
 
-  /**
-   *  The gap between elements.
-   */
+  /** The gap between elements. */
   gap: number;
 
-  /**
-   * Default flex props when adding elements.
-   */
+  /** Default flex props when adding elements. */
   defaultFlexProps: Partial<FlexProps>;
 
-  /**
-   * The direction of the main axis.
-   */
+  /** The direction of the main axis. */
   axis: "vertical" | "horizontal";
 
-  /**
-   * Wrap elements that overflow the main axis size.
-   */
+  /** Wrap elements that overflow the main axis size. */
   wrap: boolean;
 
   /**
@@ -209,9 +197,9 @@ export abstract class FlexGroup<
       const childrenWidth = this.children
         .slice(startIndex, index)
         .reduce((width, c) => width + c.box[this.dimensionAttribute.main], 0);
-      const factorsSum = this.flexProps.slice(startIndex, index).reduce((sum, p) => sum + (p.factor ?? 0), 0);
       const extraSpace = this.box[this.dimensionAttribute.main] - childrenWidth - (index - startIndex - 1) * this.gap;
 
+      let factorsSum = this.flexProps.slice(startIndex, index).reduce((sum, p) => sum + p.factor, 0);
       let mainAxisStart: number;
       if (factorsSum == 0) {
         // Space distribution only makes sense when there's no stretchable items (i.e., factorsSum == 0) because otherwise
@@ -227,6 +215,8 @@ export abstract class FlexGroup<
             mainAxisStart = extraSpace;
             break;
         }
+
+        factorsSum = 1;
       } else {
         mainAxisStart = 0;
       }
@@ -238,9 +228,7 @@ export abstract class FlexGroup<
         const props = this.flexProps[childIndex];
 
         child.box[this.startAttribute.main] = mainAxisStart;
-        if (props.factor) {
-          child.box[this.dimensionAttribute.main] += extraSpace * (props.factor / factorsSum);
-        }
+        child.box[this.dimensionAttribute.main] += extraSpace * (props.factor / factorsSum);
 
         child.layout?.();
 
