@@ -102,7 +102,8 @@ export class AboveStaff extends GridGroup<LineElement> {
     let endIndex = 0;
     let amount = 0;
 
-    this.staffElements.forEach(({ element }, index) => {
+    for (let index = 0; index < this.staffElements.length; ++index) {
+      const element = this.staffElements[index].element;
       if (element.type == "Space") {
         return;
       }
@@ -133,7 +134,7 @@ export class AboveStaff extends GridGroup<LineElement> {
       }
 
       endIndex = index + (options?.includeChordSpacer ? 2 : 1);
-    });
+    }
 
     if (typeof startIndex == "number" && predicateValue) {
       this.addElement(elementGenerator(predicateValue, amount), {
