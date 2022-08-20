@@ -1,4 +1,4 @@
-import { defaults, last, sum, zip } from "lodash";
+import { defaults, last } from "lodash";
 import types, { Alignment } from "..";
 import { Box } from "../utils/Box";
 
@@ -178,21 +178,20 @@ export abstract class FlexGroup<
       return;
     }
 
-    const childrenWithProps = zip(this.children, this.flexProps) as [T, FlexProps][];
-    for (const [child, props] of childrenWithProps) {
-      child.box = props.originalBox.clone();
-    }
-
+    let index = 0;
     let crossAxisStart = 0;
-    while (childrenWithProps.length > 0) {
-      const childrenForLine = [];
+    while (index < this.children.length) {
+      const startIndex = index;
       if (this.wrap) {
         // Figure out which elements can fit on a single line
         let remainingWidth = this.box[this.dimensionAttribute.main];
-        while (remainingWidth > 0 && childrenWithProps.length > 0) {
-          const child = childrenWithProps[0];
-          const childMainAxisSize = child[0].box[this.dimensionAttribute.main];
-          if (childrenForLine.length == 0) {
+        while (remainingWidth > 0 && index < this.children.length) {
+          const child = this.children[index];
+          const props = this.flexProps[index];
+          child.box = props.originalBox.clone();
+
+          const childMainAxisSize = child.box[this.dimensionAttribute.main];
+          if (index == startIndex) {
             // We need this branch to ensure a child too large for a line is still added, avoiding an otherwise infinite loop
             remainingWidth -= childMainAxisSize;
           } else if (childMainAxisSize + this.gap < remainingWidth) {
@@ -201,17 +200,17 @@ export abstract class FlexGroup<
             break;
           }
 
-          childrenForLine.push(child);
-          childrenWithProps.shift();
+          index += 1;
         }
       } else {
-        childrenForLine.push(...childrenWithProps.splice(0, childrenWithProps.length));
+        index = this.children.length;
       }
 
-      const childrenWidth = childrenForLine.reduce((width, v) => width + v[0].box[this.dimensionAttribute.main], 0);
-      const factorsSum = sum(childrenForLine.map((v) => v[1].factor ?? 0));
-      const extraSpace =
-        this.box[this.dimensionAttribute.main] - childrenWidth - (childrenForLine.length - 1) * this.gap;
+      const childrenWidth = this.children
+        .slice(startIndex, index)
+        .reduce((width, c) => width + c.box[this.dimensionAttribute.main], 0);
+      const factorsSum = this.flexProps.slice(startIndex, index).reduce((sum, p) => sum + (p.factor ?? 0), 0);
+      const extraSpace = this.box[this.dimensionAttribute.main] - childrenWidth - (index - startIndex - 1) * this.gap;
 
       let mainAxisStart: number;
       if (factorsSum == 0) {
@@ -234,7 +233,10 @@ export abstract class FlexGroup<
 
       // Adjust main axis attributes
       let crossAxisSize = 0;
-      for (const [child, props] of childrenForLine) {
+      for (let childIndex = startIndex; childIndex < index; ++childIndex) {
+        const child = this.children[childIndex];
+        const props = this.flexProps[childIndex];
+
         child.box[this.startAttribute.main] = mainAxisStart;
         if (props.factor) {
           child.box[this.dimensionAttribute.main] += extraSpace * (props.factor / factorsSum);
@@ -247,7 +249,9 @@ export abstract class FlexGroup<
       }
 
       // Adjust cross axis attributes
-      for (const [child, _] of childrenForLine) {
+      for (let childIndex = startIndex; childIndex < index; ++childIndex) {
+        const child = this.children[childIndex];
+
         let offset: number;
         switch (this.crossAxisAlignment) {
           case "start":
