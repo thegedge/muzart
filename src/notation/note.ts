@@ -112,7 +112,28 @@ export interface NoteOptions {
 }
 
 export class Note {
-  constructor(readonly options: NoteOptions) {}
+  private text: string;
+
+  constructor(readonly options: NoteOptions) {
+    this.text = (() => {
+      let text;
+      if (this.dead) {
+        text = "x";
+      } else if (this.tie && this.tie.previous) {
+        text = "";
+      } else if (this.placement) {
+        text = this.placement.fret.toString();
+      } else {
+        return "";
+      }
+
+      if (this.ghost) {
+        text = `(${text})`;
+      }
+
+      return text;
+    })();
+  }
 
   get pitch() {
     return this.options.pitch;
@@ -206,22 +227,7 @@ export class Note {
   }
 
   toString() {
-    let text;
-    if (this.dead) {
-      text = "x";
-    } else if (this.tie && this.tie.previous) {
-      text = "";
-    } else if (this.placement) {
-      text = this.placement.fret.toString();
-    } else {
-      return "";
-    }
-
-    if (this.ghost) {
-      text = `(${text})`;
-    }
-
-    return text;
+    return this.text;
   }
 
   /**
