@@ -23,7 +23,6 @@ export const BoxGroup = (props: BoxGroupProps) => {
     transforms.push(`scale(${props.scale})`);
   }
 
-  // TODO Maybe a clip-path (possibly on/off debug mode) to hide any overflow
   return (
     <g
       transform={transforms.join(" ")}
