@@ -1,4 +1,4 @@
-import { find, groupBy, isNumber, isUndefined, some } from "lodash";
+import { groupBy } from "lodash";
 import * as notation from "../../../notation";
 import { AccentStyle } from "../../../notation";
 import { BEAM_HEIGHT, chordWidth, STAFF_LINE_HEIGHT } from "../../constants";
@@ -37,7 +37,7 @@ export class AboveStaff extends GridGroup<LineElement> {
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
 
     this.addInterMeasureStaffDecorations(
-      (chord: notation.Chord) => some(chord.notes, "palmMute"),
+      (chord: notation.Chord) => chord.notes.some((n) => n.palmMute),
       (_hasPalmMute: boolean, amount: number) => ({
         type: amount > 1 ? "DashedLineText" : "Text",
         box: new Box(0, 0, 0, baseSize),
@@ -49,7 +49,7 @@ export class AboveStaff extends GridGroup<LineElement> {
 
     this.addInterMeasureStaffDecorations(
       (chord: notation.Chord) => {
-        return find(chord.notes, "harmonic")?.harmonicString;
+        return chord.notes.find((n) => n.harmonic)?.harmonicString;
       },
       (harmonicString: string, amount: number) => ({
         type: amount > 1 ? "DashedLineText" : "Text",
@@ -61,7 +61,7 @@ export class AboveStaff extends GridGroup<LineElement> {
     );
 
     this.addInterMeasureStaffDecorations(
-      (chord: notation.Chord) => some(chord.notes, "letRing"),
+      (chord: notation.Chord) => chord.notes.some((n) => n.letRing),
       (_letRing: boolean, amount: number) => ({
         type: amount > 1 ? "DashedLineText" : "Text",
         box: new Box(0, 0, 0, baseSize),
@@ -72,7 +72,7 @@ export class AboveStaff extends GridGroup<LineElement> {
     );
 
     this.addInterMeasureStaffDecorations(
-      (chord: notation.Chord) => some(chord.notes, "vibrato"),
+      (chord: notation.Chord) => chord.notes.some((n) => n.vibrato),
       (_vibrato: boolean, _amount: number) => new Vibrato(),
       {
         includeChordSpacer: true,
@@ -113,13 +113,13 @@ export class AboveStaff extends GridGroup<LineElement> {
       }
 
       if (newPredicateValue) {
-        if (isUndefined(startIndex)) {
+        if (startIndex === undefined) {
           startIndex = index + 1;
           predicateValue = newPredicateValue;
         } else {
           amount += 1;
         }
-      } else if (isNumber(startIndex)) {
+      } else if (typeof startIndex == "number") {
         if (predicateValue) {
           this.addElement(elementGenerator(predicateValue, amount), {
             startColumn: startIndex,
@@ -135,7 +135,7 @@ export class AboveStaff extends GridGroup<LineElement> {
       endIndex = index + (options?.includeChordSpacer ? 2 : 1);
     });
 
-    if (isNumber(startIndex) && predicateValue) {
+    if (typeof startIndex == "number" && predicateValue) {
       this.addElement(elementGenerator(predicateValue, amount), {
         startColumn: startIndex,
         endColumn: endIndex,
@@ -220,7 +220,7 @@ export class AboveStaff extends GridGroup<LineElement> {
           );
         }
 
-        const tremoloPickedNote = find(element.chord.notes, "tremoloPicking");
+        const tremoloPickedNote = element.chord.notes.find((n) => n.tremoloPicking);
         if (tremoloPickedNote) {
           const beamBoxHeight = 3 * BEAM_HEIGHT;
           const gap = 0.5 * BEAM_HEIGHT;
@@ -239,7 +239,7 @@ export class AboveStaff extends GridGroup<LineElement> {
           });
         }
 
-        const accentuatedNote = find(element.chord.notes, "accent");
+        const accentuatedNote = element.chord.notes.find((n) => n.accent);
         if (accentuatedNote && accentuatedNote.accent) {
           let accentString;
           switch (accentuatedNote.accent) {
