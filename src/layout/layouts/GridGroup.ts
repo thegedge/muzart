@@ -141,10 +141,10 @@ export class GridGroup<T extends types.LayoutElement> extends AbstractGroup<T> {
       const groupA = constraintA.group;
       const groupB = constraintB.group;
       if (groupA) {
-        return groupB ? groupA.localeCompare(groupB) : 1;
+        return groupB ? groupA.localeCompare(groupB) : -1;
       }
 
-      return groupB ? -1 : 0;
+      return groupB ? 1 : 0;
     });
 
     const bottomRow = this.newRow();
