@@ -2,7 +2,7 @@ import React from "react";
 import layout, { LINE_STROKE_WIDTH } from "../../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 
-export function Arc(props: { element: layout.Arc }) {
+export const Arc = (props: { element: layout.Arc }) => {
   const w = props.element.box.width;
   const h = props.element.box.height;
   const offset = 3 * LINE_STROKE_WIDTH;
@@ -30,4 +30,4 @@ export function Arc(props: { element: layout.Arc }) {
       <path d={path} fill="#555555" strokeLinecap="round" />
     </BoxGroup>
   );
-}
+};

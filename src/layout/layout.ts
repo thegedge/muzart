@@ -15,7 +15,7 @@ import { Box } from "./utils/Box";
  * a series of lines that will be stacked vertically. For example, the first page will often be
  * some lines of text describing the composition (name, artist, etc) followed by many staff lines.
  */
-export function layout(score: notation.Score): Score {
+export const layout = (score: notation.Score): Score => {
   console.time("layout");
   try {
     const layoutScore = new Score(score);
@@ -29,7 +29,7 @@ export function layout(score: notation.Score): Score {
   } finally {
     console.timeEnd("layout");
   }
-}
+};
 
 function layOutPart(score: notation.Score, part: notation.Part): Part {
   const measures = part.measures;

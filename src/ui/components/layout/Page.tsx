@@ -1,9 +1,9 @@
 import React from "react";
 import layout from "../../../layout";
-import ScoreElement from "../notation/ScoreElement";
+import { ScoreElement } from "../notation/ScoreElement";
 import { BoxGroup } from "./BoxGroup";
 
-export default function Page(props: { page: layout.Page }) {
+export const Page = (props: { page: layout.Page }) => {
   return (
     <BoxGroup node={props.page}>
       <rect
@@ -15,4 +15,4 @@ export default function Page(props: { page: layout.Page }) {
       <ScoreElement element={props.page.content} />
     </BoxGroup>
   );
-}
+};

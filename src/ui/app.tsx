@@ -6,7 +6,7 @@ import { Toolbox } from "./components/misc/Toolbox";
 import { Score } from "./components/notation/Score";
 import { ApplicationState, useApplicationState } from "./utils/ApplicationStateContext";
 
-export default function App() {
+export const App = () => {
   return (
     <div className="bg-gray-400 min-h-screen min-w-max">
       <div className="github-fork">
@@ -26,7 +26,7 @@ export default function App() {
       </ErrorBoundary>
     </div>
   );
-}
+};
 
 const ScoreDropZone = () => {
   const application = useApplicationState();

@@ -4,7 +4,7 @@ import { Box } from "../../../layout/utils/Box";
 import { BoxGroup } from "../layout/BoxGroup";
 import { Arc } from "./Arc";
 
-export function Slide(props: { node: layout.Slide }) {
+export const Slide = (props: { node: layout.Slide }) => {
   const arc = useMemo<layout.Arc>(
     () => ({
       type: "Arc",
@@ -33,4 +33,4 @@ export function Slide(props: { node: layout.Slide }) {
       <Arc element={arc} />
     </BoxGroup>
   );
-}
+};

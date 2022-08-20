@@ -5,7 +5,7 @@ import { Box } from "../../../layout/utils/Box";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { svgBoxProps } from "../../utils/svg";
 
-const padding = 3 * LINE_STROKE_WIDTH;
+const PADDING = 3 * LINE_STROKE_WIDTH;
 
 export const SelectionBox = observer(() => {
   const { selection, playback } = useApplicationState();
@@ -37,7 +37,7 @@ export const SelectionBox = observer(() => {
       fill="#f0f0a055"
       stroke="#c0c080"
       visibility={playback.playing ? "hidden" : undefined}
-      {...svgBoxProps(elementBox.expand(padding))}
+      {...svgBoxProps(elementBox.expand(PADDING))}
     />
   );
 });

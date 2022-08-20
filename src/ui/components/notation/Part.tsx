@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import layout from "../../../layout";
 import { CurrentPartContext } from "../../utils/CurrentPartContext";
 import { BoxGroup } from "../layout/BoxGroup";
-import Page from "../layout/Page";
+import { Page } from "../layout/Page";
 import { PlaybackBox } from "../misc/PlaybackBox";
 import { SelectionBox } from "../misc/SelectionBox";
 

@@ -13,15 +13,15 @@ declare global {
 
 export const ApplicationStateContext = createContext<Application | null>(null);
 
-export function useApplicationState(): Application {
+export const useApplicationState = (): Application => {
   const state = useContext(ApplicationStateContext);
   if (state == null) {
     throw new Error("Application state hasn't been set");
   }
   return state;
-}
+};
 
-export function ApplicationState(props: { children?: ComponentChildren }) {
+export const ApplicationState = (props: { children?: ComponentChildren }) => {
   const application = useMemo(() => {
     const selection = new Selection();
     const playback = new PlaybackController(selection);
@@ -69,4 +69,4 @@ export function ApplicationState(props: { children?: ComponentChildren }) {
       <ApplicationStateContext.Provider value={application}>{props.children}</ApplicationStateContext.Provider>
     </Suspense>
   );
-}
+};

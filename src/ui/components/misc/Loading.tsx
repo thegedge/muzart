@@ -1,7 +1,7 @@
 import React from "react";
 import { PageCallout } from "../layout/PageCallout";
 
-export function Loading() {
+export const Loading = () => {
   return (
     <PageCallout>
       Loading
@@ -10,12 +10,12 @@ export function Loading() {
       <BouncingDot delayMS={300} />
     </PageCallout>
   );
-}
+};
 
-function BouncingDot(props: { delayMS: number }) {
+const BouncingDot = (props: { delayMS: number }) => {
   return (
     <div className="animate-bounce -translate-y-1/4 inline-block" style={{ animationDelay: `${props.delayMS}ms` }}>
       .
     </div>
   );
-}
+};

@@ -2,7 +2,7 @@ import React, { JSX } from "react";
 import layout, { LINE_STROKE_WIDTH } from "../../../layout";
 import { StrokeDirection } from "../../../notation";
 
-export function Stroke(props: { node: layout.Stroke }) {
+export const Stroke = (props: { node: layout.Stroke }) => {
   switch (props.node.stroke.direction) {
     case StrokeDirection.Down: {
       const strokeProps: JSX.IntrinsicElements["line"] = { stroke: "#000000", strokeWidth: LINE_STROKE_WIDTH };
@@ -41,4 +41,4 @@ export function Stroke(props: { node: layout.Stroke }) {
       return <path d={path} fill="none" stroke="#000000" />;
     }
   }
-}
+};

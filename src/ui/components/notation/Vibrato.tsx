@@ -3,7 +3,7 @@ import React from "react";
 import layout, { STAFF_LINE_HEIGHT } from "../../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 
-export function Vibrato(props: { node: layout.Vibrato }) {
+export const Vibrato = (props: { node: layout.Vibrato }) => {
   const startX = 0.2 * STAFF_LINE_HEIGHT;
   const startY = 0.6 * props.node.box.height;
   const amplitude = 0.3 * STAFF_LINE_HEIGHT;
@@ -25,4 +25,4 @@ export function Vibrato(props: { node: layout.Vibrato }) {
       <path d={path} fill="#555555" stroke="#555555" />
     </BoxGroup>
   );
-}
+};

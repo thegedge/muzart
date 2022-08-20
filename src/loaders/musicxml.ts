@@ -22,7 +22,7 @@ import { Loader } from "./Loader";
 // TODO this is pretty slow, so perhaps a SAX-based parser
 // TODO quite incomplete, but I can't find any good MusicXML files with all the guitar tablature elements, or programs that can produce them
 
-export default function loader(source: ArrayBuffer): Loader {
+const loader = (source: ArrayBuffer): Loader => {
   const decoder = new TextDecoder();
   const xmlString = decoder.decode(source);
   return {
@@ -30,7 +30,9 @@ export default function loader(source: ArrayBuffer): Loader {
       return load(xmlString);
     },
   };
-}
+};
+
+export default loader;
 
 function load(source: string): Score {
   const parser = new DOMParser();

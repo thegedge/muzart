@@ -20,7 +20,7 @@ export enum ScoreDataType {
   Unknown = "Unknown",
 }
 
-export function getFilenameAndMimeType(source: File | Response) {
+export const getFilenameAndMimeType = (source: File | Response) => {
   let filename: string | null;
   let mimeType: string | null;
   if ("name" in source) {
@@ -31,12 +31,12 @@ export function getFilenameAndMimeType(source: File | Response) {
     mimeType = source.headers.get("Content-Type");
   }
   return { filename, mimeType };
-}
+};
 
 const GUITAR_PRO_REGEX = /\.gp\d$/;
 
 // TODO perhaps also support determining the type from the buffer?
-export function determineScoreType(source: File | Response) {
+export const determineScoreType = (source: File | Response) => {
   const { filename, mimeType } = getFilenameAndMimeType(source);
 
   if (GUITAR_PRO_REGEX.test(filename)) {
@@ -46,7 +46,7 @@ export function determineScoreType(source: File | Response) {
   }
 
   return ScoreDataType.Unknown;
-}
+};
 
 function loadScore(buffer: ArrayBuffer, type: ScoreDataType): Score {
   if (type == ScoreDataType.Unknown) {

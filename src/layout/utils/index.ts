@@ -122,7 +122,7 @@ export function maxMap<T, MaxT>(
  *
  * @returns the number of characters to represent the number, equivalent to `number.toString().length`
  */
-export function numCharsToRepresent(v: number): number {
+export const numCharsToRepresent = (v: number): number => {
   let num = 1;
   if (v > 0) {
     v = -v;
@@ -135,7 +135,7 @@ export function numCharsToRepresent(v: number): number {
   }
 
   return num;
-}
+};
 
 /**
  * Find runs of elements in a bigger list.

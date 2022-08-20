@@ -7,55 +7,55 @@ import { Box } from "../../layout/utils/Box";
 // DOM Props
 //
 
-export function sizeProps(box: Box): Partial<CSSProperties> {
+export const sizeProps = (box: Box): Partial<CSSProperties> => {
   return { width: `${box.width}in`, height: `${box.height}in` };
-}
+};
 
-export function positionProps(box: Box): Partial<CSSProperties> {
+export const positionProps = (box: Box): Partial<CSSProperties> => {
   return { top: `${box.y}in`, left: `${box.x}in` };
-}
+};
 
-export function boxProps(box: Box): Partial<CSSProperties> {
+export const boxProps = (box: Box): Partial<CSSProperties> => {
   return Object.assign(sizeProps(box), positionProps(box));
-}
+};
 
-export function marginProps(margins: Margins): Partial<CSSProperties> {
+export const marginProps = (margins: Margins): Partial<CSSProperties> => {
   return {
     paddingLeft: `${margins.left}in`,
     paddingRight: `${margins.right}in`,
     paddingTop: `${margins.top}in`,
     paddingBottom: `${margins.bottom}in`,
   };
-}
+};
 
 //
 // SVG props
 //
 
-export function svgSizeProps(box: Box | HasBox): Partial<Pick<JSX.SVGAttributes, "width" | "height">> {
+export const svgSizeProps = (box: Box | HasBox): Partial<Pick<JSX.SVGAttributes, "width" | "height">> => {
   if ("box" in box) {
     box = box.box;
   }
   return { width: box.width, height: box.height };
-}
+};
 
-export function svgPositionProps(box: Box | HasBox): Partial<Pick<JSX.SVGAttributes, "x" | "y">> {
+export const svgPositionProps = (box: Box | HasBox): Partial<Pick<JSX.SVGAttributes, "x" | "y">> => {
   if ("box" in box) {
     box = box.box;
   }
   return pick(box, "x", "y");
-}
+};
 
-export function svgPositionTransform(box: Box | HasBox): string {
+export const svgPositionTransform = (box: Box | HasBox): string => {
   if ("box" in box) {
     box = box.box;
   }
   return `translate(${box.x}, ${box.y})`;
-}
+};
 
-export function svgBoxProps(box: Box | HasBox) {
+export const svgBoxProps = (box: Box | HasBox) => {
   if ("box" in box) {
     box = box.box;
   }
   return Object.assign(svgSizeProps(box), svgPositionProps(box));
-}
+};

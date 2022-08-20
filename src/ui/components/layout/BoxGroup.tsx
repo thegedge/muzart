@@ -13,7 +13,7 @@ export interface BoxGroupProps extends JSX.SVGAttributes<SVGGElement> {
   onClick?: (event: MouseEvent) => void;
 }
 
-export function BoxGroup(props: BoxGroupProps) {
+export const BoxGroup = (props: BoxGroupProps) => {
   if (props.hidden) {
     return null;
   }
@@ -34,4 +34,4 @@ export function BoxGroup(props: BoxGroupProps) {
       <DebugBox box={props.node.box} debugType={props.node.type} />
     </g>
   );
-}
+};

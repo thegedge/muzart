@@ -4,7 +4,7 @@ import { Box } from "../../../layout/utils/Box";
 import { svgBoxProps } from "../../utils/svg";
 import { DebugBox } from "../layout/DebugBox";
 
-export function TextElement(props: {
+export const TextElement = (props: {
   text: string;
   size: number;
   box: Box;
@@ -12,7 +12,7 @@ export function TextElement(props: {
   valign?: Alignment;
   fill?: boolean | string;
   style?: CSSProperties;
-}) {
+}) => {
   let x;
   let textAnchor: JSX.SVGAttributes["textAnchor"];
   switch (props.halign || "start") {
@@ -62,4 +62,4 @@ export function TextElement(props: {
       </text>
     </>
   );
-}
+};

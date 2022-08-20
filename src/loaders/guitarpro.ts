@@ -28,9 +28,9 @@ const VERSION_REGEX = /FICHIER GUITAR PRO v(?<version>\d{1}\.\d{1,2})/;
 
 // Implemented with help from http://dguitar.sourceforge.net/GP4format.html (some adjustments, it's not totally correct)
 
-export default function loader(source: ArrayBuffer): Loader {
-  return new GuitarProLoader(source);
-}
+const loader = (source: ArrayBuffer): Loader => new GuitarProLoader(source);
+
+export default loader;
 
 interface TrackData {
   name: string;

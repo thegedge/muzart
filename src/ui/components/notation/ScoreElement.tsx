@@ -17,7 +17,7 @@ import { TextElement } from "./TextElement";
 import { TimeSignature } from "./TimeSignature";
 import { Vibrato } from "./Vibrato";
 
-export default function ScoreElement(props: { element: PageElement | LineElement }): JSX.Element {
+export const ScoreElement = (props: { element: PageElement | LineElement }): JSX.Element => {
   switch (props.element.type) {
     case "Arc":
       return <Arc element={props.element} />;
@@ -72,4 +72,4 @@ export default function ScoreElement(props: { element: PageElement | LineElement
     case "Vibrato":
       return <Vibrato node={props.element} />;
   }
-}
+};
