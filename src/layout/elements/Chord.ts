@@ -6,7 +6,7 @@ import { Note } from "./Note";
 
 export class Chord extends LayoutElement<"Chord", types.LineElement> implements types.Chord {
   readonly type = "Chord";
-  readonly children: (types.Note | types.Stroke)[] = [];
+  readonly children: (types.Note | types.Stroke)[];
 
   constructor(readonly chord: notation.Chord) {
     // TODO use num staff lines from ancestor
