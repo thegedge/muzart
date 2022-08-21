@@ -1,11 +1,10 @@
-import { groupBy } from "lodash";
 import * as notation from "../../../notation";
 import { AccentStyle } from "../../../notation";
 import { BEAM_HEIGHT, chordWidth, STAFF_LINE_HEIGHT } from "../../constants";
 import { GridGroup } from "../../layouts/GridGroup";
 import { SimpleGroupElement } from "../../layouts/SimpleGroup";
 import { LineElement, Measure } from "../../types";
-import { Box, minMap } from "../../utils";
+import { Box } from "../../utils";
 import { Beam } from "../Beam";
 import { Bend } from "../Bend";
 import { ChordDiagram } from "../ChordDiagram";
@@ -150,21 +149,14 @@ export class AboveStaff extends GridGroup<LineElement> {
     const tempoSize = 0.1;
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
 
-    const elementsByMeasure = groupBy(
-      this.staffElements.map(({ element, measure }, index) => ({ element, measure, index })),
-      "measure.measure.number"
-    );
-
-    let firstMeasure = true;
-    for (const measureElements of Object.values(elementsByMeasure)) {
-      const measureStartColumn = minMap(measureElements, ({ index }) => index + 1) ?? 0;
-      const measure = measureElements[0].measure.measure;
+    for (let index = 0; index < this.staffElements.length; ) {
+      const measure = this.staffElements[index].measure.measure;
 
       this.addElement(
         new Text({
           value: measure.number.toString(),
           size: numberSize,
-          halign: firstMeasure ? "start" : "center",
+          halign: index == 0 ? "start" : "center",
           valign: "end",
           style: {
             userSelect: "none",
@@ -173,12 +165,52 @@ export class AboveStaff extends GridGroup<LineElement> {
         }),
         {
           mustBeBottomRow: true,
-          startColumn: measureStartColumn - 1, // this is the empty spacer at the end of the measure
-          endColumn: measureStartColumn - 1,
+          startColumn: index, // this is the empty spacer at the end of the measure
+          endColumn: index,
         }
       );
 
-      for (const { element, index } of measureElements) {
+      if (measure.staffDetails.tempo?.changed) {
+        this.addElement(
+          new Text({
+            size: tempoSize,
+            value: `♩﹦${measure.staffDetails.tempo.value}`,
+            style: {
+              userSelect: "none",
+              fontWeight: "bold",
+            },
+          }),
+          {
+            startColumn: index + 1,
+            endColumn: index + 2,
+          }
+        );
+      }
+
+      if (measure.marker) {
+        this.addElement(
+          new Text({
+            size: baseSize,
+            value: measure.marker.text,
+            style: {
+              fontWeight: "bold",
+              fill: measure.marker.color,
+            },
+          }),
+          {
+            startColumn: index + 1,
+            endColumn: index + 2,
+          }
+        );
+      }
+
+      for (; index < this.staffElements.length; ++index) {
+        const staffElement = this.staffElements[index];
+        if (staffElement.measure.measure.number != measure.number) {
+          break;
+        }
+
+        const element = staffElement.element;
         if (element.type !== "Chord") {
           continue;
         }
@@ -261,42 +293,6 @@ export class AboveStaff extends GridGroup<LineElement> {
           }
         }
       }
-
-      if (measure.staffDetails.tempo?.changed) {
-        this.addElement(
-          new Text({
-            size: tempoSize,
-            value: `♩﹦${measure.staffDetails.tempo.value}`,
-            style: {
-              userSelect: "none",
-              fontWeight: "bold",
-            },
-          }),
-          {
-            startColumn: measureStartColumn,
-            endColumn: measureStartColumn + 1,
-          }
-        );
-
-        if (measure.marker) {
-          this.addElement(
-            new Text({
-              size: baseSize,
-              value: measure.marker.text,
-              style: {
-                fontWeight: "bold",
-                fill: measure.marker.color,
-              },
-            }),
-            {
-              startColumn: measureStartColumn,
-              endColumn: measureStartColumn + 1,
-            }
-          );
-        }
-      }
-
-      firstMeasure = false;
     }
   }
 
