@@ -154,15 +154,6 @@ export abstract class FlexGroup<
     return true;
   }
 
-  popElement(): T | undefined {
-    this.flexProps.pop();
-    const element = this.children.pop();
-    if (element) {
-      element.parent = null;
-    }
-    return element;
-  }
-
   /**
    * Reposition and scale all children so that they fill this flex group's box
    */
