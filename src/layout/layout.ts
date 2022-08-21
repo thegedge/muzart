@@ -40,7 +40,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   const contentWidth = page.content.box.width;
   const partHeader = new PartHeader(score, part, contentWidth);
   partHeader.layout();
-  page.content.addElement(partHeader, { factor: 0 });
+  page.content.addElement(partHeader, 0);
 
   let isFirstLine = true;
   let line = new PageLine(new Box(0, 0, contentWidth, 0), part.lineCount);
@@ -53,10 +53,10 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
     // start a new page.
 
     if (isFirstLine) {
-      line.addElement(measure, { factor: measureToLayOut.chords.length });
+      line.addElement(measure, measureToLayOut.chords.length);
       line.addBarLine();
       isFirstLine = false;
-    } else if (line.tryAddElement(measure, { factor: measureToLayOut.chords.length })) {
+    } else if (line.tryAddElement(measure, measureToLayOut.chords.length)) {
       line.addBarLine();
     } else {
       line.layout();
@@ -68,7 +68,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
       }
 
       line = new PageLine(new Box(0, 0, contentWidth, 0), part.lineCount);
-      line.addElement(measure, { factor: measureToLayOut.chords.length });
+      line.addElement(measure, measureToLayOut.chords.length);
       line.addBarLine();
       isFirstLine = true;
     }

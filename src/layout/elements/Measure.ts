@@ -2,7 +2,7 @@ import types from "..";
 import * as notation from "../../notation";
 import { NoteValue, NoteValueName } from "../../notation";
 import { STAFF_LINE_HEIGHT } from "../constants";
-import { FlexGroup, FlexProps } from "../layouts/FlexGroup";
+import { FlexGroup } from "../layouts/FlexGroup";
 import { Inches, LineElement } from "../types";
 import { Box } from "../utils/Box";
 import { Chord } from "./Chord";
@@ -23,9 +23,7 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
       box: Box.empty(),
       axis: "horizontal",
       crossAxisAlignment: "center",
-      defaultFlexProps: {
-        factor: 0,
-      },
+      defaultStretchFactor: 0,
     });
 
     const singleWholeRest =
@@ -42,7 +40,7 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
 
     if (singleWholeRest) {
       // If just a single whole rest, make this spacer stretchable to "center" the rest
-      this.addElement(Space.fromDimensions(4 * spacerWidth, spacerHeight), { factor: 1 });
+      this.addElement(Space.fromDimensions(4 * spacerWidth, spacerHeight), 1);
     } else {
       this.addElement(Space.fromDimensions(spacerWidth, spacerHeight));
     }
@@ -58,9 +56,9 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
       }
 
       if (singleWholeRest) {
-        this.addElement(Space.fromDimensions(4 * spacerWidth, spacerHeight), { factor: 1 });
+        this.addElement(Space.fromDimensions(4 * spacerWidth, spacerHeight), 1);
       } else {
-        this.addElement(Space.fromDimensions(width, spacerHeight), { factor: width });
+        this.addElement(Space.fromDimensions(width, spacerHeight), width);
       }
     }
 
@@ -71,8 +69,8 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
     this.addElement(Space.fromDimensions(0, spacerHeight));
   }
 
-  override tryAddElement(element: LineElement, flexProps?: Partial<FlexProps>) {
-    const wasAdded = super.tryAddElement(element, flexProps);
+  override tryAddElement(element: LineElement, factor?: number) {
+    const wasAdded = super.tryAddElement(element, factor);
     if (wasAdded) {
       if (element instanceof Rest || element instanceof Chord) {
         this.chords.push(element);
@@ -82,8 +80,8 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
     return wasAdded;
   }
 
-  override addElement(element: LineElement, flexProps?: Partial<FlexProps>) {
-    super.addElement(element, flexProps);
+  override addElement(element: LineElement, factor?: number) {
+    super.addElement(element, factor);
     if (element instanceof Rest || element instanceof Chord) {
       this.chords.push(element);
     }

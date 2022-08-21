@@ -2,28 +2,20 @@ import { last } from "lodash";
 import types, { Alignment } from "..";
 import { Box } from "../utils/Box";
 
-export type FlexProps = {
-  /** The stretch factor, which impacts how this element's dimensions will be stretched along the main axis. */
-  factor: number;
-
-  /** @private */
-  originalBox: Box;
-};
-
 export type FlexGroupConfig = {
   box: Box;
 
   /** The gap between elements. */
   gap: number;
 
-  /** Default flex props when adding elements. */
-  defaultFlexProps: Partial<FlexProps>;
-
   /** The direction of the main axis. */
   axis: "vertical" | "horizontal";
 
   /** Wrap elements that overflow the main axis size. */
   wrap: boolean;
+
+  /** The default stretch factor, for elements added without one */
+  defaultStretchFactor: number;
 
   /**
    * How to ditribute space among elements on the main axis, like `justify-content` in CSS
@@ -52,13 +44,15 @@ export abstract class FlexGroup<
   Parent extends types.LayoutElement | null = types.LayoutElement
 > {
   abstract readonly type: Type;
+
   readonly children: T[] = [];
+  private stretchFactors: number[] = [];
+  private originalBoxes: Box[] = [];
 
   public parent: Parent | null = null;
   public box: Box;
 
-  private defaultFlexProps: FlexProps;
-  private flexProps: FlexProps[] = [];
+  private defaultStretchFactor: number;
   private gap: number;
   private wrap: boolean;
   private mainAxisSpaceDistribution: FlexGroupConfig["mainAxisSpaceDistribution"];
@@ -89,11 +83,7 @@ export abstract class FlexGroup<
   constructor(config?: Partial<FlexGroupConfig>) {
     this.gap = config?.gap ?? 0;
     this.box = config?.box ?? Box.empty();
-    this.defaultFlexProps = {
-      factor: 1,
-      originalBox: Box.empty(),
-      ...config?.defaultFlexProps,
-    };
+    this.defaultStretchFactor = config?.defaultStretchFactor ?? 1;
 
     if (config?.axis == "vertical") {
       this.startAttribute = { main: "y", cross: "x" };
@@ -114,9 +104,9 @@ export abstract class FlexGroup<
    * Add an element to this flex group.
    *
    * @param element the element to add
-   * @param flexProps optional flex properties to associate with this element
+   * @param factor optional stretch factor to use
    */
-  addElement(element: T, flexProps?: Partial<FlexProps>): void {
+  addElement(element: T, factor = this.defaultStretchFactor): void {
     const lastElement = last(this.children);
     if (lastElement) {
       element.box[this.startAttribute.main] = lastElement.box[this.endAttribute] + this.gap;
@@ -124,11 +114,8 @@ export abstract class FlexGroup<
 
     element.parent = this;
     this.children.push(element);
-    this.flexProps.push({
-      ...this.defaultFlexProps,
-      ...flexProps,
-      originalBox: element.box,
-    });
+    this.stretchFactors.push(factor);
+    this.originalBoxes.push(element.box);
   }
 
   // TODO if we could configure this group with "wraps", we could get something like flex-wrap in CSS and not need `tryAddElement`
@@ -137,11 +124,11 @@ export abstract class FlexGroup<
    * Try adding an element to this flex group, but only if it will fit along the main axis.
    *
    * @param element the element to add
-   * @param flexProps optional flex properties to associate with this element
+   * @param factor optional stretch factor to use
    *
    * @returns `true` if the element was added, `false` otherwise
    */
-  tryAddElement(element: T, flexProps?: Partial<FlexProps>): boolean {
+  tryAddElement(element: T, factor = this.defaultStretchFactor): boolean {
     const lastElement = last(this.children);
     if (lastElement) {
       const newRight = lastElement.box[this.endAttribute] + this.gap + element.box[this.dimensionAttribute.main];
@@ -150,7 +137,7 @@ export abstract class FlexGroup<
       }
     }
 
-    this.addElement(element, flexProps);
+    this.addElement(element, factor);
     return true;
   }
 
@@ -171,8 +158,7 @@ export abstract class FlexGroup<
         let remainingWidth = this.box[this.dimensionAttribute.main];
         while (remainingWidth > 0 && index < this.children.length) {
           const child = this.children[index];
-          const props = this.flexProps[index];
-          child.box = props.originalBox.clone();
+          child.box = this.originalBoxes[index].clone();
 
           const childMainAxisSize = child.box[this.dimensionAttribute.main];
           if (index == startIndex) {
@@ -195,7 +181,7 @@ export abstract class FlexGroup<
         .reduce((width, c) => width + c.box[this.dimensionAttribute.main], 0);
       const extraSpace = this.box[this.dimensionAttribute.main] - childrenWidth - (index - startIndex - 1) * this.gap;
 
-      let factorsSum = this.flexProps.slice(startIndex, index).reduce((sum, p) => sum + p.factor, 0);
+      let factorsSum = this.stretchFactors.slice(startIndex, index).reduce((sum, p) => sum + p, 0);
       let mainAxisStart: number;
       if (factorsSum == 0) {
         // Space distribution only makes sense when there's no stretchable items (i.e., factorsSum == 0) because otherwise
@@ -221,10 +207,10 @@ export abstract class FlexGroup<
       let crossAxisSize = 0;
       for (let childIndex = startIndex; childIndex < index; ++childIndex) {
         const child = this.children[childIndex];
-        const props = this.flexProps[childIndex];
+        const factor = this.stretchFactors[childIndex];
 
         child.box[this.startAttribute.main] = mainAxisStart;
-        child.box[this.dimensionAttribute.main] += extraSpace * (props.factor / factorsSum);
+        child.box[this.dimensionAttribute.main] += extraSpace * (factor / factorsSum);
 
         child.layout?.();
 

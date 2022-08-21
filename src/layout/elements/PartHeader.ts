@@ -17,7 +17,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
     super({
       box: new Box(0, 0, contentWidth, 0),
       axis: "vertical",
-      defaultFlexProps: { factor: 0 },
+      defaultStretchFactor: 0,
     });
 
     // Lay out the composition title, composer, etc
@@ -125,7 +125,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       axis: "horizontal",
       box: new Box(0, 0, this.contentWidth, 1),
       gap: 0.5 * DEFAULT_MARGIN,
-      defaultFlexProps: { factor: 0 },
+      defaultStretchFactor: 0,
       mainAxisSpaceDistribution: "center",
       wrap: true,
     });
