@@ -1,4 +1,4 @@
-import { defaults, last } from "lodash";
+import { last } from "lodash";
 import types, { Alignment } from "..";
 import { Box } from "../utils/Box";
 
@@ -89,10 +89,11 @@ export abstract class FlexGroup<
   constructor(config?: Partial<FlexGroupConfig>) {
     this.gap = config?.gap ?? 0;
     this.box = config?.box ?? Box.empty();
-    this.defaultFlexProps = defaults(config?.defaultFlexProps, {
+    this.defaultFlexProps = {
       factor: 1,
       originalBox: Box.empty(),
-    });
+      ...config?.defaultFlexProps,
+    };
 
     if (config?.axis == "vertical") {
       this.startAttribute = { main: "y", cross: "x" };
@@ -123,7 +124,11 @@ export abstract class FlexGroup<
 
     element.parent = this;
     this.children.push(element);
-    this.flexProps.push(defaults({ originalBox: element.box }, flexProps, this.defaultFlexProps));
+    this.flexProps.push({
+      ...this.defaultFlexProps,
+      ...flexProps,
+      originalBox: element.box,
+    });
   }
 
   // TODO if we could configure this group with "wraps", we could get something like flex-wrap in CSS and not need `tryAddElement`
