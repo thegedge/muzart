@@ -23,6 +23,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
   private belowStaff: BelowStaff;
   private staffLines: Line[] = [];
   private staffOverlay: StaffOverlay;
+  private dirty = true;
 
   public measures: Measure[] = [];
 
@@ -66,6 +67,8 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
     if (element.type == "Measure") {
       this.measures.push(element);
     }
+
+    this.dirty = true;
     return this.staffLayout.addElement(element, flexProps);
   }
 
@@ -74,10 +77,15 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
     if (wasAdded && element.type == "Measure") {
       this.measures.push(element);
     }
+    this.dirty ||= wasAdded;
     return wasAdded;
   }
 
   layout() {
+    if (!this.dirty) {
+      return;
+    }
+
     this.staffLayout.layout();
     this.staffLayout.box.height = maxMap(this.staffLayout.children, (c) => c.box.height) ?? 0;
 
@@ -104,6 +112,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
 
     this.box.width = maxMap(this.children, (e) => e.box.width) ?? 0;
     this.box.height = this.belowStaff.box.bottom;
+    this.dirty = false;
   }
 
   private createTabGroup() {
