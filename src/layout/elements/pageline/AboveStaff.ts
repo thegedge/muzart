@@ -1,11 +1,10 @@
-import { find, groupBy, isNumber, isUndefined, some } from "lodash";
 import * as notation from "../../../notation";
 import { AccentStyle } from "../../../notation";
 import { BEAM_HEIGHT, chordWidth, STAFF_LINE_HEIGHT } from "../../constants";
 import { GridGroup } from "../../layouts/GridGroup";
 import { SimpleGroupElement } from "../../layouts/SimpleGroup";
 import { LineElement, Measure } from "../../types";
-import { Box, minMap } from "../../utils";
+import { Box } from "../../utils";
 import { Beam } from "../Beam";
 import { Bend } from "../Bend";
 import { ChordDiagram } from "../ChordDiagram";
@@ -37,7 +36,7 @@ export class AboveStaff extends GridGroup<LineElement> {
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
 
     this.addInterMeasureStaffDecorations(
-      (chord: notation.Chord) => some(chord.notes, "palmMute"),
+      (chord: notation.Chord) => chord.notes.some((n) => n.palmMute),
       (_hasPalmMute: boolean, amount: number) => ({
         type: amount > 1 ? "DashedLineText" : "Text",
         box: new Box(0, 0, 0, baseSize),
@@ -49,7 +48,7 @@ export class AboveStaff extends GridGroup<LineElement> {
 
     this.addInterMeasureStaffDecorations(
       (chord: notation.Chord) => {
-        return find(chord.notes, "harmonic")?.harmonicString;
+        return chord.notes.find((n) => n.harmonic)?.harmonicString;
       },
       (harmonicString: string, amount: number) => ({
         type: amount > 1 ? "DashedLineText" : "Text",
@@ -61,7 +60,7 @@ export class AboveStaff extends GridGroup<LineElement> {
     );
 
     this.addInterMeasureStaffDecorations(
-      (chord: notation.Chord) => some(chord.notes, "letRing"),
+      (chord: notation.Chord) => chord.notes.some((n) => n.letRing),
       (_letRing: boolean, amount: number) => ({
         type: amount > 1 ? "DashedLineText" : "Text",
         box: new Box(0, 0, 0, baseSize),
@@ -72,7 +71,7 @@ export class AboveStaff extends GridGroup<LineElement> {
     );
 
     this.addInterMeasureStaffDecorations(
-      (chord: notation.Chord) => some(chord.notes, "vibrato"),
+      (chord: notation.Chord) => chord.notes.some((n) => n.vibrato),
       (_vibrato: boolean, _amount: number) => new Vibrato(),
       {
         includeChordSpacer: true,
@@ -102,7 +101,8 @@ export class AboveStaff extends GridGroup<LineElement> {
     let endIndex = 0;
     let amount = 0;
 
-    this.staffElements.forEach(({ element }, index) => {
+    for (let index = 0; index < this.staffElements.length; ++index) {
+      const element = this.staffElements[index].element;
       if (element.type == "Space") {
         return;
       }
@@ -113,13 +113,13 @@ export class AboveStaff extends GridGroup<LineElement> {
       }
 
       if (newPredicateValue) {
-        if (isUndefined(startIndex)) {
+        if (startIndex === undefined) {
           startIndex = index + 1;
           predicateValue = newPredicateValue;
         } else {
           amount += 1;
         }
-      } else if (isNumber(startIndex)) {
+      } else if (typeof startIndex == "number") {
         if (predicateValue) {
           this.addElement(elementGenerator(predicateValue, amount), {
             startColumn: startIndex,
@@ -133,9 +133,9 @@ export class AboveStaff extends GridGroup<LineElement> {
       }
 
       endIndex = index + (options?.includeChordSpacer ? 2 : 1);
-    });
+    }
 
-    if (isNumber(startIndex) && predicateValue) {
+    if (typeof startIndex == "number" && predicateValue) {
       this.addElement(elementGenerator(predicateValue, amount), {
         startColumn: startIndex,
         endColumn: endIndex,
@@ -149,21 +149,14 @@ export class AboveStaff extends GridGroup<LineElement> {
     const tempoSize = 0.1;
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
 
-    const elementsByMeasure = groupBy(
-      this.staffElements.map(({ element, measure }, index) => ({ element, measure, index })),
-      "measure.measure.number"
-    );
-
-    let firstMeasure = true;
-    for (const measureElements of Object.values(elementsByMeasure)) {
-      const measureStartColumn = minMap(measureElements, ({ index }) => index + 1) ?? 0;
-      const measure = measureElements[0].measure.measure;
+    for (let index = 0; index < this.staffElements.length; ) {
+      const measure = this.staffElements[index].measure.measure;
 
       this.addElement(
         new Text({
           value: measure.number.toString(),
           size: numberSize,
-          halign: firstMeasure ? "start" : "center",
+          halign: index == 0 ? "start" : "center",
           valign: "end",
           style: {
             userSelect: "none",
@@ -172,12 +165,52 @@ export class AboveStaff extends GridGroup<LineElement> {
         }),
         {
           mustBeBottomRow: true,
-          startColumn: measureStartColumn - 1, // this is the empty spacer at the end of the measure
-          endColumn: measureStartColumn - 1,
+          startColumn: index, // this is the empty spacer at the end of the measure
+          endColumn: index,
         }
       );
 
-      for (const { element, index } of measureElements) {
+      if (measure.staffDetails.tempo?.changed) {
+        this.addElement(
+          new Text({
+            size: tempoSize,
+            value: `♩﹦${measure.staffDetails.tempo.value}`,
+            style: {
+              userSelect: "none",
+              fontWeight: "bold",
+            },
+          }),
+          {
+            startColumn: index + 1,
+            endColumn: index + 2,
+          }
+        );
+      }
+
+      if (measure.marker) {
+        this.addElement(
+          new Text({
+            size: baseSize,
+            value: measure.marker.text,
+            style: {
+              fontWeight: "bold",
+              fill: measure.marker.color,
+            },
+          }),
+          {
+            startColumn: index + 1,
+            endColumn: index + 2,
+          }
+        );
+      }
+
+      for (; index < this.staffElements.length; ++index) {
+        const staffElement = this.staffElements[index];
+        if (staffElement.measure.measure.number != measure.number) {
+          break;
+        }
+
+        const element = staffElement.element;
         if (element.type !== "Chord") {
           continue;
         }
@@ -220,7 +253,7 @@ export class AboveStaff extends GridGroup<LineElement> {
           );
         }
 
-        const tremoloPickedNote = find(element.chord.notes, "tremoloPicking");
+        const tremoloPickedNote = element.chord.notes.find((n) => n.tremoloPicking);
         if (tremoloPickedNote) {
           const beamBoxHeight = 3 * BEAM_HEIGHT;
           const gap = 0.5 * BEAM_HEIGHT;
@@ -239,7 +272,7 @@ export class AboveStaff extends GridGroup<LineElement> {
           });
         }
 
-        const accentuatedNote = find(element.chord.notes, "accent");
+        const accentuatedNote = element.chord.notes.find((n) => n.accent);
         if (accentuatedNote && accentuatedNote.accent) {
           let accentString;
           switch (accentuatedNote.accent) {
@@ -260,42 +293,6 @@ export class AboveStaff extends GridGroup<LineElement> {
           }
         }
       }
-
-      if (measure.staffDetails.tempo?.changed) {
-        this.addElement(
-          new Text({
-            size: tempoSize,
-            value: `♩﹦${measure.staffDetails.tempo.value}`,
-            style: {
-              userSelect: "none",
-              fontWeight: "bold",
-            },
-          }),
-          {
-            startColumn: measureStartColumn,
-            endColumn: measureStartColumn + 1,
-          }
-        );
-
-        if (measure.marker) {
-          this.addElement(
-            new Text({
-              size: baseSize,
-              value: measure.marker.text,
-              style: {
-                fontWeight: "bold",
-                fill: measure.marker.color,
-              },
-            }),
-            {
-              startColumn: measureStartColumn,
-              endColumn: measureStartColumn + 1,
-            }
-          );
-        }
-      }
-
-      firstMeasure = false;
     }
   }
 

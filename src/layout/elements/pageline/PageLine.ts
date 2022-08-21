@@ -1,6 +1,6 @@
 import { memoize, range } from "lodash";
 import { STAFF_LINE_HEIGHT } from "../../constants";
-import { FlexGroupElement, FlexProps } from "../../layouts/FlexGroup";
+import { FlexGroupElement } from "../../layouts/FlexGroup";
 import { SimpleGroup } from "../../layouts/SimpleGroup";
 import { LineElement, Measure, Page } from "../../types";
 import { maxMap } from "../../utils";
@@ -23,6 +23,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
   private belowStaff: BelowStaff;
   private staffLines: Line[] = [];
   private staffOverlay: StaffOverlay;
+  private dirty = true;
 
   public measures: Measure[] = [];
 
@@ -38,7 +39,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
   }
 
   addBarLine() {
-    this.addElement(new BarLine(this.numStaffLines || 6), { factor: null });
+    this.addElement(new BarLine(this.numStaffLines || 6), 0);
   }
 
   reset() {
@@ -59,25 +60,32 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
     super.addElement(this.staffOverlay);
 
     this.addBarLine();
-    this.addElement(this.createTabGroup(), { factor: null });
+    this.addElement(this.createTabGroup(), 0);
   }
 
-  addElement(element: LineElement, flexProps?: Partial<FlexProps>) {
+  addElement(element: LineElement, factor?: number) {
     if (element.type == "Measure") {
       this.measures.push(element);
     }
-    return this.staffLayout.addElement(element, flexProps);
+
+    this.dirty = true;
+    return this.staffLayout.addElement(element, factor);
   }
 
-  tryAddElement(element: LineElement, flexProps?: Partial<FlexProps>) {
-    const wasAdded = this.staffLayout.tryAddElement(element, flexProps);
+  tryAddElement(element: LineElement, factor?: number) {
+    const wasAdded = this.staffLayout.tryAddElement(element, factor);
     if (wasAdded && element.type == "Measure") {
       this.measures.push(element);
     }
+    this.dirty ||= wasAdded;
     return wasAdded;
   }
 
   layout() {
+    if (!this.dirty) {
+      return;
+    }
+
     this.staffLayout.layout();
     this.staffLayout.box.height = maxMap(this.staffLayout.children, (c) => c.box.height) ?? 0;
 
@@ -104,6 +112,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
 
     this.box.width = maxMap(this.children, (e) => e.box.width) ?? 0;
     this.box.height = this.belowStaff.box.bottom;
+    this.dirty = false;
   }
 
   private createTabGroup() {
@@ -114,6 +123,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
       box: new Box(0, 0.5 * STAFF_LINE_HEIGHT, width, STAFF_LINE_HEIGHT * (this.numStaffLines - 1)),
       axis: "vertical",
       mainAxisSpaceDistribution: "center",
+      defaultStretchFactor: 0,
     });
 
     for (const value of ["T", "A", "B"]) {
@@ -125,8 +135,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
           style: {
             userSelect: "none",
           },
-        }),
-        { factor: null }
+        })
       );
     }
 

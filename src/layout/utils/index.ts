@@ -96,19 +96,22 @@ export function minMap<T, MinT>(
  * @returns `undefined` if the array is empty, otherwise the max value in the
  */
 export function maxMap<T, MaxT>(
-  collection: Iterable<T>,
+  collection: ReadonlyArray<T>,
   mapper: (v: T) => MaxT,
   lessThan: (a: MaxT, b: MaxT) => boolean = (a, b) => a < b
 ): MaxT | undefined {
-  let maxValue: MaxT | undefined;
-  for (const v of collection) {
-    const value = mapper(v);
-    if (maxValue === undefined) {
-      maxValue = value;
-    } else if (lessThan(maxValue, value)) {
+  if (collection.length == 0) {
+    return undefined;
+  }
+
+  let maxValue: MaxT | undefined = mapper(collection[0]);
+  for (let index = 1; index < collection.length; ++index) {
+    const value = mapper(collection[index]);
+    if (lessThan(maxValue, value)) {
       maxValue = value;
     }
   }
+
   return maxValue;
 }
 
@@ -140,7 +143,7 @@ export const numCharsToRepresent = (v: number): number => {
 /**
  * Find runs of elements in a bigger list.
  *
- * @param values the list of value sto find runs in
+ * @param values the list of values to find runs in
  * @param partOfRun a function that determines if a given element should be part of a run
  *
  * @returns a list of `[start, end]` tuples for all the runs in the given list

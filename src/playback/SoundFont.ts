@@ -1,4 +1,4 @@
-import { compact, defaults, uniqBy } from "lodash";
+import { compact, uniqBy } from "lodash";
 import { BufferCursor, NumberType } from "../loaders/util/BufferCursor";
 import * as notation from "../notation";
 import { Instrument } from "./instruments/Instrument";
@@ -186,8 +186,14 @@ export class SoundFont {
             {
               ...sampleInfo,
               buffer,
-              generators: defaults({}, zone.generators, globalZone?.generators),
-              modulators: defaults({}, zone.modulators, globalZone?.modulators),
+              generators: {
+                ...globalZone?.generators,
+                ...zone.generators,
+              },
+              modulators: {
+                ...globalZone?.modulators,
+                ...zone.modulators,
+              },
             },
           ];
         } catch (error) {
