@@ -143,7 +143,7 @@ export const numCharsToRepresent = (v: number): number => {
 /**
  * Find runs of elements in a bigger list.
  *
- * @param values the list of value sto find runs in
+ * @param values the list of values to find runs in
  * @param partOfRun a function that determines if a given element should be part of a run
  *
  * @returns a list of `[start, end]` tuples for all the runs in the given list

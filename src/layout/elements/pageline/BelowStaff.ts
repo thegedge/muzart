@@ -75,7 +75,7 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
 
   private layOutStems(measureBox: Box, beatElements: BeatElements[]) {
     for (const beatElement of beatElements) {
-      if (beatElement.type !== "Chord") {
+      if (beatElement.type === "Rest") {
         continue;
       }
 
@@ -85,7 +85,7 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
 
       // Half notes have a shorter stem on tablature
       const y = this.numBeams(beatElement) < 0 ? STAFF_LINE_HEIGHT * 2 : STAFF_LINE_HEIGHT;
-      const stemBox = new Box(measureBox.x + this.elementOffset(beatElement), y, 0, STEM_HEIGHT - y);
+      const stemBox = new Box(measureBox.x + beatElement.box.centerX, y, 0, STEM_HEIGHT - y);
 
       this.addElement(new Line(stemBox, STEM_BEAM_COLOR));
     }
@@ -105,7 +105,7 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
           y -= 0.5 * BEAM_HEIGHT * (this.numBeams(beatElement) - 1);
         }
 
-        this.addElement(new Dot(measureBox.x + this.elementOffset(beatElement), y));
+        this.addElement(new Dot(measureBox.x + beatElement.box.centerX, y));
       }
     }
   }
@@ -147,8 +147,8 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
       //   if not the first in the beat, otherwise to the right
 
       for (const [start, end] of beamRuns) {
-        let left = measureBox.x + this.elementOffset(beatElements[start]);
-        let right = measureBox.x + this.elementOffset(beatElements[end]);
+        let left = measureBox.x + beatElements[start].box.centerX;
+        let right = measureBox.x + beatElements[end].box.centerX;
         if (start === end) {
           if (start == 0) {
             right += 2 * BEAM_HEIGHT;
@@ -207,13 +207,5 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
     }
 
     return beatElements;
-  }
-
-  private elementOffset(element: BeatElements) {
-    if (element.type === "Chord" && element.children.length > 0) {
-      return element.box.x + element.children[0].box.centerX;
-    }
-    // TODO need to figure out how to best center in a rest
-    return element.box.x + 0.4 * STAFF_LINE_HEIGHT;
   }
 }
