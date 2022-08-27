@@ -86,6 +86,9 @@ export enum SoundFontGeneratorType {
   /** Overriding root key for samples */
   RootKeyOverride = 58,
 
+  /** A pitch offset to apply to notes */
+  CoarseTune = 51,
+
   /** Index into sample array */
   SampleId = 53,
 }
@@ -114,12 +117,14 @@ export class SoundFont {
 
   constructor(buffer: ArrayBuffer) {
     const cursor = new BufferCursor(buffer);
+
+    // TODO a lot of this could probably be done lazily, just maintaining buffer offsets for the chunks
     this.readRiffChunk(cursor);
   }
 
   instrument(audioContext: AudioContext, instrument: notation.Instrument): Instrument {
-    // TODO What are global zones? What should we do for them?
-    // TODO these are hardcoded values for percussion instruments right now (tied to the MuseScore v1.442 soundfont)
+    // TODO Handle global zones and many other things
+    // TODO these are hardcoded values for percussion instruments right now (tied to the "GeneralUser GS v1.471" soundfont)
 
     let bank = 0;
     let midiPreset = instrument.midiPreset;
@@ -181,19 +186,19 @@ export class SoundFont {
           const buffer = audioContext.createBuffer(1, length, sampleRate);
           buffer.copyToChannel(this.sampleData.subarray(sampleInfo.start, sampleInfo.end), 0);
 
+          const generators = { ...globalZone?.generators, ...zone.generators };
+          const modulators = { ...globalZone?.modulators, ...zone.modulators };
+
+          const basePitch = generators[SoundFontGeneratorType.RootKeyOverride] ?? sampleInfo.originalPitch;
+          const pitchOffset = generators[SoundFontGeneratorType.CoarseTune] ?? 0;
+
           return [
-            zone.generators[SoundFontGeneratorType.RootKeyOverride] ?? sampleInfo.originalPitch,
+            basePitch - pitchOffset,
             {
               ...sampleInfo,
+              generators,
+              modulators,
               buffer,
-              generators: {
-                ...globalZone?.generators,
-                ...zone.generators,
-              },
-              modulators: {
-                ...globalZone?.modulators,
-                ...zone.modulators,
-              },
             },
           ];
         } catch (error) {
