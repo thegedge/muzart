@@ -52,14 +52,17 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
       return;
     }
 
-    let defaultFile = import.meta.env.VITE_DEFAULT_FILE || "Song13.gp4";
-    if (!defaultFile) {
-      return;
+    let defaultFile: string | File | null = null;
+
+    const lastViewedTab = application.storage.get("view", "lastTab");
+    if (lastViewedTab) {
+      const lastViewedTabData = application.storage.getBlob("tabs", lastViewedTab);
+      if (lastViewedTabData) {
+        defaultFile = new File([lastViewedTabData], lastViewedTab);
+      }
     }
 
-    if (!/^https?:\/\//.test(defaultFile)) {
-      defaultFile = `songs/${encodeURIComponent(defaultFile)}`;
-    }
+    defaultFile ??= "songs/Song13.gp4";
 
     void application.loadScore(defaultFile);
   }, [application]);

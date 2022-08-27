@@ -37,23 +37,7 @@ const ScoreDropZone = () => {
       return;
     }
 
-    const sources: File[] = [];
-    if (event.dataTransfer.items) {
-      for (let i = 0; i < event.dataTransfer.items.length; i++) {
-        if (event.dataTransfer.items[i].kind === "file") {
-          const file = event.dataTransfer.items[i].getAsFile();
-          if (file) {
-            sources.push(file);
-          }
-        }
-      }
-    } else {
-      for (let i = 0; i < event.dataTransfer.files.length; i++) {
-        const file = event.dataTransfer.files[i];
-        sources.push(file);
-      }
-    }
-
+    const sources = filesFromDataTransfer(event.dataTransfer);
     const soundfontFile = sources.find((file) => getFilenameAndMimeType(file).filename.endsWith(".sf2"));
     const tabFile = sources.find((file) => determineScoreType(file) != ScoreDataType.Unknown);
 
@@ -78,4 +62,24 @@ const ScoreDropZone = () => {
       <Score />
     </div>
   );
+};
+
+const filesFromDataTransfer = (dataTransfer: DataTransfer): File[] => {
+  const sources: File[] = [];
+
+  for (let i = 0; i < dataTransfer.items.length; i++) {
+    if (dataTransfer.items[i].kind === "file") {
+      const file = dataTransfer.items[i].getAsFile();
+      if (file) {
+        sources.push(file);
+      }
+    }
+  }
+
+  for (let i = 0; i < dataTransfer.files.length; i++) {
+    const file = dataTransfer.files[i];
+    sources.push(file);
+  }
+
+  return sources;
 };
