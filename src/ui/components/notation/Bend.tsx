@@ -5,6 +5,9 @@ import { BoxGroup } from "../layout/BoxGroup";
 
 const BEND_COLOR = "#555555";
 
+// Half width of the arrow heads
+const HEAD_HALFW = 4 * LINE_STROKE_WIDTH;
+
 export const Bend = (props: { node: layout.Bend }) => {
   const points = bendPoints(props.node);
   const bendTextX = points[1][0];
@@ -28,8 +31,6 @@ export const Bend = (props: { node: layout.Bend }) => {
 };
 
 function bendArrowHeads(points: [number, number][]) {
-  // "radius" of the arrow heads
-  const hr = 4 * LINE_STROKE_WIDTH;
   let previous = points[0];
   return (
     <>
@@ -41,7 +42,7 @@ function bendArrowHeads(points: [number, number][]) {
           return (
             <polyline
               key={index}
-              points={`${x - hr},${y + 2 * hr} ${x + hr},${y + 2 * hr} ${x},${y}`}
+              points={`${x - HEAD_HALFW},${y + 2 * HEAD_HALFW} ${x + HEAD_HALFW},${y + 2 * HEAD_HALFW} ${x},${y}`}
               fill={BEND_COLOR}
               stroke="none"
             />
@@ -50,7 +51,7 @@ function bendArrowHeads(points: [number, number][]) {
           return (
             <polyline
               key={index}
-              points={`${x - hr},${y - 2 * hr} ${x + hr},${y - 2 * hr} ${x},${y}`}
+              points={`${x - HEAD_HALFW},${y - 2 * HEAD_HALFW} ${x + HEAD_HALFW},${y - 2 * HEAD_HALFW} ${x},${y}`}
               fill={BEND_COLOR}
               stroke="none"
             />
@@ -118,14 +119,18 @@ function bendPath(points: [number, number][]) {
     const [x, y] = point;
     const w = x - px;
     const h = Math.abs(y - py);
+    const endY = y + 2 * (py > y ? HEAD_HALFW : -HEAD_HALFW);
+
     if (w == 0 || h == 0) {
       path.push(`L ${x},${y}`);
     } else if (py > y) {
-      path.push(`C ${px + 0.75 * w},${py} ${x},${y + 0.75 * h} ${x},${y}`);
+      path.push(`C ${px + 0.5 * w},${py} ${x},${endY + 0.7 * h} ${x},${endY}`);
     } else {
       // else if (previous[1] < y)
-      path.push(`C ${px + 0.75 * w},${py} ${x},${y - 0.75 * h} ${x},${y}`);
+      path.push(`C ${px + 0.5 * w},${py} ${x},${endY - 0.7 * h} ${x},${endY}`);
     }
+
+    path.push(`M ${x},${y}`);
 
     [px, py] = point;
   }
