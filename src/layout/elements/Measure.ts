@@ -48,11 +48,11 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
     for (const chord of measure.chords) {
       let width = widthForValue(chord.value);
       if (chord.rest) {
-        this.addElement(new Rest(chord, part.lineCount * STAFF_LINE_HEIGHT));
+        this.addElement(new Rest(chord, part.lineCount));
       } else {
         const hasBend = chord.notes.some((n) => !!n.bend);
         width *= hasBend ? 2 : 1;
-        this.addElement(new Chord(chord));
+        this.addElement(new Chord(chord, part.lineCount));
       }
 
       if (singleWholeRest) {
