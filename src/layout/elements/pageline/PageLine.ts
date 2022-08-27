@@ -54,10 +54,10 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
       return line;
     });
 
+    super.addElement(this.staffOverlay);
     super.addElement(this.aboveStaffLayout);
     super.addElement(this.staffLayout);
     super.addElement(this.belowStaff);
-    super.addElement(this.staffOverlay);
 
     this.addBarLine();
     this.addElement(this.createTabGroup(), 0);
