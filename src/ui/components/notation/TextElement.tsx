@@ -49,7 +49,6 @@ export const TextElement = (props: {
 
   return (
     <>
-      <DebugBox box={props.box} debugType="TextElement" />
       {props.fill && <rect {...svgBoxProps(props.box)} fill={props.fill === true ? "#ffffff" : props.fill} />}
       <text
         x={x}
@@ -60,6 +59,7 @@ export const TextElement = (props: {
       >
         {props.text}
       </text>
+      <DebugBox box={props.box} debugType="TextElement" />
     </>
   );
 };
