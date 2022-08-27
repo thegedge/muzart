@@ -5,11 +5,14 @@ import { LayoutElement } from "../../../layout";
 import { svgPositionTransform } from "../../utils/svg";
 import { DebugBox } from "./DebugBox";
 
-export interface BoxGroupProps extends JSX.SVGAttributes<SVGGElement> {
+export interface BoxGroupProps extends Omit<JSX.SVGAttributes<SVGGElement>, "clip" | "onClick"> {
   node: LayoutElement;
   scale?: number;
   forceDebug?: boolean;
   hidden?: boolean;
+  clip?: boolean;
+
+  // We need this one here because the onClick from SVGAttributes has `this: never`, which makes it impossible to call
   onClick?: (event: MouseEvent) => void;
 }
 
@@ -23,11 +26,24 @@ export const BoxGroup = (props: BoxGroupProps) => {
     transforms.push(`scale(${props.scale})`);
   }
 
+  let clipProps: JSX.SVGAttributes<SVGGElement> = {};
+  if (props.clip) {
+    const cx = 0;
+    const cy = 0;
+    const cr = props.node.box.width;
+    const cb = props.node.box.height;
+    clipProps = {
+      clipPath: `polygon(${cx} ${cy}, ${cr} ${cy}, ${cr} ${cb}, ${cx} ${cb}) view-box`,
+      clipPathUnits: "userSpaceOnUse",
+    };
+  }
+
   return (
     <g
       transform={transforms.join(" ")}
-      {...omit(props, "node", "children", "scale", "forceDebug", "hidden")}
+      {...omit(props, "node", "children", "scale", "forceDebug", "hidden", "clip")}
       data-node-type={props.node.type}
+      {...clipProps}
     >
       {props.children}
       <DebugBox box={props.node.box} debugType={props.node.type} />

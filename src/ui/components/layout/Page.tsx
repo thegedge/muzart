@@ -4,8 +4,6 @@ import { ScoreElement } from "../notation/ScoreElement";
 import { BoxGroup } from "./BoxGroup";
 
 export const Page = (props: { page: layout.Page }) => {
-  const cw = props.page.content.box.width;
-  const ch = props.page.content.box.height;
   return (
     <BoxGroup node={props.page}>
       <rect
@@ -14,11 +12,7 @@ export const Page = (props: { page: layout.Page }) => {
         fill="#ffffff"
         style={{ filter: "url(#pageShadow)" }}
       />
-      <BoxGroup
-        node={props.page.content}
-        clipPath={`polygon(0 0, ${cw} 0, ${cw} ${ch}, 0 ${ch})`}
-        clipPathUnits="userSpaceOnUse"
-      >
+      <BoxGroup node={props.page.content} clip>
         {props.page.content.children.map((e, index) => (
           <ScoreElement key={index} element={e} />
         ))}
