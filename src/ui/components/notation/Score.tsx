@@ -15,8 +15,6 @@ import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { BoxGroup } from "../layout/BoxGroup";
 import { Part } from "./Part";
 
-const BASE_SCALE = 8;
-
 export const Score = observer(() => {
   const application = useApplicationState();
   const { loading, error, selection, playback, storage } = application;
@@ -67,8 +65,8 @@ export const Score = observer(() => {
 
     svgProps["viewBox"] = `${partBox.x} ${partBox.y} ${partBox.width} ${partBox.height}`;
     svgProps["style"] = {
-      width: `${partBox.width * BASE_SCALE}rem`,
-      height: `${partBox.height * BASE_SCALE}rem`,
+      width: `${partBox.width}in`,
+      height: `${partBox.height}in`,
     };
 
     const pageBox = partBox.expand(-PAGE_MARGIN);
@@ -184,8 +182,8 @@ export const Score = observer(() => {
     const part = selection.part;
     svgProps["viewBox"] = `${part.box.x} ${part.box.y} ${part.box.width} ${part.box.height}`;
     svgProps["style"] = {
-      width: `${part.box.width * BASE_SCALE}rem`,
-      height: `${part.box.height * BASE_SCALE}rem`,
+      width: `${part.box.width}in`,
+      height: `${part.box.height}in`,
     };
 
     content = <Part part={part} />;
