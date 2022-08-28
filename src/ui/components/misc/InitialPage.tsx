@@ -1,6 +1,12 @@
 import { observer } from "mobx-react-lite";
 import React, { useMemo } from "react";
-import { Box, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH, STAFF_LINE_HEIGHT } from "../../../layout";
+import {
+  Box,
+  DEFAULT_PAGE_HEIGHT,
+  DEFAULT_PAGE_WIDTH,
+  DEFAULT_SANS_SERIF_FONT_FAMILY,
+  STAFF_LINE_HEIGHT,
+} from "../../../layout";
 import { PAGE_MARGIN } from "../../../layout/elements/Part";
 import { TABS_NAMESPACE, VIEW_STATE_NAMESPACE } from "../../storage/namespaces";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
@@ -46,10 +52,10 @@ export const InitialPage = observer((_props: Record<string, never>) => {
     });
 
     return [
-      { text: "Drop a Guitar Pro 3/4" },
-      { text: "file here" },
+      { text: "Drop a Guitar Pro 3/4", fontWeight: "bold" },
+      { text: "file here", fontWeight: "bold" },
       { text: " " },
-      { text: "Or load one from storage:", fontSize: DEFAULT_FONT_SIZE * 0.4, alignment: "start" },
+      { text: "Or load one from storage:", fontSize: DEFAULT_FONT_SIZE * 0.4, alignment: "start", fontWeight: 200 },
       { text: " ", lineHeight: DEFAULT_FONT_SIZE * 0.2 },
       ...songLines,
       { text: " ", lineHeight: Math.max(0, (8 - songLines.length) * PAGE_MARGIN) },
@@ -61,7 +67,12 @@ export const InitialPage = observer((_props: Record<string, never>) => {
       <BoxGroup node={{ type: "Page", box: pageBox, parent: null }}>
         <rect width={pageBox.width} height={pageBox.height} fill="#ffffff" style={{ filter: "url(#pageShadow)" }} />
         <BoxGroup node={{ type: "PageContent", box: contentBox, parent: null }} clip>
-          <TextBox lines={lines} box={textBox} fontSize={DEFAULT_FONT_SIZE} />
+          <TextBox
+            lines={lines}
+            box={textBox}
+            fontSize={DEFAULT_FONT_SIZE}
+            fontFamily={DEFAULT_SANS_SERIF_FONT_FAMILY}
+          />
         </BoxGroup>
       </BoxGroup>
     </SvgRoot>

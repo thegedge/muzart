@@ -5,14 +5,22 @@ import { Alignment, Box } from "../../../layout";
 export interface TextBoxLine {
   text: string;
   fontSize?: number;
-  fontWeight?: string;
+  fontWeight?: number | "normal" | "bold" | "lighter" | "bolder";
   lineHeight?: number;
   color?: string;
   alignment?: Alignment;
   href?: string;
 }
 
-export function TextBox(props: { fontSize: number; lineHeight?: number; box: Box; lines: TextBoxLine[] }) {
+export interface TextBoxProps {
+  box: Box;
+  fontSize: number;
+  fontFamily?: string;
+  lineHeight?: number;
+  lines: TextBoxLine[];
+}
+
+export const TextBox = (props: TextBoxProps) => {
   const { lines, box } = props;
   const lineHeight = props.lineHeight ?? 1.1 * props.fontSize;
 
@@ -22,7 +30,15 @@ export function TextBox(props: { fontSize: number; lineHeight?: number; box: Box
   }, [lines]);
 
   return (
-    <text y={y} textAnchor="middle" dominantBaseline="middle" fill="rgb(156, 163, 175)" fontSize={props.fontSize}>
+    <text
+      y={y}
+      textAnchor="middle"
+      dominantBaseline="middle"
+      fill="rgb(156, 163, 175)"
+      fontSize={props.fontSize}
+      fontFamily={props.fontFamily}
+      fontWeight="normal"
+    >
       {lines.map((line, index) => {
         let x: number;
         switch (line.alignment) {
@@ -54,4 +70,4 @@ export function TextBox(props: { fontSize: number; lineHeight?: number; box: Box
       })}
     </text>
   );
-}
+};

@@ -28,7 +28,8 @@ export const TUPLET_SIZE = 2.5 * BEAM_HEIGHT;
 export const chordWidth = (numChars: number) => STAFF_LINE_HEIGHT * (0.5 + 0.3 * numChars);
 
 // For now, some default fonts to ensure things look the way I see them for everyone else
-export const DEFAULT_SANS_SERIF_FONT_FAMILY = "Arial, sans-serif";
+export const DEFAULT_SANS_SERIF_FONT_FAMILY =
+  "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif";
 export const DEFAULT_SERIF_FONT_FAMILY = "Times New Roman, serif";
 
 export const STEM_BEAM_COLOR = "#333333";
