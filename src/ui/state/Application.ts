@@ -56,6 +56,7 @@ export class Application {
   }
 
   setScore(score: layout.Score | null) {
+    this.playback.stop();
     this.score = score;
     this.selection.setScore(score);
   }

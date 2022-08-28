@@ -1,10 +1,11 @@
 import { observer } from "mobx-react-lite";
 import React, { useMemo } from "react";
-import { Box, STAFF_LINE_HEIGHT } from "../../../layout";
+import { Box, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH, STAFF_LINE_HEIGHT } from "../../../layout";
 import { PAGE_MARGIN } from "../../../layout/elements/Part";
 import { TABS_NAMESPACE, VIEW_STATE_NAMESPACE } from "../../storage/namespaces";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { BoxGroup } from "../layout/BoxGroup";
+import { SvgRoot } from "./SvgRoot";
 import { TextBox, TextBoxLine } from "./TextBox";
 
 const DEFAULT_FONT_SIZE = 6 * STAFF_LINE_HEIGHT;
@@ -13,15 +14,15 @@ export type DemoType = { name: string; key: string; source: "demo" };
 export type StorageType = { name: string; key: string; source: "storage" };
 export type SongTypes = DemoType | StorageType;
 
-export const InitialPage = observer((props: { box: Box }) => {
+export const InitialPage = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
   const { loading, storage } = application;
 
-  const pageBox = props.box.expand(-PAGE_MARGIN);
+  const box = new Box(0, 0, DEFAULT_PAGE_WIDTH + 2 * PAGE_MARGIN, DEFAULT_PAGE_HEIGHT + 2 * PAGE_MARGIN);
+  const pageBox = box.expand(-PAGE_MARGIN);
   const contentBox = pageBox.expand(-PAGE_MARGIN).translate(-PAGE_MARGIN);
   const textBox = contentBox.translate(-PAGE_MARGIN);
 
-  console.log(loading);
   const lines = useMemo((): TextBoxLine[] => {
     if (loading) {
       return [{ text: "Loading..." }];
@@ -56,11 +57,13 @@ export const InitialPage = observer((props: { box: Box }) => {
   }, [loading, storage]);
 
   return (
-    <BoxGroup node={{ type: "Page", box: pageBox, parent: null }}>
-      <rect width={pageBox.width} height={pageBox.height} fill="#ffffff" style={{ filter: "url(#pageShadow)" }} />
-      <BoxGroup node={{ type: "PageContent", box: contentBox, parent: null }} clip>
-        <TextBox lines={lines} box={textBox} fontSize={DEFAULT_FONT_SIZE} />
+    <SvgRoot box={box}>
+      <BoxGroup node={{ type: "Page", box: pageBox, parent: null }}>
+        <rect width={pageBox.width} height={pageBox.height} fill="#ffffff" style={{ filter: "url(#pageShadow)" }} />
+        <BoxGroup node={{ type: "PageContent", box: contentBox, parent: null }} clip>
+          <TextBox lines={lines} box={textBox} fontSize={DEFAULT_FONT_SIZE} />
+        </BoxGroup>
       </BoxGroup>
-    </BoxGroup>
+    </SvgRoot>
   );
 });

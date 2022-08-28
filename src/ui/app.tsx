@@ -1,9 +1,13 @@
 import * as React from "react";
+import { useEffect, useState } from "react";
+import { BaseLocationHook, Route, Router } from "wouter";
 import { determineScoreType, getFilenameAndMimeType, ScoreDataType } from "../loaders";
 import "./app.css";
 import { PartPanel } from "./components/editor/PartPanel";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { InitialPage, SongTypes } from "./components/misc/InitialPage";
 import { Score } from "./components/notation/Score";
+import { TABS_NAMESPACE } from "./storage/namespaces";
 import { ApplicationState, useApplicationState } from "./utils/ApplicationStateContext";
 
 export const App = () => {
@@ -59,13 +63,74 @@ const ScoreDropZone = () => {
       }}
     >
       <div className="flex flex-col items-center w-screen h-screen max-w-screen max-h-screen overflow-clip">
-        <div className="flex-1 w-full overflow-auto">
-          <Score />
-        </div>
-        <PartPanel />
+        <Router hook={useHashLocation}>
+          <Route path="/:source/:name">
+            {(params: { source: SongTypes["source"]; name: string }) => {
+              const name = decodeURIComponent(params.name);
+              return <ScoreLoader name={name} source={params.source} />;
+            }}
+          </Route>
+          <Route path="/">
+            <div className="w-full overflow-auto">
+              <InitialPage />
+            </div>
+          </Route>
+        </Router>
       </div>
     </div>
   );
+};
+
+const ScoreLoader = (props: { source: SongTypes["source"]; name: string }) => {
+  const { source, name } = props;
+  const application = useApplicationState();
+
+  useEffect(() => {
+    switch (source) {
+      case "demo": {
+        void application.loadScore(`/songs/${name}`);
+        return;
+      }
+      case "storage": {
+        const tabData = application.storage.getBlob(TABS_NAMESPACE, name);
+        if (!tabData) {
+          throw new Error(`${name} not found in local storage!`);
+        }
+
+        const file = new File([tabData], name);
+        void application.loadScore(file);
+      }
+    }
+  }, [source, name]);
+
+  return (
+    <>
+      <div className="flex-1 w-full overflow-auto">
+        <Score />
+      </div>
+      <PartPanel />
+    </>
+  );
+};
+
+const currentLocation = () => {
+  return window.location.hash.replace(/^#/, "") || "/";
+};
+
+const navigate = (to: string) => {
+  window.location.hash = to;
+};
+
+const useHashLocation: BaseLocationHook = () => {
+  const [location, setLocation] = useState(currentLocation());
+
+  useEffect(() => {
+    const handler = () => setLocation(currentLocation());
+    window.addEventListener("hashchange", handler);
+    return () => window.removeEventListener("hashchange", handler);
+  }, []);
+
+  return [location, navigate];
 };
 
 const filesFromDataTransfer = (dataTransfer: DataTransfer): File[] => {

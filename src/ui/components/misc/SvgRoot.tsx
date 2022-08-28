@@ -1,0 +1,34 @@
+import { ComponentChildren } from "preact";
+import React from "react";
+import { Box, DEFAULT_SANS_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH } from "../../../layout";
+
+export const SvgRoot = (props: { box: Box; children?: ComponentChildren }) => {
+  const box = props.box;
+  return (
+    <svg
+      viewBox={`${box.x} ${box.y} ${box.width} ${box.height}`}
+      style={{
+        width: `${box.width}in`,
+        height: `${box.height}in`,
+      }}
+      className="m-auto"
+      fontFamily={DEFAULT_SANS_SERIF_FONT_FAMILY}
+      shapeRendering="geometricPrecision"
+      stroke="transparent"
+      strokeWidth={LINE_STROKE_WIDTH}
+      textRendering="optimizeSpeed"
+    >
+      <defs>
+        <filter id="pageShadow">
+          <feDropShadow
+            dx={LINE_STROKE_WIDTH * 0}
+            dy={LINE_STROKE_WIDTH * 0}
+            stdDeviation={LINE_STROKE_WIDTH * 10}
+            floodOpacity="0.25"
+          />
+        </filter>
+      </defs>
+      {props.children}
+    </svg>
+  );
+};
