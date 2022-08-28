@@ -47,27 +47,27 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
     void application.playback.loadSoundFont(defaultSoundfont);
   }, [application]);
 
-  if (import.meta.env.DEV) {
-    useEffect(() => {
-      if (application.score != null) {
-        return;
-      }
+  // if (import.meta.env.DEV) {
+  //   useEffect(() => {
+  //     if (application.score != null) {
+  //       return;
+  //     }
 
-      let defaultFile: string | File | null = null;
+  //     let defaultFile: string | File | null = null;
 
-      const lastViewedTab = application.storage.get("view", "lastTab");
-      if (lastViewedTab) {
-        const lastViewedTabData = application.storage.getBlob("tabs", lastViewedTab);
-        if (lastViewedTabData) {
-          defaultFile = new File([lastViewedTabData], lastViewedTab);
-        }
-      }
+  //     const lastViewedTab = application.storage.get("view", "lastTab");
+  //     if (lastViewedTab) {
+  //       const lastViewedTabData = application.storage.getBlob("tabs", lastViewedTab);
+  //       if (lastViewedTabData) {
+  //         defaultFile = new File([lastViewedTabData], lastViewedTab);
+  //       }
+  //     }
 
-      defaultFile ??= "songs/Song13.gp4";
+  //     defaultFile ??= "songs/Song13.gp4";
 
-      void application.loadScore(defaultFile);
-    }, [application]);
-  }
+  //     void application.loadScore(defaultFile);
+  //   }, [application]);
+  // }
 
   return (
     <Suspense fallback={<Loading />}>

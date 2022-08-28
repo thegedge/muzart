@@ -5,7 +5,7 @@ import { load } from "../../loaders";
 import { Score } from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
 import { LocalStorage } from "../storage/LocalStorage";
-import { TAB_NAMESPACE, VIEW_STATE_NAMESPACE } from "../storage/namespaces";
+import { TABS_NAMESPACE, VIEW_STATE_NAMESPACE } from "../storage/namespaces";
 import { Storage } from "../storage/Storage";
 import { DebugContext } from "./DebugContext";
 import { Selection } from "./Selection";
@@ -33,7 +33,7 @@ export class Application {
       if (source instanceof File) {
         const buffer = (yield source.arrayBuffer()) as ArrayBuffer;
         const blob = new Blob([buffer], { type: "application/octet-stream" });
-        this.storage.setBlob(TAB_NAMESPACE, source.name, blob);
+        this.storage.setBlob(TABS_NAMESPACE, source.name, blob);
         this.storage.set(VIEW_STATE_NAMESPACE, "lastTab", source.name);
       } else if (typeof source == "string") {
         const [_songs, songName] = source.split("/");
