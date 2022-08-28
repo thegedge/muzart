@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import React, { useMemo } from "react";
 import { Box, STAFF_LINE_HEIGHT } from "../../../layout";
 import { PAGE_MARGIN } from "../../../layout/elements/Part";
@@ -8,10 +9,11 @@ import { TextBox, TextBoxLine } from "./TextBox";
 
 const DEFAULT_FONT_SIZE = 6 * STAFF_LINE_HEIGHT;
 
-type DemoType = { name: string; key: string; from: "demo" };
-type StorageType = { name: string; key: string; from: "storage" };
+export type DemoType = { name: string; key: string; source: "demo" };
+export type StorageType = { name: string; key: string; source: "storage" };
+export type SongTypes = DemoType | StorageType;
 
-export function InitialPage(props: { box: Box }) {
+export const InitialPage = observer((props: { box: Box }) => {
   const application = useApplicationState();
   const { loading, storage } = application;
 
@@ -19,37 +21,18 @@ export function InitialPage(props: { box: Box }) {
   const contentBox = pageBox.expand(-PAGE_MARGIN).translate(-PAGE_MARGIN);
   const textBox = contentBox.translate(-PAGE_MARGIN);
 
+  console.log(loading);
   const lines = useMemo((): TextBoxLine[] => {
     if (loading) {
       return [{ text: "Loading..." }];
     }
 
-    const songs: (DemoType | StorageType)[] = [
-      ...storage.list(TABS_NAMESPACE).map((name) => ({ name, key: name, from: "storage" as const })),
-      { name: "Demo Song", key: "Song13.gp4", from: "demo" },
+    const songs: SongTypes[] = [
+      ...storage.list(TABS_NAMESPACE).map((name) => ({ name, key: name, source: "storage" as const })),
+      { name: "Demo Song", key: "Song13.gp4", source: "demo" },
     ];
 
     const songLines = songs.map((song): TextBoxLine => {
-      const openSong = (event: MouseEvent) => {
-        event.stopPropagation();
-
-        switch (song.from) {
-          case "demo": {
-            void application.loadScore(`songs/${song.key}`);
-            return;
-          }
-          case "storage": {
-            const tabData = application.storage.getBlob(TABS_NAMESPACE, song.name);
-            if (!tabData) {
-              throw new Error(`${song.name} not found in local storage!`);
-            }
-
-            const file = new File([tabData], song.name);
-            void application.loadScore(file);
-          }
-        }
-      };
-
       const lastViewedTab = application.storage.get(VIEW_STATE_NAMESPACE, "lastTab");
       return {
         text: `▸ ${song.name}${song.key == lastViewedTab ? " (last viewed)" : ""}`,
@@ -57,7 +40,7 @@ export function InitialPage(props: { box: Box }) {
         lineHeight: DEFAULT_FONT_SIZE * 0.5,
         color: "#88aaff",
         alignment: "start",
-        onClick: openSong,
+        href: `/${song.source}/${encodeURIComponent(song.key)}`,
       };
     });
 
@@ -68,8 +51,9 @@ export function InitialPage(props: { box: Box }) {
       { text: "Or load one from storage:", fontSize: DEFAULT_FONT_SIZE * 0.4, alignment: "start" },
       { text: " ", lineHeight: DEFAULT_FONT_SIZE * 0.2 },
       ...songLines,
+      { text: " ", lineHeight: Math.max(0, (8 - songLines.length) * PAGE_MARGIN) },
     ];
-  }, [storage]);
+  }, [loading, storage]);
 
   return (
     <BoxGroup node={{ type: "Page", box: pageBox, parent: null }}>
@@ -79,4 +63,4 @@ export function InitialPage(props: { box: Box }) {
       </BoxGroup>
     </BoxGroup>
   );
-}
+});

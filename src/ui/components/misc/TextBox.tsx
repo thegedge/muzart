@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { Link } from "wouter";
 import { Alignment, Box } from "../../../layout";
 
 export interface TextBoxLine {
@@ -8,7 +9,7 @@ export interface TextBoxLine {
   lineHeight?: number;
   color?: string;
   alignment?: Alignment;
-  onClick?: (event: MouseEvent) => void;
+  href?: string;
 }
 
 export function TextBox(props: { fontSize: number; lineHeight?: number; box: Box; lines: TextBoxLine[] }) {
@@ -45,16 +46,9 @@ export function TextBox(props: { fontSize: number; lineHeight?: number; box: Box
             fontSize={line.fontSize}
             fontWeight={line.fontWeight}
             fill={line.color}
-            onClick={line.onClick}
             dy={line.lineHeight ?? line.fontSize ?? lineHeight}
           >
-            {line.onClick ? (
-              <a href="#" onClick={line.onClick}>
-                {line.text}
-              </a>
-            ) : (
-              line.text
-            )}
+            {line.href ? <Link href={line.href}>{line.text}</Link> : line.text}
           </tspan>
         );
       })}

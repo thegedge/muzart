@@ -20,7 +20,8 @@
     "mobx": "^6.6.0",
     "mobx-react-lite": "^3.4.0",
     "preact": "^10.10.1",
-    "tinykeys": "^1.4.0"
+    "tinykeys": "^1.4.0",
+    "wouter": "^2.8.0-alpha.2"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.3.0",

@@ -5,7 +5,8 @@ import { Measure, Part } from "../../../notation";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 
 export const PartPanel = observer((_props: Record<string, never>) => {
-  const { selection, score } = useApplicationState();
+  const { selection } = useApplicationState();
+  const score = selection.score;
   if (!score) {
     return null;
   }
