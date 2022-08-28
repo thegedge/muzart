@@ -88,7 +88,12 @@ const ScoreLoader = (props: { source: SongTypes["source"]; name: string }) => {
   useEffect(() => {
     switch (source) {
       case "demo": {
-        void application.loadScore(`/songs/${name}`);
+        const base = import.meta.env.BASE_URL;
+        if (base == "") {
+          void application.loadScore(`${base}/songs/${name}`);
+        } else {
+          void application.loadScore(`songs/${name}`);
+        }
         return;
       }
       case "storage": {

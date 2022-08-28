@@ -41,7 +41,7 @@ export const InitialPage = observer((_props: Record<string, never>) => {
         lineHeight: DEFAULT_FONT_SIZE * 0.5,
         color: "#88aaff",
         alignment: "start",
-        href: `/${song.source}/${encodeURIComponent(song.key)}`,
+        href: `#/${song.source}/${encodeURIComponent(song.key)}`,
       };
     });
 
