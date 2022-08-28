@@ -71,9 +71,14 @@ const ScoreDropZone = () => {
             }}
           </Route>
           <Route path="/">
-            <div className="w-full overflow-auto">
-              <InitialPage />
-            </div>
+            {(_params: undefined) => {
+              application.setScore(null);
+              return (
+                <div className="w-full overflow-auto">
+                  <InitialPage />
+                </div>
+              );
+            }}
           </Route>
         </Router>
       </div>
