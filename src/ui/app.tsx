@@ -1,8 +1,8 @@
 import * as React from "react";
 import { determineScoreType, getFilenameAndMimeType, ScoreDataType } from "../loaders";
 import "./app.css";
+import { PartPanel } from "./components/editor/PartPanel";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { Toolbox } from "./components/misc/Toolbox";
 import { Score } from "./components/notation/Score";
 import { ApplicationState, useApplicationState } from "./utils/ApplicationStateContext";
 
@@ -58,8 +58,12 @@ const ScoreDropZone = () => {
         e.preventDefault();
       }}
     >
-      <Toolbox />
-      <Score />
+      <div className="flex flex-col items-center w-screen h-screen max-w-screen max-h-screen overflow-clip">
+        <div className="flex-1 w-full overflow-auto">
+          <Score />
+        </div>
+        <PartPanel />
+      </div>
     </div>
   );
 };

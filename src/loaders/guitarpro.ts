@@ -37,6 +37,7 @@ interface TrackData {
   strings: Pitch[];
   midiPort: number;
   midiChannel: number;
+  color?: string;
 }
 
 interface MeasureData {
@@ -132,6 +133,7 @@ class GuitarProLoader {
       const midiData = midiPorts[trackData.midiPort - 1][trackData.midiChannel - 1];
       score.parts.push({
         name: trackData.name,
+        color: trackData.color,
         lineCount: trackData.strings.length,
         measures: [],
         instrument: {
@@ -260,9 +262,23 @@ class GuitarProLoader {
     /* const midiChannelEffects = */ this.cursor.nextNumber(NumberType.Uint32);
     /* const numberOfFrets = */ this.cursor.nextNumber(NumberType.Uint32);
     /* const capoFret = */ this.cursor.nextNumber(NumberType.Uint32);
-    /* const color = */ this.cursor.nextNumber(NumberType.Uint32);
 
-    return { name, midiPort, midiChannel, strings };
+    const colorNumber = this.cursor.nextNumber(NumberType.Uint32);
+    let color: string | undefined;
+    if (colorNumber != 0) {
+      const r = (colorNumber & 0x0000ff) >> 0;
+      const g = (colorNumber & 0x00ff00) >> 8;
+      const b = (colorNumber & 0xff0000) >> 16;
+      color = `rgb(${r}, ${g}, ${b})`;
+    }
+
+    return {
+      name,
+      color,
+      midiPort,
+      midiChannel,
+      strings,
+    };
   }
 
   readBeat(trackData: TrackData): Chord {

@@ -3,7 +3,13 @@ module.exports = {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
+      gridTemplateColumns: {
+        "part-list": "max-content 1fr",
+      },
       minWidth: {
+        screen: "100vw",
+      },
+      maxWidth: {
         screen: "100vw",
       },
       keyframes: {

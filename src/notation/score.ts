@@ -9,7 +9,8 @@ export interface Score {
 }
 
 export interface Part {
-  name?: string;
+  name: string;
+  color?: string;
   instrument?: Instrument;
   lineCount: number;
   measures: Measure[];

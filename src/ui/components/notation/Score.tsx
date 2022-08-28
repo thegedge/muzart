@@ -17,7 +17,7 @@ import { Part } from "./Part";
 
 export const Score = observer(() => {
   const application = useApplicationState();
-  const { loading, error, selection, playback, storage } = application;
+  const { loading, error, selection, playback, storage, debug } = application;
 
   useEffect(() => {
     return () => playback.stop();
@@ -25,25 +25,29 @@ export const Score = observer(() => {
 
   useEffect(() => {
     const listener = createKeybindingsHandler({
-      Space: (event) => {
+      "Space": (event) => {
         event.preventDefault();
         playback.togglePlay();
       },
-      ArrowLeft: (event) => {
+      "ArrowLeft": (event) => {
         event.preventDefault();
         selection.previousChord();
       },
-      ArrowRight: (event) => {
+      "ArrowRight": (event) => {
         event.preventDefault();
         selection.nextChord();
       },
-      ArrowUp: (event) => {
+      "ArrowUp": (event) => {
         event.preventDefault();
         selection.previousNote();
       },
-      ArrowDown: (event) => {
+      "ArrowDown": (event) => {
         event.preventDefault();
         selection.nextNote();
+      },
+      "Shift+D": (event) => {
+        event.preventDefault();
+        debug.setEnabled(!debug.enabled);
       },
     });
 
@@ -103,8 +107,7 @@ export const Score = observer(() => {
       const lastViewedTab = application.storage.get(VIEW_STATE_NAMESPACE, "lastTab");
 
       const songList = songs.map((song, index) => {
-        const onClick = (event: MouseEvent) => {
-          event.preventDefault();
+        const openSong = (event: MouseEvent) => {
           event.stopPropagation();
 
           switch (song.from) {
@@ -136,7 +139,7 @@ export const Score = observer(() => {
               ▸{" "}
             </tspan>
             <tspan fontSize={0.4 * fontSize} fill="#88aaff">
-              <a href="#" onClick={onClick}>
+              <a href="#" onClick={openSong}>
                 {song.name}
                 {song.key == lastViewedTab && (
                   <tspan fontStyle="italic" fontWeight={300}>
