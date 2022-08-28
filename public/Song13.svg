@@ -1,0 +1,1737 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 8.5 11.5" width="9.5in" height="12.5in" font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif" shape-rendering="geometricPrecision" stroke="transparent" stroke-width="0.005">
+  <defs>
+    <filter id="pageShadow">
+      <fedropshadow dx="0" dy="0" stddeviation="0.05" flood-opacity="0.25"></fedropshadow>
+    </filter>
+  </defs>
+  <g data-node-type="Page">
+    <rect width="8.5" height="11" fill="#ffffff" style="filter: url(#pageShadow);"></rect>
+    <g transform="translate(0.5, 0.5)" data-node-type="Group" clip-path="polygon(0 0, 7.5 0, 7.5 10, 0 10) view-box" clip-path-units="userSpaceOnUse">
+      <g transform="translate(0, 0)" data-node-type="Group">
+        <text x="3.75" y="0" dominant-baseline="hanging" text-anchor="middle" style="font-size: 0.4px; font-family: Times New Roman, serif;">
+          Song 13
+        </text>
+        <text x="7.5" y="0.4" dominant-baseline="hanging" text-anchor="end" style="font-size: 0.15px; font-family: Times New Roman, serif;">
+          Jason Gedge
+        </text>
+        <text x="3.75" y="0.7000000000000001" dominant-baseline="hanging" text-anchor="middle" style="font-size: 0.1px; font-family: Times New Roman, serif; font-style: italic;">
+          This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
+        </text>
+        <text x="3.75" y="0.8500000000000001" dominant-baseline="hanging" text-anchor="middle" style="font-size: 0.1px; font-family: Times New Roman, serif; font-style: italic;">
+          http://creativecommons.org/licenses/by-nc-sa/4.0/
+        </text>
+        <g transform="translate(0, 1)" data-node-type="Space"></g>
+        <g transform="translate(0, 1.125)" data-node-type="Group">
+          <g transform="translate(1.6, 0)" data-node-type="ChordDiagram">
+            <text x="0.2" y="0" dominant-baseline="hanging" text-anchor="middle" style="font-size: 0.1px; font-family: Times New Roman, serif;">
+              A
+            </text>
+            <line x1="-0.0025" y1="0.25" x2="0.4025" y2="0.25" stroke="#000000" stroke-width="0.025"></line>
+            <line x1="0" y1="0.34" x2="0.4" y2="0.34" stroke="#000000"></line>
+            <line x1="0" y1="0.43000000000000005" x2="0.4" y2="0.43000000000000005" stroke="#000000"></line>
+            <line x1="0" y1="0.52" x2="0.4" y2="0.52" stroke="#000000"></line>
+            <line x1="0" y1="0.6100000000000001" x2="0.4" y2="0.6100000000000001" stroke="#000000"></line>
+            <line x1="0" y1="0.7000000000000001" x2="0.4" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0" y1="0.25" x2="0" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.08" y1="0.25" x2="0.08" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.16" y1="0.25" x2="0.16" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.24" y1="0.25" x2="0.24" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.32" y1="0.25" x2="0.32" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.4" y1="0.25" x2="0.4" y2="0.7000000000000001" stroke="#000000"></line>
+            <text x="0.39999999999999997" y="0.194" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ○
+            </text>
+            <text x="0.08" y="0.194" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ○
+            </text>
+            <text x="0" y="0.2" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ×
+            </text>
+            <circle cx="0.32" cy="0.385" r="0.024" fill="#000000"></circle>
+            <circle cx="0.24" cy="0.385" r="0.024" fill="#000000"></circle>
+            <circle cx="0.16" cy="0.385" r="0.024" fill="#000000"></circle>
+          </g>
+          <g transform="translate(2.25, 0)" data-node-type="ChordDiagram">
+            <text x="0.2" y="0" dominant-baseline="hanging" text-anchor="middle" style="font-size: 0.1px; font-family: Times New Roman, serif;">
+              E6/F
+            </text>
+            <line x1="-0.0025" y1="0.25" x2="0.4025" y2="0.25" stroke="#000000" stroke-width="0.025"></line>
+            <line x1="0" y1="0.34" x2="0.4" y2="0.34" stroke="#000000"></line>
+            <line x1="0" y1="0.43000000000000005" x2="0.4" y2="0.43000000000000005" stroke="#000000"></line>
+            <line x1="0" y1="0.52" x2="0.4" y2="0.52" stroke="#000000"></line>
+            <line x1="0" y1="0.6100000000000001" x2="0.4" y2="0.6100000000000001" stroke="#000000"></line>
+            <line x1="0" y1="0.7000000000000001" x2="0.4" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0" y1="0.25" x2="0" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.08" y1="0.25" x2="0.08" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.16" y1="0.25" x2="0.16" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.24" y1="0.25" x2="0.24" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.32" y1="0.25" x2="0.32" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.4" y1="0.25" x2="0.4" y2="0.7000000000000001" stroke="#000000"></line>
+            <text x="0.39999999999999997" y="0.194" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ○
+            </text>
+            <text x="0.08" y="0.2" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ×
+            </text>
+            <text x="0" y="0.2" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ×
+            </text>
+            <circle cx="0.32" cy="0.385" r="0.024" fill="#000000"></circle>
+            <circle cx="0.24" cy="0.5650000000000001" r="0.024" fill="#000000"></circle>
+            <circle cx="0.16" cy="0.47500000000000003" r="0.024" fill="#000000"></circle>
+          </g>
+          <g transform="translate(2.9, 0)" data-node-type="ChordDiagram">
+            <text x="0.2" y="0" dominant-baseline="hanging" text-anchor="middle" style="font-size: 0.1px; font-family: Times New Roman, serif;">
+              F6
+            </text>
+            <line x1="-0.0025" y1="0.25" x2="0.4025" y2="0.25" stroke="#000000" stroke-width="0.025"></line>
+            <line x1="0" y1="0.34" x2="0.4" y2="0.34" stroke="#000000"></line>
+            <line x1="0" y1="0.43000000000000005" x2="0.4" y2="0.43000000000000005" stroke="#000000"></line>
+            <line x1="0" y1="0.52" x2="0.4" y2="0.52" stroke="#000000"></line>
+            <line x1="0" y1="0.6100000000000001" x2="0.4" y2="0.6100000000000001" stroke="#000000"></line>
+            <line x1="0" y1="0.7000000000000001" x2="0.4" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0" y1="0.25" x2="0" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.08" y1="0.25" x2="0.08" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.16" y1="0.25" x2="0.16" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.24" y1="0.25" x2="0.24" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.32" y1="0.25" x2="0.32" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.4" y1="0.25" x2="0.4" y2="0.7000000000000001" stroke="#000000"></line>
+            <text x="0.08" y="0.2" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ×
+            </text>
+            <text x="0" y="0.2" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ×
+            </text>
+            <circle cx="0.4" cy="0.295" r="0.024" fill="#000000"></circle>
+            <circle cx="0.32" cy="0.47500000000000003" r="0.024" fill="#000000"></circle>
+            <circle cx="0.24" cy="0.385" r="0.024" fill="#000000"></circle>
+            <circle cx="0.16" cy="0.47500000000000003" r="0.024" fill="#000000"></circle>
+          </g>
+          <g transform="translate(3.55, 0)" data-node-type="ChordDiagram">
+            <text x="0.2" y="0" dominant-baseline="hanging" text-anchor="middle" style="font-size: 0.1px; font-family: Times New Roman, serif;">
+              Asus2
+            </text>
+            <line x1="-0.0025" y1="0.25" x2="0.4025" y2="0.25" stroke="#000000" stroke-width="0.025"></line>
+            <line x1="0" y1="0.34" x2="0.4" y2="0.34" stroke="#000000"></line>
+            <line x1="0" y1="0.43000000000000005" x2="0.4" y2="0.43000000000000005" stroke="#000000"></line>
+            <line x1="0" y1="0.52" x2="0.4" y2="0.52" stroke="#000000"></line>
+            <line x1="0" y1="0.6100000000000001" x2="0.4" y2="0.6100000000000001" stroke="#000000"></line>
+            <line x1="0" y1="0.7000000000000001" x2="0.4" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0" y1="0.25" x2="0" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.08" y1="0.25" x2="0.08" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.16" y1="0.25" x2="0.16" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.24" y1="0.25" x2="0.24" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.32" y1="0.25" x2="0.32" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.4" y1="0.25" x2="0.4" y2="0.7000000000000001" stroke="#000000"></line>
+            <text x="0.39999999999999997" y="0.194" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ○
+            </text>
+            <text x="0.32" y="0.194" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ○
+            </text>
+            <text x="0.08" y="0.194" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ○
+            </text>
+            <text x="0" y="0.2" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ×
+            </text>
+            <circle cx="0.24" cy="0.385" r="0.024" fill="#000000"></circle>
+            <circle cx="0.16" cy="0.385" r="0.024" fill="#000000"></circle>
+          </g>
+          <g transform="translate(4.2, 0)" data-node-type="ChordDiagram">
+            <text x="0.2" y="0" dominant-baseline="hanging" text-anchor="middle" style="font-size: 0.1px; font-family: Times New Roman, serif;">
+              F6
+            </text>
+            <line x1="-0.0025" y1="0.25" x2="0.4025" y2="0.25" stroke="#000000" stroke-width="0.025"></line>
+            <line x1="0" y1="0.34" x2="0.4" y2="0.34" stroke="#000000"></line>
+            <line x1="0" y1="0.43000000000000005" x2="0.4" y2="0.43000000000000005" stroke="#000000"></line>
+            <line x1="0" y1="0.52" x2="0.4" y2="0.52" stroke="#000000"></line>
+            <line x1="0" y1="0.6100000000000001" x2="0.4" y2="0.6100000000000001" stroke="#000000"></line>
+            <line x1="0" y1="0.7000000000000001" x2="0.4" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0" y1="0.25" x2="0" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.08" y1="0.25" x2="0.08" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.16" y1="0.25" x2="0.16" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.24" y1="0.25" x2="0.24" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.32" y1="0.25" x2="0.32" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.4" y1="0.25" x2="0.4" y2="0.7000000000000001" stroke="#000000"></line>
+            <text x="0.08" y="0.194" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ○
+            </text>
+            <text x="0" y="0.2" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ×
+            </text>
+            <circle cx="0.4" cy="0.295" r="0.024" fill="#000000"></circle>
+            <circle cx="0.32" cy="0.47500000000000003" r="0.024" fill="#000000"></circle>
+            <circle cx="0.24" cy="0.385" r="0.024" fill="#000000"></circle>
+            <circle cx="0.16" cy="0.47500000000000003" r="0.024" fill="#000000"></circle>
+          </g>
+          <g transform="translate(4.8500000000000005, 0)" data-node-type="ChordDiagram">
+            <text x="0.2" y="0" dominant-baseline="hanging" text-anchor="middle" style="font-size: 0.1px; font-family: Times New Roman, serif;">
+              G/A
+            </text>
+            <line x1="-0.0025" y1="0.25" x2="0.4025" y2="0.25" stroke="#000000" stroke-width="0.025"></line>
+            <line x1="0" y1="0.34" x2="0.4" y2="0.34" stroke="#000000"></line>
+            <line x1="0" y1="0.43000000000000005" x2="0.4" y2="0.43000000000000005" stroke="#000000"></line>
+            <line x1="0" y1="0.52" x2="0.4" y2="0.52" stroke="#000000"></line>
+            <line x1="0" y1="0.6100000000000001" x2="0.4" y2="0.6100000000000001" stroke="#000000"></line>
+            <line x1="0" y1="0.7000000000000001" x2="0.4" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0" y1="0.25" x2="0" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.08" y1="0.25" x2="0.08" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.16" y1="0.25" x2="0.16" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.24" y1="0.25" x2="0.24" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.32" y1="0.25" x2="0.32" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.4" y1="0.25" x2="0.4" y2="0.7000000000000001" stroke="#000000"></line>
+            <text x="0.32" y="0.2" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ×
+            </text>
+            <text x="0.08" y="0.194" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ○
+            </text>
+            <text x="0" y="0.2" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ×
+            </text>
+            <circle cx="0.4" cy="0.47500000000000003" r="0.024" fill="#000000"></circle>
+            <circle cx="0.24" cy="0.5650000000000001" r="0.024" fill="#000000"></circle>
+            <circle cx="0.16" cy="0.655" r="0.024" fill="#000000"></circle>
+          </g>
+          <g transform="translate(5.500000000000001, 0)" data-node-type="ChordDiagram">
+            <text x="0.2" y="0" dominant-baseline="hanging" text-anchor="middle" style="font-size: 0.1px; font-family: Times New Roman, serif;">
+              Aadd9
+            </text>
+            <line x1="-0.0025" y1="0.25" x2="0.4025" y2="0.25" stroke="#000000" stroke-width="0.005"></line>
+            <line x1="0" y1="0.34" x2="0.4" y2="0.34" stroke="#000000"></line>
+            <line x1="0" y1="0.43000000000000005" x2="0.4" y2="0.43000000000000005" stroke="#000000"></line>
+            <line x1="0" y1="0.52" x2="0.4" y2="0.52" stroke="#000000"></line>
+            <line x1="0" y1="0.6100000000000001" x2="0.4" y2="0.6100000000000001" stroke="#000000"></line>
+            <line x1="0" y1="0.7000000000000001" x2="0.4" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0" y1="0.25" x2="0" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.08" y1="0.25" x2="0.08" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.16" y1="0.25" x2="0.16" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.24" y1="0.25" x2="0.24" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.32" y1="0.25" x2="0.32" y2="0.7000000000000001" stroke="#000000"></line>
+            <line x1="0.4" y1="0.25" x2="0.4" y2="0.7000000000000001" stroke="#000000"></line>
+            <text x="0.39999999999999997" y="0.194" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ○
+            </text>
+            <text x="0.32" y="0.194" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.125px; font-family: Times New Roman, serif;">
+              ○
+            </text>
+            <circle cx="0.24" cy="0.385" r="0.024" fill="#000000"></circle>
+            <circle cx="0.16" cy="0.47500000000000003" r="0.024" fill="#000000"></circle>
+            <circle cx="0.08" cy="0.47500000000000003" r="0.024" fill="#000000"></circle>
+            <circle cx="0" cy="0.295" r="0.024" fill="#000000"></circle>
+          </g>
+        </g>
+        <g transform="translate(0, 1.8250000000000002)" data-node-type="Group">
+          <text x="0" y="0.065" dominant-baseline="central" text-anchor="start" style="font-size: 0.1px; font-family: Times New Roman, serif;">
+            ⑥ = E4
+          </text>
+          <text x="0.5" y="0.065" dominant-baseline="central" text-anchor="start" style="font-size: 0.1px; font-family: Times New Roman, serif;">
+            ③ = D3
+          </text>
+        </g>
+        <g transform="translate(0, 1.955)" data-node-type="Group">
+          <text x="0" y="0.065" dominant-baseline="central" text-anchor="start" style="font-size: 0.1px; font-family: Times New Roman, serif;">
+            ⑤ = B3
+          </text>
+          <text x="0.5" y="0.065" dominant-baseline="central" text-anchor="start" style="font-size: 0.1px; font-family: Times New Roman, serif;">
+            ② = A2
+          </text>
+        </g>
+        <g transform="translate(0, 2.085)" data-node-type="Group">
+          <text x="0" y="0.065" dominant-baseline="central" text-anchor="start" style="font-size: 0.1px; font-family: Times New Roman, serif;">
+            ④ = G3
+          </text>
+          <text x="0.5" y="0.065" dominant-baseline="central" text-anchor="start" style="font-size: 0.1px; font-family: Times New Roman, serif;">
+            ① = E2
+          </text>
+        </g>
+      </g>
+      <g transform="translate(0, 2.465)" data-node-type="PageLine">
+        <line x1="0" y1="0.255" x2="7.5" y2="0.255" stroke="#888888"></line>
+        <line x1="0" y1="0.35500000000000004" x2="7.5" y2="0.35500000000000004" stroke="#888888"></line>
+        <line x1="0" y1="0.455" x2="7.5" y2="0.455" stroke="#888888"></line>
+        <line x1="0" y1="0.555" x2="7.5" y2="0.555" stroke="#888888"></line>
+        <line x1="0" y1="0.655" x2="7.5" y2="0.655" stroke="#888888"></line>
+        <line x1="0" y1="0.7550000000000001" x2="7.5" y2="0.7550000000000001" stroke="#888888"></line>
+        <g transform="translate(0, 0.20500000000000002)" data-node-type="Group">
+          <g transform="translate(5.155, 0.5)" data-node-type="Arc">
+            <path d="M 0,0 C 0.6247500000000001,0.05 1.4577500000000003,0.05 2.0825000000000005,0 C 1.4577500000000003,0.035 0.6247500000000001,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(5.452500000000001, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.4462499999999999,0.05 1.0412499999999998,0.05 1.4874999999999998,0 C 1.0412499999999998,0.035 0.4462499999999999,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(6.345000000000001, 0.2)" data-node-type="Arc">
+            <path d="M 0,0 C 0.3464999999999998,0.05 0.8084999999999996,0.05 1.1549999999999994,0 C 0.8084999999999996,0.035 0.3464999999999998,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(7.237500000000001, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.07874999999999978,0.05 0.1837499999999995,0.05 0.2624999999999993,0 C 0.1837499999999995,0.035 0.07874999999999978,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(5.75, 0.13999999999999999)" data-node-type="Arc">
+            <path d="M 0,0.06999999999999999 C 0.08925000000000002,0 0.20825000000000005,0 0.2975000000000001,0.06999999999999999 C 0.20825000000000005,0.015 0.08925000000000002,0.015 0,0.06999999999999999" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(6.6425, 0.13999999999999999)" data-node-type="Arc">
+            <path d="M 0,0.06999999999999999 C 0.08925000000000002,0 0.20825000000000005,0 0.2975000000000001,0.06999999999999999 C 0.20825000000000005,0.015 0.08925000000000002,0.015 0,0.06999999999999999" fill="#555555" stroke-linecap="round"></path>
+          </g>
+        </g>
+        <g transform="translate(0, 0)" data-node-type="Group">
+          <rect x="3.6224999999999996" y="0" width="0.08000000000000002" height="0.05" fill="#000000"></rect>
+          <line x1="3.6224999999999996" x2="3.6224999999999996" y1="0" y2="0.1" stroke="#000000" stroke-width="0.005"></line>
+          <line x1="3.7024999999999997" x2="3.7024999999999997" y1="0" y2="0.1" stroke="#000000" stroke-width="0.005"></line>
+          <text x="0" y="0.20500000000000002" dominant-baseline="text-top" text-anchor="start" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            1
+          </text>
+          <text x="0.20500000000000002" y="0" dominant-baseline="hanging" text-anchor="start" style="font-size: 0.1px; user-select: none; font-weight: bold;">
+            ♩﹦98
+          </text>
+          <text x="1.9725000000000001" y="0.20500000000000002" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            2
+          </text>
+          <text x="3.48" y="0.20500000000000002" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            3
+          </text>
+          <text x="4.987500000000001" y="0.20500000000000002" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            4
+          </text>
+          <text x="5.155" y="0.05" dominant-baseline="central" text-anchor="middle" style="font-size: 0.08px;">
+            A
+          </text>
+        </g>
+        <g transform="translate(0, 0.20500000000000002)" data-node-type="Group">
+          <line x1="0.0025" y1="0.050000000000000044" x2="0.0025" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(0.005, 0.050000000000000044)" data-node-type="Group">
+            <text x="0.1" y="0.09999999999999998" dominant-baseline="central" text-anchor="middle" style="font-size: 0.15px; user-select: none;">
+              T
+            </text>
+            <text x="0.1" y="0.25" dominant-baseline="central" text-anchor="middle" style="font-size: 0.15px; user-select: none;">
+              A
+            </text>
+            <text x="0.1" y="0.4" dominant-baseline="central" text-anchor="middle" style="font-size: 0.15px; user-select: none;">
+              B
+            </text>
+          </g>
+          <g transform="translate(0.20500000000000002, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.0625, 0.09000000000000002)" data-node-type="TimeSignature">
+              <g transform="translate(0 0)">
+                <path d="M 15.783292,14.629305 H 13.446493 V 15.524979 Q 13.446493,17.117284 13.802954,17.734302 14.278235,18.570262 15.743685,18.610069 V 20.102856 H 5.8816026 V 18.610069 Q 7.4460696,18.570259 7.9411546,17.794014 8.3174186,17.216803 8.3174186,15.524979 V 14.629305 H 0.0396067 V 13.037001 Q 4.3963496,8.897007 5.5053386,0 H 12.535538 Q 11.030482,2.726822 7.5846936,6.886721 4.1191025,11.10633 1.7625006,13.037001 H 8.3174186 V 8.897007 L 13.446493,3.940955 V 13.037001 H 15.783292 V 14.629305 z" transform="scale(0.009948835130689889 0.009948835130689889)"></path>
+              </g>
+              <g transform="translate(0 0.22000000000000003)">
+                <path d="M 15.783292,14.629305 H 13.446493 V 15.524979 Q 13.446493,17.117284 13.802954,17.734302 14.278235,18.570262 15.743685,18.610069 V 20.102856 H 5.8816026 V 18.610069 Q 7.4460696,18.570259 7.9411546,17.794014 8.3174186,17.216803 8.3174186,15.524979 V 14.629305 H 0.0396067 V 13.037001 Q 4.3963496,8.897007 5.5053386,0 H 12.535538 Q 11.030482,2.726822 7.5846936,6.886721 4.1191025,11.10633 1.7625006,13.037001 H 8.3174186 V 8.897007 L 13.446493,3.940955 V 13.037001 H 15.783292 V 14.629305 z" transform="scale(0.009948835130689889 0.009948835130689889)"></path>
+              </g>
+            </g>
+            <g transform="translate(0.2625, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.3875, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.11000000000000001" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.05500000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  12
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.49750000000000005, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.7650000000000001, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="1.9725000000000001" y1="0.050000000000000044" x2="1.9725000000000001" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(1.975, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.125, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.005)" data-node-type="Note">
+                <rect width="0.11000000000000001" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.05500000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  12
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.23500000000000001, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.5025000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="3.48" y1="0.050000000000000044" x2="3.48" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(3.4825, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.125, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.005)" data-node-type="Note">
+                <rect width="0.11000000000000001" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.05500000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  12
+                </text>
+              </g>
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.11000000000000001" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.05500000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  12
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.23500000000000001, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.5025000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="4.987500000000001" y1="0.050000000000000044" x2="4.987500000000001" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(4.99, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.125, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.405)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.20500000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.42250000000000004, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.5025000000000001, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.7200000000000001, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.8, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.0175, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.0975000000000001, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.3150000000000002, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.3950000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.6125000000000003, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.6925000000000003, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.9100000000000004, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.9900000000000004, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.2075000000000005, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(2.2875000000000005, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.505000000000001, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="7.497500000000001" y1="0.050000000000000044" x2="7.497500000000001" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+        </g>
+        <g transform="translate(0, 0.8050000000000002)" data-node-type="Group">
+          <line x1="5.155" y1="0.1" x2="5.155" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="5.452500000000001" y1="0.1" x2="5.452500000000001" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.2975000000000003" height="0.025" x="5.155" y="0.275" fill="#333333"></rect>
+          <line x1="5.75" y1="0.1" x2="5.75" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="6.0475" y1="0.1" x2="6.0475" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.2975000000000003" height="0.025" x="5.75" y="0.275" fill="#333333"></rect>
+          <line x1="6.345000000000001" y1="0.1" x2="6.345000000000001" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="6.6425" y1="0.1" x2="6.6425" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.29749999999999943" height="0.025" x="6.345000000000001" y="0.275" fill="#333333"></rect>
+          <line x1="6.94" y1="0.1" x2="6.94" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="7.237500000000001" y1="0.1" x2="7.237500000000001" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.2975000000000003" height="0.025" x="6.94" y="0.275" fill="#333333"></rect>
+        </g>
+      </g>
+      <g transform="translate(0, 3.974)" data-node-type="PageLine">
+        <line x1="0" y1="0.23500000000000004" x2="7.5" y2="0.23500000000000004" stroke="#888888"></line>
+        <line x1="0" y1="0.3350000000000001" x2="7.5" y2="0.3350000000000001" stroke="#888888"></line>
+        <line x1="0" y1="0.43500000000000005" x2="7.5" y2="0.43500000000000005" stroke="#888888"></line>
+        <line x1="0" y1="0.535" x2="7.5" y2="0.535" stroke="#888888"></line>
+        <line x1="0" y1="0.635" x2="7.5" y2="0.635" stroke="#888888"></line>
+        <line x1="0" y1="0.7350000000000001" x2="7.5" y2="0.7350000000000001" stroke="#888888"></line>
+        <g transform="translate(0, 0.18500000000000003)" data-node-type="Group">
+          <g transform="translate(0.20500000000000002, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.048,0.05 0.11199999999999999,0.05 0.16,0 C 0.11199999999999999,0.035 0.048,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(0.37, 0.5)" data-node-type="Arc">
+            <path d="M 0,0 C 0.6685875000000001,0.05 1.5600375000000002,0.05 2.2286250000000005,0 C 1.5600375000000002,0.035 0.6685875000000001,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(0.688375, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.47756250000000017,0.05 1.1143125000000003,0.05 1.5918750000000006,0 C 1.1143125000000003,0.035 0.47756250000000017,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(1.6435000000000002, 0.2)" data-node-type="Arc">
+            <path d="M 0,0 C 0.2865375000000001,0.05 0.6685875000000002,0.05 0.9551250000000004,0 C 0.6685875000000002,0.035 0.2865375000000001,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(3.0470000000000006, 0.5)" data-node-type="Arc">
+            <path d="M 0,0 C 0.6076813016528926,0.05 1.4179230371900826,0.05 2.0256043388429754,0 C 1.4179230371900826,0.035 0.6076813016528926,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(3.362520661157025, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.5130251033057852,0.05 1.1970585743801656,0.05 1.710083677685951,0 C 1.1970585743801656,0.035 0.5130251033057852,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(3.67804132231405, 0.30000000000000004)" data-node-type="Arc">
+            <path d="M 0,0 C 0.3237127066115704,0.05 0.755329648760331,0.05 1.0790423553719015,0 C 0.755329648760331,0.035 0.3237127066115704,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(3.993561983471075, 0.2)" data-node-type="Arc">
+            <path d="M 0,0 C 0.0946561983471076,0.05 0.22086446280991776,0.05 0.3155206611570254,0 C 0.22086446280991776,0.035 0.0946561983471076,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(4.3090826446281, 0.1)" data-node-type="Arc">
+            <path d="M 0,0 C 0.546870601348412,0.05 1.2760314031462947,0.05 1.8229020044947069,0 C 1.2760314031462947,0.035 0.546870601348412,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(5.072604338842976, 0.30000000000000004)" data-node-type="Arc">
+            <path d="M 0,0 C 0.13365619834710732,0.05 0.31186446280991703,0.05 0.4455206611570244,0 C 0.31186446280991703,0.035 0.13365619834710732,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(6.131984649122807, 0.2)" data-node-type="Arc">
+            <path d="M 0,0 C 0.1841578947368423,0.05 0.42970175438596536,0.05 0.6138596491228077,0 C 0.42970175438596536,0.035 0.1841578947368423,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(6.4389144736842105, 0.1)" data-node-type="Arc">
+            <path d="M 0,0 C 0.09207894736842127,0.05 0.214850877192983,0.05 0.3069298245614043,0 C 0.214850877192983,0.035 0.09207894736842127,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(1.00675, 0.13999999999999999)" data-node-type="Arc">
+            <path d="M 0,0.06999999999999999 C 0.09551250000000001,0 0.22286250000000005,0 0.3183750000000001,0.06999999999999999 C 0.22286250000000005,0.015 0.09551250000000001,0.015 0,0.06999999999999999" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(1.9618750000000003, 0.13999999999999999)" data-node-type="Arc">
+            <path d="M 0,0.06999999999999999 C 0.09551250000000001,0 0.22286250000000005,0 0.3183750000000001,0.06999999999999999 C 0.22286250000000005,0.015 0.09551250000000001,0.015 0,0.06999999999999999" fill="#555555" stroke-linecap="round"></path>
+          </g>
+        </g>
+        <g transform="translate(0, 0)" data-node-type="Group">
+          <text x="0" y="0.185" dominant-baseline="text-top" text-anchor="start" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            5
+          </text>
+          <text x="2.8795000000000006" y="0.185" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            6
+          </text>
+          <text x="3.362520661157025" y="0.04000000000000001" dominant-baseline="central" text-anchor="middle" style="font-size: 0.08px;">
+            E6/F
+          </text>
+          <text x="5.350625000000001" y="0.185" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            7
+          </text>
+        </g>
+        <g transform="translate(0, 0.18500000000000003)" data-node-type="Group">
+          <line x1="0.0025" y1="0.050000000000000044" x2="0.0025" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(0.005, 0.050000000000000044)" data-node-type="Group">
+            <text x="0.1" y="0.09999999999999998" dominant-baseline="central" text-anchor="middle" style="font-size: 0.15px; user-select: none;">
+              T
+            </text>
+            <text x="0.1" y="0.25" dominant-baseline="central" text-anchor="middle" style="font-size: 0.15px; user-select: none;">
+              A
+            </text>
+            <text x="0.1" y="0.4" dominant-baseline="central" text-anchor="middle" style="font-size: 0.15px; user-select: none;">
+              B
+            </text>
+          </g>
+          <g transform="translate(0.20500000000000002, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.125, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.405)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.20500000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.443375, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.523375, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.76175, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.84175, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.080125, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.160125, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.3985, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.4785000000000001, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.7168750000000002, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.7968750000000002, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.0352500000000004, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(2.1152500000000005, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.3536250000000005, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(2.4336250000000006, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.6720000000000006, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="2.8795000000000006" y1="0.050000000000000044" x2="2.8795000000000006" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(2.8820000000000006, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.125, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.405)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.20500000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.44052066115702476, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  3
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.5205206611570248, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.7560413223140495, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.8360413223140495, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.0715619834710743, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.1515619834710744, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.3870826446280993, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.4670826446280993, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.8350836776859505, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.9150836776859506, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.1506043388429754, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(2.2306043388429755, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.4661250000000003, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="5.350625000000001" y1="0.050000000000000044" x2="5.350625000000001" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(5.353125, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.125, 0)" data-node-type="Chord"></g>
+            <g transform="translate(0.20500000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.4319298245614035, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.5119298245614035, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.7388596491228069, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  3
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.8188596491228068, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.0457894736842104, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  1
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.1257894736842105, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.352719298245614, 0)" data-node-type="Chord"></g>
+            <g transform="translate(1.432719298245614, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.1418749999999998, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="7.4975000000000005" y1="0.050000000000000044" x2="7.4975000000000005" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+        </g>
+        <g transform="translate(0, 0.7850000000000001)" data-node-type="Group">
+          <line x1="0.37" y1="0.1" x2="0.37" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="0.688375" y1="0.1" x2="0.688375" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.31837499999999996" height="0.025" x="0.37" y="0.275" fill="#333333"></rect>
+          <line x1="1.00675" y1="0.1" x2="1.00675" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="1.325125" y1="0.1" x2="1.325125" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.3183750000000001" height="0.025" x="1.00675" y="0.275" fill="#333333"></rect>
+          <line x1="1.6435000000000002" y1="0.1" x2="1.6435000000000002" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="1.9618750000000003" y1="0.1" x2="1.9618750000000003" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.3183750000000001" height="0.025" x="1.6435000000000002" y="0.275" fill="#333333"></rect>
+          <line x1="2.2802500000000006" y1="0.1" x2="2.2802500000000006" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="2.5986250000000006" y1="0.1" x2="2.5986250000000006" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.3183750000000001" height="0.025" x="2.2802500000000006" y="0.275" fill="#333333"></rect>
+          <line x1="3.0470000000000006" y1="0.1" x2="3.0470000000000006" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="3.362520661157025" y1="0.1" x2="3.362520661157025" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.3155206611570245" height="0.025" x="3.0470000000000006" y="0.275" fill="#333333"></rect>
+          <line x1="3.67804132231405" y1="0.1" x2="3.67804132231405" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="3.993561983471075" y1="0.1" x2="3.993561983471075" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.31552066115702493" height="0.025" x="3.67804132231405" y="0.275" fill="#333333"></rect>
+          <line x1="4.3090826446281" y1="0.1" x2="4.3090826446281" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="4.7570836776859515" y1="0.1" x2="4.7570836776859515" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="5.072604338842976" y1="0.1" x2="5.072604338842976" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.3155206611570245" height="0.025" x="4.7570836776859515" y="0.275" fill="#333333"></rect>
+          <line x1="5.518125" y1="0.1" x2="5.518125" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="5.825054824561404" y1="0.1" x2="5.825054824561404" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.3069298245614034" height="0.025" x="5.518125" y="0.275" fill="#333333"></rect>
+          <line x1="6.131984649122807" y1="0.1" x2="6.131984649122807" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="6.4389144736842105" y1="0.1" x2="6.4389144736842105" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.3069298245614034" height="0.025" x="6.131984649122807" y="0.275" fill="#333333"></rect>
+          <line x1="6.745844298245615" y1="0.2" x2="6.745844298245615" y2="0.30000000000000004" stroke="#333333"></line>
+        </g>
+      </g>
+      <g transform="translate(0, 5.463)" data-node-type="PageLine">
+        <line x1="0" y1="0.23500000000000004" x2="7.5" y2="0.23500000000000004" stroke="#888888"></line>
+        <line x1="0" y1="0.3350000000000001" x2="7.5" y2="0.3350000000000001" stroke="#888888"></line>
+        <line x1="0" y1="0.43500000000000005" x2="7.5" y2="0.43500000000000005" stroke="#888888"></line>
+        <line x1="0" y1="0.535" x2="7.5" y2="0.535" stroke="#888888"></line>
+        <line x1="0" y1="0.635" x2="7.5" y2="0.635" stroke="#888888"></line>
+        <line x1="0" y1="0.7350000000000001" x2="7.5" y2="0.7350000000000001" stroke="#888888"></line>
+        <g transform="translate(0, 0.18500000000000003)" data-node-type="Group">
+          <g transform="translate(0.37, 0.5)" data-node-type="Arc">
+            <path d="M 0,0 C 0.6041874999999998,0.05 1.4097708333333328,0.05 2.0139583333333326,0 C 1.4097708333333328,0.035 0.6041874999999998,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(0.6577083333333333, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.43156249999999985,0.05 1.0069791666666663,0.05 1.4385416666666662,0 C 1.0069791666666663,0.035 0.43156249999999985,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(1.520833333333333, 0.2)" data-node-type="Arc">
+            <path d="M 0,0 C 0.6431875,0.05 1.5007708333333334,0.05 2.1439583333333334,0 C 1.5007708333333334,0.035 0.6431875,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(2.3839583333333327, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.1253125000000002,0.05 0.2923958333333338,0.05 0.417708333333334,0 C 0.2923958333333338,0.035 0.1253125000000002,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(2.8016666666666667, 0.5)" data-node-type="Arc">
+            <path d="M 0,0 C 0.6041874999999997,0.05 1.4097708333333325,0.05 2.013958333333332,0 C 1.4097708333333325,0.035 0.6041874999999997,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(3.089375, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.43156249999999985,0.05 1.0069791666666663,0.05 1.4385416666666662,0 C 1.0069791666666663,0.035 0.43156249999999985,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(3.9524999999999997, 0.2)" data-node-type="Arc">
+            <path d="M 0,0 C 0.25893749999999977,0.05 0.6041874999999994,0.05 0.8631249999999993,0 C 0.6041874999999994,0.035 0.25893749999999977,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(5.233333333333333, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.6799999999999999,0.05 1.5866666666666664,0.05 2.2666666666666666,0 C 1.5866666666666664,0.035 0.6799999999999999,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(5.521041666666667, 0.30000000000000004)" data-node-type="Arc">
+            <path d="M 0,0 C 0.5178749999999995,0.05 1.2083749999999989,0.05 1.7262499999999985,0 C 1.2083749999999989,0.035 0.5178749999999995,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(5.80875, 0.2)" data-node-type="Arc">
+            <path d="M 0,0 C 0.3452499999999999,0.05 0.805583333333333,0.05 1.150833333333333,0 C 0.805583333333333,0.035 0.3452499999999999,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(6.096458333333333, 0.1)" data-node-type="Arc">
+            <path d="M 0,0 C 0.0863125000000001,0.05 0.20139583333333355,0.05 0.2877083333333337,0 C 0.20139583333333355,0.035 0.0863125000000001,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(0.9454166666666666, 0.13999999999999999)" data-node-type="Arc">
+            <path d="M 0,0.06999999999999999 C 0.08631249999999999,0 0.2013958333333333,0 0.2877083333333333,0.06999999999999999 C 0.2013958333333333,0.015 0.08631249999999999,0.015 0,0.06999999999999999" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(1.8085416666666663, 0.13999999999999999)" data-node-type="Arc">
+            <path d="M 0,0.06999999999999999 C 0.08631249999999999,0 0.2013958333333333,0 0.2877083333333333,0.06999999999999999 C 0.2013958333333333,0.015 0.08631249999999999,0.015 0,0.06999999999999999" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(3.377083333333333, 0.13999999999999999)" data-node-type="Arc">
+            <path d="M 0,0.06999999999999999 C 0.08631249999999999,0 0.2013958333333333,0 0.2877083333333333,0.06999999999999999 C 0.2013958333333333,0.015 0.08631249999999999,0.015 0,0.06999999999999999" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(4.240208333333333, 0.13999999999999999)" data-node-type="Arc">
+            <path d="M 0,0.06999999999999999 C 0.08631249999999999,0 0.2013958333333333,0 0.2877083333333333,0.06999999999999999 C 0.2013958333333333,0.015 0.08631249999999999,0.015 0,0.06999999999999999" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(6.671875, -0.06000000000000001)" data-node-type="Arc">
+            <path d="M 0,0.06999999999999999 C 0.08631249999999999,0 0.2013958333333333,0 0.2877083333333333,0.06999999999999999 C 0.2013958333333333,0.015 0.08631249999999999,0.015 0,0.06999999999999999" fill="#555555" stroke-linecap="round"></path>
+          </g>
+        </g>
+        <g transform="translate(0, 0)" data-node-type="Group">
+          <text x="0" y="0.185" dominant-baseline="text-top" text-anchor="start" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            8
+          </text>
+          <text x="0.37" y="0.04000000000000001" dominant-baseline="central" text-anchor="middle" style="font-size: 0.08px;">
+            A
+          </text>
+          <text x="2.6341666666666663" y="0.185" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            9
+          </text>
+          <text x="5.065833333333333" y="0.185" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            10
+          </text>
+          <text x="5.233333333333333" y="0.04000000000000001" dominant-baseline="central" text-anchor="middle" style="font-size: 0.08px;">
+            F6
+          </text>
+        </g>
+        <g transform="translate(0, 0.18500000000000003)" data-node-type="Group">
+          <line x1="0.0025" y1="0.050000000000000044" x2="0.0025" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(0.005, 0.050000000000000044)" data-node-type="Group">
+            <text x="0.1" y="0.09999999999999998" dominant-baseline="central" text-anchor="middle" style="font-size: 0.15px; user-select: none;">
+              T
+            </text>
+            <text x="0.1" y="0.25" dominant-baseline="central" text-anchor="middle" style="font-size: 0.15px; user-select: none;">
+              A
+            </text>
+            <text x="0.1" y="0.4" dominant-baseline="central" text-anchor="middle" style="font-size: 0.15px; user-select: none;">
+              B
+            </text>
+          </g>
+          <g transform="translate(0.20500000000000002, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.125, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.405)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.20500000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.4127083333333333, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.4927083333333333, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.7004166666666666, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.7804166666666665, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.9881249999999998, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.0681249999999998, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.275833333333333, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.355833333333333, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.5635416666666662, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.6435416666666662, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.8512499999999994, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.9312499999999995, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.1389583333333326, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(2.2189583333333327, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.426666666666666, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="2.6341666666666668" y1="0.050000000000000044" x2="2.6341666666666668" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(2.6366666666666667, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.125, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.405)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.20500000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.4127083333333333, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.4927083333333333, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.7004166666666666, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.7804166666666665, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.9881249999999998, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.0681249999999998, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.275833333333333, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.355833333333333, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.5635416666666662, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.6435416666666662, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.8512499999999994, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.9312499999999995, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.1389583333333326, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(2.2189583333333327, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.426666666666666, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="5.065833333333334" y1="0.050000000000000044" x2="5.065833333333334" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(5.068333333333333, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.125, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  3
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.20500000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.4127083333333333, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.4927083333333333, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.7004166666666666, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  3
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.7804166666666665, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.9881249999999998, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  1
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.0681249999999998, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.275833333333333, 0)" data-node-type="Chord"></g>
+            <g transform="translate(1.355833333333333, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.5635416666666662, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  1
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.6435416666666662, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.8512499999999994, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.9312499999999995, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.1389583333333326, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  3
+                </text>
+              </g>
+            </g>
+            <g transform="translate(2.2189583333333327, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.426666666666666, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="7.4975000000000005" y1="0.050000000000000044" x2="7.4975000000000005" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+        </g>
+        <g transform="translate(0, 0.7850000000000001)" data-node-type="Group">
+          <line x1="0.37" y1="0.1" x2="0.37" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="0.6577083333333333" y1="0.1" x2="0.6577083333333333" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.28770833333333334" height="0.025" x="0.37" y="0.275" fill="#333333"></rect>
+          <line x1="0.9454166666666666" y1="0.1" x2="0.9454166666666666" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="1.2331249999999998" y1="0.1" x2="1.2331249999999998" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.28770833333333323" height="0.025" x="0.9454166666666666" y="0.275" fill="#333333"></rect>
+          <line x1="1.520833333333333" y1="0.1" x2="1.520833333333333" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="1.8085416666666663" y1="0.1" x2="1.8085416666666663" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.28770833333333323" height="0.025" x="1.520833333333333" y="0.275" fill="#333333"></rect>
+          <line x1="2.0962499999999995" y1="0.1" x2="2.0962499999999995" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="2.3839583333333327" y1="0.1" x2="2.3839583333333327" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.28770833333333323" height="0.025" x="2.0962499999999995" y="0.275" fill="#333333"></rect>
+          <line x1="2.8016666666666667" y1="0.1" x2="2.8016666666666667" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="3.089375" y1="0.1" x2="3.089375" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.28770833333333323" height="0.025" x="2.8016666666666667" y="0.275" fill="#333333"></rect>
+          <line x1="3.377083333333333" y1="0.1" x2="3.377083333333333" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="3.6647916666666664" y1="0.1" x2="3.6647916666666664" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.28770833333333323" height="0.025" x="3.377083333333333" y="0.275" fill="#333333"></rect>
+          <line x1="3.9524999999999997" y1="0.1" x2="3.9524999999999997" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="4.240208333333333" y1="0.1" x2="4.240208333333333" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.2877083333333337" height="0.025" x="3.9524999999999997" y="0.275" fill="#333333"></rect>
+          <line x1="4.527916666666666" y1="0.1" x2="4.527916666666666" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="4.815624999999999" y1="0.1" x2="4.815624999999999" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.2877083333333328" height="0.025" x="4.527916666666666" y="0.275" fill="#333333"></rect>
+          <line x1="5.233333333333333" y1="0.1" x2="5.233333333333333" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="5.521041666666667" y1="0.1" x2="5.521041666666667" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.2877083333333337" height="0.025" x="5.233333333333333" y="0.275" fill="#333333"></rect>
+          <line x1="5.80875" y1="0.1" x2="5.80875" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="6.096458333333333" y1="0.1" x2="6.096458333333333" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.2877083333333328" height="0.025" x="5.80875" y="0.275" fill="#333333"></rect>
+          <line x1="6.384166666666666" y1="0.1" x2="6.384166666666666" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="6.671875" y1="0.1" x2="6.671875" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.2877083333333337" height="0.025" x="6.384166666666666" y="0.275" fill="#333333"></rect>
+          <line x1="6.959583333333333" y1="0.1" x2="6.959583333333333" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="7.247291666666666" y1="0.1" x2="7.247291666666666" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.2877083333333328" height="0.025" x="6.959583333333333" y="0.275" fill="#333333"></rect>
+        </g>
+      </g>
+      <g transform="translate(0, 6.952)" data-node-type="PageLine">
+        <line x1="0" y1="0.23500000000000004" x2="7.5" y2="0.23500000000000004" stroke="#888888"></line>
+        <line x1="0" y1="0.3350000000000001" x2="7.5" y2="0.3350000000000001" stroke="#888888"></line>
+        <line x1="0" y1="0.43500000000000005" x2="7.5" y2="0.43500000000000005" stroke="#888888"></line>
+        <line x1="0" y1="0.535" x2="7.5" y2="0.535" stroke="#888888"></line>
+        <line x1="0" y1="0.635" x2="7.5" y2="0.635" stroke="#888888"></line>
+        <line x1="0" y1="0.7350000000000001" x2="7.5" y2="0.7350000000000001" stroke="#888888"></line>
+        <g transform="translate(0, 0.18500000000000003)" data-node-type="Group">
+          <g transform="translate(0.20500000000000002, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.048,0.05 0.11199999999999999,0.05 0.16,0 C 0.11199999999999999,0.035 0.048,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(0.9583722601509164, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.3530233560905498,0.05 0.8237211642112828,0.05 1.1767445203018327,0 C 0.8237211642112828,0.035 0.3530233560905498,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(1.2525583902263746, 0.30000000000000004)" data-node-type="Arc">
+            <path d="M 0,0 C 0.26476751706791235,0.05 0.6177908731584622,0.05 0.8825583902263745,0 C 0.6177908731584622,0.035 0.26476751706791235,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(1.5467445203018328, 0.2)" data-node-type="Arc">
+            <path d="M 0,0 C 0.17651167804527487,0.05 0.41186058210564136,0.05 0.5883722601509163,0 C 0.41186058210564136,0.035 0.17651167804527487,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(1.840930650377291, 0.1)" data-node-type="Arc">
+            <path d="M 0,0 C 0.08825583902263741,0.05 0.2059302910528206,0.05 0.294186130075458,0 C 0.2059302910528206,0.035 0.08825583902263741,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(2.679782608695652, 0.5)" data-node-type="Arc">
+            <path d="M 0,0 C 0.6201847826086956,0.05 1.4470978260869565,0.05 2.067282608695652,0 C 1.4470978260869565,0.035 0.6201847826086956,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(2.9751086956521737, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.44298913043478244,0.05 1.0336413043478256,0.05 1.4766304347826082,0 C 1.0336413043478256,0.035 0.44298913043478244,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(3.8610869565217385, 0.2)" data-node-type="Arc">
+            <path d="M 0,0 C 0.6591847826086957,0.05 1.5380978260869567,0.05 2.1972826086956525,0 C 1.5380978260869567,0.035 0.6591847826086957,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(4.747065217391304, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.1275978260869566,0.05 0.29772826086956544,0.05 0.4253260869565221,0 C 0.29772826086956544,0.035 0.1275978260869566,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(5.172391304347826, 0.5)" data-node-type="Arc">
+            <path d="M 0,0 C 0.6201847826086955,0.05 1.447097826086956,0.05 2.0672826086956517,0 C 1.447097826086956,0.035 0.6201847826086955,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(5.4677173913043475, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.4429891304347827,0.05 1.0336413043478263,0.05 1.4766304347826091,0 C 1.0336413043478263,0.035 0.4429891304347827,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(6.353695652173913, 0.2)" data-node-type="Arc">
+            <path d="M 0,0 C 0.2657934782608694,0.05 0.6201847826086953,0.05 0.8859782608695648,0 C 0.6201847826086953,0.035 0.2657934782608694,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(3.2704347826086955, 0.13999999999999999)" data-node-type="Arc">
+            <path d="M 0,0.06999999999999999 C 0.08859782608695652,0 0.2067282608695652,0 0.29532608695652174,0.06999999999999999 C 0.2067282608695652,0.015 0.08859782608695652,0.015 0,0.06999999999999999" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(4.156413043478261, 0.13999999999999999)" data-node-type="Arc">
+            <path d="M 0,0.06999999999999999 C 0.08859782608695652,0 0.2067282608695652,0 0.29532608695652174,0.06999999999999999 C 0.2067282608695652,0.015 0.08859782608695652,0.015 0,0.06999999999999999" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(5.76304347826087, 0.13999999999999999)" data-node-type="Arc">
+            <path d="M 0,0.06999999999999999 C 0.08859782608695652,0 0.2067282608695652,0 0.29532608695652174,0.06999999999999999 C 0.2067282608695652,0.015 0.08859782608695652,0.015 0,0.06999999999999999" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(6.6490217391304345, 0.13999999999999999)" data-node-type="Arc">
+            <path d="M 0,0.06999999999999999 C 0.08859782608695652,0 0.2067282608695652,0 0.29532608695652174,0.06999999999999999 C 0.2067282608695652,0.015 0.08859782608695652,0.015 0,0.06999999999999999" fill="#555555" stroke-linecap="round"></path>
+          </g>
+        </g>
+        <g transform="translate(0, 0)" data-node-type="Group">
+          <text x="0" y="0.185" dominant-baseline="text-top" text-anchor="start" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            11
+          </text>
+          <text x="0.6641861300754581" y="0.04000000000000001" dominant-baseline="central" text-anchor="middle" style="font-size: 0.08px;">
+            Asus2
+          </text>
+          <text x="2.512282608695652" y="0.185" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            12
+          </text>
+          <text x="2.679782608695652" y="0.04000000000000001" dominant-baseline="central" text-anchor="middle" style="font-size: 0.08px;">
+            A
+          </text>
+          <text x="5.004891304347826" y="0.185" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            13
+          </text>
+        </g>
+        <g transform="translate(0, 0.18500000000000003)" data-node-type="Group">
+          <line x1="0.0025" y1="0.050000000000000044" x2="0.0025" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(0.005, 0.050000000000000044)" data-node-type="Group">
+            <text x="0.1" y="0.09999999999999998" dominant-baseline="central" text-anchor="middle" style="font-size: 0.15px; user-select: none;">
+              T
+            </text>
+            <text x="0.1" y="0.25" dominant-baseline="central" text-anchor="middle" style="font-size: 0.15px; user-select: none;">
+              A
+            </text>
+            <text x="0.1" y="0.4" dominant-baseline="central" text-anchor="middle" style="font-size: 0.15px; user-select: none;">
+              B
+            </text>
+          </g>
+          <g transform="translate(0.20500000000000002, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.125, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.20500000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.41918613007545813, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  3
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.49918613007545815, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.7133722601509163, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.7933722601509163, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.0075583902263745, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.0875583902263746, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.3017445203018327, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.3817445203018328, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.595930650377291, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.675930650377291, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.8901167804527492, 0)" data-node-type="Chord"></g>
+            <g transform="translate(1.9701167804527493, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.3047826086956524, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="2.512282608695652" y1="0.050000000000000044" x2="2.512282608695652" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(2.514782608695652, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.125, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.405)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.20500000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.4203260869565217, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.5003260869565217, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.7156521739130434, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.7956521739130433, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.010978260869565, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.090978260869565, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.3063043478260867, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.3863043478260868, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.6016304347826085, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.6816304347826085, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.8969565217391302, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.9769565217391303, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.1922826086956517, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(2.272282608695652, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.4876086956521735, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="5.004891304347827" y1="0.050000000000000044" x2="5.004891304347827" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(5.007391304347826, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.125, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.405)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.20500000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.4203260869565217, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.5003260869565217, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.7156521739130434, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.7956521739130433, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.010978260869565, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.090978260869565, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.3063043478260867, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.3863043478260868, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.6016304347826085, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.6816304347826085, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.8969565217391302, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.9769565217391303, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.1922826086956517, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(2.272282608695652, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.4876086956521735, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="7.4975000000000005" y1="0.050000000000000044" x2="7.4975000000000005" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+        </g>
+        <g transform="translate(0, 0.7850000000000001)" data-node-type="Group">
+          <line x1="0.37" y1="0.1" x2="0.37" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="0.6641861300754581" y1="0.1" x2="0.6641861300754581" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.29418613007545813" height="0.025" x="0.37" y="0.275" fill="#333333"></rect>
+          <line x1="0.9583722601509164" y1="0.1" x2="0.9583722601509164" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="1.2525583902263746" y1="0.1" x2="1.2525583902263746" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.29418613007545824" height="0.025" x="0.9583722601509164" y="0.275" fill="#333333"></rect>
+          <line x1="1.5467445203018328" y1="0.1" x2="1.5467445203018328" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="1.840930650377291" y1="0.1" x2="1.840930650377291" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.29418613007545824" height="0.025" x="1.5467445203018328" y="0.275" fill="#333333"></rect>
+          <line x1="2.135116780452749" y1="0.1" x2="2.135116780452749" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="2.679782608695652" y1="0.1" x2="2.679782608695652" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="2.9751086956521737" y1="0.1" x2="2.9751086956521737" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.29532608695652174" height="0.025" x="2.679782608695652" y="0.275" fill="#333333"></rect>
+          <line x1="3.2704347826086955" y1="0.1" x2="3.2704347826086955" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="3.565760869565217" y1="0.1" x2="3.565760869565217" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.29532608695652174" height="0.025" x="3.2704347826086955" y="0.275" fill="#333333"></rect>
+          <line x1="3.8610869565217385" y1="0.1" x2="3.8610869565217385" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="4.156413043478261" y1="0.1" x2="4.156413043478261" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.2953260869565222" height="0.025" x="3.8610869565217385" y="0.275" fill="#333333"></rect>
+          <line x1="4.451739130434782" y1="0.1" x2="4.451739130434782" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="4.747065217391304" y1="0.1" x2="4.747065217391304" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.2953260869565222" height="0.025" x="4.451739130434782" y="0.275" fill="#333333"></rect>
+          <line x1="5.172391304347826" y1="0.1" x2="5.172391304347826" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="5.4677173913043475" y1="0.1" x2="5.4677173913043475" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.2953260869565213" height="0.025" x="5.172391304347826" y="0.275" fill="#333333"></rect>
+          <line x1="5.76304347826087" y1="0.1" x2="5.76304347826087" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="6.058369565217391" y1="0.1" x2="6.058369565217391" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.2953260869565213" height="0.025" x="5.76304347826087" y="0.275" fill="#333333"></rect>
+          <line x1="6.353695652173913" y1="0.1" x2="6.353695652173913" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="6.6490217391304345" y1="0.1" x2="6.6490217391304345" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.2953260869565213" height="0.025" x="6.353695652173913" y="0.275" fill="#333333"></rect>
+          <line x1="6.944347826086957" y1="0.1" x2="6.944347826086957" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="7.239673913043478" y1="0.1" x2="7.239673913043478" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.2953260869565213" height="0.025" x="6.944347826086957" y="0.275" fill="#333333"></rect>
+        </g>
+      </g>
+      <g transform="translate(0, 8.441)" data-node-type="PageLine">
+        <line x1="0" y1="0.255" x2="7.5" y2="0.255" stroke="#888888"></line>
+        <line x1="0" y1="0.35500000000000004" x2="7.5" y2="0.35500000000000004" stroke="#888888"></line>
+        <line x1="0" y1="0.455" x2="7.5" y2="0.455" stroke="#888888"></line>
+        <line x1="0" y1="0.555" x2="7.5" y2="0.555" stroke="#888888"></line>
+        <line x1="0" y1="0.655" x2="7.5" y2="0.655" stroke="#888888"></line>
+        <line x1="0" y1="0.7550000000000001" x2="7.5" y2="0.7550000000000001" stroke="#888888"></line>
+        <g transform="translate(0, 0.20500000000000002)" data-node-type="Group">
+          <g transform="translate(0.37, 0.5)" data-node-type="Arc">
+            <path d="M 0,0 C 0.3099705882352941,0.05 0.7232647058823529,0.05 1.033235294117647,0 C 0.7232647058823529,0.035 0.3099705882352941,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(0.7144117647058823, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.20664705882352943,0.05 0.4821764705882354,0.05 0.6888235294117648,0 C 0.4821764705882354,0.035 0.20664705882352943,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(1.0588235294117647, 0.30000000000000004)" data-node-type="Arc">
+            <path d="M 0,0 C 0.10332352941176472,0.05 0.2410882352941177,0.05 0.3444117647058824,0 C 0.2410882352941177,0.035 0.10332352941176472,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(1.7476470588235296, 0.5)" data-node-type="Arc">
+            <path d="M 0,0 C 0.30997058823529405,0.05 0.7232647058823527,0.05 1.0332352941176468,0 C 0.7232647058823527,0.035 0.30997058823529405,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(2.092058823529412, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.20664705882352932,0.05 0.48217647058823504,0.05 0.6888235294117644,0 C 0.48217647058823504,0.035 0.20664705882352932,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(2.436470588235294, 0.30000000000000004)" data-node-type="Arc">
+            <path d="M 0,0 C 0.10332352941176466,0.05 0.24108823529411752,0.05 0.3444117647058822,0 C 0.24108823529411752,0.035 0.10332352941176466,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(3.255294117647059, 0.5)" data-node-type="Arc">
+            <path d="M 0,0 C 0.3099705882352942,0.05 0.7232647058823531,0.05 1.0332352941176475,0 C 0.7232647058823531,0.035 0.3099705882352942,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(3.599705882352941, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.20664705882352957,0.05 0.48217647058823565,0.05 0.6888235294117653,0 C 0.48217647058823565,0.035 0.20664705882352957,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(3.9441176470588237, 0.30000000000000004)" data-node-type="Arc">
+            <path d="M 0,0 C 0.10332352941176479,0.05 0.24108823529411783,0.05 0.34441176470588264,0 C 0.24108823529411783,0.035 0.10332352941176479,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(4.632941176470588, 0.6000000000000001)" data-node-type="Arc">
+            <path d="M 0,0 C 0.45229411764705885,0.05 1.0553529411764706,0.05 1.5076470588235296,0 C 1.0553529411764706,0.035 0.45229411764705885,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(4.977352941176471, 0.5)" data-node-type="Arc">
+            <path d="M 0,0 C 0.3489705882352941,0.05 0.8142647058823528,0.05 1.163235294117647,0 C 0.8142647058823528,0.035 0.3489705882352941,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(5.321764705882353, 0.4)" data-node-type="Arc">
+            <path d="M 0,0 C 0.24564705882352927,0.05 0.573176470588235,0.05 0.8188235294117643,0 C 0.573176470588235,0.035 0.24564705882352927,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+          <g transform="translate(5.666176470588235, 0.30000000000000004)" data-node-type="Arc">
+            <path d="M 0,0 C 0.14232352941176477,0.05 0.33208823529411774,0.05 0.47441176470588253,0 C 0.33208823529411774,0.035 0.14232352941176477,0.035 0,0" fill="#555555" stroke-linecap="round"></path>
+          </g>
+        </g>
+        <g transform="translate(0, 0)" data-node-type="Group">
+          <rect x="6.100588235294118" y="0" width="0.08000000000000002" height="0.05" fill="#000000"></rect>
+          <line x1="6.100588235294118" x2="6.100588235294118" y1="0" y2="0.1" stroke="#000000" stroke-width="0.005"></line>
+          <line x1="6.180588235294118" x2="6.180588235294118" y1="0" y2="0.1" stroke="#000000" stroke-width="0.005"></line>
+          <text x="0" y="0.20500000000000002" dominant-baseline="text-top" text-anchor="start" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            14
+          </text>
+          <text x="0.37" y="0.05" dominant-baseline="central" text-anchor="middle" style="font-size: 0.08px;">
+            A
+          </text>
+          <text x="1.7476470588235296" y="0.05" dominant-baseline="central" text-anchor="middle" style="font-size: 0.08px;">
+            F6
+          </text>
+          <text x="3.087794117647059" y="0.20500000000000002" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            15
+          </text>
+          <text x="3.255294117647059" y="0.05" dominant-baseline="central" text-anchor="middle" style="font-size: 0.08px;">
+            G/A
+          </text>
+          <text x="4.632941176470588" y="0.05" dominant-baseline="central" text-anchor="middle" style="font-size: 0.08px;">
+            Aadd9
+          </text>
+          <text x="5.973088235294117" y="0.20500000000000002" dominant-baseline="text-top" text-anchor="middle" style="font-size: 0.08px; user-select: none; fill: rgb(136, 136, 136);">
+            16
+          </text>
+        </g>
+        <g transform="translate(0, 0.20500000000000002)" data-node-type="Group">
+          <line x1="0.0025" y1="0.050000000000000044" x2="0.0025" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(0.005, 0.050000000000000044)" data-node-type="Group">
+            <text x="0.1" y="0.09999999999999998" dominant-baseline="central" text-anchor="middle" style="font-size: 0.15px; user-select: none;">
+              T
+            </text>
+            <text x="0.1" y="0.25" dominant-baseline="central" text-anchor="middle" style="font-size: 0.15px; user-select: none;">
+              A
+            </text>
+            <text x="0.1" y="0.4" dominant-baseline="central" text-anchor="middle" style="font-size: 0.15px; user-select: none;">
+              B
+            </text>
+          </g>
+          <g transform="translate(0.20500000000000002, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.125, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.405)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.20500000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.4694117647058823, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.5494117647058823, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.8138235294117646, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.8938235294117647, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.158235294117647, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.238235294117647, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.5026470588235294, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.405)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.5826470588235295, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.8470588235294119, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  3
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.927058823529412, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.191470588235294, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  2
+                </text>
+              </g>
+            </g>
+            <g transform="translate(2.271470588235294, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.5358823529411763, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  3
+                </text>
+              </g>
+            </g>
+            <g transform="translate(2.6158823529411763, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.8802941176470584, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="3.087794117647059" y1="0.050000000000000044" x2="3.087794117647059" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(3.090294117647059, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.125, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.405)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.20500000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.4694117647058823, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  5
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.5494117647058823, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.8138235294117646, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.8938235294117647, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.158235294117647, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  5
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.238235294117647, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.5026470588235294, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.505)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  5
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.5826470588235295, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.8470588235294119, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.405)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  7
+                </text>
+              </g>
+            </g>
+            <g transform="translate(1.927058823529412, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.191470588235294, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.30500000000000005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  7
+                </text>
+              </g>
+            </g>
+            <g transform="translate(2.271470588235294, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.5358823529411763, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.20500000000000002)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  4
+                </text>
+              </g>
+            </g>
+            <g transform="translate(2.6158823529411763, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(2.8802941176470584, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="5.973088235294118" y1="0.050000000000000044" x2="5.973088235294118" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+          <g transform="translate(5.975588235294118, 0)" data-node-type="Measure">
+            <g transform="translate(0, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(0.125, 0)" data-node-type="Chord">
+              <g transform="translate(0, 0.005)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+              <g transform="translate(0, 0.10500000000000001)" data-node-type="Note">
+                <rect width="0.08000000000000002" height="0.09000000000000001" x="0" y="0" fill="#ffffff"></rect>
+                <text x="0.04000000000000001" y="0.045000000000000005" dominant-baseline="central" text-anchor="middle" style="font-size: 0.09px; user-select: none; cursor: pointer;">
+                  0
+                </text>
+              </g>
+            </g>
+            <g transform="translate(0.20500000000000002, 0.20000000000000004)" data-node-type="Space"></g>
+            <g transform="translate(1.5194117647058825, 0.20000000000000004)" data-node-type="Space"></g>
+          </g>
+          <line x1="7.4975000000000005" y1="0.050000000000000044" x2="7.4975000000000005" y2="0.55" stroke="#000000" stroke-width="0.005"></line>
+        </g>
+        <g transform="translate(0, 0.8050000000000002)" data-node-type="Group">
+          <line x1="0.37" y1="0.1" x2="0.37" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="0.7144117647058823" y1="0.1" x2="0.7144117647058823" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.3444117647058823" height="0.025" x="0.37" y="0.275" fill="#333333"></rect>
+          <line x1="1.0588235294117647" y1="0.1" x2="1.0588235294117647" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="1.4032352941176471" y1="0.1" x2="1.4032352941176471" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.3444117647058824" height="0.025" x="1.0588235294117647" y="0.275" fill="#333333"></rect>
+          <line x1="1.7476470588235296" y1="0.1" x2="1.7476470588235296" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="2.092058823529412" y1="0.1" x2="2.092058823529412" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.3444117647058824" height="0.025" x="1.7476470588235296" y="0.275" fill="#333333"></rect>
+          <line x1="2.436470588235294" y1="0.1" x2="2.436470588235294" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="2.7808823529411764" y1="0.1" x2="2.7808823529411764" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.3444117647058822" height="0.025" x="2.436470588235294" y="0.275" fill="#333333"></rect>
+          <line x1="3.255294117647059" y1="0.1" x2="3.255294117647059" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="3.599705882352941" y1="0.1" x2="3.599705882352941" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.3444117647058822" height="0.025" x="3.255294117647059" y="0.275" fill="#333333"></rect>
+          <line x1="3.9441176470588237" y1="0.1" x2="3.9441176470588237" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="4.288529411764706" y1="0.1" x2="4.288529411764706" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.34441176470588264" height="0.025" x="3.9441176470588237" y="0.275" fill="#333333"></rect>
+          <line x1="4.632941176470588" y1="0.1" x2="4.632941176470588" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="4.977352941176471" y1="0.1" x2="4.977352941176471" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.34441176470588264" height="0.025" x="4.632941176470588" y="0.275" fill="#333333"></rect>
+          <line x1="5.321764705882353" y1="0.1" x2="5.321764705882353" y2="0.30000000000000004" stroke="#333333"></line>
+          <line x1="5.666176470588235" y1="0.1" x2="5.666176470588235" y2="0.30000000000000004" stroke="#333333"></line>
+          <rect width="0.34441176470588175" height="0.025" x="5.321764705882353" y="0.275" fill="#333333"></rect>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

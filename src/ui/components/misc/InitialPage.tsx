@@ -69,7 +69,17 @@ export const InitialPage = observer((_props: Record<string, never>) => {
         <rect
           width={pageBox.width}
           height={pageBox.height}
-          fill="#ffffff"
+          fill="rgb(255, 255, 255)"
+          className="stroke-gray-400"
+          style={{ filter: "url(#pageShadow)" }}
+        />
+
+        <image width={pageBox.width} height={pageBox.height} href="Song13.svg" style={{ filter: "url(#pageBlur)" }} />
+
+        <rect
+          width={pageBox.width}
+          height={pageBox.height}
+          fill="rgb(255, 255, 255, 0.8)"
           className="stroke-gray-400"
           style={{ filter: "url(#pageShadow)" }}
         />
@@ -79,7 +89,7 @@ export const InitialPage = observer((_props: Record<string, never>) => {
           y={0.5 * PAGE_MARGIN}
           width={pageBox.width - PAGE_MARGIN}
           height={pageBox.height - PAGE_MARGIN}
-          fill="#ffffff"
+          fill="none"
           className="stroke-gray-400"
           strokeWidth={5 * LINE_STROKE_WIDTH}
           strokeDasharray={`${0.2 * PAGE_MARGIN}`}

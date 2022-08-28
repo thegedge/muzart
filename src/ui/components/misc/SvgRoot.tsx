@@ -27,6 +27,10 @@ export const SvgRoot = (props: { box: Box; children?: ComponentChildren }) => {
             floodOpacity="0.25"
           />
         </filter>
+
+        <filter id="pageBlur">
+          <feGaussianBlur in="SourceGraphic" stdDeviation={5 * LINE_STROKE_WIDTH} />
+        </filter>
       </defs>
       {props.children}
     </svg>
