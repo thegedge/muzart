@@ -5,6 +5,7 @@ import {
   DEFAULT_PAGE_HEIGHT,
   DEFAULT_PAGE_WIDTH,
   DEFAULT_SANS_SERIF_FONT_FAMILY,
+  LINE_STROKE_WIDTH,
   STAFF_LINE_HEIGHT,
 } from "../../../layout";
 import { PAGE_MARGIN } from "../../../layout/elements/Part";
@@ -27,7 +28,7 @@ export const InitialPage = observer((_props: Record<string, never>) => {
   const box = new Box(0, 0, DEFAULT_PAGE_WIDTH + 2 * PAGE_MARGIN, DEFAULT_PAGE_HEIGHT + 2 * PAGE_MARGIN);
   const pageBox = box.expand(-PAGE_MARGIN);
   const contentBox = pageBox.expand(-PAGE_MARGIN).translate(-PAGE_MARGIN);
-  const textBox = contentBox.translate(-PAGE_MARGIN);
+  const textBox = contentBox.update({ x: 0, y: 0 }).expand(-PAGE_MARGIN);
 
   const lines = useMemo((): TextBoxLine[] => {
     if (loading) {
@@ -65,7 +66,25 @@ export const InitialPage = observer((_props: Record<string, never>) => {
   return (
     <SvgRoot box={box}>
       <BoxGroup node={{ type: "Page", box: pageBox, parent: null }}>
-        <rect width={pageBox.width} height={pageBox.height} fill="#ffffff" style={{ filter: "url(#pageShadow)" }} />
+        <rect
+          width={pageBox.width}
+          height={pageBox.height}
+          fill="#ffffff"
+          className="stroke-gray-400"
+          style={{ filter: "url(#pageShadow)" }}
+        />
+
+        <rect
+          x={0.5 * PAGE_MARGIN}
+          y={0.5 * PAGE_MARGIN}
+          width={pageBox.width - PAGE_MARGIN}
+          height={pageBox.height - PAGE_MARGIN}
+          fill="#ffffff"
+          className="stroke-gray-400"
+          strokeWidth={5 * LINE_STROKE_WIDTH}
+          strokeDasharray={`${0.2 * PAGE_MARGIN}`}
+        />
+
         <BoxGroup node={{ type: "PageContent", box: contentBox, parent: null }} clip>
           <TextBox
             lines={lines}
