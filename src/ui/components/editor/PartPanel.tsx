@@ -24,12 +24,12 @@ export const PartPanel = observer((_props: Record<string, never>) => {
 
   return (
     <div className="max-h-64 w-full flex flex-col bg-black text-gray-300 overflow-auto">
-      <div className="grid grid-cols-part-list items-center gap-x-px gap-y-px">
+      <div className="grid grid-cols-part-list items-center gap-px">
         <div className="px-4 text-gray-200">Track</div>
-        <div className="text-gray-200 flex gap-px justify-center items-center">
+        <div className="text-gray-200 flex gap-px">
           {range(numMeasures).map((measureIndex) => (
-            <div key={measureIndex} className="w-6 text-xs text-center">
-              {(measureIndex == 0 || measureIndex % 10 == 9) && measureIndex + 1}
+            <div key={measureIndex} className="w-6 h-6 text-xs flex items-center justify-center">
+              <div>{(measureIndex == 0 || measureIndex % 10 == 9) && measureIndex + 1}</div>
             </div>
           ))}
         </div>
@@ -47,14 +47,17 @@ const PartRow = observer((props: { part: Part; partIndex: number; onChange: JSX.
   const { selection } = useApplicationState();
   const partColor = part.color ?? "rgb(156, 163, 175)";
   const rowBackgroundColor = part == selection.part?.part ? "bg-gray-700" : "bg-gray-800";
-  const globalClasses = ["cursor-pointer", "h-full"].join(" ");
 
   return (
     <>
-      <div className={`px-4 ${rowBackgroundColor} ${globalClasses}`} onClick={onChange} data-part={partIndex}>
+      <div
+        className={`flex h-full text-xs font-extralight items-center px-4 cursor-pointer ${rowBackgroundColor}`}
+        onClick={onChange}
+        data-part={partIndex}
+      >
         {part.name}
       </div>
-      <div className={`flex gap-px items-center align-middle ${globalClasses}`}>
+      <div className="flex gap-px items-center cursor-pointer">
         {part.measures.map((measure, measureIndex) => (
           <MeasureBox
             key={measureIndex}
@@ -78,25 +81,25 @@ const MeasureBox = observer(
   }) => {
     const { selection, playback } = useApplicationState();
     const { measure, partIndex, color, onChange } = props;
-    const rowBackgroundColor = partIndex == selection.partIndex ? "bg-gray-700" : "bg-gray-800";
 
     const currentMeasure =
       playback.playing && playback.currentMeasure ? playback.currentMeasure.measure.number : selection.measureIndex + 1;
-    const opacity = 0.25 + 0.75 * measure.chords.reduce((sum, ch) => sum + (ch.rest ? 0 : ch.value.toDecimal()), 0);
+
+    const baseOpacity = partIndex == selection.partIndex ? 0.6 : 0.4;
+    const opacity =
+      baseOpacity + 0.4 * measure.chords.reduce((sum, ch) => sum + (ch.rest ? 0 : ch.value.toDecimal()), 0);
 
     return (
-      <div className={rowBackgroundColor}>
-        <div
-          className="w-6 h-6 p-1"
-          style={{ backgroundColor: replaceAlpha(color, opacity) }}
-          onClick={onChange}
-          data-measure={measure.number - 1}
-          data-part={partIndex}
-        >
-          {partIndex == selection.partIndex && measure.number == currentMeasure && (
-            <div className="w-full h-full rounded-sm bg-white/50">&nbsp;</div>
-          )}
-        </div>
+      <div
+        className="w-6 h-6 p-1 rounded-sm"
+        style={{ backgroundColor: replaceAlpha(color, opacity) }}
+        onClick={onChange}
+        data-measure={measure.number - 1}
+        data-part={partIndex}
+      >
+        {partIndex == selection.partIndex && measure.number == currentMeasure && (
+          <div className="w-full h-full rounded-sm bg-white/50" />
+        )}
       </div>
     );
   }
