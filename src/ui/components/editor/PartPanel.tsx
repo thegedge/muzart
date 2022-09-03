@@ -60,7 +60,7 @@ const PartRow = observer((props: { part: Part; partIndex: number; onChange: JSX.
       <div className="flex gap-px items-center cursor-pointer">
         {part.measures.map((measure, measureIndex) => (
           <MeasureBox
-            key={measureIndex}
+            key={`${measureIndex}-${measureIndex == selection.measureIndex ? "-selected" : ""}`}
             partIndex={partIndex}
             measure={measure}
             color={partColor}
@@ -72,38 +72,36 @@ const PartRow = observer((props: { part: Part; partIndex: number; onChange: JSX.
   );
 });
 
-const MeasureBox = observer(
-  (props: {
-    measure: Measure;
-    partIndex: number;
-    color: string;
-    onChange: JSX.IntrinsicElements["div"]["onClick"];
-  }) => {
-    const { selection, playback } = useApplicationState();
-    const { measure, partIndex, color, onChange } = props;
+// Parent is observed, and will re-render all children
+const MeasureBox = (props: {
+  measure: Measure;
+  partIndex: number;
+  color: string;
+  onChange: JSX.IntrinsicElements["div"]["onClick"];
+}) => {
+  const { selection, playback } = useApplicationState();
+  const { measure, partIndex, color, onChange } = props;
 
-    const currentMeasure =
-      playback.playing && playback.currentMeasure ? playback.currentMeasure.measure.number : selection.measureIndex + 1;
+  const currentMeasure =
+    playback.playing && playback.currentMeasure ? playback.currentMeasure.measure.number : selection.measureIndex + 1;
 
-    const baseOpacity = partIndex == selection.partIndex ? 0.6 : 0.4;
-    const opacity =
-      baseOpacity + 0.4 * measure.chords.reduce((sum, ch) => sum + (ch.rest ? 0 : ch.value.toDecimal()), 0);
+  const baseOpacity = partIndex == selection.partIndex ? 0.6 : 0.4;
+  const opacity = baseOpacity + 0.4 * measure.chords.reduce((sum, ch) => sum + (ch.rest ? 0 : ch.value.toDecimal()), 0);
 
-    return (
-      <div
-        className="w-6 h-6 p-1 rounded-sm"
-        style={{ backgroundColor: replaceAlpha(color, opacity) }}
-        onClick={onChange}
-        data-measure={measure.number - 1}
-        data-part={partIndex}
-      >
-        {partIndex == selection.partIndex && measure.number == currentMeasure && (
-          <div className="w-full h-full rounded-sm bg-white/50" />
-        )}
-      </div>
-    );
-  }
-);
+  return (
+    <div
+      className="w-6 h-6 p-1 rounded-sm"
+      style={{ backgroundColor: replaceAlpha(color, opacity) }}
+      onClick={onChange}
+      data-measure={measure.number - 1}
+      data-part={partIndex}
+    >
+      {partIndex == selection.partIndex && measure.number == currentMeasure && (
+        <div className="w-full h-full rounded-sm bg-white/50" />
+      )}
+    </div>
+  );
+};
 
 const replaceAlpha = (rgb: string, a: number) => {
   const prefix = rgb.substring(0, rgb.length - 1);
