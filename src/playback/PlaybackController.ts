@@ -1,5 +1,6 @@
+import { range } from "lodash";
 import { action, computed, flow, makeObservable, observable } from "mobx";
-import { Measure } from "../layout";
+import { maxMap, Measure } from "../layout";
 import { NoteValue, NoteValueName } from "../notation";
 import { Selection } from "../ui/state/Selection";
 import { Instrument } from "./instruments/Instrument";
@@ -58,62 +59,71 @@ export class PlaybackController {
   }
 
   togglePlay() {
-    if (this.playbackHandle) {
-      this.stop();
-    } else {
-      this.stop();
+    const currentlyPlaying = this.playing; // capture before this.stop(), which will set to false
+    this.stop();
+    if (currentlyPlaying) {
+      return;
+    }
 
-      const score = this.selection.score;
-      if (!score) {
+    const score = this.selection.score;
+    if (!score) {
+      return;
+    }
+
+    const measureStartTimes = this.measureTimes();
+    let nextMeasureTime = this.audioContext.currentTime;
+    let currentMeasureIndex = this.selection.measureIndex;
+    const playNextMeasure = () => {
+      if (!this.playing) {
         return;
       }
 
-      let currentMeasureIndex = this.selection.measureIndex;
+      // Since this callback may be called before the EXACT start of the measure, we need to figure out how far
+      // into the future the measure's events should occur
+      const offsetFromNow = nextMeasureTime - this.audioContext.currentTime;
 
-      const playNextMeasure = () => {
-        let tempo: number | undefined;
+      score.children.forEach((part, partIndex) => {
+        const measure = part.part.measures[currentMeasureIndex];
+        if (!measure) {
+          return;
+        }
 
-        score.children.forEach((part, partIndex) => {
-          const measure = part.part.measures[currentMeasureIndex];
-          if (!measure) {
-            this.stop();
-            return;
-          }
-
-          if (part == this.selection.part) {
-            const pageWithMeasure = part.children.find((page) => !!page.measures.find((m) => m.measure == measure));
-            this.setCurrentMeasure(pageWithMeasure?.measures.find((m) => m.measure == measure));
-          }
-
-          tempo = measure.staffDetails.tempo?.value;
-          const instrument = this.instrumentForPart(partIndex);
-          if (instrument) {
-            let currentTime = 0;
-            for (const chord of measure.chords) {
-              if (!chord.rest) {
-                for (const note of chord.notes) {
-                  instrument.playNote(note, this.tempoOfSelection, currentTime);
-                }
-              }
-
-              currentTime += noteValueToSeconds(chord.value, this.tempoOfSelection);
+        if (part == this.selection.part) {
+          // We don't need perfection here, but would be nice to ensure this timeout is better aligned with the audio context
+          setTimeout(() => {
+            if (this.playing) {
+              const pageWithMeasure = part.children.find((page) => !!page.measures.find((m) => m.measure == measure));
+              this.setCurrentMeasure(pageWithMeasure?.measures.find((m) => m.measure == measure));
             }
+          }, 1000 * offsetFromNow);
+        }
+
+        const instrument = this.instrumentForPart(partIndex);
+        if (instrument) {
+          let currentTime = offsetFromNow;
+          for (const chord of measure.chords) {
+            if (!chord.rest) {
+              for (const note of chord.notes) {
+                instrument.playNote(note, this.tempoOfSelection, currentTime);
+              }
+            }
+
+            currentTime += noteValueToSeconds(chord.value, this.tempoOfSelection);
           }
-        });
+        }
+      });
 
-        currentMeasureIndex += 1;
+      // Schedule the next handler to be a little before the actual starting time so there's time to queue the audio
+      // events, but also gives us a decent buffer in case we're delayed due to some CPU bound work.
+      const currentMeasureDuration = measureStartTimes[currentMeasureIndex++];
+      nextMeasureTime += currentMeasureDuration;
+      this.playbackHandle = setTimeout(playNextMeasure, 500 * currentMeasureDuration);
+    };
 
-        // TODO setTimeout may not work great with the audio context timer, and could be blocked by other things happening
-        //      on the main thread. May want it to happen more frequently, with overlaps.
-
-        // TODO I don't think a whole note always spans an entire measure?
-        this.playbackHandle = setTimeout(
-          playNextMeasure,
-          1000 * noteValueToSeconds(new NoteValue(NoteValueName.Whole), tempo)
-        );
-      };
-
-      this.playing = true;
+    this.playing = true;
+    if (this.audioContext.state == "suspended") {
+      void this.audioContext.resume().then(() => playNextMeasure());
+    } else {
       playNextMeasure();
     }
   }
@@ -127,6 +137,7 @@ export class PlaybackController {
         instrument?.stop();
       }
 
+      void this.audioContext.suspend();
       this.playing = false;
     }
   }
@@ -140,6 +151,22 @@ export class PlaybackController {
 
   setCurrentMeasure(measure: Measure | undefined) {
     this.currentMeasure = measure;
+  }
+
+  private measureTimes(): number[] {
+    const score = this.selection.score?.score;
+    if (!score) {
+      return [];
+    }
+
+    let currentTempo = this.tempoOfSelection;
+    return range(score.parts[0].measures.length).map((measureIndex) => {
+      const maybeTempoChange = maxMap(score.parts, (part) => part.measures[measureIndex].staffDetails.tempo?.value);
+      currentTempo = maybeTempoChange ?? currentTempo;
+
+      // TODO Does a whole note always span an entire measure?
+      return noteValueToSeconds(new NoteValue(NoteValueName.Whole), currentTempo);
+    });
   }
 
   private get tempoOfSelection() {
