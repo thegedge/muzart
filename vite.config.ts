@@ -28,6 +28,10 @@ export default defineConfig(async ({ mode }) => {
       },
     },
 
+    build: {
+      minify: mode == "production",
+    },
+
     esbuild: {
       logOverride: {
         "this-is-undefined-in-esm": "silent",
