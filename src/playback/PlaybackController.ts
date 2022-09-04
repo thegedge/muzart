@@ -19,6 +19,7 @@ export class PlaybackController {
 
   private audioContext: AudioContext;
   private playbackHandle: NodeJS.Timeout | undefined;
+  private setCurrentMeasureHandle: NodeJS.Timeout | undefined;
 
   private instruments_: Record<string, Instrument | undefined> = {};
 
@@ -73,14 +74,14 @@ export class PlaybackController {
     const measureStartTimes = this.measureTimes();
     let nextMeasureTime = this.audioContext.currentTime;
     let currentMeasureIndex = this.selection.measureIndex;
-    const playNextMeasure = () => {
+    const queueNextMeasureAudio = () => {
       if (!this.playing) {
         return;
       }
 
       // Since this callback may be called before the EXACT start of the measure, we need to figure out how far
       // into the future the measure's events should occur
-      const offsetFromNow = nextMeasureTime - this.audioContext.currentTime;
+      const offsetFromNowSecs = nextMeasureTime - this.audioContext.currentTime;
 
       score.children.forEach((part, partIndex) => {
         const measure = part.part.measures[currentMeasureIndex];
@@ -89,18 +90,24 @@ export class PlaybackController {
         }
 
         if (part == this.selection.part) {
-          // We don't need perfection here, but would be nice to ensure this timeout is better aligned with the audio context
-          setTimeout(() => {
-            if (this.playing) {
-              const pageWithMeasure = part.children.find((page) => !!page.measures.find((m) => m.measure == measure));
-              this.setCurrentMeasure(pageWithMeasure?.measures.find((m) => m.measure == measure));
-            }
-          }, 1000 * offsetFromNow);
+          console.info(offsetFromNowSecs);
+          const pageWithMeasure = part.children.find((page) => !!page.measures.find((m) => m.measure == measure));
+          const nextMeasure = pageWithMeasure?.measures.find((m) => m.measure == measure);
+
+          if (offsetFromNowSecs < 0.001) {
+            // If it's less than a millisecond away, just set it now
+            this.setCurrentMeasure(nextMeasure);
+          } else {
+            // We don't need perfection here, but would be nice to ensure this timeout is better aligned with the audio context
+            this.setCurrentMeasureHandle = setTimeout(() => {
+              this.setCurrentMeasure(nextMeasure);
+            }, 1000 * offsetFromNowSecs);
+          }
         }
 
         const instrument = this.instrumentForPart(partIndex);
         if (instrument) {
-          let currentTime = offsetFromNow;
+          let currentTime = offsetFromNowSecs;
           for (const chord of measure.chords) {
             if (!chord.rest) {
               for (const note of chord.notes) {
@@ -119,23 +126,26 @@ export class PlaybackController {
 
       // Schedule the next handler to be a little before the actual starting time so there's time to queue the audio
       // events, but also gives us a decent buffer in case we're delayed due to some CPU bound work.
-      const currentMeasureDuration = measureStartTimes[currentMeasureIndex++];
-      nextMeasureTime += currentMeasureDuration;
-      this.playbackHandle = setTimeout(playNextMeasure, 500 * currentMeasureDuration);
+      const currentMeasureDurationSecs = measureStartTimes[currentMeasureIndex++];
+      nextMeasureTime += currentMeasureDurationSecs;
+      this.playbackHandle = setTimeout(queueNextMeasureAudio, 500 * currentMeasureDurationSecs);
     };
 
     this.playing = true;
+
     if (this.audioContext.state == "suspended") {
-      void this.audioContext.resume().then(() => playNextMeasure());
+      void this.audioContext.resume().then(() => queueNextMeasureAudio());
     } else {
-      playNextMeasure();
+      queueNextMeasureAudio();
     }
   }
 
   stop() {
     if (this.playbackHandle) {
       clearTimeout(this.playbackHandle);
+      clearTimeout(this.setCurrentMeasureHandle);
       this.playbackHandle = undefined;
+      this.setCurrentMeasureHandle = undefined;
 
       for (const instrument of Object.values(this.instruments_)) {
         instrument?.stop();
