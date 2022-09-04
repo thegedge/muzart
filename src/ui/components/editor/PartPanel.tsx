@@ -23,7 +23,7 @@ export const PartPanel = observer((_props: Record<string, never>) => {
   const numMeasures = score.score.parts[0]?.measures.length ?? 0;
 
   return (
-    <div className="max-h-64 w-full flex flex-col bg-black text-gray-300 overflow-auto">
+    <div className="max-h-48 w-full flex flex-col bg-black text-gray-300 overflow-auto">
       <div className="grid grid-cols-part-list items-center gap-px">
         <div className="px-4 text-gray-200">Track</div>
         <div className="text-gray-200 flex gap-px">
