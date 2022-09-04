@@ -105,6 +105,10 @@ export class PlaybackController {
             if (!chord.rest) {
               for (const note of chord.notes) {
                 instrument.playNote(note, this.tempoOfSelection, currentTime);
+                if (note.graceNote) {
+                  const graceNoteTime = noteValueToSeconds(note.graceNote.value, this.tempoOfSelection);
+                  instrument.playNote(note.graceNote, this.tempoOfSelection, currentTime - graceNoteTime);
+                }
               }
             }
 

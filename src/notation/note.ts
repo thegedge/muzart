@@ -95,20 +95,21 @@ export interface NoteOptions {
   value: NoteValue;
   placement?: Placement;
 
-  bend?: Bend;
-  slide?: Slide;
-  vibrato?: boolean;
-  dead?: boolean;
-  tie?: Tie;
-  letRing?: boolean;
-  ghost?: boolean;
-  harmonic?: HarmonicStyle;
   accent?: AccentStyle;
-  palmMute?: boolean;
-  staccato?: boolean;
+  bend?: Bend;
+  dead?: boolean;
   dynamic?: NoteDynamic;
-  tremoloPicking?: NoteValue;
+  ghost?: boolean;
+  graceNote?: Note;
   hammerOnPullOff?: boolean;
+  harmonic?: HarmonicStyle;
+  letRing?: boolean;
+  palmMute?: boolean;
+  slide?: Slide;
+  staccato?: boolean;
+  tie?: Tie;
+  tremoloPicking?: NoteValue;
+  vibrato?: boolean;
 }
 
 export class Note {
@@ -201,6 +202,10 @@ export class Note {
 
   get hammerOnPullOff() {
     return this.options.hammerOnPullOff;
+  }
+
+  get graceNote() {
+    return this.options.graceNote;
   }
 
   get harmonicString() {

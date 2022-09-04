@@ -1,4 +1,4 @@
-import { padStart, range, zip } from "lodash";
+import { omit, padStart, range, zip } from "lodash";
 import {
   AccentStyle,
   Bend,
@@ -47,6 +47,15 @@ interface MeasureData {
     changed: boolean;
   };
 }
+
+interface GraceNote {
+  fret: number;
+  value: NoteValue;
+  dynamic?: NoteDynamic;
+  transition?: number;
+}
+
+type NoteEffects = Partial<Omit<NoteOptions, "graceNote">> & { graceNote?: GraceNote };
 
 class GuitarProLoader {
   private cursor: BufferCursor;
@@ -538,13 +547,7 @@ class GuitarProLoader {
       /* const rightHandFingering = */ this.cursor.nextNumber(NumberType.Uint8);
     }
 
-    let effects: Partial<NoteOptions> | undefined;
-    if (hasNoteEffects) {
-      effects = this.readNoteEffects();
-    }
-
-    // options initialized here because pitch/value have to be defined
-    return {
+    const noteOptions: NoteOptions = {
       pitch: stringTuning.adjust(fret),
       value: duration == 0 ? defaultNoteValue : NoteValue.fromNumber(duration),
       dead: noteType === 3,
@@ -556,11 +559,25 @@ class GuitarProLoader {
         fret,
         string: 0,
       },
-      ...effects,
     };
+
+    if (hasNoteEffects) {
+      const effects = this.readNoteEffects();
+      if (effects.graceNote) {
+        noteOptions.graceNote = new Note({
+          pitch: stringTuning.adjust(fret),
+          value: effects.graceNote.value,
+          dynamic: effects.graceNote.dynamic,
+        });
+      }
+
+      Object.assign(noteOptions, omit(effects, "graceNote"));
+    }
+
+    return noteOptions;
   }
 
-  readNoteEffects(): Partial<NoteOptions> {
+  readNoteEffects(): NoteEffects {
     let vibrato = false;
     let letRing = false;
     let palmMute = false;
@@ -570,6 +587,7 @@ class GuitarProLoader {
     let harmonic: HarmonicStyle | undefined;
     let tremoloPicking: NoteValue | undefined;
     let hammerOnPullOff: boolean | undefined;
+    let graceNote: GraceNote | undefined;
 
     if (this.version < 4) {
       const bits1 = bits(this.cursor.nextNumber(NumberType.Uint8));
@@ -586,7 +604,7 @@ class GuitarProLoader {
       }
 
       if (hasGraceNote) {
-        this.readGraceNote();
+        graceNote = this.readGraceNote();
       }
 
       if (hasSlide) {
@@ -606,7 +624,7 @@ class GuitarProLoader {
       }
 
       if (hasGraceNote) {
-        this.readGraceNote();
+        graceNote = this.readGraceNote();
       }
 
       if (hasTremoloPicking) {
@@ -637,6 +655,7 @@ class GuitarProLoader {
       harmonic,
       tremoloPicking,
       hammerOnPullOff,
+      graceNote,
     };
   }
 
@@ -1003,11 +1022,35 @@ class GuitarProLoader {
     }
   }
 
-  readGraceNote() {
-    /* const fret = */ this.cursor.nextNumber(NumberType.Uint8);
-    /* const dynamic = */ this.cursor.nextNumber(NumberType.Uint8);
-    /* const transition = */ this.cursor.nextNumber(NumberType.Uint8);
-    /* const duration = */ this.cursor.nextNumber(NumberType.Uint8);
+  readGraceNote(): GraceNote {
+    const fret = this.cursor.nextNumber(NumberType.Uint8);
+    const dynamic = this.readNoteDynamic();
+    const transition = this.cursor.nextNumber(NumberType.Uint8);
+    // 0 - None, 1 - Slide, 2 - Bend, 3 - Hammer on / pull off
+
+    const durationValue = this.cursor.nextNumber(NumberType.Uint8);
+    let value: NoteValue;
+    switch (durationValue) {
+      case 1:
+        value = NoteValue.fromNumber(32);
+        break;
+      case 2:
+        // TODO need to support "24th" in NoteValue
+        value = NoteValue.fromNumber(32);
+        break;
+      case 3:
+        value = NoteValue.fromNumber(16);
+        break;
+      default:
+        throw new Error(`unsupported value for grace note duration: ${durationValue}`);
+    }
+
+    return {
+      fret,
+      value,
+      dynamic,
+      transition,
+    };
   }
 
   debug(msg: unknown) {
