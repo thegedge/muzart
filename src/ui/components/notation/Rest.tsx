@@ -3,7 +3,7 @@ import * as layout from "../../../layout";
 import { STAFF_LINE_HEIGHT } from "../../../layout";
 import { Rests } from "../../resources/rests";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { SelectableBoxGroup } from "../layout/SelectableBoxGroup";
+import { Selectable } from "../layout/Selectable";
 
 const REST_COLOR = "#333333";
 
@@ -18,8 +18,8 @@ export const Rest = (props: { element: layout.Rest }) => {
   const offset = ((selection.part?.part.instrument?.tuning?.length ?? 6) - 1) / 2;
 
   return (
-    <SelectableBoxGroup element={props.element} scale={STAFF_LINE_HEIGHT}>
+    <Selectable element={props.element} scale={STAFF_LINE_HEIGHT}>
       <g transform={`translate(0 ${offset})`}>{React.cloneElement(icon, { fill: REST_COLOR })}</g>
-    </SelectableBoxGroup>
+    </Selectable>
   );
 };

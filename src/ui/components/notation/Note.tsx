@@ -2,7 +2,7 @@ import React from "react";
 import * as layout from "../../../layout";
 import { Box } from "../../../layout/utils/Box";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { SelectableBoxGroup } from "../layout/SelectableBoxGroup";
+import { Selectable } from "../layout/Selectable";
 import { TextElement } from "./TextElement";
 
 export const Note = (props: { element: layout.Note }) => {
@@ -21,7 +21,7 @@ export const Note = (props: { element: layout.Note }) => {
   };
 
   return (
-    <SelectableBoxGroup element={props.element} onClick={playNote}>
+    <Selectable element={props.element} onClick={playNote}>
       <TextElement
         box={new Box(0, 0, props.element.box.width, props.element.box.height)}
         halign="center"
@@ -31,6 +31,6 @@ export const Note = (props: { element: layout.Note }) => {
         style={{ userSelect: "none", cursor: "pointer" }}
         fill
       />
-    </SelectableBoxGroup>
+    </Selectable>
   );
 };
