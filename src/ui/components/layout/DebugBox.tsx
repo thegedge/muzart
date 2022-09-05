@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import { Box } from "../../../layout";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 
-export const DebugBox = observer(function DebugBox(props: { box: Box; debugType: string }) {
+export const DebugBox = observer((props: { box: Box; debugType: string }) => {
   const { debug } = useApplicationState();
   if (!debug.enabled) {
     return null;
