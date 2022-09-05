@@ -1,5 +1,6 @@
+import { FunctionalComponent } from "preact";
 import React, { JSX } from "react";
-import { LineElement, PageElement } from "../../../layout";
+import layout, { LineElement, PageElement } from "../../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
@@ -16,59 +17,56 @@ import { TextElement } from "./TextElement";
 import { TimeSignature } from "./TimeSignature";
 import { Vibrato } from "./Vibrato";
 
-export const ScoreElement = (props: { element: PageElement | LineElement }): JSX.Element => {
-  switch (props.element.type) {
-    case "Arc":
-      return <Arc element={props.element} />;
-    case "BarLine":
-      return <BarLine element={props.element} />;
-    case "Bend":
-      return <Bend element={props.element} />;
-    case "Beam":
-      return <Beam element={props.element} />;
-    case "ChordDiagram":
-      return <ChordDiagram element={props.element} />;
-    case "DashedLineText":
-      return <DashedLineText element={props.element} />;
-    case "Dot":
-      return <Dot element={props.element} />;
-    case "Chord":
-    case "Group":
-    case "Measure":
-    case "PageLine":
-      // Index keys probably aren't going to be the best here, especially once we support editing
-      return (
-        <BoxGroup element={props.element}>
-          {props.element.children.map((e, index) => (
-            <ScoreElement key={index} element={e} />
-          ))}
-        </BoxGroup>
-      );
-    case "Line":
-      return (
-        <line
-          x1={props.element.box.x}
-          y1={props.element.box.y}
-          x2={props.element.box.right}
-          y2={props.element.box.bottom}
-          stroke={props.element.color}
-        />
-      );
-    case "Note":
-      return <Note element={props.element} />;
-    case "Stroke":
-      return <Stroke element={props.element} />;
-    case "Rest":
-      return <Rest element={props.element} />;
-    case "Slide":
-      return <Slide element={props.element} />;
-    case "Space":
-      return <BoxGroup element={props.element} />;
-    case "Text":
-      return <TextElement {...props.element} text={props.element.value} />;
-    case "TimeSignature":
-      return <TimeSignature element={props.element} />;
-    case "Vibrato":
-      return <Vibrato element={props.element} />;
-  }
+type ElementType = PageElement | LineElement;
+type GroupElements = layout.Chord | layout.Group<ElementType> | layout.Measure | layout.PageLine;
+
+export const ScoreElement = <T extends ElementType>(props: { element: T }): JSX.Element => {
+  const Element = Elements[props.element.type] as FunctionalComponent<{ element: T }>;
+  return <Element element={props.element} />;
 };
+
+const Group = (props: { element: GroupElements }) => {
+  // Index keys probably aren't going to be the best here, especially once we support editing
+  return (
+    <BoxGroup element={props.element}>
+      {props.element.children.map((e, index) => (
+        <ScoreElement key={index} element={e} />
+      ))}
+    </BoxGroup>
+  );
+};
+
+const Elements = {
+  Arc,
+  BarLine,
+  Bend,
+  Beam,
+  ChordDiagram,
+  DashedLineText,
+  Dot,
+  Chord: Group,
+  Group,
+  Measure: Group,
+  PageLine: Group,
+  Line: (props: { element: layout.Line }) => {
+    return (
+      <line
+        x1={props.element.box.x}
+        y1={props.element.box.y}
+        x2={props.element.box.right}
+        y2={props.element.box.bottom}
+        stroke={props.element.color}
+      />
+    );
+  },
+  Note,
+  Stroke,
+  Rest,
+  Slide,
+  Space: BoxGroup,
+  Text: (props: { element: layout.Text }) => {
+    return <TextElement {...props.element} text={props.element.value} />;
+  },
+  TimeSignature,
+  Vibrato,
+} as const;
