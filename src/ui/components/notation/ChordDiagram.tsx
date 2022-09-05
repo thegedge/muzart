@@ -26,7 +26,7 @@ export const ChordDiagram = (props: { element: layout.ChordDiagram }) => {
   }
 
   return (
-    <BoxGroup node={props.element}>
+    <BoxGroup element={props.element}>
       <TextElement
         size={STAFF_LINE_HEIGHT}
         box={textBox}

@@ -65,7 +65,7 @@ export const InitialPage = observer((_props: Record<string, never>) => {
 
   return (
     <SvgRoot box={box}>
-      <BoxGroup node={{ type: "Page", box: pageBox, parent: null }}>
+      <BoxGroup element={{ type: "Page", box: pageBox, parent: null }}>
         <rect
           width={pageBox.width}
           height={pageBox.height}
@@ -95,7 +95,7 @@ export const InitialPage = observer((_props: Record<string, never>) => {
           strokeDasharray={`${0.2 * PAGE_MARGIN}`}
         />
 
-        <BoxGroup node={{ type: "PageContent", box: contentBox, parent: null }} clip>
+        <BoxGroup element={{ type: "PageContent", box: contentBox, parent: null }} clip>
           <TextBox
             lines={lines}
             box={textBox}

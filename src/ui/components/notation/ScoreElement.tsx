@@ -21,24 +21,24 @@ export const ScoreElement = (props: { element: PageElement | LineElement }): JSX
     case "Arc":
       return <Arc element={props.element} />;
     case "BarLine":
-      return <BarLine node={props.element} />;
+      return <BarLine element={props.element} />;
     case "Bend":
-      return <Bend node={props.element} />;
+      return <Bend element={props.element} />;
     case "Beam":
-      return <Beam node={props.element} />;
+      return <Beam element={props.element} />;
     case "ChordDiagram":
       return <ChordDiagram element={props.element} />;
     case "DashedLineText":
       return <DashedLineText element={props.element} />;
     case "Dot":
-      return <Dot node={props.element} />;
+      return <Dot element={props.element} />;
     case "Chord":
     case "Group":
     case "Measure":
     case "PageLine":
       // Index keys probably aren't going to be the best here, especially once we support editing
       return (
-        <BoxGroup node={props.element}>
+        <BoxGroup element={props.element}>
           {props.element.children.map((e, index) => (
             <ScoreElement key={index} element={e} />
           ))}
@@ -55,20 +55,20 @@ export const ScoreElement = (props: { element: PageElement | LineElement }): JSX
         />
       );
     case "Note":
-      return <Note note={props.element} />;
+      return <Note element={props.element} />;
     case "Stroke":
-      return <Stroke node={props.element} />;
+      return <Stroke element={props.element} />;
     case "Rest":
-      return <Rest node={props.element} />;
+      return <Rest element={props.element} />;
     case "Slide":
-      return <Slide node={props.element} />;
+      return <Slide element={props.element} />;
     case "Space":
-      return <BoxGroup node={props.element} />;
+      return <BoxGroup element={props.element} />;
     case "Text":
       return <TextElement {...props.element} text={props.element.value} />;
     case "TimeSignature":
-      return <TimeSignature node={props.element} />;
+      return <TimeSignature element={props.element} />;
     case "Vibrato":
-      return <Vibrato node={props.element} />;
+      return <Vibrato element={props.element} />;
   }
 };

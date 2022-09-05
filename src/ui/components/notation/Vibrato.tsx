@@ -3,12 +3,12 @@ import React from "react";
 import layout, { STAFF_LINE_HEIGHT } from "../../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 
-export const Vibrato = (props: { node: layout.Vibrato }) => {
+export const Vibrato = (props: { element: layout.Vibrato }) => {
   const startX = 0.2 * STAFF_LINE_HEIGHT;
-  const startY = 0.6 * props.node.box.height;
+  const startY = 0.6 * props.element.box.height;
   const amplitude = 0.3 * STAFF_LINE_HEIGHT;
   const wavelength = 0.3 * STAFF_LINE_HEIGHT;
-  const numPeaks = Math.floor((props.node.box.width - 2 * startX) / wavelength / 2) * 2; // 2* startX for padding on the right
+  const numPeaks = Math.floor((props.element.box.width - 2 * startX) / wavelength / 2) * 2; // 2* startX for padding on the right
   const points = range(numPeaks - 1).map((_) => `${wavelength},0`);
 
   const path = `
@@ -21,7 +21,7 @@ export const Vibrato = (props: { node: layout.Vibrato }) => {
   `;
 
   return (
-    <BoxGroup node={props.node}>
+    <BoxGroup element={props.element}>
       <path d={path} fill="#555555" stroke="#555555" />
     </BoxGroup>
   );

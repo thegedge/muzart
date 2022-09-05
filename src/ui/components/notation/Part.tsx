@@ -13,7 +13,7 @@ export const Part = (props: { part: layout.Part }) => {
 
   return (
     <CurrentPartContext.Provider value={props.part.part}>
-      <BoxGroup node={props.part}>
+      <BoxGroup element={props.part}>
         {pages}
         <SelectionBox />
         <PlaybackBox />

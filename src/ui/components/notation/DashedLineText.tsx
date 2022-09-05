@@ -32,7 +32,7 @@ export const DashedLineText = (props: { element: layout.DashedLineText }) => {
   }
 
   return (
-    <BoxGroup node={props.element}>
+    <BoxGroup element={props.element}>
       <TextElement
         box={new Box(0, 0, props.element.box.width, props.element.box.height)}
         size={props.element.size}

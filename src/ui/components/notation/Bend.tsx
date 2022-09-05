@@ -8,12 +8,12 @@ const BEND_COLOR = "#555555";
 // Half width of the arrow heads
 const HEAD_HALFW = 4 * LINE_STROKE_WIDTH;
 
-export const Bend = (props: { node: layout.Bend }) => {
-  const points = bendPoints(props.node);
+export const Bend = (props: { element: layout.Bend }) => {
+  const points = bendPoints(props.element);
   const bendTextX = points[1][0];
 
   return (
-    <BoxGroup node={props.node}>
+    <BoxGroup element={props.element}>
       <path d={bendPath(points)} fill="none" stroke={BEND_COLOR} />
       {bendArrowHeads(points)}
       <text
@@ -24,7 +24,7 @@ export const Bend = (props: { node: layout.Bend }) => {
         fontSize={0.9 * STAFF_LINE_HEIGHT}
         fill={BEND_COLOR}
       >
-        {bendText(props.node)}
+        {bendText(props.element)}
       </text>
     </BoxGroup>
   );

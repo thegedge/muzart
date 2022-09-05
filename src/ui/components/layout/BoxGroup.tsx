@@ -6,7 +6,7 @@ import { svgPositionTransform } from "../../utils/svg";
 import { DebugBox } from "./DebugBox";
 
 export interface BoxGroupProps extends Omit<JSX.SVGAttributes<SVGGElement>, "clip" | "onClick"> {
-  node: LayoutElement;
+  element: LayoutElement;
   scale?: number;
   forceDebug?: boolean;
   hidden?: boolean;
@@ -21,7 +21,7 @@ export const BoxGroup = (props: BoxGroupProps) => {
     return null;
   }
 
-  const transforms = [svgPositionTransform(props.node)];
+  const transforms = [svgPositionTransform(props.element)];
   if (props.scale) {
     transforms.push(`scale(${props.scale})`);
   }
@@ -30,8 +30,8 @@ export const BoxGroup = (props: BoxGroupProps) => {
   if (props.clip) {
     const cx = 0;
     const cy = 0;
-    const cr = props.node.box.width;
-    const cb = props.node.box.height;
+    const cr = props.element.box.width;
+    const cb = props.element.box.height;
     clipProps = {
       clipPath: `polygon(${cx} ${cy}, ${cr} ${cy}, ${cr} ${cb}, ${cx} ${cb}) view-box`,
       clipPathUnits: "userSpaceOnUse",
@@ -41,12 +41,12 @@ export const BoxGroup = (props: BoxGroupProps) => {
   return (
     <g
       transform={transforms.join(" ")}
-      {...omit(props, "node", "children", "scale", "forceDebug", "hidden", "clip")}
-      data-node-type={props.node.type}
+      {...omit(props, "element", "children", "scale", "forceDebug", "hidden", "clip")}
+      data-element-type={props.element.type}
       {...clipProps}
     >
       {props.children}
-      <DebugBox box={props.node.box} debugType={props.node.type} />
+      <DebugBox box={props.element.box} debugType={props.element.type} />
     </g>
   );
 };

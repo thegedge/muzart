@@ -26,7 +26,7 @@ export const Arc = (props: { element: layout.Arc }) => {
   }
 
   return (
-    <BoxGroup node={props.element}>
+    <BoxGroup element={props.element}>
       <path d={path} fill="#555555" strokeLinecap="round" />
     </BoxGroup>
   );

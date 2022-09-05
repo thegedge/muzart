@@ -4,15 +4,15 @@ import { Box } from "../../../layout/utils/Box";
 import { BoxGroup } from "../layout/BoxGroup";
 import { Arc } from "./Arc";
 
-export const Slide = (props: { node: layout.Slide }) => {
+export const Slide = (props: { element: layout.Slide }) => {
   const arc = useMemo<layout.Arc>(
     () => ({
       type: "Arc",
-      parent: props.node.parent,
+      parent: props.element.parent,
       box: new Box(
         -0.5 * STAFF_LINE_HEIGHT,
         -STAFF_LINE_HEIGHT,
-        props.node.box.width + STAFF_LINE_HEIGHT,
+        props.element.box.width + STAFF_LINE_HEIGHT,
         0.8 * STAFF_LINE_HEIGHT
       ),
       orientation: "above",
@@ -20,16 +20,16 @@ export const Slide = (props: { node: layout.Slide }) => {
     [props]
   );
 
-  const upwards = props.node.upwards;
+  const upwards = props.element.upwards;
   const slideLine = useMemo(() => {
     const strokeWidth = 1.5 * LINE_STROKE_WIDTH;
     if (upwards) {
       return (
         <line
           x1={0}
-          y1={props.node.upwards ? 0 : props.node.box.height}
-          x2={props.node.box.width}
-          y2={props.node.upwards ? props.node.box.height : 0}
+          y1={props.element.upwards ? 0 : props.element.box.height}
+          x2={props.element.box.width}
+          y2={props.element.upwards ? props.element.box.height : 0}
           stroke="#555555"
           strokeWidth={strokeWidth}
         />
@@ -38,9 +38,9 @@ export const Slide = (props: { node: layout.Slide }) => {
       return (
         <line
           x1={5 * LINE_STROKE_WIDTH}
-          y1={props.node.upwards ? props.node.box.height : 0}
-          x2={props.node.box.width - 5 * LINE_STROKE_WIDTH}
-          y2={props.node.upwards ? 0 : props.node.box.height}
+          y1={props.element.upwards ? props.element.box.height : 0}
+          x2={props.element.box.width - 5 * LINE_STROKE_WIDTH}
+          y2={props.element.upwards ? 0 : props.element.box.height}
           stroke="#555555"
           strokeWidth={strokeWidth}
         />
@@ -49,7 +49,7 @@ export const Slide = (props: { node: layout.Slide }) => {
   }, [upwards]);
 
   return (
-    <BoxGroup node={props.node}>
+    <BoxGroup element={props.element}>
       {slideLine}
       <Arc element={arc} />
     </BoxGroup>

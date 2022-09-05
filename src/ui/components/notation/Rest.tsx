@@ -7,8 +7,8 @@ import { SelectableBoxGroup } from "../layout/SelectableBoxGroup";
 
 const REST_COLOR = "#333333";
 
-export const Rest = (props: { node: layout.Rest }) => {
-  const icon = Rests[props.node.chord.value.name];
+export const Rest = (props: { element: layout.Rest }) => {
+  const icon = Rests[props.element.chord.value.name];
   if (!icon) {
     return null;
   }
@@ -18,7 +18,7 @@ export const Rest = (props: { node: layout.Rest }) => {
   const offset = ((selection.part?.part.instrument?.tuning?.length ?? 6) - 1) / 2;
 
   return (
-    <SelectableBoxGroup node={props.node} scale={STAFF_LINE_HEIGHT}>
+    <SelectableBoxGroup element={props.element} scale={STAFF_LINE_HEIGHT}>
       <g transform={`translate(0 ${offset})`}>{React.cloneElement(icon, { fill: REST_COLOR })}</g>
     </SelectableBoxGroup>
   );
