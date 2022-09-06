@@ -1,11 +1,11 @@
 import { CSSProperties } from "react";
-import types, { Alignment, Inches } from "..";
+import types, { Alignment, Millimetres } from "..";
 import { Box } from "../utils";
 import { LayoutElement } from "./LayoutElement";
 
 interface TextOptions {
   value: string;
-  size: Inches;
+  size: Millimetres;
   box?: Box;
   halign?: Alignment;
   valign?: Alignment;

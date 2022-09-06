@@ -8,8 +8,8 @@ export const SvgRoot = (props: { box: Box; children?: ComponentChildren }) => {
     <svg
       viewBox={`${box.x} ${box.y} ${box.width} ${box.height}`}
       style={{
-        width: `${box.width}in`,
-        height: `${box.height}in`,
+        width: `${box.width}mm`,
+        height: `${box.height}mm`,
       }}
       className="m-auto"
       fontFamily={DEFAULT_SANS_SERIF_FONT_FAMILY}

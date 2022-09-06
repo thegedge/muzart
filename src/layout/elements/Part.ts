@@ -1,9 +1,9 @@
-import types from "..";
+import types, { INCH_TO_MM } from "..";
 import * as notation from "../../notation";
 import { SimpleGroup } from "../layouts/SimpleGroup";
 import { Box } from "../utils";
 
-export const PAGE_MARGIN = 0.5;
+export const PAGE_MARGIN = 0.5 * INCH_TO_MM;
 
 export class Part extends SimpleGroup<types.Page, "Part", types.Score> implements types.Part {
   readonly type = "Part";

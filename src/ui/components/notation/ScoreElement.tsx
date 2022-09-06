@@ -1,6 +1,6 @@
 import { FunctionalComponent } from "preact";
 import React, { JSX } from "react";
-import layout, { LineElement, PageElement } from "../../../layout";
+import layout, { LineElement, LINE_STROKE_WIDTH, PageElement } from "../../../layout";
 import { BoxGroup } from "../layout/BoxGroup";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
@@ -56,6 +56,7 @@ const Elements = {
         x2={props.element.box.right}
         y2={props.element.box.bottom}
         stroke={props.element.color}
+        strokeWidth={LINE_STROKE_WIDTH}
       />
     );
   },

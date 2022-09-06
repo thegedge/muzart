@@ -2,7 +2,7 @@ import { CSSProperties } from "react";
 import * as notation from "../notation";
 import { Box } from "./utils/Box";
 
-export type Inches = number;
+export type Millimetres = number;
 export type Alignment = "start" | "center" | "end";
 export type VerticalOrientation = "above" | "below";
 
@@ -28,10 +28,10 @@ export interface LayoutElement<ParentT = unknown, LayoutArgs extends unknown[] =
 }
 
 export interface Margins {
-  left: Inches;
-  right: Inches;
-  top: Inches;
-  bottom: Inches;
+  left: Millimetres;
+  right: Millimetres;
+  top: Millimetres;
+  bottom: Millimetres;
 }
 
 export interface Score extends LayoutElement<never> {
@@ -136,7 +136,7 @@ export interface Stroke extends LayoutElement<LineElement> {
 export interface Text extends LayoutElement<LineElement> {
   type: "Text";
   value: string;
-  size: Inches;
+  size: Millimetres;
   halign?: Alignment;
   valign?: Alignment;
   style?: CSSProperties;
@@ -145,7 +145,7 @@ export interface Text extends LayoutElement<LineElement> {
 export interface DashedLineText extends LayoutElement<LineElement> {
   type: "DashedLineText";
   value: string;
-  size: Inches;
+  size: Millimetres;
 }
 
 export interface Measure extends LayoutElement<LineElement> {

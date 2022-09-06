@@ -11,9 +11,9 @@ import { Box } from "./utils/Box";
 /**
  * Return a layout for the given score.
  *
- * The score is laid out in inches, currently assuming a 8.5" x 11" page. Each page is laid out as
- * a series of lines that will be stacked vertically. For example, the first page will often be
- * some lines of text describing the composition (name, artist, etc) followed by many staff lines.
+ * The score is laid out assuming a 8.5" x 11" page. Each page is laid out as a series of lines that will be stacked
+ * vertically. For example, the first page will often be some lines of text describing the composition (name,
+ * artist, etc) followed by many staff lines.
  */
 export const layout = (score: notation.Score): Score => {
   console.time("layout");

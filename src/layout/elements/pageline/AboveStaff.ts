@@ -1,6 +1,6 @@
 import * as notation from "../../../notation";
 import { AccentStyle } from "../../../notation";
-import { BEAM_HEIGHT, chordWidth, STAFF_LINE_HEIGHT } from "../../constants";
+import { BEAM_HEIGHT, chordWidth, INCH_TO_MM, STAFF_LINE_HEIGHT } from "../../constants";
 import { GridGroup } from "../../layouts/GridGroup";
 import { SimpleGroupElement } from "../../layouts/SimpleGroup";
 import { LineElement, Measure } from "../../types";
@@ -145,8 +145,8 @@ export class AboveStaff extends GridGroup<LineElement> {
   }
 
   private addIntraMeasureAboveStaffDecorations() {
-    const numberSize = 0.08;
-    const tempoSize = 0.1;
+    const numberSize = 0.08 * INCH_TO_MM;
+    const tempoSize = 0.1 * INCH_TO_MM;
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
 
     for (let index = 0; index < this.staffElements.length; ) {
