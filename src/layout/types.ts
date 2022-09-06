@@ -34,6 +34,8 @@ export interface Margins {
   bottom: Millimetres;
 }
 
+export type AllElements = Score | Part | Page | PageElement | LineElement;
+
 export interface Score extends LayoutElement<never> {
   type: "Score";
   score: notation.Score;
@@ -135,7 +137,7 @@ export interface Stroke extends LayoutElement<LineElement> {
 
 export interface Text extends LayoutElement<LineElement> {
   type: "Text";
-  value: string;
+  text: string;
   size: Millimetres;
   halign?: Alignment;
   valign?: Alignment;
@@ -144,7 +146,7 @@ export interface Text extends LayoutElement<LineElement> {
 
 export interface DashedLineText extends LayoutElement<LineElement> {
   type: "DashedLineText";
-  value: string;
+  text: string;
   size: Millimetres;
 }
 

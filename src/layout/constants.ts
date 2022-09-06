@@ -1,9 +1,8 @@
 import { Margins, Millimetres } from "./types";
 
-export const INCH_TO_MM: Millimetres = 25.4;
-export const DEFAULT_PAGE_WIDTH: Millimetres = 8.5 * INCH_TO_MM;
-export const DEFAULT_PAGE_HEIGHT: Millimetres = 11 * INCH_TO_MM;
-export const DEFAULT_MARGIN: Millimetres = 0.5 * INCH_TO_MM;
+export const DEFAULT_PAGE_WIDTH: Millimetres = 215.9;
+export const DEFAULT_PAGE_HEIGHT: Millimetres = 279.4;
+export const DEFAULT_MARGIN: Millimetres = 12;
 export const DEFAULT_MARGINS: Margins = {
   left: DEFAULT_MARGIN,
   right: DEFAULT_MARGIN,
@@ -12,13 +11,13 @@ export const DEFAULT_MARGINS: Margins = {
 };
 
 /** The stroke width for any lines */
-export const LINE_STROKE_WIDTH = 0.005 * INCH_TO_MM;
+export const LINE_STROKE_WIDTH = 0.08;
 
 /** The height of a single line in a staff (for example, a string for a guitar tablature staff) */
-export const STAFF_LINE_HEIGHT: Millimetres = 0.1 * INCH_TO_MM;
+export const STAFF_LINE_HEIGHT: Millimetres = 2.5;
 
 /** The space between lines */
-export const LINE_MARGIN: Millimetres = 0.25 * INCH_TO_MM;
+export const LINE_MARGIN: Millimetres = 6;
 
 export const STEM_HEIGHT = STAFF_LINE_HEIGHT * 3;
 export const BEAM_HEIGHT = STAFF_LINE_HEIGHT / 4;

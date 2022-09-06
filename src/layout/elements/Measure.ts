@@ -1,7 +1,7 @@
 import types from "..";
 import * as notation from "../../notation";
 import { NoteValue, NoteValueName } from "../../notation";
-import { INCH_TO_MM, STAFF_LINE_HEIGHT } from "../constants";
+import { STAFF_LINE_HEIGHT } from "../constants";
 import { FlexGroup } from "../layouts/FlexGroup";
 import { LineElement, Millimetres } from "../types";
 import { Box } from "../utils/Box";
@@ -10,8 +10,8 @@ import { Rest } from "./Rest";
 import { Space } from "./Space";
 import { TimeSignature } from "./TimeSignature";
 
-const MIN_NOTE_WIDTH: Millimetres = 0.2 * INCH_TO_MM;
-const QUARTER_NOTE_WIDTH: Millimetres = 0.25 * INCH_TO_MM;
+const MIN_NOTE_WIDTH: Millimetres = 5;
+const QUARTER_NOTE_WIDTH: Millimetres = 6;
 
 export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
   readonly type = "Measure";

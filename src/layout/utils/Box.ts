@@ -65,6 +65,13 @@ export class Box {
     return new Box(x, y, r - x, b - y);
   }
 
+  /**
+   * Returns whether or not this box overlaps the other.
+   */
+  overlaps(box: Box): boolean {
+    return this.x <= box.right && this.right >= box.x && this.y <= box.bottom && this.bottom >= box.y;
+  }
+
   get right() {
     return this.x + this.width;
   }

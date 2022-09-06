@@ -1,11 +1,12 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
 import { createKeybindingsHandler } from "tinykeys";
+import { Box } from "../../../layout";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { SvgRoot } from "../misc/SvgRoot";
-import { Part } from "./Part";
+import { Canvas, RenderFunction } from "../misc/Canvas";
+import { ScoreElement } from "./ScoreElement";
 
-export const Score = observer(() => {
+export const Score = observer((_props: never) => {
   const application = useApplicationState();
   const { error, selection, playback, debug } = application;
 
@@ -47,13 +48,15 @@ export const Score = observer(() => {
     throw error; // Let the ErrorBoundary figure it out
   }
 
-  if (!selection.part) {
+  const part = selection.part;
+  if (!part) {
     return null;
   }
 
-  return (
-    <SvgRoot box={selection.part.box}>
-      <Part part={selection.part} />
-    </SvgRoot>
-  );
+  const box = selection.part?.box.clone() ?? Box.empty();
+  const render: RenderFunction = (context, viewport) => {
+    ScoreElement(context, part, viewport);
+  };
+
+  return <Canvas render={render} size={box} />;
 });
