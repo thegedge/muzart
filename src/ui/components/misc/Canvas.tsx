@@ -42,11 +42,9 @@ export const Canvas = (props: { render: RenderFunction; size: Box }) => {
       return;
     }
 
-    let frameHandle: number | undefined;
+    let frameHandle = -1;
     const listener = () => {
-      if (frameHandle !== undefined) {
-        cancelAnimationFrame(frameHandle);
-      }
+      cancelAnimationFrame(frameHandle);
 
       frameHandle = requestAnimationFrame((_time) => {
         let x = 0;
@@ -72,7 +70,7 @@ export const Canvas = (props: { render: RenderFunction; size: Box }) => {
         const viewport = new Box(-x / factor, -y / factor, canvas.width / factor, canvas.height / factor);
         props.render(context, viewport);
 
-        frameHandle = undefined;
+        frameHandle = -1;
       });
     };
 
@@ -80,15 +78,13 @@ export const Canvas = (props: { render: RenderFunction; size: Box }) => {
 
     scrollRef.current.addEventListener("scroll", listener, { passive: true });
     return () => {
-      if (frameHandle !== undefined) {
-        cancelAnimationFrame(frameHandle);
-      }
+      cancelAnimationFrame(frameHandle);
       scrollRef.current?.removeEventListener("scroll", listener);
     };
   }, [canvas, scrollRef.current, containerRef.current, props.size, pixelRatio, props.render, context]);
 
   return (
-    <div ref={scrollRef} className="relative flex-1 overflow-scroll">
+    <div ref={scrollRef} className="relative flex-1 overflow-auto">
       <div ref={containerRef} className="absolute" />
       <canvas ref={setCanvas} className="sticky left-0 top-0 w-full h-full" />
     </div>
