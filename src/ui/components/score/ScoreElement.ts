@@ -37,7 +37,7 @@ export const ScoreElement = (
   try {
     RenderFunctions[element.type]?.(application, context, element);
 
-    if ("children" in element) {
+    if ("children" in element && element.children.length > 0) {
       context.translate(element.box.x, element.box.y);
       const adjustedViewport = viewport.translate(-element.box.x, -element.box.y);
       for (const child of element.children) {

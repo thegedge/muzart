@@ -9,4 +9,10 @@ export const Page = (_application: Application, context: CanvasRenderingContext2
   context.fillRect(element.box.x, element.box.y, element.box.width, element.box.height);
   context.shadowBlur = 0;
   context.shadowColor = "";
+
+  const box = element.content.box.translate(element.box.x, element.box.y);
+  context.beginPath();
+  context.rect(box.x, box.y, box.width, box.height);
+  context.clip();
+  context.closePath();
 };
