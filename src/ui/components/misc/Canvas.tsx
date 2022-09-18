@@ -6,11 +6,13 @@ export interface RenderFunction {
 }
 
 export const Canvas = (props: { render: RenderFunction; size: Box }) => {
-  const [pixelRatio, setPixelRatio] = useState(devicePixelRatio);
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const [pixelRatio, setPixelRatio] = useState(devicePixelRatio);
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
+  const [zoom, setZoom] = useState(1);
+
   const context = canvas?.getContext("2d", {
     willReadFrequently: false,
   });
@@ -24,10 +26,25 @@ export const Canvas = (props: { render: RenderFunction; size: Box }) => {
 
   useEffect(() => {
     if (containerRef.current) {
-      containerRef.current.style.width = `${props.size.width * PX_PER_MM}px`;
-      containerRef.current.style.height = `${props.size.height * PX_PER_MM}px`;
+      containerRef.current.style.width = `${zoom * props.size.width * PX_PER_MM}px`;
+      containerRef.current.style.height = `${zoom * props.size.height * PX_PER_MM}px`;
     }
-  }, [containerRef.current, props.size]);
+  }, [containerRef.current, zoom, props.size]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      const listener = (event: WheelEvent) => {
+        if (event.metaKey && event.deltaY != 0) {
+          event.preventDefault();
+          event.stopPropagation();
+          setZoom((currentZoom) => Math.max(0.1, Math.min(5, currentZoom * Math.exp(-event.deltaY / PX_PER_MM / 100))));
+        }
+      };
+
+      scrollRef.current.addEventListener("wheel", listener);
+      return () => scrollRef.current?.removeEventListener("wheel", listener);
+    }
+  }, [scrollRef.current]);
 
   useEffect(() => {
     if (canvas) {
@@ -56,7 +73,7 @@ export const Canvas = (props: { render: RenderFunction; size: Box }) => {
           y = containerRect.y * pixelRatio;
         }
 
-        const factor = pixelRatio * PX_PER_MM;
+        const factor = zoom * pixelRatio * PX_PER_MM;
         const w = canvas.width / factor;
         if (props.size.width < w) {
           x += 0.5 * (w - props.size.width) * factor;
@@ -81,7 +98,7 @@ export const Canvas = (props: { render: RenderFunction; size: Box }) => {
       cancelAnimationFrame(frameHandle);
       scrollRef.current?.removeEventListener("scroll", listener);
     };
-  }, [canvas, scrollRef.current, containerRef.current, props.size, pixelRatio, props.render, context]);
+  }, [canvas, scrollRef.current, containerRef.current, props.size, pixelRatio, props.render, context, zoom]);
 
   return (
     <div ref={scrollRef} className="relative flex-1 overflow-auto">
