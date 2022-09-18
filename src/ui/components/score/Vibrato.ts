@@ -19,8 +19,9 @@ export const Vibrato = (_application: Application, context: CanvasRenderingConte
     t -${points.join(" -")}
   `);
 
+  context.lineWidth = LINE_STROKE_WIDTH;
   context.fillStyle = "#555555";
-  context.strokeStyle = `${LINE_STROKE_WIDTH} #555555`;
+  context.strokeStyle = "#555555";
   context.stroke(path);
   context.fill(path);
 };

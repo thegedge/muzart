@@ -103,7 +103,7 @@ export const Canvas = (props: { render: RenderFunction; size: Box }) => {
   return (
     <div ref={scrollRef} className="relative flex-1 overflow-auto">
       <div ref={containerRef} className="absolute" />
-      <canvas ref={setCanvas} className="sticky left-0 top-0 w-full h-full" />
+      <canvas ref={setCanvas} className="sticky left-0 top-0 w-full h-full" style={{ imageRendering: "crisp-edges" }} />
     </div>
   );
 };

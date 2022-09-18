@@ -12,8 +12,9 @@ export const Bend = (_application: Application, context: CanvasRenderingContext2
 
   context.save();
   context.translate(element.box.x, element.box.y);
-  context.fillStyle = `#555555`;
-  context.strokeStyle = `${LINE_STROKE_WIDTH} #555555`;
+  context.lineWidth = LINE_STROKE_WIDTH;
+  context.fillStyle = "#555555";
+  context.strokeStyle = " #555555";
   context.stroke(path);
 
   for (const head of bendArrowHeads(points)) {
