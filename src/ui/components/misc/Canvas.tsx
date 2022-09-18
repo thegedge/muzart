@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Box, LINE_STROKE_WIDTH } from "../../../layout";
 
 export interface RenderFunction {
@@ -8,7 +8,7 @@ export interface RenderFunction {
 const PX_PER_MM = 3.7795275591; // 96 DPI
 
 export const Canvas = (props: { render: RenderFunction; size: Box }) => {
-  const pixelRatio = devicePixelRatio;
+  const [pixelRatio, setPixelRatio] = useState(devicePixelRatio);
   const scrollRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -18,6 +18,13 @@ export const Canvas = (props: { render: RenderFunction; size: Box }) => {
       willReadFrequently: false,
     });
   }, [canvasRef.current]);
+
+  useEffect(() => {
+    const update = () => setPixelRatio(devicePixelRatio);
+    const media = matchMedia(`(resolution: ${devicePixelRatio}dppx)`);
+    media.addEventListener("change", update, { once: true });
+    return () => media.removeEventListener("change", update);
+  }, [pixelRatio]);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -32,7 +39,7 @@ export const Canvas = (props: { render: RenderFunction; size: Box }) => {
       canvasRef.current.width = Math.ceil(canvasRect.width * pixelRatio);
       canvasRef.current.height = Math.ceil(canvasRect.height * pixelRatio);
     }
-  }, [canvasRef.current]);
+  }, [canvasRef.current, pixelRatio]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -86,8 +93,13 @@ export const Canvas = (props: { render: RenderFunction; size: Box }) => {
     listener(); // initial render
 
     scrollRef.current.addEventListener("scroll", listener, { passive: true });
-    return () => scrollRef.current?.removeEventListener("scroll", listener);
-  }, [canvasRef.current, scrollRef.current, containerRef.current, props.size]);
+    return () => {
+      if (frameHandle !== undefined) {
+        cancelAnimationFrame(frameHandle);
+      }
+      scrollRef.current?.removeEventListener("scroll", listener);
+    };
+  }, [canvasRef.current, scrollRef.current, containerRef.current, props.size, pixelRatio]);
 
   return (
     <div ref={scrollRef} className="relative flex-1 overflow-scroll">
