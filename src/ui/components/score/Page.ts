@@ -1,7 +1,8 @@
 import layout from "../../../layout";
 import { PAGE_MARGIN } from "../../../layout/elements/Part";
+import { Application } from "../../state/Application";
 
-export const Page = (context: CanvasRenderingContext2D, element: layout.Page) => {
+export const Page = (_application: Application, context: CanvasRenderingContext2D, element: layout.Page) => {
   context.shadowBlur = 2 * PAGE_MARGIN;
   context.shadowColor = "rgb(0, 0, 0, 0.2)";
   context.fillStyle = "#ffffff";

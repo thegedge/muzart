@@ -1,5 +1,6 @@
 import * as layout from "../../../layout";
 import { Box } from "../../../layout";
+import { Application } from "../../state/Application";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
@@ -18,27 +19,29 @@ import { Text } from "./Text";
 import { TimeSignature } from "./TimeSignature";
 import { Vibrato } from "./Vibrato";
 
-type RenderFunc<E extends layout.AllElements = layout.AllElements> = (
+type RenderFunc<E = layout.AllElements> = (
+  application: Application,
   context: CanvasRenderingContext2D,
   element: E
 ) => void;
 
-export const ScoreElement = (context: CanvasRenderingContext2D, element: layout.AllElements, viewport: Box) => {
+export const ScoreElement = (
+  application: Application,
+  context: CanvasRenderingContext2D,
+  element: layout.AllElements,
+  viewport: Box
+) => {
   if (!element.box.overlaps(viewport)) return;
 
   context.save();
   try {
-    if (element.type in RenderFunctions) {
-      // TODO avoid the as casts
-      const Render = RenderFunctions[element.type as keyof typeof RenderFunctions] as RenderFunc;
-      Render(context, element);
-    }
+    RenderFunctions[element.type]?.(application, context, element);
 
     if ("children" in element) {
       context.translate(element.box.x, element.box.y);
       const adjustedViewport = viewport.translate(-element.box.x, -element.box.y);
       for (const child of element.children) {
-        ScoreElement(context, child, adjustedViewport);
+        ScoreElement(application, context, child, adjustedViewport);
       }
     }
   } finally {
@@ -46,7 +49,8 @@ export const ScoreElement = (context: CanvasRenderingContext2D, element: layout.
   }
 };
 
-const RenderFunctions = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const RenderFunctions: Record<string, RenderFunc<any>> = {
   Arc,
   BarLine,
   Bend,

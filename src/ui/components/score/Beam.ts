@@ -1,8 +1,9 @@
 import layout from "../../../layout";
+import { Application } from "../../state/Application";
 
 const BEAM_COLOR = "#333333";
 
-export const Beam = (context: CanvasRenderingContext2D, beam: layout.Beam) => {
+export const Beam = (_application: Application, context: CanvasRenderingContext2D, beam: layout.Beam) => {
   context.fillStyle = BEAM_COLOR;
 
   if (beam.size == beam.box.height) {

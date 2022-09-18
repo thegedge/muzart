@@ -1,11 +1,16 @@
 import { range } from "lodash";
 import layout, { DEFAULT_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../../layout";
 import { Box } from "../../../layout/utils/Box";
+import { Application } from "../../state/Application";
 import { Text } from "./Text";
 
 // TODO have ChordDiagram just be FretboardDiagram, and have layout use a group to show other text elements
 
-export const ChordDiagram = (context: CanvasRenderingContext2D, element: layout.ChordDiagram) => {
+export const ChordDiagram = (
+  application: Application,
+  context: CanvasRenderingContext2D,
+  element: layout.ChordDiagram
+) => {
   const textBox = new Box(element.box.x, element.box.y, element.box.width, STAFF_LINE_HEIGHT);
 
   let valign: layout.Alignment;
@@ -15,7 +20,7 @@ export const ChordDiagram = (context: CanvasRenderingContext2D, element: layout.
     valign = "end";
   }
 
-  Text(context, {
+  Text(application, context, {
     size: STAFF_LINE_HEIGHT,
     box: textBox,
     text: element.diagram.name,
@@ -33,16 +38,19 @@ export const ChordDiagram = (context: CanvasRenderingContext2D, element: layout.
     element.box.height - textBox.height
   );
   context.translate(0, textBox.height);
-  FretboardDiagram(context, element, diagramBox);
+  FretboardDiagram(application, context, element, diagramBox);
 };
 
-const FretboardDiagram = (context: CanvasRenderingContext2D, chordDiagram: layout.ChordDiagram, box: Box) => {
-  // const part = useCurrentPart();
-  // const numStrings = part?.instrument?.tuning?.length;
-  // if (!numStrings) {
-  // return null;
-  // }
-  const numStrings = 6;
+const FretboardDiagram = (
+  application: Application,
+  context: CanvasRenderingContext2D,
+  chordDiagram: layout.ChordDiagram,
+  box: Box
+) => {
+  const numStrings = application.selection.part?.part?.instrument?.tuning?.length;
+  if (!numStrings) {
+    return null;
+  }
 
   const diagram = chordDiagram.diagram.diagram;
   if (!diagram) {
@@ -112,7 +120,7 @@ const FretboardDiagram = (context: CanvasRenderingContext2D, chordDiagram: layou
       }
     }
 
-    Text(context, {
+    Text(application, context, {
       box: new Box(box.x + (numStrings - index - 1.5) * fretW, box.y, fretW, height),
       halign: "center",
       valign: "end",

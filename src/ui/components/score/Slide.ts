@@ -1,8 +1,9 @@
 import layout, { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../../layout";
 import { Box } from "../../../layout/utils/Box";
+import { Application } from "../../state/Application";
 import { Arc } from "./Arc";
 
-export const Slide = (context: CanvasRenderingContext2D, element: layout.Slide) => {
+export const Slide = (application: Application, context: CanvasRenderingContext2D, element: layout.Slide) => {
   context.strokeStyle = "#555555";
   context.lineWidth = 1.5 * LINE_STROKE_WIDTH;
 
@@ -17,7 +18,7 @@ export const Slide = (context: CanvasRenderingContext2D, element: layout.Slide) 
   context.stroke();
   context.closePath();
 
-  Arc(context, {
+  Arc(application, context, {
     type: "Arc",
     parent: element.parent,
     box: new Box(

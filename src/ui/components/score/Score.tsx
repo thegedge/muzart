@@ -1,7 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
 import { createKeybindingsHandler } from "tinykeys";
-import { Box } from "../../../layout";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, RenderFunction } from "../misc/Canvas";
 import { ScoreElement } from "./ScoreElement";
@@ -53,10 +52,14 @@ export const Score = observer((_props: never) => {
     return null;
   }
 
-  const box = selection.part?.box.clone() ?? Box.empty();
+  // TODO bring back three things:
+  //   1. Selection box
+  //   2. Playback box
+  //   3. Playback of note when clicking
+
   const render: RenderFunction = (context, viewport) => {
-    ScoreElement(context, part, viewport);
+    ScoreElement(application, context, part, viewport);
   };
 
-  return <Canvas render={render} size={box} />;
+  return <Canvas render={render} size={part.box} />;
 });

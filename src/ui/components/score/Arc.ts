@@ -1,6 +1,7 @@
 import layout, { LINE_STROKE_WIDTH } from "../../../layout";
+import { Application } from "../../state/Application";
 
-export const Arc = (context: CanvasRenderingContext2D, element: layout.Arc) => {
+export const Arc = (_application: Application, context: CanvasRenderingContext2D, element: layout.Arc) => {
   const l = element.box.x;
   const t = element.box.y;
   const r = element.box.right;

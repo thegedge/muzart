@@ -1,5 +1,7 @@
 import { Margins, Millimetres } from "./types";
 
+export const PX_PER_MM = 3.7795275591; // assuming 96 DPI, may need to be scaled for more
+
 export const DEFAULT_PAGE_WIDTH: Millimetres = 215.9;
 export const DEFAULT_PAGE_HEIGHT: Millimetres = 279.4;
 export const DEFAULT_MARGIN: Millimetres = 12;

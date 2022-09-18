@@ -1,10 +1,11 @@
 import layout, { DEFAULT_SANS_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../../layout";
 import { BendType } from "../../../notation";
+import { Application } from "../../state/Application";
 
 // Half width of the arrow heads
 const HEAD_HALFW = 4 * LINE_STROKE_WIDTH;
 
-export const Bend = (context: CanvasRenderingContext2D, element: layout.Bend) => {
+export const Bend = (_application: Application, context: CanvasRenderingContext2D, element: layout.Bend) => {
   const points = bendPoints(element);
   const bendTextX = points[1][0];
   const path = new Path2D(bendPath(points));

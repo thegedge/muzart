@@ -1,7 +1,8 @@
 import * as layout from "../../../layout";
+import { Application } from "../../state/Application";
 import { Text } from "./Text";
 
-export const Note = (context: CanvasRenderingContext2D, element: layout.Note) => {
+export const Note = (application: Application, context: CanvasRenderingContext2D, element: layout.Note) => {
   if (element.note.tie && element.note.tie.type !== "start") {
     return;
   }
@@ -11,12 +12,7 @@ export const Note = (context: CanvasRenderingContext2D, element: layout.Note) =>
     return;
   }
 
-  // const { playback } = useApplicationState();
-  // const playNote = () => {
-  //   playback.playSelectedNote();
-  // };
-
-  Text(context, {
+  Text(application, context, {
     box: element.box,
     halign: "center",
     valign: "center",

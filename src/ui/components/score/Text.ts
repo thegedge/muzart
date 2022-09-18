@@ -1,8 +1,10 @@
 import { CSSProperties } from "react";
 import { Alignment, DEFAULT_SANS_SERIF_FONT_FAMILY } from "../../../layout";
 import { Box } from "../../../layout/utils/Box";
+import { Application } from "../../state/Application";
 
 export const Text = (
+  _application: Application,
   context: CanvasRenderingContext2D,
   props: {
     text: string;

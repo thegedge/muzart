@@ -1,7 +1,8 @@
 import { range } from "lodash";
 import layout, { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../../layout";
+import { Application } from "../../state/Application";
 
-export const Vibrato = (context: CanvasRenderingContext2D, element: layout.Vibrato) => {
+export const Vibrato = (_application: Application, context: CanvasRenderingContext2D, element: layout.Vibrato) => {
   const startX = element.box.x + 0.2 * STAFF_LINE_HEIGHT;
   const startY = element.box.y + 0.6 * element.box.height;
   const amplitude = 0.3 * STAFF_LINE_HEIGHT;

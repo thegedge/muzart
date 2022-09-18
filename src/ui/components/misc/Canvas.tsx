@@ -1,23 +1,19 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Box, LINE_STROKE_WIDTH } from "../../../layout";
+import React, { useEffect, useRef, useState } from "react";
+import { Box, LINE_STROKE_WIDTH, PX_PER_MM } from "../../../layout";
 
 export interface RenderFunction {
   (context: CanvasRenderingContext2D, viewport: Box): void;
 }
 
-const PX_PER_MM = 3.7795275591; // 96 DPI
-
 export const Canvas = (props: { render: RenderFunction; size: Box }) => {
   const [pixelRatio, setPixelRatio] = useState(devicePixelRatio);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const context = useMemo(() => {
-    return canvasRef.current?.getContext("2d", {
-      willReadFrequently: false,
-    });
-  }, [canvasRef.current]);
+  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
+  const context = canvas?.getContext("2d", {
+    willReadFrequently: false,
+  });
 
   useEffect(() => {
     const update = () => setPixelRatio(devicePixelRatio);
@@ -34,15 +30,14 @@ export const Canvas = (props: { render: RenderFunction; size: Box }) => {
   }, [containerRef.current, props.size]);
 
   useEffect(() => {
-    if (canvasRef.current) {
-      const canvasRect = canvasRef.current.getBoundingClientRect();
-      canvasRef.current.width = Math.ceil(canvasRect.width * pixelRatio);
-      canvasRef.current.height = Math.ceil(canvasRect.height * pixelRatio);
+    if (canvas) {
+      const canvasRect = canvas.getBoundingClientRect();
+      canvas.width = Math.ceil(canvasRect.width * pixelRatio);
+      canvas.height = Math.ceil(canvasRect.height * pixelRatio);
     }
-  }, [canvasRef.current, pixelRatio]);
+  }, [canvas, pixelRatio]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
     if (!canvas || !context || !scrollRef.current) {
       return;
     }
@@ -64,26 +59,17 @@ export const Canvas = (props: { render: RenderFunction; size: Box }) => {
         }
 
         const factor = pixelRatio * PX_PER_MM;
-
-        let vw = canvas.width;
-        const vh = canvas.height;
-        const vx = -x;
-        const vy = -y;
         const w = canvas.width / factor;
         if (props.size.width < w) {
           x += 0.5 * (w - props.size.width) * factor;
-          vw = props.size.width * factor;
         }
-
-        const viewport = new Box(vx / factor, vy / factor, vw / factor, vh / factor);
 
         context.resetTransform();
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.setTransform(factor, 0, 0, factor, x, y);
         context.lineWidth = LINE_STROKE_WIDTH;
-        context.strokeStyle = "#000000";
-        context.fillStyle = "#000000";
 
+        const viewport = new Box(-x / factor, -y / factor, canvas.width / factor, canvas.height / factor);
         props.render(context, viewport);
 
         frameHandle = undefined;
@@ -99,12 +85,12 @@ export const Canvas = (props: { render: RenderFunction; size: Box }) => {
       }
       scrollRef.current?.removeEventListener("scroll", listener);
     };
-  }, [canvasRef.current, scrollRef.current, containerRef.current, props.size, pixelRatio]);
+  }, [canvas, scrollRef.current, containerRef.current, props.size, pixelRatio, props.render, context]);
 
   return (
     <div ref={scrollRef} className="relative flex-1 overflow-scroll">
       <div ref={containerRef} className="absolute" />
-      <canvas ref={canvasRef} className="sticky left-0 top-0 w-full h-full" />
+      <canvas ref={setCanvas} className="sticky left-0 top-0 w-full h-full" />
     </div>
   );
 };

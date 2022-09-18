@@ -1,8 +1,13 @@
 import layout, { LINE_STROKE_WIDTH } from "../../../layout";
+import { Application } from "../../state/Application";
 import { Text } from "./Text";
 
-export const DashedLineText = (context: CanvasRenderingContext2D, element: layout.DashedLineText) => {
-  Text(context, {
+export const DashedLineText = (
+  application: Application,
+  context: CanvasRenderingContext2D,
+  element: layout.DashedLineText
+) => {
+  Text(application, context, {
     box: element.box,
     size: element.size,
     text: element.text,

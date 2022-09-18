@@ -1,8 +1,13 @@
 import layout from "../../../layout";
 import { digits } from "../../../utils/digits";
 import { timeSignatureDigit } from "../../resources/time_signature_digits";
+import { Application } from "../../state/Application";
 
-export const TimeSignature = (context: CanvasRenderingContext2D, element: layout.TimeSignature) => {
+export const TimeSignature = (
+  _application: Application,
+  context: CanvasRenderingContext2D,
+  element: layout.TimeSignature
+) => {
   const topDigits = digits(element.timeSignature.count);
   const bottomDigits = digits(element.timeSignature.value.toNumber());
 

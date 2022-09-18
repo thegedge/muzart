@@ -1,6 +1,7 @@
 import * as layout from "../../../layout";
+import { Application } from "../../state/Application";
 
-export const Dot = (context: CanvasRenderingContext2D, element: layout.Dot) => {
+export const Dot = (_application: Application, context: CanvasRenderingContext2D, element: layout.Dot) => {
   const w = element.box.width;
   const h = element.box.height;
   context.fillStyle = "#000000";
