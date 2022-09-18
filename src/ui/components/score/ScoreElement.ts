@@ -1,5 +1,5 @@
 import * as layout from "../../../layout";
-import { Box } from "../../../layout";
+import { Box, LINE_STROKE_WIDTH } from "../../../layout";
 import { Application } from "../../state/Application";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
@@ -36,6 +36,12 @@ export const ScoreElement = (
   context.save();
   try {
     RenderFunctions[element.type]?.(application, context, element);
+
+    if (application.debug.enabled) {
+      context.lineWidth = LINE_STROKE_WIDTH;
+      context.strokeStyle = "red";
+      context.strokeRect(element.box.x, element.box.y, element.box.width, element.box.height);
+    }
 
     if ("children" in element && element.children.length > 0) {
       context.translate(element.box.x, element.box.y);
