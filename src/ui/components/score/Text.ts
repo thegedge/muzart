@@ -40,7 +40,7 @@ export const Text = (
     case undefined:
     case "start":
       y = props.box.y;
-      baseline = "hanging";
+      baseline = "top";
       break;
     case "center": {
       y = props.box.centerY + 0.5 * props.size;
