@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { createKeybindingsHandler } from "tinykeys";
 import { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT, toAncestorCoordinateSystem } from "../../../layout";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { Canvas, RenderFunction } from "../misc/Canvas";
+import { Canvas, Point, RenderFunction } from "../misc/Canvas";
 import { ScoreElement } from "./ScoreElement";
 
 export const Score = observer((_props: never) => {
@@ -79,5 +79,9 @@ export const Score = observer((_props: never) => {
     }
   };
 
-  return <Canvas render={render} size={part.box} />;
+  const onClick = (_p: Point) => {
+    // TODO change selection
+  };
+
+  return <Canvas render={render} size={part.box} onClick={onClick} />;
 });

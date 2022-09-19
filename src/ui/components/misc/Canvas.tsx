@@ -5,13 +5,19 @@ export interface RenderFunction {
   (context: CanvasRenderingContext2D, viewport: Box): void;
 }
 
-export const Canvas = (props: { render: RenderFunction; size: Box }) => {
+export interface Point {
+  x: number;
+  y: number;
+}
+
+export const Canvas = (props: { render: RenderFunction; size: Box; onClick: (p: Point) => void }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
 
   const [pixelRatio, setPixelRatio] = useState(devicePixelRatio);
-  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
   const [zoom, setZoom] = useState(1);
+  const [viewport, setViewport] = useState<Box | null>(null);
 
   const context = canvas?.getContext("2d", {
     willReadFrequently: false,
@@ -55,54 +61,64 @@ export const Canvas = (props: { render: RenderFunction; size: Box }) => {
   }, [canvas, pixelRatio]);
 
   useEffect(() => {
-    if (!canvas || !context || !scrollRef.current) {
+    const container = containerRef.current;
+    const scroll = scrollRef.current;
+    if (!canvas || !container || !scroll) {
       return;
     }
 
-    let frameHandle = -1;
     const listener = () => {
-      cancelAnimationFrame(frameHandle);
+      // No need to multiply by PX_PER_MM because the container values are already in pixels
+      const containerRect = container.getBoundingClientRect();
+      let x = containerRect.x * pixelRatio;
+      const y = containerRect.y * pixelRatio;
+      const factor = zoom * pixelRatio * PX_PER_MM;
+      const w = canvas.width / factor;
+      if (props.size.width < w) {
+        x += 0.5 * (w - props.size.width) * factor;
+      }
 
-      frameHandle = requestAnimationFrame((_time) => {
-        let x = 0;
-        let y = 0;
-        const containerRect = containerRef.current?.getBoundingClientRect();
-        if (containerRect) {
-          // No need to multiply by PX_PER_MM because the container values are already in pixels
-          x = containerRect.x * pixelRatio;
-          y = containerRect.y * pixelRatio;
-        }
-
-        const factor = zoom * pixelRatio * PX_PER_MM;
-        const w = canvas.width / factor;
-        if (props.size.width < w) {
-          x += 0.5 * (w - props.size.width) * factor;
-        }
-
-        context.resetTransform();
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.setTransform(factor, 0, 0, factor, x, y);
-        context.lineWidth = LINE_STROKE_WIDTH;
-
-        const viewport = new Box(-x / factor, -y / factor, canvas.width / factor, canvas.height / factor);
-        props.render(context, viewport);
-
-        frameHandle = -1;
-      });
+      setViewport(new Box(-x / factor, -y / factor, canvas.width / factor, canvas.height / factor));
     };
 
-    listener(); // initial render
+    // Ensure we set an initial viewport
+    listener();
 
-    scrollRef.current.addEventListener("scroll", listener, { passive: true });
-    return () => {
-      cancelAnimationFrame(frameHandle);
-      scrollRef.current?.removeEventListener("scroll", listener);
-    };
-  }, [canvas, scrollRef.current, containerRef.current, props.size, pixelRatio, props.render, context, zoom]);
+    scroll.addEventListener("scroll", listener, { passive: true });
+    return () => scroll.removeEventListener("scroll", listener);
+  }, [canvas, containerRef.current, scrollRef.current, props.size, zoom, pixelRatio]);
+
+  const frameHandle = useRef(-1);
+
+  useEffect(() => {
+    if (!canvas || !context || !viewport) {
+      return;
+    }
+
+    cancelAnimationFrame(frameHandle.current);
+
+    frameHandle.current = requestAnimationFrame((_time) => {
+      const factor = zoom * pixelRatio * PX_PER_MM;
+      context.resetTransform();
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.setTransform(factor, 0, 0, factor, -viewport.x * factor, -viewport.y * factor);
+      context.lineWidth = LINE_STROKE_WIDTH;
+      props.render(context, viewport);
+    });
+  }, [canvas, context, viewport, props.size, zoom, pixelRatio, props.render]);
+
+  const onClick = () => {
+    if (!props.onClick) {
+      return;
+    }
+
+    const p = { x: 0, y: 0 };
+    props.onClick(p);
+  };
 
   return (
     <div ref={scrollRef} className="relative flex-1 overflow-auto">
-      <div ref={containerRef} className="absolute" />
+      <div ref={containerRef} className="absolute" onClick={onClick} />
       <canvas ref={setCanvas} className="sticky left-0 top-0 w-full h-full" style={{ imageRendering: "crisp-edges" }} />
     </div>
   );
