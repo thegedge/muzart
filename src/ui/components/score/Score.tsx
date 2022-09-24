@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { createKeybindingsHandler } from "tinykeys";
 import { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT, toAncestorCoordinateSystem } from "../../../layout";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
@@ -55,29 +55,40 @@ export const Score = observer((_props: never) => {
 
   // TODO Playback of note when clicking
 
-  const render: RenderFunction = (context, viewport) => {
-    ScoreElement(application, context, part, viewport);
+  const render = useCallback<RenderFunction>(
+    (context, viewport) => {
+      ScoreElement(application, context, part, viewport);
 
-    if (application.playback.playing) {
-      // TODO Playback box
-    } else if (selection.chord) {
-      // Selection box
-      const PADDING = 3 * LINE_STROKE_WIDTH;
-      const chordBox = toAncestorCoordinateSystem(selection.chord);
-      const selectionBox = chordBox
-        .update({
-          y: chordBox.y + selection.noteIndex * STAFF_LINE_HEIGHT,
-          width: selection.chord.type == "Chord" ? chordBox.width : STAFF_LINE_HEIGHT,
-          height: STAFF_LINE_HEIGHT,
-        })
-        .expand(PADDING);
+      if (application.playback.playing) {
+        // TODO Playback box
+      } else if (selection.chord) {
+        // Selection box
+        const PADDING = 3 * LINE_STROKE_WIDTH;
+        const chordBox = toAncestorCoordinateSystem(selection.chord);
+        const selectionBox = chordBox
+          .update({
+            y: chordBox.y + selection.noteIndex * STAFF_LINE_HEIGHT,
+            width: selection.chord.type == "Chord" ? chordBox.width : STAFF_LINE_HEIGHT,
+            height: STAFF_LINE_HEIGHT,
+          })
+          .expand(PADDING);
 
-      context.fillStyle = "#f0f0a055";
-      context.strokeStyle = "#a0a050";
-      context.fillRect(selectionBox.x, selectionBox.y, selectionBox.width, selectionBox.height);
-      context.strokeRect(selectionBox.x, selectionBox.y, selectionBox.width, selectionBox.height);
-    }
-  };
+        context.fillStyle = "#f0f0a055";
+        context.strokeStyle = "#a0a050";
+        context.fillRect(selectionBox.x, selectionBox.y, selectionBox.width, selectionBox.height);
+        context.strokeRect(selectionBox.x, selectionBox.y, selectionBox.width, selectionBox.height);
+      }
+    },
+    [
+      application.renderEpoch,
+      application.selection.partIndex,
+      application.selection.measureIndex,
+      application.selection.chordIndex,
+      application.selection.noteIndex,
+      application.debug.enabled,
+      application.playback.playing,
+    ]
+  );
 
   const onClick = (_p: Point) => {
     // TODO change selection
