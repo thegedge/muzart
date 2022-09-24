@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Box, LINE_STROKE_WIDTH, PX_PER_MM } from "../../../layout";
 
 export interface RenderFunction {
@@ -23,12 +23,45 @@ export const Canvas = (props: { render: RenderFunction; size: Box; onClick: (p: 
     willReadFrequently: false,
   });
 
+  const updateViewport = () => {
+    const container = containerRef.current;
+    if (!canvas || !container) {
+      return;
+    }
+
+    // No need to multiply by PX_PER_MM because the container values are already in pixels
+    const containerRect = container.getBoundingClientRect();
+    let x = containerRect.x * pixelRatio;
+    const y = containerRect.y * pixelRatio;
+    const factor = zoom * pixelRatio * PX_PER_MM;
+    const w = canvas.width / factor;
+    if (props.size.width < w) {
+      x += 0.5 * (w - props.size.width) * factor;
+    }
+
+    setViewport(new Box(-x / factor, -y / factor, canvas.width / factor, canvas.height / factor));
+  };
+
   useEffect(() => {
     const update = () => setPixelRatio(devicePixelRatio);
     const media = matchMedia(`(resolution: ${devicePixelRatio}dppx)`);
     media.addEventListener("change", update, { once: true });
     return () => media.removeEventListener("change", update);
   }, [pixelRatio]);
+
+  useEffect(() => {
+    const update = () => {
+      if (canvas) {
+        const canvasRect = canvas.getBoundingClientRect();
+        canvas.width = Math.ceil(canvasRect.width * pixelRatio);
+        canvas.height = Math.ceil(canvasRect.height * pixelRatio);
+        updateViewport();
+      }
+    };
+
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [canvas]);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -67,26 +100,13 @@ export const Canvas = (props: { render: RenderFunction; size: Box; onClick: (p: 
       return;
     }
 
-    const listener = () => {
-      // No need to multiply by PX_PER_MM because the container values are already in pixels
-      const containerRect = container.getBoundingClientRect();
-      let x = containerRect.x * pixelRatio;
-      const y = containerRect.y * pixelRatio;
-      const factor = zoom * pixelRatio * PX_PER_MM;
-      const w = canvas.width / factor;
-      if (props.size.width < w) {
-        x += 0.5 * (w - props.size.width) * factor;
-      }
-
-      setViewport(new Box(-x / factor, -y / factor, canvas.width / factor, canvas.height / factor));
-    };
-
-    // Ensure we set an initial viewport
-    listener();
-
-    scroll.addEventListener("scroll", listener, { passive: true });
-    return () => scroll.removeEventListener("scroll", listener);
+    scroll.addEventListener("scroll", updateViewport, { passive: true });
+    return () => scroll.removeEventListener("scroll", updateViewport);
   }, [canvas, containerRef.current, scrollRef.current, props.size, zoom, pixelRatio]);
+
+  useEffect(() => {
+    updateViewport();
+  }, []);
 
   const frameHandle = useRef(-1);
 
@@ -116,10 +136,19 @@ export const Canvas = (props: { render: RenderFunction; size: Box; onClick: (p: 
     props.onClick(p);
   };
 
-  return (
-    <div ref={scrollRef} className="relative flex-1 overflow-auto">
-      <div ref={containerRef} className="absolute" onClick={onClick} />
-      <canvas ref={setCanvas} className="sticky left-0 top-0 w-full h-full" style={{ imageRendering: "crisp-edges" }} />
-    </div>
+  const canvasElement = useMemo(
+    () => (
+      <div ref={scrollRef} className="relative flex-1 overflow-auto">
+        <div ref={containerRef} className="absolute" onClick={onClick} />
+        <canvas
+          ref={setCanvas}
+          className="sticky left-0 top-0 w-full h-full"
+          style={{ imageRendering: "crisp-edges" }}
+        />
+      </div>
+    ),
+    [scrollRef, containerRef, setCanvas]
   );
+
+  return canvasElement;
 };
