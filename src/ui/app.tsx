@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { BaseLocationHook, Route, Router } from "wouter";
 import { determineScoreType, getFilenameAndMimeType, ScoreDataType } from "../loaders";
 import "./app.css";
-import { PartPanel } from "./components/editor/PartPanel";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { InitialPage, SongTypes } from "./components/misc/InitialPage";
 import { Score } from "./components/score/Score";
@@ -116,7 +115,7 @@ const ScoreLoader = (props: { source: SongTypes["source"]; name: string }) => {
   return (
     <div className="flex flex-col w-screen h-screen">
       <Score />
-      <PartPanel />
+      {/* <PartPanel /> */}
     </div>
   );
 };
