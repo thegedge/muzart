@@ -16,7 +16,6 @@ export interface Point {
 // eslint-disable-next-line react/display-name
 export const Canvas = React.memo((props: { render: RenderFunction; size: Box; onClick: (p: Point) => void }) => {
   const [scroll, setScroll] = useState<HTMLDivElement | null>(null);
-  const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
 
   const state = useMemo(() => {
@@ -42,31 +41,49 @@ export const Canvas = React.memo((props: { render: RenderFunction; size: Box; on
       return;
     }
 
+    let startingWheelEvent = true;
+    let zooming = false;
+    let wheelTimeout = -1;
+
     const wheelListener = (event: WheelEvent) => {
-      if (event.metaKey && event.deltaY != 0) {
+      clearTimeout(wheelTimeout);
+
+      if (startingWheelEvent) {
+        zooming = event.metaKey;
+        startingWheelEvent = false;
+      }
+
+      if (event.deltaY != 0) {
+        // Disable font zooming and browser-controlled scrolling. I tried to just deal with the former and let the
+        // browser deal with the latter, but it was too dang hard to get just right.
         event.preventDefault();
         event.stopPropagation();
-        state.setZoom(Math.max(0.1, Math.min(5, state.zoom * Math.exp(-event.deltaY / PX_PER_MM / 100))));
+
+        if (zooming) {
+          // TODO if zooming out and everything fits on screen, may need to scroll up
+          state.setZoom(Math.max(0.1, Math.min(5, state.zoom * Math.exp(-event.deltaY / PX_PER_MM / 100))));
+        } else {
+          scroll.scrollBy(0, event.deltaY);
+        }
       }
+
+      wheelTimeout = window.setTimeout(() => {
+        startingWheelEvent = true;
+        zooming = false;
+      }, 50);
     };
 
-    scroll.addEventListener("wheel", wheelListener);
-    return () => scroll.removeEventListener("wheel", wheelListener);
-  }, [state, scroll]);
-
-  useEffect(() => {
-    if (!scroll || !container) {
-      return;
-    }
-
-    const listener = () => {
-      const containerRect = container.getBoundingClientRect();
+    const scrollListener = () => {
       const factor = state.zoom * PX_PER_MM;
-      state.setScroll(containerRect.x / factor, containerRect.y / factor);
+      state.setScroll(scroll.scrollLeft / factor, scroll.scrollTop / factor);
     };
 
-    scroll.addEventListener("scroll", listener, { passive: true });
-    return () => scroll.removeEventListener("scroll", listener);
+    scroll.addEventListener("scroll", scrollListener, { passive: true });
+    scroll.addEventListener("wheel", wheelListener);
+    return () => {
+      scroll.removeEventListener("wheel", wheelListener);
+      scroll.removeEventListener("scroll", scrollListener);
+    };
   }, [state, scroll]);
 
   useEffect(() => {
@@ -87,7 +104,6 @@ export const Canvas = React.memo((props: { render: RenderFunction; size: Box; on
       <Observer>
         {() => (
           <div
-            ref={setContainer}
             className="absolute"
             onClick={onClick}
             style={{
@@ -125,14 +141,6 @@ class CanvasState {
 
   constructor(readonly userSpaceSize: Box, readonly render: RenderFunction) {
     makeAutoObservable(this, {});
-  }
-
-  setContainer(canvas: HTMLCanvasElement | null) {
-    this.canvas = canvas;
-    if (this.canvas) {
-      this.updateCanvas();
-      this.redraw();
-    }
   }
 
   setCanvas(canvas: HTMLCanvasElement | null) {
@@ -181,12 +189,12 @@ class CanvasState {
     const y = this.scrollY * this.deviceToUserspaceFactor;
     const w = this.userSpaceSize.width * this.deviceToUserspaceFactor;
     if (w < this.canvas.width) {
-      x += 0.5 * (this.canvas.width - w);
+      x -= 0.5 * (this.canvas.width - w);
     }
 
     this.viewport = new Box(
-      -x / this.deviceToUserspaceFactor,
-      -y / this.deviceToUserspaceFactor,
+      x / this.deviceToUserspaceFactor,
+      y / this.deviceToUserspaceFactor,
       this.canvas.width / this.deviceToUserspaceFactor,
       this.canvas.height / this.deviceToUserspaceFactor
     );

@@ -18,8 +18,8 @@ export class PlaybackController {
   public soundFont: SoundFont | undefined;
 
   private audioContext: AudioContext;
-  private playbackHandle: NodeJS.Timeout | undefined;
-  private setCurrentMeasureHandle: NodeJS.Timeout | undefined;
+  private playbackHandle: number | undefined;
+  private setCurrentMeasureHandle: number | undefined;
 
   private instruments_: Record<string, Instrument | undefined> = {};
 
@@ -99,7 +99,7 @@ export class PlaybackController {
             this.setCurrentMeasure(nextMeasure);
           } else {
             // We don't need perfection here, but would be nice to ensure this timeout is better aligned with the audio context
-            this.setCurrentMeasureHandle = setTimeout(() => {
+            this.setCurrentMeasureHandle = window.setTimeout(() => {
               this.setCurrentMeasure(nextMeasure);
             }, 1000 * offsetFromNowSecs);
           }
@@ -128,7 +128,7 @@ export class PlaybackController {
       // events, but also gives us a decent buffer in case we're delayed due to some CPU bound work.
       const currentMeasureDurationSecs = measureStartTimes[currentMeasureIndex++];
       nextMeasureTime += currentMeasureDurationSecs;
-      this.playbackHandle = setTimeout(queueNextMeasureAudio, 500 * currentMeasureDurationSecs);
+      this.playbackHandle = window.setTimeout(queueNextMeasureAudio, 500 * currentMeasureDurationSecs);
     };
 
     this.playing = true;
