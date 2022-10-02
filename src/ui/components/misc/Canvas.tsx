@@ -61,9 +61,11 @@ export const Canvas = React.memo((props: { render: RenderFunction; size: Box; on
         if (zooming) {
           // TODO if zooming out and everything fits on screen, may need to scroll up
           state.setZoom(Math.max(0.1, Math.min(5, state.zoom * Math.exp(-event.deltaY / PX_PER_MM / 100))));
-        } else {
-          scroll.scrollBy(0, event.deltaY);
         }
+      }
+
+      if (!zooming && (event.deltaX != 0 || event.deltaY != 0)) {
+        scroll.scrollBy(event.deltaX, event.deltaY);
       }
 
       wheelTimeout = window.setTimeout(() => {
