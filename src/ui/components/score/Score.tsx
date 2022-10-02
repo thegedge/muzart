@@ -60,7 +60,14 @@ export const Score = observer((_props: never) => {
       ScoreElement(application, context, part, viewport);
 
       if (application.playback.playing) {
-        // TODO Playback box
+        // Playback box
+        const measure = application.playback.currentMeasure;
+        if (measure) {
+          const measureBox = toAncestorCoordinateSystem(measure);
+          context.strokeStyle = "#ff000033";
+          context.lineWidth = LINE_STROKE_WIDTH * 8;
+          context.strokeRect(measureBox.x, measureBox.y, measureBox.width, measureBox.height);
+        }
       } else if (selection.chord) {
         // Selection box
         const PADDING = 3 * LINE_STROKE_WIDTH;
@@ -87,6 +94,7 @@ export const Score = observer((_props: never) => {
       application.selection.noteIndex,
       application.debug.enabled,
       application.playback.playing,
+      application.playback.currentMeasure,
     ]
   );
 
