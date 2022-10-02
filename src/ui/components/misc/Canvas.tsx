@@ -146,10 +146,7 @@ class CanvasState {
 
   setCanvas(canvas: HTMLCanvasElement | null) {
     this.canvas = canvas;
-    if (this.canvas) {
-      this.updateCanvas();
-      this.redraw();
-    }
+    this.updateCanvas();
   }
 
   setZoom(zoom: number) {
@@ -159,17 +156,15 @@ class CanvasState {
 
   setPixelRatio(pixelRatio: number) {
     this.pixelRatio = pixelRatio;
-    this.updateViewport();
+    this.updateCanvas();
   }
 
   updateCanvas() {
-    if (!this.canvas) {
-      return;
+    if (this.canvas) {
+      const canvasRect = this.canvas.getBoundingClientRect();
+      this.canvas.width = Math.ceil(canvasRect.width * this.pixelRatio);
+      this.canvas.height = Math.ceil(canvasRect.height * this.pixelRatio);
     }
-
-    const canvasRect = this.canvas.getBoundingClientRect();
-    this.canvas.width = Math.ceil(canvasRect.width * this.pixelRatio);
-    this.canvas.height = Math.ceil(canvasRect.height * this.pixelRatio);
     this.updateViewport();
   }
 
