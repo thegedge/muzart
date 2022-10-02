@@ -1,4 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { makeAutoObservable } from "mobx";
+import { Observer } from "mobx-react-lite";
+import { useMemo } from "preact/hooks";
+import React, { useEffect, useState } from "react";
 import { Box, LINE_STROKE_WIDTH, PX_PER_MM } from "../../../layout";
 
 export interface RenderFunction {
@@ -10,122 +13,65 @@ export interface Point {
   y: number;
 }
 
-export const Canvas = (props: { render: RenderFunction; size: Box; onClick: (p: Point) => void }) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+// eslint-disable-next-line react/display-name
+export const Canvas = React.memo((props: { render: RenderFunction; size: Box; onClick: (p: Point) => void }) => {
+  const [scroll, setScroll] = useState<HTMLDivElement | null>(null);
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
 
-  const [pixelRatio, setPixelRatio] = useState(devicePixelRatio);
-  const [zoom, setZoom] = useState(1);
-  const [viewport, setViewport] = useState<Box | null>(null);
-
-  const context = canvas?.getContext("2d", {
-    willReadFrequently: false,
-  });
-
-  const updateViewport = () => {
-    const container = containerRef.current;
-    if (!canvas || !container) {
-      return;
-    }
-
-    // No need to multiply by PX_PER_MM because the container values are already in pixels
-    const containerRect = container.getBoundingClientRect();
-    let x = containerRect.x * pixelRatio;
-    const y = containerRect.y * pixelRatio;
-    const factor = zoom * pixelRatio * PX_PER_MM;
-    const w = canvas.width / factor;
-    if (props.size.width < w) {
-      x += 0.5 * (w - props.size.width) * factor;
-    }
-
-    setViewport(new Box(-x / factor, -y / factor, canvas.width / factor, canvas.height / factor));
-  };
+  const state = useMemo(() => {
+    return new CanvasState(props.size, props.render);
+  }, [props.size, props.render]);
 
   useEffect(() => {
-    const update = () => setPixelRatio(devicePixelRatio);
+    const update = () => state.setPixelRatio(devicePixelRatio);
     const media = matchMedia(`(resolution: ${devicePixelRatio}dppx)`);
     media.addEventListener("change", update, { once: true });
     return () => media.removeEventListener("change", update);
-  }, [pixelRatio]);
+  }, [state]);
+
+  // TODO don't change the canvas width/height, just set it to the viewport width/height
+  useEffect(() => {
+    const update = () => state.updateCanvas();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [state]);
 
   useEffect(() => {
-    const update = () => {
-      if (canvas) {
-        const canvasRect = canvas.getBoundingClientRect();
-        canvas.width = Math.ceil(canvasRect.width * pixelRatio);
-        canvas.height = Math.ceil(canvasRect.height * pixelRatio);
-        updateViewport();
+    if (!scroll) {
+      return;
+    }
+
+    const wheelListener = (event: WheelEvent) => {
+      if (event.metaKey && event.deltaY != 0) {
+        event.preventDefault();
+        event.stopPropagation();
+        state.setZoom(Math.max(0.1, Math.min(5, state.zoom * Math.exp(-event.deltaY / PX_PER_MM / 100))));
       }
     };
 
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
+    scroll.addEventListener("wheel", wheelListener);
+    return () => scroll.removeEventListener("wheel", wheelListener);
+  }, [state, scroll]);
+
+  useEffect(() => {
+    if (!scroll || !container) {
+      return;
+    }
+
+    const listener = () => {
+      const containerRect = container.getBoundingClientRect();
+      const factor = state.zoom * PX_PER_MM;
+      state.setScroll(containerRect.x / factor, containerRect.y / factor);
+    };
+
+    scroll.addEventListener("scroll", listener, { passive: true });
+    return () => scroll.removeEventListener("scroll", listener);
+  }, [state, scroll]);
+
+  useEffect(() => {
+    state.setCanvas(canvas);
   }, [canvas]);
-
-  useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.style.width = `${zoom * props.size.width * PX_PER_MM}px`;
-      containerRef.current.style.height = `${zoom * props.size.height * PX_PER_MM}px`;
-    }
-  }, [containerRef.current, zoom, props.size]);
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      const listener = (event: WheelEvent) => {
-        if (event.metaKey && event.deltaY != 0) {
-          event.preventDefault();
-          event.stopPropagation();
-          setZoom((currentZoom) => Math.max(0.1, Math.min(5, currentZoom * Math.exp(-event.deltaY / PX_PER_MM / 100))));
-        }
-      };
-
-      scrollRef.current.addEventListener("wheel", listener);
-      return () => scrollRef.current?.removeEventListener("wheel", listener);
-    }
-  }, [scrollRef.current]);
-
-  useEffect(() => {
-    if (canvas) {
-      const canvasRect = canvas.getBoundingClientRect();
-      canvas.width = Math.ceil(canvasRect.width * pixelRatio);
-      canvas.height = Math.ceil(canvasRect.height * pixelRatio);
-    }
-  }, [canvas, pixelRatio]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    const scroll = scrollRef.current;
-    if (!canvas || !container || !scroll) {
-      return;
-    }
-
-    scroll.addEventListener("scroll", updateViewport, { passive: true });
-    return () => scroll.removeEventListener("scroll", updateViewport);
-  }, [canvas, containerRef.current, scrollRef.current, props.size, zoom, pixelRatio]);
-
-  useEffect(() => {
-    updateViewport();
-  }, []);
-
-  const frameHandle = useRef(-1);
-
-  useEffect(() => {
-    if (!canvas || !context || !viewport) {
-      return;
-    }
-
-    cancelAnimationFrame(frameHandle.current);
-
-    frameHandle.current = requestAnimationFrame((_time) => {
-      const factor = zoom * pixelRatio * PX_PER_MM;
-      context.resetTransform();
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.setTransform(factor, 0, 0, factor, -viewport.x * factor, -viewport.y * factor);
-      context.lineWidth = LINE_STROKE_WIDTH;
-      props.render(context, viewport);
-    });
-  }, [canvas, context, viewport, props.size, zoom, pixelRatio, props.render]);
 
   const onClick = () => {
     if (!props.onClick) {
@@ -136,19 +82,143 @@ export const Canvas = (props: { render: RenderFunction; size: Box; onClick: (p: 
     props.onClick(p);
   };
 
-  const canvasElement = useMemo(
-    () => (
-      <div ref={scrollRef} className="relative flex-1 overflow-auto">
-        <div ref={containerRef} className="absolute" onClick={onClick} />
-        <canvas
-          ref={setCanvas}
-          className="sticky left-0 top-0 w-full h-full"
-          style={{ imageRendering: "crisp-edges" }}
-        />
-      </div>
-    ),
-    [scrollRef, containerRef, setCanvas]
+  return (
+    <div ref={setScroll} className="relative flex-1 overflow-auto">
+      <Observer>
+        {() => (
+          <div
+            ref={setContainer}
+            className="absolute"
+            onClick={onClick}
+            style={{
+              width: `${state.zoom * props.size.width * PX_PER_MM}px`,
+              height: `${state.zoom * props.size.height * PX_PER_MM}px`,
+            }}
+          />
+        )}
+      </Observer>
+      <canvas ref={setCanvas} className="sticky left-0 top-0 w-full h-full" style={{ imageRendering: "crisp-edges" }} />
+    </div>
   );
+});
 
-  return canvasElement;
-};
+class CanvasState {
+  canvas: HTMLCanvasElement | null = null;
+
+  /** The zoom level, a linear scaling factor applied to the entire canvas */
+  zoom = 1;
+
+  /** The actual device pixel ratio */
+  pixelRatio = devicePixelRatio;
+
+  /** The viewport, in user space coordinates */
+  viewport = Box.empty();
+
+  /** The handle of the last request animation frame */
+  frameHandle = -1;
+
+  /** The horizontal scroll offset, in device units */
+  scrollX = 0;
+
+  /** The vertical scroll offset, in device units */
+  scrollY = 0;
+
+  constructor(readonly userSpaceSize: Box, readonly render: RenderFunction) {
+    makeAutoObservable(this, {});
+  }
+
+  setContainer(canvas: HTMLCanvasElement | null) {
+    this.canvas = canvas;
+    if (this.canvas) {
+      this.updateCanvas();
+      this.redraw();
+    }
+  }
+
+  setCanvas(canvas: HTMLCanvasElement | null) {
+    this.canvas = canvas;
+    if (this.canvas) {
+      this.updateCanvas();
+      this.redraw();
+    }
+  }
+
+  setZoom(zoom: number) {
+    this.zoom = zoom;
+    this.updateViewport();
+  }
+
+  setPixelRatio(pixelRatio: number) {
+    this.pixelRatio = pixelRatio;
+    this.updateViewport();
+  }
+
+  updateCanvas() {
+    if (!this.canvas) {
+      return;
+    }
+
+    const canvasRect = this.canvas.getBoundingClientRect();
+    this.canvas.width = Math.ceil(canvasRect.width * this.pixelRatio);
+    this.canvas.height = Math.ceil(canvasRect.height * this.pixelRatio);
+    this.updateViewport();
+  }
+
+  setScroll(x: number, y: number) {
+    this.scrollX = x;
+    this.scrollY = y;
+    this.updateViewport();
+  }
+
+  updateViewport() {
+    if (!this.canvas) {
+      return;
+    }
+
+    // Convert the device space into user space. We first ensure everything is in device coordinates, and then
+    // divide by the scaling factor at the end to bring everything back to user space.
+    let x = this.scrollX * this.deviceToUserspaceFactor;
+    const y = this.scrollY * this.deviceToUserspaceFactor;
+    const w = this.userSpaceSize.width * this.deviceToUserspaceFactor;
+    if (w < this.canvas.width) {
+      x += 0.5 * (this.canvas.width - w);
+    }
+
+    this.viewport = new Box(
+      -x / this.deviceToUserspaceFactor,
+      -y / this.deviceToUserspaceFactor,
+      this.canvas.width / this.deviceToUserspaceFactor,
+      this.canvas.height / this.deviceToUserspaceFactor
+    );
+    this.redraw();
+  }
+
+  get deviceToUserspaceFactor() {
+    return this.zoom * this.pixelRatio * PX_PER_MM;
+  }
+
+  redraw() {
+    if (!this.canvas || !this.viewport) {
+      return;
+    }
+
+    const context = this.canvas.getContext("2d", { willReadFrequently: false });
+    if (!context) {
+      return;
+    }
+
+    cancelAnimationFrame(this.frameHandle);
+
+    this.frameHandle = requestAnimationFrame((_time) => {
+      if (!this.canvas) {
+        return;
+      }
+
+      const factor = this.zoom * this.pixelRatio * PX_PER_MM;
+      context.setTransform(factor, 0, 0, factor, -this.viewport.x * factor, -this.viewport.y * factor);
+      context.clearRect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height);
+      context.lineWidth = LINE_STROKE_WIDTH;
+      this.render(context, this.viewport);
+    });
+  }
+}
