@@ -16,7 +16,6 @@ export interface Point {
 // eslint-disable-next-line react/display-name
 export const Canvas = React.memo((props: { render: RenderFunction; size: Box; onClick: (p: Point) => void }) => {
   const [scroll, setScroll] = useState<HTMLDivElement | null>(null);
-  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
 
   const state = useMemo(() => {
     return new CanvasState(props.size, props.render);
@@ -86,10 +85,6 @@ export const Canvas = React.memo((props: { render: RenderFunction; size: Box; on
     };
   }, [state, scroll]);
 
-  useEffect(() => {
-    state.setCanvas(canvas);
-  }, [canvas]);
-
   const onClick = () => {
     if (!props.onClick) {
       return;
@@ -113,7 +108,11 @@ export const Canvas = React.memo((props: { render: RenderFunction; size: Box; on
           />
         )}
       </Observer>
-      <canvas ref={setCanvas} className="sticky left-0 top-0 w-full h-full" style={{ imageRendering: "crisp-edges" }} />
+      <canvas
+        ref={(canvas) => state.setCanvas(canvas)}
+        className="sticky left-0 top-0 w-full h-full"
+        style={{ imageRendering: "crisp-edges" }}
+      />
     </div>
   );
 });
