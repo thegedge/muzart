@@ -16,10 +16,10 @@ export interface Point {
 // eslint-disable-next-line react/display-name
 export const Canvas = React.memo((props: { render: RenderFunction; size: Box; onClick: (p: Point) => void }) => {
   const [scroll, setScroll] = useState<HTMLDivElement | null>(null);
+  const state = useMemo(() => new CanvasState(), []);
 
-  const state = useMemo(() => {
-    return new CanvasState(props.size, props.render);
-  }, [props.size, props.render]);
+  useEffect(() => state.setUserSpaceSize(props.size), [props.size]);
+  useEffect(() => state.setRenderFunction(props.render), [props.render]);
 
   useEffect(() => {
     const update = () => state.setPixelRatio(devicePixelRatio);
@@ -140,13 +140,29 @@ class CanvasState {
   /** The vertical scroll offset, in device units */
   scrollY = 0;
 
-  constructor(readonly userSpaceSize: Box, readonly render: RenderFunction) {
+  /** The size of the user coordinate space */
+  userSpaceSize = Box.empty();
+
+  /** The function to call when a redraw needs to occur */
+  render: RenderFunction = () => void 0;
+
+  constructor() {
     makeAutoObservable(this, {});
   }
 
   setCanvas(canvas: HTMLCanvasElement | null) {
     this.canvas = canvas;
     this.updateCanvas();
+  }
+
+  setUserSpaceSize(size: Box) {
+    this.userSpaceSize = size;
+    this.updateViewport();
+  }
+
+  setRenderFunction(f: RenderFunction) {
+    this.render = f;
+    this.redraw();
   }
 
   setZoom(zoom: number) {
