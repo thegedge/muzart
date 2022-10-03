@@ -3,7 +3,6 @@ import { JSX } from "preact";
 import React from "react";
 import { LayoutElement } from "../../../layout";
 import { svgPositionTransform } from "../../utils/svg";
-import { DebugBox } from "./DebugBox";
 
 export interface BoxGroupProps extends Omit<JSX.SVGAttributes<SVGGElement>, "clip" | "onClick"> {
   element: LayoutElement;
@@ -46,7 +45,6 @@ export const BoxGroup = (props: BoxGroupProps) => {
       {...clipProps}
     >
       {props.children}
-      <DebugBox box={props.element.box} debugType={props.element.type} />
     </g>
   );
 };
