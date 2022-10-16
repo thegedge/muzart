@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { inRange, last } from "lodash";
 import { makeAutoObservable } from "mobx";
-import { Chord, getAncestorOfType, LayoutElement, Measure, Note, Page, Part, Rest, Score } from "../../layout";
+import layout, { Chord, getAncestorOfType, LayoutElement, Measure, Note, Page, Part, Rest, Score } from "../../layout";
 
 export class Selection {
   public score: Score | null = null;
@@ -135,11 +135,11 @@ export class Selection {
     }
   }
 
-  setFor(element: LayoutElement) {
+  setFor(element: layout.AllElements) {
     // TODO optimize getting indexes (context?)
     const noteElement = getAncestorOfType<Note>(element, "Note");
     const chordElement = getAncestorOfType<Chord>(noteElement ?? element, "Chord");
-    const measureElement = getAncestorOfType<Measure>(noteElement ?? chordElement ?? element, "Measure");
+    const measureElement = getAncestorOfType<Measure>(chordElement ?? element, "Measure");
 
     this.update({
       measureIndex: measureElement ? measureElement.measure.number - 1 : undefined,

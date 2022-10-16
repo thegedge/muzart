@@ -98,8 +98,11 @@ export const Score = observer((_props: never) => {
     ]
   );
 
-  const onClick = (_p: Point) => {
-    // TODO change selection
+  const onClick = (pt: Point) => {
+    const hit = application.elementAtPoint(pt);
+    if (hit) {
+      application.selection.setFor(hit);
+    }
   };
 
   return <Canvas render={render} size={part.box} onClick={onClick} />;

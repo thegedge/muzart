@@ -30,7 +30,9 @@ export const renderScoreElement = (
   element: layout.AllElements,
   viewport: Box
 ) => {
-  if (!element.box.overlaps(viewport)) return;
+  if (!element.box.overlaps(viewport)) {
+    return;
+  }
 
   context.save();
   try {

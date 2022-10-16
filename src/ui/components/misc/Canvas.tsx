@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { Observer } from "mobx-react-lite";
 import { useMemo } from "preact/hooks";
-import React, { useEffect, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import { Box, LINE_STROKE_WIDTH, PX_PER_MM } from "../../../layout";
 
 export interface RenderFunction {
@@ -75,8 +75,7 @@ export const Canvas = React.memo((props: { render: RenderFunction; size: Box; on
     };
 
     const scrollListener = () => {
-      const factor = state.zoom * PX_PER_MM;
-      state.setScroll(scroll.scrollLeft / factor, scroll.scrollTop / factor);
+      state.setScroll(scroll.scrollLeft, scroll.scrollTop);
     };
 
     scroll.addEventListener("scroll", scrollListener, { passive: true });
@@ -87,34 +86,37 @@ export const Canvas = React.memo((props: { render: RenderFunction; size: Box; on
     };
   }, [state, scroll]);
 
-  const onClick = () => {
+  const onClick: JSX.MouseEventHandler<HTMLElement> = (evt) => {
     if (!props.onClick) {
       return;
     }
 
-    const p = { x: 0, y: 0 };
-    props.onClick(p);
+    const pt = state.canvasToUserSpace(evt);
+    props.onClick(pt);
   };
 
   return (
     <div ref={setScroll} className="relative flex-1 overflow-auto">
-      <Observer>
-        {() => (
-          <div
-            className="absolute"
-            onClick={onClick}
-            style={{
-              width: `${state.zoom * props.size.width * PX_PER_MM}px`,
-              height: `${state.zoom * props.size.height * PX_PER_MM}px`,
-            }}
-          />
-        )}
-      </Observer>
       <canvas
         ref={(canvas) => state.setCanvas(canvas)}
         className="sticky left-0 top-0 w-full h-full"
         style={{ imageRendering: "crisp-edges" }}
+        onClick={onClick}
       />
+      <Observer>
+        {() => (
+          <div
+            className="absolute"
+            style={{
+              top: 0,
+              left: 0,
+              width: `${state.zoom * props.size.width * PX_PER_MM}px`,
+              height: `${state.zoom * props.size.height * PX_PER_MM}px`,
+              pointerEvents: "none",
+            }}
+          />
+        )}
+      </Observer>
     </div>
   );
 });
@@ -185,8 +187,9 @@ class CanvasState {
   }
 
   setScroll(x: number, y: number) {
-    this.scrollX = x;
-    this.scrollY = y;
+    const factor = this.zoom * PX_PER_MM;
+    this.scrollX = x / factor;
+    this.scrollY = y / factor;
     this.updateViewport();
   }
 
@@ -195,22 +198,35 @@ class CanvasState {
       return;
     }
 
+    const { x, y } = this.canvasToUserSpace({ x: 0, y: 0 });
+
+    this.viewport = new Box(
+      x,
+      y,
+      this.canvas.width / this.deviceToUserspaceFactor,
+      this.canvas.height / this.deviceToUserspaceFactor
+    );
+    this.redraw();
+  }
+
+  canvasToUserSpace(pt: Point): Point {
+    if (!this.canvas) {
+      return pt;
+    }
+
     // Convert the device space into user space. We first ensure everything is in device coordinates, and then
     // divide by the scaling factor at the end to bring everything back to user space.
-    let x = this.scrollX * this.deviceToUserspaceFactor;
-    const y = this.scrollY * this.deviceToUserspaceFactor;
+    let x = this.scrollX * this.deviceToUserspaceFactor + pt.x * this.pixelRatio;
+    const y = this.scrollY * this.deviceToUserspaceFactor + pt.y * this.pixelRatio;
     const w = this.userSpaceSize.width * this.deviceToUserspaceFactor;
     if (w < this.canvas.width) {
       x -= 0.5 * (this.canvas.width - w);
     }
 
-    this.viewport = new Box(
-      x / this.deviceToUserspaceFactor,
-      y / this.deviceToUserspaceFactor,
-      this.canvas.width / this.deviceToUserspaceFactor,
-      this.canvas.height / this.deviceToUserspaceFactor
-    );
-    this.redraw();
+    return {
+      x: x / this.deviceToUserspaceFactor,
+      y: y / this.deviceToUserspaceFactor,
+    };
   }
 
   get deviceToUserspaceFactor() {
