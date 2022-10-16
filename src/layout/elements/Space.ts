@@ -8,4 +8,8 @@ export class Space extends LayoutElement<"Space", types.LineElement | types.Page
   }
 
   readonly type = "Space";
+
+  render(_context: CanvasRenderingContext2D): void {
+    // Nothing to do
+  }
 }

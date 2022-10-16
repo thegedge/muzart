@@ -4,7 +4,7 @@ import { createKeybindingsHandler } from "tinykeys";
 import { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT, toAncestorCoordinateSystem } from "../../../layout";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../misc/Canvas";
-import { ScoreElement } from "./ScoreElement";
+import { render } from "./render";
 
 export const Score = observer((_props: never) => {
   const application = useApplicationState();
@@ -55,9 +55,9 @@ export const Score = observer((_props: never) => {
 
   // TODO Playback of note when clicking
 
-  const render = useCallback<RenderFunction>(
+  const renderFunc = useCallback<RenderFunction>(
     (context, viewport) => {
-      ScoreElement(application, context, part, viewport);
+      render(application, context, part, viewport);
 
       if (application.playback.playing) {
         // Playback box
@@ -102,5 +102,5 @@ export const Score = observer((_props: never) => {
     // TODO change selection
   };
 
-  return <Canvas render={render} size={part.box} onClick={onClick} />;
+  return <Canvas render={renderFunc} size={part.box} onClick={onClick} />;
 });

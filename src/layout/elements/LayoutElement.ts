@@ -9,4 +9,8 @@ export abstract class LayoutElement<TypeT extends string, ParentT extends types.
   parent: ParentT | null = null;
 
   constructor(public box = Box.empty()) {}
+
+  render(_context: CanvasRenderingContext2D): void {
+    // Render nothing
+  }
 }

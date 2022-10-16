@@ -14,17 +14,19 @@ export interface HasParent<ParentT = unknown> {
   parent: LayoutElement<ParentT> | null;
 }
 
-export interface MaybeLayout<Args extends unknown[]> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  layout?: (...args: Args) => void;
+export interface MaybeLayout {
+  layout?: () => void;
+}
+
+export interface MaybeRenderable {
+  // TODO have our own rendering context interface, not the canvas context
+  render?: (context: CanvasRenderingContext2D) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface LayoutElement<ParentT = unknown, LayoutArgs extends unknown[] = any[]>
-  extends HasBox,
-    HasParent<ParentT>,
-    MaybeLayout<LayoutArgs> {
+export interface LayoutElement<ParentT = unknown> extends MaybeRenderable, HasBox, HasParent<ParentT>, MaybeLayout {
   type: string;
+  children?: LayoutElement[];
 }
 
 export interface Margins {

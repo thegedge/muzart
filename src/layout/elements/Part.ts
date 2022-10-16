@@ -26,4 +26,8 @@ export class Part extends SimpleGroup<types.Page, "Part", types.Score> implement
     this.box.width += PAGE_MARGIN;
     this.box.height += PAGE_MARGIN;
   }
+
+  render(context: CanvasRenderingContext2D): void {
+    // Nothing to do
+  }
 }

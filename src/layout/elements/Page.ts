@@ -22,6 +22,21 @@ export class Page extends LayoutElement<"Page", types.Part> implements types.Pag
     this.content.layout();
   }
 
+  render(context: CanvasRenderingContext2D): void {
+    // context.shadowBlur = 2 * PAGE_MARGIN;
+    // context.shadowColor = "rgb(0, 0, 0, 0.2)";
+    context.fillStyle = "#ffffff";
+    context.fillRect(this.box.x, this.box.y, this.box.width, this.box.height);
+    // context.shadowBlur = 0;
+    // context.shadowColor = "";
+
+    const box = this.content.box.translate(this.box.x, this.box.y);
+    context.beginPath();
+    context.rect(box.x, box.y, box.width, box.height);
+    context.clip();
+    context.closePath();
+  }
+
   get children() {
     return [this.content];
   }
