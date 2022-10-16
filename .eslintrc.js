@@ -32,6 +32,7 @@ module.exports = {
     "lodash/prefer-constant": "off",
     "lodash/prefer-lodash-method": "off",
     "lodash/prefer-lodash-typecheck": "off",
+    "lodash/prefer-noop": "off",
     "lodash/prop-shorthand": "off",
   },
 };

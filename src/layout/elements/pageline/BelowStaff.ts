@@ -1,19 +1,10 @@
-import types, {
-  BEAM_HEIGHT,
-  Box,
-  DOT_SIZE,
-  runs,
-  STAFF_LINE_HEIGHT,
-  STEM_BEAM_COLOR,
-  STEM_HEIGHT,
-  TUPLET_SIZE,
-} from "../..";
+import types, { BEAM_HEIGHT, Box, runs, STAFF_LINE_HEIGHT, STEM_BEAM_COLOR, STEM_HEIGHT, TUPLET_SIZE } from "../..";
 import * as notation from "../../../notation";
 import { NoteValueName } from "../../../notation";
 import { SimpleGroupElement } from "../../layouts/SimpleGroup";
 import { LineElement, Measure } from "../../types";
 import { Beam } from "../Beam";
-import { Dot } from "../Dot";
+import { Dot, DOT_SIZE } from "../Dot";
 import { Line } from "../Line";
 import { Text } from "../Text";
 

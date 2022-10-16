@@ -1,11 +1,11 @@
 import { CSSProperties } from "react";
-import types, { Alignment, Inches } from "..";
+import types, { Alignment, Millimetres } from "..";
 import { Box } from "../utils";
 import { LayoutElement } from "./LayoutElement";
 
 interface TextOptions {
   value: string;
-  size: Inches;
+  size: Millimetres;
   box?: Box;
   halign?: Alignment;
   valign?: Alignment;
@@ -18,7 +18,7 @@ export class Text extends LayoutElement<"Text", types.PageElement | types.LineEl
   }
 
   readonly type = "Text";
-  readonly value: string;
+  readonly text: string;
   readonly size: number;
   readonly halign: Alignment;
   readonly valign: Alignment;
@@ -26,7 +26,7 @@ export class Text extends LayoutElement<"Text", types.PageElement | types.LineEl
 
   constructor(options: TextOptions) {
     super(options.box ?? new Box(0, 0, options.size * options.value.length, options.size));
-    this.value = options.value;
+    this.text = options.value;
     this.size = options.size;
     this.halign = options.halign ?? "start";
     this.valign = options.valign ?? "start";

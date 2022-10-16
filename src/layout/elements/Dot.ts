@@ -1,6 +1,8 @@
-import types, { DOT_SIZE } from "..";
+import types, { BEAM_HEIGHT } from "..";
 import { Box } from "../utils";
 import { LayoutElement } from "./LayoutElement";
+
+export const DOT_SIZE = 2 * BEAM_HEIGHT;
 
 export class Dot extends LayoutElement<"Dot", types.LineElement> implements types.Dot {
   readonly type = "Dot";

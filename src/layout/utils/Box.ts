@@ -1,3 +1,8 @@
+export interface Point {
+  x: number;
+  y: number;
+}
+
 export class Box {
   /**
    * Create an empty box (zero width/height, located at origin).
@@ -63,6 +68,20 @@ export class Box {
     const r = Math.max(this.right, box.right);
     const b = Math.max(this.bottom, box.bottom);
     return new Box(x, y, r - x, b - y);
+  }
+
+  /**
+   * Returns whether or not this box contains the given point.
+   */
+  contains(point: Point): boolean {
+    return this.x <= point.x && point.x <= this.right && this.y <= point.y && point.y <= this.bottom;
+  }
+
+  /**
+   * Returns whether or not this box overlaps the other.
+   */
+  overlaps(box: Box): boolean {
+    return this.x <= box.right && this.right >= box.x && this.y <= box.bottom && this.bottom >= box.y;
   }
 
   get right() {

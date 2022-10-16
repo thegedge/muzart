@@ -41,7 +41,7 @@ export class AboveStaff extends GridGroup<LineElement> {
         type: amount > 1 ? "DashedLineText" : "Text",
         box: new Box(0, 0, 0, baseSize),
         size: baseSize,
-        value: "P.M.",
+        text: "P.M.",
         parent: null,
       })
     );
@@ -54,7 +54,7 @@ export class AboveStaff extends GridGroup<LineElement> {
         type: amount > 1 ? "DashedLineText" : "Text",
         box: new Box(0, 0, 0, baseSize),
         size: baseSize,
-        value: harmonicString,
+        text: harmonicString,
         parent: null,
       })
     );
@@ -65,7 +65,7 @@ export class AboveStaff extends GridGroup<LineElement> {
         type: amount > 1 ? "DashedLineText" : "Text",
         box: new Box(0, 0, 0, baseSize),
         size: baseSize,
-        value: "let ring",
+        text: "let ring",
         parent: null,
       })
     );
@@ -145,8 +145,8 @@ export class AboveStaff extends GridGroup<LineElement> {
   }
 
   private addIntraMeasureAboveStaffDecorations() {
-    const numberSize = 0.08;
-    const tempoSize = 0.1;
+    const numberSize = 2;
+    const tempoSize = 2.5;
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
 
     for (let index = 0; index < this.staffElements.length; ) {

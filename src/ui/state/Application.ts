@@ -1,6 +1,7 @@
 import { last } from "lodash";
 import { makeAutoObservable } from "mobx";
 import * as layout from "../../layout";
+import { Point } from "../../layout";
 import { load } from "../../loaders";
 import { Score } from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
@@ -14,6 +15,8 @@ export class Application {
   public loading = false;
   public error: Error | null = null;
   public score: layout.Score | null = null;
+
+  public renderEpoch = 0n;
 
   public debug: DebugContext = new DebugContext();
   public storage: Storage = new LocalStorage(globalThis.localStorage);
@@ -53,6 +56,32 @@ export class Application {
     } finally {
       this.loading = false;
     }
+  }
+
+  elementAtPoint(pt: Point, element: layout.AllElements | null = this.score): layout.AllElements | null {
+    if (!element?.box.contains(pt)) {
+      return null;
+    }
+
+    if ("children" in element && element.children.length > 0) {
+      const adjustedPoint = { x: pt.x - element.box.x, y: pt.y - element.box.y };
+      for (const child of element.children) {
+        const hit = this.elementAtPoint(adjustedPoint, child);
+        if (hit) {
+          return hit;
+        }
+      }
+    }
+
+    if (element.type == "Group") {
+      return null;
+    }
+
+    return element;
+  }
+
+  redraw() {
+    this.renderEpoch += 1n;
   }
 
   setScore(score: layout.Score | null) {

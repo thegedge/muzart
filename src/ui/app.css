@@ -6,7 +6,7 @@
   .github-fork {
     @apply bg-white text-gray-700 text-center;
     @apply opacity-50 hover:opacity-100 transition-opacity ease-in-out duration-300;
-    @apply fixed;
+    @apply fixed z-50;
     @apply -rotate-45 -translate-x-24 -translate-y-24;
     @apply shadow-lg;
   }

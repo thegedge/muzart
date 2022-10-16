@@ -152,8 +152,8 @@ export class StaffOverlay extends SimpleGroupElement<LineElement> {
               new Box(
                 measure.box.x,
                 measure.box.y + element.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
-                0.16,
-                STAFF_LINE_HEIGHT * 0.5
+                STAFF_LINE_HEIGHT,
+                0.5 * STAFF_LINE_HEIGHT
               )
             )
           );
@@ -182,7 +182,7 @@ export class StaffOverlay extends SimpleGroupElement<LineElement> {
                 x,
                 measure.box.y + element.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
                 width,
-                STAFF_LINE_HEIGHT * 0.5
+                0.5 * STAFF_LINE_HEIGHT
               )
             )
           );

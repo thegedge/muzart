@@ -6,7 +6,7 @@ import "./app.css";
 import { PartPanel } from "./components/editor/PartPanel";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { InitialPage, SongTypes } from "./components/misc/InitialPage";
-import { Score } from "./components/notation/Score";
+import { Score } from "./components/misc/Score";
 import { TABS_NAMESPACE } from "./storage/namespaces";
 import { ApplicationState, useApplicationState } from "./utils/ApplicationStateContext";
 
@@ -114,12 +114,10 @@ const ScoreLoader = (props: { source: SongTypes["source"]; name: string }) => {
   }, [source, name]);
 
   return (
-    <>
-      <div className="flex-1 w-full overflow-auto">
-        <Score />
-      </div>
+    <div className="flex flex-col w-screen h-screen">
+      <Score />
       <PartPanel />
-    </>
+    </div>
   );
 };
 

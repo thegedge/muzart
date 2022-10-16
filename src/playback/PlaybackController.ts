@@ -18,8 +18,8 @@ export class PlaybackController {
   public soundFont: SoundFont | undefined;
 
   private audioContext: AudioContext;
-  private playbackHandle: NodeJS.Timeout | undefined;
-  private setCurrentMeasureHandle: NodeJS.Timeout | undefined;
+  private playbackHandle: number | undefined;
+  private setCurrentMeasureHandle: number | undefined;
 
   private instruments_: Record<string, Instrument | undefined> = {};
 
@@ -71,6 +71,9 @@ export class PlaybackController {
       return;
     }
 
+    // The (approximate) number of seconds before the next measure where we queue up its note events
+    const nextMeasureBufferTime = 0.1;
+
     const measureStartTimes = this.measureTimes();
     let nextMeasureTime = this.audioContext.currentTime;
     let currentMeasureIndex = this.selection.measureIndex;
@@ -82,6 +85,13 @@ export class PlaybackController {
       // Since this callback may be called before the EXACT start of the measure, we need to figure out how far
       // into the future the measure's events should occur
       const offsetFromNowSecs = nextMeasureTime - this.audioContext.currentTime;
+      if (offsetFromNowSecs > nextMeasureBufferTime) {
+        this.playbackHandle = window.setTimeout(
+          queueNextMeasureAudio,
+          1000 * (offsetFromNowSecs - nextMeasureBufferTime)
+        );
+        return;
+      }
 
       score.children.forEach((part, partIndex) => {
         const measure = part.part.measures[currentMeasureIndex];
@@ -90,7 +100,6 @@ export class PlaybackController {
         }
 
         if (part == this.selection.part) {
-          console.info(offsetFromNowSecs);
           const pageWithMeasure = part.children.find((page) => !!page.measures.find((m) => m.measure == measure));
           const nextMeasure = pageWithMeasure?.measures.find((m) => m.measure == measure);
 
@@ -99,7 +108,7 @@ export class PlaybackController {
             this.setCurrentMeasure(nextMeasure);
           } else {
             // We don't need perfection here, but would be nice to ensure this timeout is better aligned with the audio context
-            this.setCurrentMeasureHandle = setTimeout(() => {
+            this.setCurrentMeasureHandle = window.setTimeout(() => {
               this.setCurrentMeasure(nextMeasure);
             }, 1000 * offsetFromNowSecs);
           }
@@ -128,13 +137,19 @@ export class PlaybackController {
       // events, but also gives us a decent buffer in case we're delayed due to some CPU bound work.
       const currentMeasureDurationSecs = measureStartTimes[currentMeasureIndex++];
       nextMeasureTime += currentMeasureDurationSecs;
-      this.playbackHandle = setTimeout(queueNextMeasureAudio, 500 * currentMeasureDurationSecs);
+      this.playbackHandle = window.setTimeout(
+        queueNextMeasureAudio,
+        1000 * (nextMeasureTime - nextMeasureBufferTime - this.audioContext.currentTime)
+      );
     };
 
     this.playing = true;
+    this.currentMeasure = this.selection.measure;
 
     if (this.audioContext.state == "suspended") {
-      void this.audioContext.resume().then(() => queueNextMeasureAudio());
+      void this.audioContext.resume().then(() => {
+        queueNextMeasureAudio();
+      });
     } else {
       queueNextMeasureAudio();
     }
@@ -146,13 +161,13 @@ export class PlaybackController {
       clearTimeout(this.setCurrentMeasureHandle);
       this.playbackHandle = undefined;
       this.setCurrentMeasureHandle = undefined;
+      this.playing = false;
 
       for (const instrument of Object.values(this.instruments_)) {
         instrument?.stop();
       }
 
       void this.audioContext.suspend();
-      this.playing = false;
     }
   }
 

@@ -3,7 +3,7 @@ import * as notation from "../../notation";
 import { SimpleGroup } from "../layouts/SimpleGroup";
 import { Box } from "../utils";
 
-export const PAGE_MARGIN = 0.5;
+export const PAGE_MARGIN = 12;
 
 export class Part extends SimpleGroup<types.Page, "Part", types.Score> implements types.Part {
   readonly type = "Part";

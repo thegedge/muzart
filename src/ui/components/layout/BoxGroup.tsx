@@ -3,7 +3,6 @@ import { JSX } from "preact";
 import React from "react";
 import { LayoutElement } from "../../../layout";
 import { svgPositionTransform } from "../../utils/svg";
-import { DebugBox } from "./DebugBox";
 
 export interface BoxGroupProps extends Omit<JSX.SVGAttributes<SVGGElement>, "clip" | "onClick"> {
   element: LayoutElement;
@@ -11,9 +10,6 @@ export interface BoxGroupProps extends Omit<JSX.SVGAttributes<SVGGElement>, "cli
   forceDebug?: boolean;
   hidden?: boolean;
   clip?: boolean;
-
-  // We need this one here because the onClick from SVGAttributes has `this: never`, which makes it impossible to call
-  onClick?: (event: MouseEvent) => void;
 }
 
 export const BoxGroup = (props: BoxGroupProps) => {
@@ -46,7 +42,6 @@ export const BoxGroup = (props: BoxGroupProps) => {
       {...clipProps}
     >
       {props.children}
-      <DebugBox box={props.element.box} debugType={props.element.type} />
     </g>
   );
 };

@@ -3,15 +3,15 @@ import * as notation from "../../notation";
 import { NoteValue, NoteValueName } from "../../notation";
 import { STAFF_LINE_HEIGHT } from "../constants";
 import { FlexGroup } from "../layouts/FlexGroup";
-import { Inches, LineElement } from "../types";
+import { LineElement, Millimetres } from "../types";
 import { Box } from "../utils/Box";
 import { Chord } from "./Chord";
 import { Rest } from "./Rest";
 import { Space } from "./Space";
 import { TimeSignature } from "./TimeSignature";
 
-const MIN_NOTE_WIDTH: Inches = 0.2;
-const QUARTER_NOTE_WIDTH: Inches = 0.25;
+const MIN_NOTE_WIDTH: Millimetres = 5;
+const QUARTER_NOTE_WIDTH: Millimetres = 6;
 
 export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
   readonly type = "Measure";
