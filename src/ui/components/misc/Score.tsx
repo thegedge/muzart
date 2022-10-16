@@ -87,7 +87,6 @@ export const Score = observer((_props: never) => {
       }
     },
     [
-      application.renderEpoch,
       application.selection.partIndex,
       application.selection.measureIndex,
       application.selection.chordIndex,

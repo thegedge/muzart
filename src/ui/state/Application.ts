@@ -16,8 +16,6 @@ export class Application {
   public error: Error | null = null;
   public score: layout.Score | null = null;
 
-  public renderEpoch = 0n;
-
   public debug: DebugContext = new DebugContext();
   public storage: Storage = new LocalStorage(globalThis.localStorage);
 
@@ -78,10 +76,6 @@ export class Application {
     }
 
     return element;
-  }
-
-  redraw() {
-    this.renderEpoch += 1n;
   }
 
   setScore(score: layout.Score | null) {
