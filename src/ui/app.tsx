@@ -95,7 +95,7 @@ const ScoreLoader = (props: { source: SongTypes["source"]; name: string }) => {
       case "demo": {
         const base = import.meta.env.BASE_URL;
         if (base == "") {
-          void application.loadScore(`${base}/songs/${name}`);
+          void application.loadScore(`${base}songs/${name}`);
         } else {
           void application.loadScore(`songs/${name}`);
         }
