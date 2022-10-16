@@ -10,9 +10,6 @@ export interface BoxGroupProps extends Omit<JSX.SVGAttributes<SVGGElement>, "cli
   forceDebug?: boolean;
   hidden?: boolean;
   clip?: boolean;
-
-  // We need this one here because the onClick from SVGAttributes has `this: never`, which makes it impossible to call
-  onClick?: (event: MouseEvent) => void;
 }
 
 export const BoxGroup = (props: BoxGroupProps) => {

@@ -1,6 +1,5 @@
-import * as layout from "../../../layout";
-import { Box, LINE_STROKE_WIDTH } from "../../../layout";
-import { Application } from "../../state/Application";
+import layout, { Box, LINE_STROKE_WIDTH } from "../layout";
+import { Application } from "../ui/state/Application";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
@@ -25,7 +24,7 @@ type RenderFunc<E = layout.AllElements> = (
   element: E
 ) => void;
 
-export const ScoreElement = (
+export const renderScoreElement = (
   application: Application,
   context: CanvasRenderingContext2D,
   element: layout.AllElements,
@@ -47,7 +46,7 @@ export const ScoreElement = (
       context.translate(element.box.x, element.box.y);
       const adjustedViewport = viewport.translate(-element.box.x, -element.box.y);
       for (const child of element.children) {
-        ScoreElement(application, context, child, adjustedViewport);
+        renderScoreElement(application, context, child, adjustedViewport);
       }
     }
   } finally {

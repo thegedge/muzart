@@ -1,5 +1,5 @@
-import layout, { LINE_STROKE_WIDTH } from "../../../layout";
-import { Application } from "../../state/Application";
+import layout, { LINE_STROKE_WIDTH } from "../layout";
+import { Application } from "../ui/state/Application";
 import { Text } from "./Text";
 
 export const DashedLineText = (

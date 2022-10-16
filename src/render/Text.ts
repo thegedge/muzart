@@ -1,7 +1,6 @@
 import { CSSProperties } from "react";
-import { Alignment, DEFAULT_SANS_SERIF_FONT_FAMILY } from "../../../layout";
-import { Box } from "../../../layout/utils/Box";
-import { Application } from "../../state/Application";
+import { Alignment, Box, DEFAULT_SANS_SERIF_FONT_FAMILY } from "../layout";
+import { Application } from "../ui/state/Application";
 
 export const Text = (
   _application: Application,

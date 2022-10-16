@@ -1,6 +1,6 @@
-import layout, { DEFAULT_SANS_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../../layout";
-import { BendType } from "../../../notation";
-import { Application } from "../../state/Application";
+import layout, { DEFAULT_SANS_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../layout";
+import { BendType } from "../notation";
+import { Application } from "../ui/state/Application";
 
 // Half width of the arrow heads
 const HEAD_HALFW = 4 * LINE_STROKE_WIDTH;

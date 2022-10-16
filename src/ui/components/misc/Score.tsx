@@ -2,9 +2,9 @@ import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect } from "react";
 import { createKeybindingsHandler } from "tinykeys";
 import { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT, toAncestorCoordinateSystem } from "../../../layout";
+import { renderScoreElement } from "../../../render/renderScoreElement";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../misc/Canvas";
-import { ScoreElement } from "./ScoreElement";
 
 export const Score = observer((_props: never) => {
   const application = useApplicationState();
@@ -57,7 +57,7 @@ export const Score = observer((_props: never) => {
 
   const render = useCallback<RenderFunction>(
     (context, viewport) => {
-      ScoreElement(application, context, part, viewport);
+      renderScoreElement(application, context, part, viewport);
 
       if (application.playback.playing) {
         // Playback box

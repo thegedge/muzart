@@ -1,7 +1,6 @@
-import * as layout from "../../../layout";
-import { STAFF_LINE_HEIGHT } from "../../../layout";
-import { Rests } from "../../resources/rests";
-import { Application } from "../../state/Application";
+import layout, { STAFF_LINE_HEIGHT } from "../layout";
+import { Rests } from "../ui/resources/rests";
+import { Application } from "../ui/state/Application";
 
 const REST_COLOR = "#333333";
 

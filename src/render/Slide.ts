@@ -1,6 +1,5 @@
-import layout, { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../../layout";
-import { Box } from "../../../layout/utils/Box";
-import { Application } from "../../state/Application";
+import layout, { Box, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../layout";
+import { Application } from "../ui/state/Application";
 import { Arc } from "./Arc";
 
 export const Slide = (application: Application, context: CanvasRenderingContext2D, element: layout.Slide) => {

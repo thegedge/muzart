@@ -1,6 +1,6 @@
-import layout, { LINE_STROKE_WIDTH } from "../../../layout";
-import { StrokeDirection } from "../../../notation";
-import { Application } from "../../state/Application";
+import layout, { LINE_STROKE_WIDTH } from "../layout";
+import { StrokeDirection } from "../notation";
+import { Application } from "../ui/state/Application";
 
 export const Stroke = (_application: Application, context: CanvasRenderingContext2D, element: layout.Stroke) => {
   context.fillStyle = "#000000";

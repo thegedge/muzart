@@ -1,5 +1,5 @@
-import layout from "../../../layout";
-import { Application } from "../../state/Application";
+import layout from "../layout";
+import { Application } from "../ui/state/Application";
 
 export const Page = (_application: Application, context: CanvasRenderingContext2D, element: layout.Page) => {
   // context.shadowBlur = 2 * PAGE_MARGIN;

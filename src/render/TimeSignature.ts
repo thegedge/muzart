@@ -1,7 +1,7 @@
-import layout from "../../../layout";
-import { digits } from "../../../utils/digits";
-import { timeSignatureDigit } from "../../resources/time_signature_digits";
-import { Application } from "../../state/Application";
+import layout from "../layout";
+import { timeSignatureDigit } from "../ui/resources/time_signature_digits";
+import { Application } from "../ui/state/Application";
+import { digits } from "../utils/digits";
 
 export const TimeSignature = (
   _application: Application,

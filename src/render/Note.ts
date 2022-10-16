@@ -1,5 +1,5 @@
-import * as layout from "../../../layout";
-import { Application } from "../../state/Application";
+import layout from "../layout";
+import { Application } from "../ui/state/Application";
 import { Text } from "./Text";
 
 export const Note = (application: Application, context: CanvasRenderingContext2D, element: layout.Note) => {

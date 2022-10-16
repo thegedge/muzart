@@ -1,5 +1,5 @@
-import layout from "../../../layout";
-import { Application } from "../../state/Application";
+import layout from "../layout";
+import { Application } from "../ui/state/Application";
 
 const BEAM_COLOR = "#333333";
 

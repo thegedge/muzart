@@ -5,7 +5,7 @@ import { determineScoreType, getFilenameAndMimeType, ScoreDataType } from "../lo
 import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { InitialPage, SongTypes } from "./components/misc/InitialPage";
-import { Score } from "./components/score/Score";
+import { Score } from "./components/misc/Score";
 import { TABS_NAMESPACE } from "./storage/namespaces";
 import { ApplicationState, useApplicationState } from "./utils/ApplicationStateContext";
 

@@ -1,7 +1,6 @@
 import { range } from "lodash";
-import layout, { DEFAULT_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../../../layout";
-import { Box } from "../../../layout/utils/Box";
-import { Application } from "../../state/Application";
+import layout, { Box, DEFAULT_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../layout";
+import { Application } from "../ui/state/Application";
 import { Text } from "./Text";
 
 // TODO have ChordDiagram just be FretboardDiagram, and have layout use a group to show other text elements
