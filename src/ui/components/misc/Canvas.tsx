@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { Observer } from "mobx-react-lite";
 import { useMemo } from "preact/hooks";
 import React, { JSX, useEffect, useState } from "react";
+import { createKeybindingsHandler } from "tinykeys";
 import { Box, LINE_STROKE_WIDTH, PX_PER_MM } from "../../../layout";
 
 export interface RenderFunction {
@@ -17,6 +18,28 @@ export interface Point {
 export const Canvas = React.memo((props: { render: RenderFunction; size: Box; onClick: (p: Point) => void }) => {
   const [scroll, setScroll] = useState<HTMLDivElement | null>(null);
   const state = useMemo(() => new CanvasState(), []);
+
+  useEffect(() => {
+    const listener = createKeybindingsHandler({
+      "Meta+Equal": (event) => {
+        event.preventDefault();
+        state.setZoom(state.zoom * 1.2);
+      },
+      "Meta+Minus": (event) => {
+        event.preventDefault();
+        state.setZoom(state.zoom / 1.2);
+      },
+      "Meta+0": (event) => {
+        event.preventDefault();
+        state.setZoom(1);
+      },
+    });
+
+    document.body.addEventListener("keydown", listener);
+    return () => {
+      document.body.removeEventListener("keydown", listener);
+    };
+  }, [state]);
 
   useEffect(() => state.setUserSpaceSize(props.size), [props.size]);
   useEffect(() => state.setRenderFunction(props.render), [props.render]);
@@ -60,7 +83,7 @@ export const Canvas = React.memo((props: { render: RenderFunction; size: Box; on
 
         if (zooming) {
           // TODO if zooming out and everything fits on screen, may need to scroll up
-          state.setZoom(Math.max(0.1, Math.min(5, state.zoom * Math.exp(-event.deltaY / PX_PER_MM / 100))));
+          state.setZoom(state.zoom * Math.exp(-event.deltaY / PX_PER_MM / 100));
         }
       }
 
@@ -168,7 +191,7 @@ class CanvasState {
   }
 
   setZoom(zoom: number) {
-    this.zoom = zoom;
+    this.zoom = Math.max(0.1, Math.min(5, zoom));
     this.updateViewport();
   }
 
