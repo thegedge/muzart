@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { createKeybindingsHandler } from "tinykeys";
 import { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT, toAncestorCoordinateSystem } from "../../../layout";
 import { renderScoreElement } from "../../../render/renderScoreElement";
@@ -97,6 +97,8 @@ export const Score = observer((_props: never) => {
     ]
   );
 
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
   const onClick = (pt: Point) => {
     const hit = application.elementAtPoint(pt);
     if (hit) {
@@ -104,5 +106,24 @@ export const Score = observer((_props: never) => {
     }
   };
 
-  return <Canvas render={render} size={part.box} onClick={onClick} />;
+  const onMouseMove = (pt: Point) => {
+    if (!canvasRef.current) {
+      return;
+    }
+
+    let cursor = "auto";
+    const hit = application.elementAtPoint(pt);
+    if (hit) {
+      switch (hit.type) {
+        case "Note":
+        case "Rest":
+          cursor = "pointer";
+          break;
+      }
+    }
+
+    canvasRef.current.style.cursor = cursor;
+  };
+
+  return <Canvas ref={canvasRef} render={render} size={part.box} onClick={onClick} onMouseMove={onMouseMove} />;
 });

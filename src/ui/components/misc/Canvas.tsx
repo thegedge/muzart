@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { Observer } from "mobx-react-lite";
-import { useMemo } from "preact/hooks";
+import { MutableRef, useMemo } from "preact/hooks";
 import React, { JSX, useEffect, useState } from "react";
 import { createKeybindingsHandler } from "tinykeys";
 import { Box, LINE_STROKE_WIDTH, PX_PER_MM } from "../../../layout";
@@ -14,8 +14,16 @@ export interface Point {
   y: number;
 }
 
+interface CanvasProps {
+  size: Box;
+  render: RenderFunction;
+
+  onClick?: (p: Point) => void;
+  onMouseMove?: (p: Point) => void;
+}
+
 // eslint-disable-next-line react/display-name
-export const Canvas = React.memo((props: { render: RenderFunction; size: Box; onClick: (p: Point) => void }) => {
+export const Canvas = React.forwardRef<HTMLCanvasElement, CanvasProps>((props, canvasRef) => {
   const [scroll, setScroll] = useState<HTMLDivElement | null>(null);
   const state = useMemo(() => new CanvasState(), []);
 
@@ -109,22 +117,33 @@ export const Canvas = React.memo((props: { render: RenderFunction; size: Box; on
     };
   }, [state, scroll]);
 
-  const onClick: JSX.MouseEventHandler<HTMLElement> = (evt) => {
-    if (!props.onClick) {
-      return;
-    }
+  const onClickProp = props.onClick;
+  const onClick: JSX.MouseEventHandler<HTMLElement> | undefined = onClickProp
+    ? (evt) => {
+        const pt = state.canvasToUserSpace(evt);
+        onClickProp(pt);
+      }
+    : undefined;
 
-    const pt = state.canvasToUserSpace(evt);
-    props.onClick(pt);
-  };
+  const onMouseMoveProp = props.onMouseMove;
+  const onMouseMove: JSX.MouseEventHandler<HTMLElement> | undefined = onMouseMoveProp
+    ? (evt) => {
+        const pt = state.canvasToUserSpace(evt);
+        onMouseMoveProp(pt);
+      }
+    : undefined;
 
   return (
     <div ref={setScroll} className="relative flex-1 overflow-auto">
       <canvas
-        ref={(canvas) => state.setCanvas(canvas)}
+        ref={(canvas) => {
+          state.setCanvas(canvas);
+          (canvasRef as MutableRef<HTMLCanvasElement | null>).current = canvas;
+        }}
         className="sticky left-0 top-0 w-full h-full"
         style={{ imageRendering: "crisp-edges" }}
         onClick={onClick}
+        onMouseMove={onMouseMove}
       />
       <Observer>
         {() => (
