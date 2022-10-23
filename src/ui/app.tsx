@@ -114,7 +114,7 @@ const ScoreLoader = (props: { source: SongTypes["source"]; name: string }) => {
   }, [source, name]);
 
   return (
-    <div className="flex flex-col w-screen h-screen">
+    <div className="flex flex-col w-screen h-screen max-w-screen max-h-screen">
       <Score />
       <PartPanel />
     </div>

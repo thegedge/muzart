@@ -1,5 +1,4 @@
 import { makeAutoObservable } from "mobx";
-import { Observer } from "mobx-react-lite";
 import { MutableRef, useMemo } from "preact/hooks";
 import React, { JSX, useEffect, useState } from "react";
 import { createKeybindingsHandler } from "tinykeys";
@@ -24,7 +23,7 @@ interface CanvasProps {
 
 // eslint-disable-next-line react/display-name
 export const Canvas = React.forwardRef<HTMLCanvasElement, CanvasProps>((props, canvasRef) => {
-  const [scroll, setScroll] = useState<HTMLDivElement | null>(null);
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const state = useMemo(() => new CanvasState(), []);
 
   useEffect(() => {
@@ -59,7 +58,6 @@ export const Canvas = React.forwardRef<HTMLCanvasElement, CanvasProps>((props, c
     return () => media.removeEventListener("change", update);
   }, [state]);
 
-  // TODO don't change the canvas width/height, just set it to the viewport width/height
   useEffect(() => {
     const update = () => state.updateCanvas();
     window.addEventListener("resize", update);
@@ -67,7 +65,7 @@ export const Canvas = React.forwardRef<HTMLCanvasElement, CanvasProps>((props, c
   }, [state]);
 
   useEffect(() => {
-    if (!scroll) {
+    if (!container) {
       return;
     }
 
@@ -91,12 +89,12 @@ export const Canvas = React.forwardRef<HTMLCanvasElement, CanvasProps>((props, c
 
         if (zooming) {
           // TODO if zooming out and everything fits on screen, may need to scroll up
-          state.setZoom(state.zoom * Math.exp(-event.deltaY / PX_PER_MM / 100));
+          state.zoomCenteredOn(state.zoom * Math.exp(-event.deltaY / PX_PER_MM / 100), event.x, event.y);
         }
       }
 
       if (!zooming && (event.deltaX != 0 || event.deltaY != 0)) {
-        scroll.scrollBy(event.deltaX, event.deltaY);
+        state.scrollBy(event.deltaX, event.deltaY);
       }
 
       wheelTimeout = window.setTimeout(() => {
@@ -105,17 +103,12 @@ export const Canvas = React.forwardRef<HTMLCanvasElement, CanvasProps>((props, c
       }, 50);
     };
 
-    const scrollListener = () => {
-      state.setScroll(scroll.scrollLeft, scroll.scrollTop);
-    };
-
-    scroll.addEventListener("scroll", scrollListener, { passive: true });
-    scroll.addEventListener("wheel", wheelListener);
+    container.addEventListener("wheel", wheelListener);
     return () => {
-      scroll.removeEventListener("wheel", wheelListener);
-      scroll.removeEventListener("scroll", scrollListener);
+      clearTimeout(wheelTimeout);
+      container.removeEventListener("wheel", wheelListener);
     };
-  }, [state, scroll]);
+  }, [state, container]);
 
   const onClickProp = props.onClick;
   const onClick: JSX.MouseEventHandler<HTMLElement> | undefined = onClickProp
@@ -134,35 +127,28 @@ export const Canvas = React.forwardRef<HTMLCanvasElement, CanvasProps>((props, c
     : undefined;
 
   return (
-    <div ref={setScroll} className="relative flex-1 overflow-auto">
+    <div ref={setContainer} className="flex-1 overflow-hidden">
       <canvas
         ref={(canvas) => {
           state.setCanvas(canvas);
           (canvasRef as MutableRef<HTMLCanvasElement | null>).current = canvas;
         }}
-        className="sticky left-0 top-0 w-full h-full"
+        className="w-full h-full"
         style={{ imageRendering: "crisp-edges" }}
         onClick={onClick}
         onMouseMove={onMouseMove}
       />
-      <Observer>
-        {() => (
-          <div
-            className="absolute"
-            style={{
-              top: 0,
-              left: 0,
-              width: `${state.zoom * props.size.width * PX_PER_MM}px`,
-              height: `${state.zoom * props.size.height * PX_PER_MM}px`,
-              pointerEvents: "none",
-            }}
-          />
-        )}
-      </Observer>
     </div>
   );
 });
 
+/**
+ * Manages the canvas state, translating between various coordinate spaces:
+ *
+ * 1. user space; the space in which the rendering occurs,
+ * 2. canvas space; the space in which mouse events are created, and
+ * 3. device space; the space in which rendering is performed (canvas space * pixel ratio)
+ */
 class CanvasState {
   canvas: HTMLCanvasElement | null = null;
 
@@ -172,16 +158,16 @@ class CanvasState {
   /** The actual device pixel ratio */
   pixelRatio = devicePixelRatio;
 
-  /** The viewport, in user space coordinates */
+  /** The viewport, in userspace coordinates */
   viewport = Box.empty();
 
   /** The handle of the last request animation frame */
   frameHandle = -1;
 
-  /** The horizontal scroll offset, in device units */
+  /** The horizontal scroll offset, in canvas space */
   scrollX = 0;
 
-  /** The vertical scroll offset, in device units */
+  /** The vertical scroll offset, in canvas space */
   scrollY = 0;
 
   /** The size of the user coordinate space */
@@ -210,7 +196,24 @@ class CanvasState {
   }
 
   setZoom(zoom: number) {
-    this.zoom = Math.max(0.1, Math.min(5, zoom));
+    const newZoom = Math.max(0.1, Math.min(5, zoom));
+    if (newZoom == this.zoom) {
+      return;
+    }
+
+    this.zoom = newZoom;
+    this.updateViewport();
+  }
+
+  zoomCenteredOn(zoom: number, mouseX: number, mouseY: number) {
+    const newZoom = Math.max(0.1, Math.min(5, zoom));
+    if (newZoom == this.zoom) {
+      return;
+    }
+
+    this.scrollX = (newZoom / this.zoom) * (this.scrollX + mouseX) - mouseX;
+    this.scrollY = (newZoom / this.zoom) * (this.scrollY + mouseY) - mouseY;
+    this.zoom = newZoom;
     this.updateViewport();
   }
 
@@ -222,16 +225,23 @@ class CanvasState {
   updateCanvas() {
     if (this.canvas) {
       const canvasRect = this.canvas.getBoundingClientRect();
-      this.canvas.width = Math.ceil(canvasRect.width * this.pixelRatio);
-      this.canvas.height = Math.ceil(canvasRect.height * this.pixelRatio);
+      this.canvas.width = canvasRect.width * this.pixelRatio;
+      this.canvas.height = canvasRect.height * this.pixelRatio;
     }
     this.updateViewport();
   }
 
-  setScroll(x: number, y: number) {
-    const factor = this.zoom * PX_PER_MM;
-    this.scrollX = x / factor;
-    this.scrollY = y / factor;
+  scrollBy(deltaX: number, deltaY: number) {
+    this.scrollTo(this.scrollX + deltaX, this.scrollY + deltaY);
+  }
+
+  scrollTo(x: number, y: number) {
+    if (!this.canvas) {
+      return;
+    }
+
+    this.scrollX = x;
+    this.scrollY = y;
     this.updateViewport();
   }
 
@@ -240,13 +250,19 @@ class CanvasState {
       return;
     }
 
+    // Ensure the scroll values are clamped
+    const pageW = this.canvas.width / this.pixelRatio;
+    const pageH = this.canvas.height / this.pixelRatio;
+    this.scrollX = Math.max(-pageW, Math.min(this.scrollX, this.canvasSpaceSize.width));
+    this.scrollY = Math.max(-pageH, Math.min(this.scrollY, this.canvasSpaceSize.height));
+
     const { x, y } = this.canvasToUserSpace({ x: 0, y: 0 });
 
     this.viewport = new Box(
       x,
       y,
-      this.canvas.width / this.deviceToUserspaceFactor,
-      this.canvas.height / this.deviceToUserspaceFactor
+      this.canvas.width / this.userspaceToDeviceFactor,
+      this.canvas.height / this.userspaceToDeviceFactor
     );
     this.redraw();
   }
@@ -256,23 +272,27 @@ class CanvasState {
       return pt;
     }
 
-    // Convert the device space into user space. We first ensure everything is in device coordinates, and then
-    // divide by the scaling factor at the end to bring everything back to user space.
-    let x = this.scrollX * this.deviceToUserspaceFactor + pt.x * this.pixelRatio;
-    const y = this.scrollY * this.deviceToUserspaceFactor + pt.y * this.pixelRatio;
-    const w = this.userSpaceSize.width * this.deviceToUserspaceFactor;
-    if (w < this.canvas.width) {
-      x -= 0.5 * (this.canvas.width - w);
-    }
-
     return {
-      x: x / this.deviceToUserspaceFactor,
-      y: y / this.deviceToUserspaceFactor,
+      x: (this.scrollX + pt.x) / this.userspaceToCanvasFactor,
+      y: (this.scrollY + pt.y) / this.userspaceToCanvasFactor,
     };
   }
 
-  get deviceToUserspaceFactor() {
-    return this.zoom * this.pixelRatio * PX_PER_MM;
+  get canvasSpaceSize() {
+    return new Box(
+      0,
+      0,
+      this.userSpaceSize.width * this.userspaceToCanvasFactor,
+      this.userSpaceSize.height * this.userspaceToCanvasFactor
+    );
+  }
+
+  get userspaceToCanvasFactor() {
+    return this.zoom * PX_PER_MM;
+  }
+
+  get userspaceToDeviceFactor() {
+    return this.userspaceToCanvasFactor * this.pixelRatio;
   }
 
   redraw() {
