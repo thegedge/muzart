@@ -39,6 +39,7 @@ export const Canvas = React.forwardRef<HTMLCanvasElement, CanvasProps>((props, c
       "Meta+0": (event) => {
         event.preventDefault();
         state.setZoom(1);
+        state.centerViewport();
       },
     });
 
@@ -183,6 +184,7 @@ class CanvasState {
   setCanvas(canvas: HTMLCanvasElement | null) {
     this.canvas = canvas;
     this.updateCanvas();
+    this.centerViewport();
   }
 
   setUserSpaceSize(size: Box) {
@@ -196,13 +198,9 @@ class CanvasState {
   }
 
   setZoom(zoom: number) {
-    const newZoom = Math.max(0.1, Math.min(5, zoom));
-    if (newZoom == this.zoom) {
-      return;
-    }
-
-    this.zoom = newZoom;
-    this.updateViewport();
+    const canvasHalfWidth = (0.5 * (this.canvas?.width ?? 0)) / this.pixelRatio;
+    const canvasHalfHeight = (0.5 * (this.canvas?.height ?? 0)) / this.pixelRatio;
+    this.zoomCenteredOn(zoom, canvasHalfWidth, canvasHalfHeight);
   }
 
   zoomCenteredOn(zoom: number, mouseX: number, mouseY: number) {
@@ -220,6 +218,17 @@ class CanvasState {
   setPixelRatio(pixelRatio: number) {
     this.pixelRatio = pixelRatio;
     this.updateCanvas();
+  }
+
+  centerViewport() {
+    if (this.canvas) {
+      const canvasSpaceWidth = this.canvasSpaceSize.width;
+      const width = this.canvas.width / this.pixelRatio;
+      if (canvasSpaceWidth < width) {
+        this.scrollX = -0.5 * (width - canvasSpaceWidth);
+      }
+      this.updateViewport();
+    }
   }
 
   updateCanvas() {
