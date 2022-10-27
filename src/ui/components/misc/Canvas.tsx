@@ -182,9 +182,12 @@ class CanvasState {
   }
 
   setCanvas(canvas: HTMLCanvasElement | null) {
+    const center = this.canvas == null;
     this.canvas = canvas;
     this.updateCanvas();
-    this.centerViewport();
+    if (center) {
+      this.centerViewport();
+    }
   }
 
   setUserSpaceSize(size: Box) {
