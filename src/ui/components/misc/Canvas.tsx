@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
-import { MutableRef, useMemo } from "preact/hooks";
+import { RefCallback } from "preact";
+import { MutableRef, useCallback, useMemo } from "preact/hooks";
 import React, { JSX, useEffect, useState } from "react";
 import { createKeybindingsHandler } from "tinykeys";
 import { Box, LINE_STROKE_WIDTH, PX_PER_MM } from "../../../layout";
@@ -127,13 +128,20 @@ export const Canvas = React.forwardRef<HTMLCanvasElement, CanvasProps>((props, c
       }
     : undefined;
 
+  const setCanvasRef = useCallback<RefCallback<HTMLCanvasElement>>(
+    (canvas) => {
+      setTimeout(() => {
+        state.setCanvas(canvas);
+      }, 10);
+      (canvasRef as MutableRef<HTMLCanvasElement | null>).current = canvas;
+    },
+    [state]
+  );
+
   return (
     <div ref={setContainer} className="flex-1 overflow-hidden">
       <canvas
-        ref={(canvas) => {
-          state.setCanvas(canvas);
-          (canvasRef as MutableRef<HTMLCanvasElement | null>).current = canvas;
-        }}
+        ref={setCanvasRef}
         className="w-full h-full"
         style={{ imageRendering: "crisp-edges" }}
         onClick={onClick}
