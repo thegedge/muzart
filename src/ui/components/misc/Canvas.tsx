@@ -152,6 +152,24 @@ export const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>((props, canvasR
   );
 });
 
+const scrollWithClamping = (current: number, delta: number, min: number, max: number) => {
+  let desired = current + delta;
+  if (desired < min) {
+    if (current > min) {
+      desired = min;
+    } else if (desired < current) {
+      desired = current;
+    }
+  } else if (desired > max) {
+    if (current < max) {
+      desired = max;
+    } else if (desired > current) {
+      desired = current;
+    }
+  }
+  return desired;
+};
+
 /**
  * Manages the canvas state, translating between various coordinate spaces:
  *
@@ -253,7 +271,26 @@ class CanvasState {
   }
 
   scrollBy(deltaX: number, deltaY: number) {
-    this.scrollTo(this.scrollX + deltaX, this.scrollY + deltaY);
+    if (!this.canvas) {
+      return false;
+    }
+
+    const pageW = this.canvas.width / this.pixelRatio;
+    const pageH = this.canvas.height / this.pixelRatio;
+
+    let lowerX = 0;
+    let upperX = this.canvasSpaceSize.width - pageW;
+    const canvasSpaceWidth = this.canvasSpaceSize.width;
+    const canvasSpaceViewportWidth = this.canvas.width / this.pixelRatio;
+    if (canvasSpaceWidth < canvasSpaceViewportWidth) {
+      lowerX = -0.5 * (canvasSpaceViewportWidth - canvasSpaceWidth);
+      upperX = lowerX + canvasSpaceWidth - pageW;
+    }
+
+    const newX = scrollWithClamping(this.scrollX, deltaX, lowerX, upperX);
+    const newY = scrollWithClamping(this.scrollY, deltaY, 0, this.canvasSpaceSize.height - pageH);
+
+    this.scrollTo(newX, newY);
   }
 
   scrollTo(x: number, y: number) {
