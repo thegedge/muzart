@@ -1,10 +1,11 @@
 import { observer } from "mobx-react-lite";
-import { useCallback, useEffect, useRef } from "preact/hooks";
+import { useCallback, useEffect, useMemo } from "preact/hooks";
 import { createKeybindingsHandler } from "tinykeys";
 import { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT, toAncestorCoordinateSystem } from "../../../layout";
 import { renderScoreElement } from "../../../render/renderScoreElement";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../misc/Canvas";
+import { CanvasState } from "../misc/CanvasState";
 
 export const Score = observer((_props: never) => {
   const application = useApplicationState();
@@ -97,7 +98,7 @@ export const Score = observer((_props: never) => {
     ]
   );
 
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const state = useMemo(() => new CanvasState(), []);
 
   const onClick = (pt: Point) => {
     const hit = application.elementAtPoint(pt);
@@ -107,10 +108,6 @@ export const Score = observer((_props: never) => {
   };
 
   const onMouseMove = (pt: Point) => {
-    if (!canvasRef.current) {
-      return;
-    }
-
     let cursor = "auto";
     const hit = application.elementAtPoint(pt);
     if (hit) {
@@ -122,8 +119,8 @@ export const Score = observer((_props: never) => {
       }
     }
 
-    canvasRef.current.style.cursor = cursor;
+    state.setCursor(cursor);
   };
 
-  return <Canvas ref={canvasRef} render={render} size={part.box} onClick={onClick} onMouseMove={onMouseMove} />;
+  return <Canvas render={render} size={part.box} onClick={onClick} onMouseMove={onMouseMove} state={state} />;
 });
