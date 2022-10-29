@@ -1,5 +1,7 @@
 import { range } from "lodash";
+import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
+import { useEffect, useState } from "preact/hooks";
 import { JSXInternal } from "preact/src/jsx";
 import { Measure, Part } from "../../../notation";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
@@ -59,9 +61,9 @@ const PartRow = observer(
           {part.name}
         </div>
         <div className="flex gap-px items-center cursor-pointer">
-          {part.measures.map((measure, measureIndex) => (
+          {part.measures.map((measure) => (
             <MeasureBox
-              key={`${measureIndex}-${measureIndex == selection.measureIndex ? "-selected" : ""}`}
+              key={measure.number}
               partIndex={partIndex}
               measure={measure}
               color={partColor}
@@ -81,14 +83,26 @@ const MeasureBox = (props: {
   color: string;
   onChange: JSXInternal.MouseEventHandler<HTMLElement>;
 }) => {
-  const { selection, playback } = useApplicationState();
   const { measure, partIndex, color, onChange } = props;
-
-  const currentMeasure =
-    playback.playing && playback.currentMeasure ? playback.currentMeasure.measure.number : selection.measureIndex + 1;
+  const { playback, selection } = useApplicationState();
+  const [selected, setSelected] = useState(false);
 
   const baseOpacity = partIndex == selection.partIndex ? 0.6 : 0.4;
   const opacity = baseOpacity + 0.4 * measure.chords.reduce((sum, ch) => sum + (ch.rest ? 0 : ch.value.toDecimal()), 0);
+
+  useEffect(() => {
+    return reaction(
+      () => {
+        const currentMeasure =
+          playback.playing && playback.currentMeasure
+            ? playback.currentMeasure.measure.number
+            : selection.measureIndex + 1;
+        return partIndex == selection.partIndex && currentMeasure == measure.number;
+      },
+      (isSelected) => setSelected(isSelected),
+      { fireImmediately: true }
+    );
+  }, [playback, selection]);
 
   return (
     <div
@@ -98,9 +112,7 @@ const MeasureBox = (props: {
       data-measure={measure.number - 1}
       data-part={partIndex}
     >
-      {partIndex == selection.partIndex && measure.number == currentMeasure && (
-        <div className="w-full h-full rounded-sm bg-white/50" />
-      )}
+      {selected && <div className="w-full h-full rounded-sm bg-white/50" />}
     </div>
   );
 };
