@@ -11,7 +11,6 @@ export const Text = (
     box: Box;
     halign?: Alignment;
     valign?: Alignment;
-    fill?: boolean | string;
     style?: CSSProperties;
   }
 ) => {
@@ -50,11 +49,6 @@ export const Text = (
       y = props.box.bottom;
       baseline = "ideographic";
       break;
-  }
-
-  if (props.fill) {
-    context.fillStyle = props.fill === true ? "#ffffff" : props.fill;
-    context.fillRect(props.box.x, props.box.y, props.box.width, props.box.height);
   }
 
   const style = props.style?.color ?? props.style?.fill;
