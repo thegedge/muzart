@@ -110,6 +110,8 @@ export abstract class FlexGroup<
     const lastElement = last(this.children);
     if (lastElement) {
       element.box[this.startAttribute.main] = lastElement.box[this.endAttribute] + this.gap;
+    } else {
+      element.box[this.startAttribute.main] = 0;
     }
 
     element.parent = this;
@@ -131,8 +133,8 @@ export abstract class FlexGroup<
   tryAddElement(element: T, factor = this.defaultStretchFactor): boolean {
     const lastElement = last(this.children);
     if (lastElement) {
-      const newRight = lastElement.box[this.endAttribute] + this.gap + element.box[this.dimensionAttribute.main];
-      if (newRight > this.box[this.dimensionAttribute.main]) {
+      const newEnd = lastElement.box[this.endAttribute] + this.gap + element.box[this.dimensionAttribute.main];
+      if (newEnd > this.box[this.dimensionAttribute.main]) {
         return false;
       }
     }
@@ -155,17 +157,17 @@ export abstract class FlexGroup<
       const startIndex = index;
       if (this.wrap) {
         // Figure out which elements can fit on a single line
-        let remainingWidth = this.box[this.dimensionAttribute.main];
-        while (remainingWidth > 0 && index < this.children.length) {
+        let remainingMain = this.box[this.dimensionAttribute.main];
+        while (remainingMain > 0 && index < this.children.length) {
           const child = this.children[index];
           child.box = this.originalBoxes[index].clone();
 
           const childMainAxisSize = child.box[this.dimensionAttribute.main];
           if (index == startIndex) {
             // We need this branch to ensure a child too large for a line is still added, avoiding an otherwise infinite loop
-            remainingWidth -= childMainAxisSize;
-          } else if (childMainAxisSize + this.gap < remainingWidth) {
-            remainingWidth -= childMainAxisSize + this.gap;
+            remainingMain -= childMainAxisSize;
+          } else if (childMainAxisSize + this.gap < remainingMain) {
+            remainingMain -= childMainAxisSize + this.gap;
           } else {
             break;
           }
@@ -176,10 +178,11 @@ export abstract class FlexGroup<
         index = this.children.length;
       }
 
-      const childrenWidth = this.children
+      const childrenMainTotal = this.children
         .slice(startIndex, index)
         .reduce((width, c) => width + c.box[this.dimensionAttribute.main], 0);
-      const extraSpace = this.box[this.dimensionAttribute.main] - childrenWidth - (index - startIndex - 1) * this.gap;
+      const extraSpace =
+        this.box[this.dimensionAttribute.main] - childrenMainTotal - (index - startIndex - 1) * this.gap;
 
       let factorsSum = this.stretchFactors.slice(startIndex, index).reduce((sum, p) => sum + p, 0);
       let mainAxisStart: number;

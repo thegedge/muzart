@@ -133,6 +133,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
     for (const diagram of uniqueDiagrams) {
       group.addElement(new ChordDiagram(diagram));
     }
+    group.layout();
 
     this.addElement(Space.fromDimensions(1, 0.5 * LINE_MARGIN));
     this.addElement(group);
