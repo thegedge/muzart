@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import { JSXInternal } from "preact/src/jsx";
 import { Alignment, Box, DEFAULT_SANS_SERIF_FONT_FAMILY } from "../layout";
 import { Application } from "../ui/state/Application";
 
@@ -11,7 +11,7 @@ export const Text = (
     box: Box;
     halign?: Alignment;
     valign?: Alignment;
-    style?: CSSProperties;
+    style?: JSXInternal.CSSProperties;
   }
 ) => {
   let x;

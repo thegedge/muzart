@@ -1,8 +1,7 @@
-import { ComponentChildren } from "preact";
-import * as React from "react";
+import { Component, ComponentChildren } from "preact";
 import { PageCallout } from "./layout/PageCallout";
 
-export default class ErrorBoundary extends React.Component<{ children: ComponentChildren }, { error?: Error }> {
+export default class ErrorBoundary extends Component<{ children: ComponentChildren }, { error?: Error }> {
   constructor(props: { children: ComponentChildren }) {
     super(props);
     this.state = {};

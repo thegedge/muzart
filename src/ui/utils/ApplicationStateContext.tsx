@@ -1,5 +1,6 @@
-import { ComponentChildren } from "preact";
-import React, { createContext, Suspense, useContext, useEffect, useMemo } from "react";
+import { ComponentChildren, createContext } from "preact";
+import React, { Suspense } from "preact/compat";
+import { useContext, useEffect, useMemo } from "preact/hooks";
 import { PlaybackController } from "../../playback/PlaybackController";
 import { Loading } from "../components/misc/Loading";
 import { Application } from "../state/Application";

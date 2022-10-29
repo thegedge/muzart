@@ -1,7 +1,8 @@
 import { makeAutoObservable } from "mobx";
 import { RefCallback } from "preact";
-import { MutableRef, useCallback, useMemo } from "preact/hooks";
-import React, { JSX, useEffect, useState } from "react";
+import { forwardRef } from "preact/compat";
+import { MutableRef, useCallback, useEffect, useMemo, useState } from "preact/hooks";
+import { JSXInternal } from "preact/src/jsx";
 import { createKeybindingsHandler } from "tinykeys";
 import { Box, LINE_STROKE_WIDTH, PX_PER_MM } from "../../../layout";
 
@@ -23,7 +24,7 @@ interface CanvasProps {
 }
 
 // eslint-disable-next-line react/display-name
-export const Canvas = React.forwardRef<HTMLCanvasElement, CanvasProps>((props, canvasRef) => {
+export const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>((props, canvasRef) => {
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const state = useMemo(() => new CanvasState(), []);
 
@@ -113,7 +114,7 @@ export const Canvas = React.forwardRef<HTMLCanvasElement, CanvasProps>((props, c
   }, [state, container]);
 
   const onClickProp = props.onClick;
-  const onClick: JSX.MouseEventHandler<HTMLElement> | undefined = onClickProp
+  const onClick: JSXInternal.MouseEventHandler<HTMLElement> | undefined = onClickProp
     ? (evt) => {
         const pt = state.canvasToUserSpace(evt);
         onClickProp(pt);
@@ -121,7 +122,7 @@ export const Canvas = React.forwardRef<HTMLCanvasElement, CanvasProps>((props, c
     : undefined;
 
   const onMouseMoveProp = props.onMouseMove;
-  const onMouseMove: JSX.MouseEventHandler<HTMLElement> | undefined = onMouseMoveProp
+  const onMouseMove: JSXInternal.MouseEventHandler<HTMLElement> | undefined = onMouseMoveProp
     ? (evt) => {
         const pt = state.canvasToUserSpace(evt);
         onMouseMoveProp(pt);

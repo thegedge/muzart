@@ -1,5 +1,5 @@
 module.exports = {
-  plugins: ["@typescript-eslint", "react-hooks", "lodash", "import"],
+  plugins: ["@typescript-eslint", "react", "lodash", "import", "promise", "standard"],
   parserOptions: {
     tsconfigRootDir: __dirname,
     project: ["tsconfig.json"],
@@ -15,7 +15,6 @@ module.exports = {
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:import/typescript",
     "plugin:lodash/recommended",
-    "plugin:react/recommended",
     "prettier",
   ],
   rules: {

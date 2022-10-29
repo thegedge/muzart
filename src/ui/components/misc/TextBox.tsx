@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "preact/hooks";
 import { Link } from "wouter";
 import { Alignment, Box } from "../../../layout";
 

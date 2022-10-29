@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import { CSSProperties } from "preact/compat";
 import types, { Alignment, Millimetres } from "..";
 import { Box } from "../utils";
 import { LayoutElement } from "./LayoutElement";

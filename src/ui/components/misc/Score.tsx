@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "preact/hooks";
 import { createKeybindingsHandler } from "tinykeys";
 import { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT, toAncestorCoordinateSystem } from "../../../layout";
 import { renderScoreElement } from "../../../render/renderScoreElement";

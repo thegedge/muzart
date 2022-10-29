@@ -1,4 +1,5 @@
-import { createContext, useContext } from "react";
+import { createContext } from "preact";
+import { useContext } from "preact/hooks";
 import { Part } from "../../notation";
 
 export const CurrentPartContext = createContext<Part | null>(null);

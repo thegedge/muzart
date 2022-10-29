@@ -1,5 +1,4 @@
 import { ComponentChildren } from "preact";
-import React from "react";
 
 export const PageCallout = (props: { children: ComponentChildren }) => {
   return (

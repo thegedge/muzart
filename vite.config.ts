@@ -1,4 +1,4 @@
-import preact from "@prefresh/vite";
+import preact from "@preact/preset-vite";
 import fs from "node:fs/promises";
 import { TlsOptions } from "node:tls";
 import { defineConfig } from "vite";

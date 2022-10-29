@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { useMemo } from "react";
+import { useMemo } from "preact/hooks";
 import {
   Box,
   DEFAULT_PAGE_HEIGHT,

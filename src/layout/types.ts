@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import { CSSProperties } from "preact/compat";
 import * as notation from "../notation";
 import { Box } from "./utils/Box";
 

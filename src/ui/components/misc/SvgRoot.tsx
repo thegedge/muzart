@@ -1,5 +1,4 @@
 import { ComponentChildren } from "preact";
-import React from "react";
 import { Box, DEFAULT_SANS_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH } from "../../../layout";
 
 export const SvgRoot = (props: { box: Box; children?: ComponentChildren }) => {

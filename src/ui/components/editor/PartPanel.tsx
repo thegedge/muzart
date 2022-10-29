@@ -1,6 +1,6 @@
 import { range } from "lodash";
 import { observer } from "mobx-react-lite";
-import React, { JSX } from "react";
+import { JSXInternal } from "preact/src/jsx";
 import { Measure, Part } from "../../../notation";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 
@@ -42,42 +42,44 @@ export const PartPanel = observer((_props: Record<string, never>) => {
   );
 });
 
-const PartRow = observer((props: { part: Part; partIndex: number; onChange: JSX.MouseEventHandler<HTMLElement> }) => {
-  const { part, partIndex, onChange } = props;
-  const { selection } = useApplicationState();
-  const partColor = part.color ?? "rgb(156, 163, 175)";
-  const rowBackgroundColor = part == selection.part?.part ? "bg-gray-700" : "bg-gray-800";
+const PartRow = observer(
+  (props: { part: Part; partIndex: number; onChange: JSXInternal.MouseEventHandler<HTMLElement> }) => {
+    const { part, partIndex, onChange } = props;
+    const { selection } = useApplicationState();
+    const partColor = part.color ?? "rgb(156, 163, 175)";
+    const rowBackgroundColor = part == selection.part?.part ? "bg-gray-700" : "bg-gray-800";
 
-  return (
-    <>
-      <div
-        className={`flex h-full text-xs font-extralight items-center px-4 cursor-pointer ${rowBackgroundColor}`}
-        onClick={onChange}
-        data-part={partIndex}
-      >
-        {part.name}
-      </div>
-      <div className="flex gap-px items-center cursor-pointer">
-        {part.measures.map((measure, measureIndex) => (
-          <MeasureBox
-            key={`${measureIndex}-${measureIndex == selection.measureIndex ? "-selected" : ""}`}
-            partIndex={partIndex}
-            measure={measure}
-            color={partColor}
-            onChange={onChange}
-          />
-        ))}
-      </div>
-    </>
-  );
-});
+    return (
+      <>
+        <div
+          className={`flex h-full text-xs font-extralight items-center px-4 cursor-pointer ${rowBackgroundColor}`}
+          onClick={onChange}
+          data-part={partIndex}
+        >
+          {part.name}
+        </div>
+        <div className="flex gap-px items-center cursor-pointer">
+          {part.measures.map((measure, measureIndex) => (
+            <MeasureBox
+              key={`${measureIndex}-${measureIndex == selection.measureIndex ? "-selected" : ""}`}
+              partIndex={partIndex}
+              measure={measure}
+              color={partColor}
+              onChange={onChange}
+            />
+          ))}
+        </div>
+      </>
+    );
+  }
+);
 
 // Parent is observed, and will re-render all children
 const MeasureBox = (props: {
   measure: Measure;
   partIndex: number;
   color: string;
-  onChange: JSX.IntrinsicElements["div"]["onClick"];
+  onChange: JSXInternal.MouseEventHandler<HTMLElement>;
 }) => {
   const { selection, playback } = useApplicationState();
   const { measure, partIndex, color, onChange } = props;

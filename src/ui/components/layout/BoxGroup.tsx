@@ -1,6 +1,5 @@
 import { omit } from "lodash";
 import { JSX } from "preact";
-import React from "react";
 import { LayoutElement } from "../../../layout";
 import { svgPositionTransform } from "../../utils/svg";
 

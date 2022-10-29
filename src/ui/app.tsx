@@ -1,5 +1,4 @@
-import * as React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "preact/hooks";
 import { BaseLocationHook, Route, Router } from "wouter";
 import { determineScoreType, getFilenameAndMimeType, ScoreDataType } from "../loaders";
 import "./app.css";

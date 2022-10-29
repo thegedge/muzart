@@ -1,4 +1,3 @@
-import React from "react";
 import { PageCallout } from "../layout/PageCallout";
 
 export const Loading = () => {
