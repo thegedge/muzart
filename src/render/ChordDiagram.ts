@@ -3,8 +3,6 @@ import layout, { Box, DEFAULT_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH, STAFF_LINE_H
 import { Application } from "../ui/state/Application";
 import { Text } from "./Text";
 
-// TODO have ChordDiagram just be FretboardDiagram, and have layout use a group to show other text elements
-
 export const ChordDiagram = (
   application: Application,
   context: CanvasRenderingContext2D,
@@ -32,11 +30,10 @@ export const ChordDiagram = (
 
   const diagramBox = new Box(
     element.box.x,
-    element.box.y + STAFF_LINE_HEIGHT,
+    element.box.y + textBox.height,
     element.box.width,
     element.box.height - textBox.height
   );
-  context.translate(0, textBox.height);
   FretboardDiagram(application, context, element, diagramBox);
 };
 
