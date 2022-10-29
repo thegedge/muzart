@@ -53,12 +53,12 @@ const FretboardDiagram = (
     return null;
   }
 
+  const textSize = chordDiagram.textSize;
   const numFrets = 5; // TODO make this configurable
-  const fretY = box.y + 1.5 * STAFF_LINE_HEIGHT;
   const fretboardH = box.height - 1.5 * STAFF_LINE_HEIGHT;
   const fretW = box.width / (numStrings - 1);
   const fretH = fretboardH / numFrets;
-  const textSize = chordDiagram.textSize;
+  const fretY = box.y + textSize;
 
   const openUnplayed = diagram.frets.slice(0, numStrings);
   diagram.barres.forEach((barre) => {
@@ -66,35 +66,37 @@ const FretboardDiagram = (
   });
 
   // TODO enable this once chord diagrams can influence the width of chords. Not enough width at the moment.
-  // renderText(context, {
-  //   text: diagram.baseFret.toString(),
-  //   box: new Box(box.x - STAFF_LINE_HEIGHT, fretY, textSize, textSize),
-  //   size: textSize,
-  //   halign: "center",
-  //   valign: "center",
-  // });
+  // if (diagram.baseFret > 1) {
+  //   Text(application, context, {
+  //     text: diagram.baseFret.toString(),
+  //     box: new Box(box.x - textSize + 2 * LINE_STROKE_WIDTH, fretY, textSize, textSize),
+  //     size: textSize,
+  //     halign: "center",
+  //     valign: "center",
+  //   });
+  // }
 
+  // The lines forming the fretboard + the nut
+  context.beginPath();
   context.strokeStyle = "#000000";
   context.fillStyle = "#000000";
+  {
+    context.lineWidth = LINE_STROKE_WIDTH * (diagram.baseFret == 1 ? 5 : 1);
+    context.moveTo(box.x - 0.5 * LINE_STROKE_WIDTH, fretY);
+    context.lineTo(box.right + 0.5 * LINE_STROKE_WIDTH, fretY);
+    context.stroke();
 
-  context.beginPath();
+    context.lineWidth = LINE_STROKE_WIDTH;
+    range(1, numFrets + 1).forEach((fret) => {
+      context.moveTo(box.x, fretY + fretH * fret);
+      context.lineTo(box.right, fretY + fretH * fret);
+    });
 
-  context.lineWidth = LINE_STROKE_WIDTH * (diagram.baseFret == 1 ? 5 : 1);
-  context.moveTo(box.x - 0.5 * LINE_STROKE_WIDTH, fretY);
-  context.lineTo(box.right - 0.5 * LINE_STROKE_WIDTH, fretY);
-  context.stroke();
-
-  context.lineWidth = LINE_STROKE_WIDTH;
-  range(1, numFrets + 1).forEach((fret) => {
-    context.moveTo(box.x, fretY + fretH * fret);
-    context.lineTo(box.right, fretY + fretH * fret);
-  });
-
-  range(numStrings).forEach((string) => {
-    context.moveTo(box.x + fretW * string, fretY);
-    context.lineTo(box.x + fretW * string, fretY + fretboardH);
-  });
-
+    range(numStrings).forEach((string) => {
+      context.moveTo(box.x + fretW * string, fretY);
+      context.lineTo(box.x + fretW * string, fretY + fretboardH);
+    });
+  }
   context.stroke();
 
   openUnplayed.forEach((v, index) => {
