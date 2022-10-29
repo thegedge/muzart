@@ -1,4 +1,4 @@
-import layout, { Box, LINE_STROKE_WIDTH } from "../layout";
+import layout, { Box } from "../layout";
 import { Application } from "../ui/state/Application";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
@@ -38,17 +38,25 @@ export const renderScoreElement = (
   try {
     RenderFunctions[element.type]?.(application, context, element);
 
-    if (application.debug.enabled) {
-      context.lineWidth = LINE_STROKE_WIDTH;
-      context.strokeStyle = "red";
-      context.strokeRect(element.box.x, element.box.y, element.box.width, element.box.height);
-    }
-
     if ("children" in element && element.children.length > 0) {
       context.translate(element.box.x, element.box.y);
       const adjustedViewport = viewport.translate(-element.box.x, -element.box.y);
       for (const child of element.children) {
         renderScoreElement(application, context, child, adjustedViewport);
+      }
+      context.translate(-element.box.x, -element.box.y);
+    }
+
+    // We render after children so that the parent containers are clearly visible
+    if (application.debug.enabled) {
+      const params = application.debug.paramsForType(element.type);
+      if (params) {
+        context.strokeStyle = params.strokeStyle;
+        context.lineWidth = params.lineWidth;
+        context.fillStyle = params.fillStyle;
+        context.setLineDash(params.dashArray);
+        context.strokeRect(element.box.x, element.box.y, element.box.width, element.box.height);
+        context.setLineDash([]);
       }
     }
   } finally {
