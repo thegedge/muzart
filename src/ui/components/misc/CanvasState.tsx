@@ -39,17 +39,42 @@ export class CanvasState {
   /** The function to call when a redraw needs to occur */
   render: RenderFunction = () => void 0;
 
+  private canvasResizeObserver: ResizeObserver;
+  private centerOnFirstResize = true;
+
   constructor() {
+    let timeoutHandle = -1;
+    this.canvasResizeObserver = new ResizeObserver(() => {
+      clearTimeout(timeoutHandle);
+      timeoutHandle = window.setTimeout(() => {
+        this.updateCanvas();
+        if (this.centerOnFirstResize) {
+          this.centerViewport();
+        }
+      }, 100);
+    });
+
     makeAutoObservable(this, {});
   }
 
   setCanvas(canvas: HTMLCanvasElement | null) {
-    const center = this.canvas == null;
+    if (canvas === this.canvas) {
+      return;
+    }
+
+    if (this.canvas) {
+      this.canvasResizeObserver.unobserve(this.canvas);
+    }
+
+    if (canvas) {
+      this.centerOnFirstResize = true;
+      this.canvasResizeObserver.observe(canvas, {
+        box: "device-pixel-content-box",
+      });
+    }
+
     this.canvas = canvas;
     this.updateCanvas();
-    if (center) {
-      this.centerViewport();
-    }
   }
 
   setCursor(cursor: this["cursor"]) {
@@ -91,6 +116,7 @@ export class CanvasState {
 
   centerViewport() {
     if (this.canvas) {
+      this.centerOnFirstResize = false;
       const canvasSpaceWidth = this.canvasSpaceSize.width;
       const width = this.canvas.width / this.pixelRatio;
       if (canvasSpaceWidth < width) {
@@ -102,6 +128,7 @@ export class CanvasState {
 
   updateCanvas() {
     if (this.canvas) {
+      // TODO maybe consider setting a flag and only doing this on render to avoid flicker?
       const canvasRect = this.canvas.getBoundingClientRect();
       this.canvas.width = canvasRect.width * this.pixelRatio;
       this.canvas.height = canvasRect.height * this.pixelRatio;

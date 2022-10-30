@@ -56,19 +56,6 @@ export const Canvas = observer((props: CanvasProps) => {
   useEffect(() => state.setRenderFunction(props.render), [props.render]);
 
   useEffect(() => {
-    const update = () => state.setPixelRatio(devicePixelRatio);
-    const media = matchMedia(`(resolution: ${devicePixelRatio}dppx)`);
-    media.addEventListener("change", update, { once: true });
-    return () => media.removeEventListener("change", update);
-  }, [state]);
-
-  useEffect(() => {
-    const update = () => state.updateCanvas();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, [state]);
-
-  useEffect(() => {
     if (!container) {
       return;
     }
@@ -132,11 +119,7 @@ export const Canvas = observer((props: CanvasProps) => {
 
   const setCanvasRef = useCallback<RefCallback<HTMLCanvasElement>>(
     (canvas) => {
-      // We don't set the state canvas value immediately, so that the DOM node has some time to mount and properly size.
-      // This allows the call to `getBoundingClientRect()` to return a non-empty rectangle.
-      setTimeout(() => {
-        state.setCanvas(canvas);
-      }, 10);
+      state.setCanvas(canvas);
     },
     [state]
   );
@@ -146,7 +129,7 @@ export const Canvas = observer((props: CanvasProps) => {
       <canvas
         ref={setCanvasRef}
         className="w-full h-full"
-        style={{ imageRendering: "crisp-edges", cursor: state.cursor }}
+        style={{ imageRendering: "high-quality", cursor: state.cursor }}
         onClick={onClick}
         onMouseMove={onMouseMove}
       />
