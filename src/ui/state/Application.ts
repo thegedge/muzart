@@ -56,7 +56,7 @@ export class Application {
     }
   }
 
-  elementAtPoint(pt: Point, element: layout.AllElements | null = this.score): layout.AllElements | null {
+  elementAtPoint(pt: Point, element: layout.AllElements | undefined = this.selection.part): layout.AllElements | null {
     if (!element?.box.contains(pt)) {
       return null;
     }
