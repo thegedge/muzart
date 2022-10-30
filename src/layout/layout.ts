@@ -6,6 +6,7 @@ import { PageLine } from "./elements/pageline/PageLine";
 import { Part } from "./elements/Part";
 import { PartHeader } from "./elements/PartHeader";
 import { Score } from "./elements/Score";
+import { Space } from "./elements/Space";
 import { Box } from "./utils/Box";
 
 /**
@@ -87,6 +88,9 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   if (page.content.children.length > 0) {
     layoutPart.addElement(page);
   }
+
+  // Add a high factor spacer to the last page so the page lines are all at the top
+  page.content.addElement(new Space(), 100000);
 
   return layoutPart;
 }
