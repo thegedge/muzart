@@ -53,12 +53,12 @@ const PartRow = observer(
     const partColor = part.color ?? "rgb(156, 163, 175)";
     const rowBackgroundColor = part == selection.part?.part ? "bg-gray-700" : "bg-gray-800";
 
-    const toggleSolo: JSXInternal.GenericEventHandler<HTMLInputElement> = (event) => {
+    const toggleSolo: JSXInternal.GenericEventHandler<HTMLElement> = (event) => {
       event.preventDefault();
       playback.toggleSolo(props.partIndex);
     };
 
-    const toggleMute: JSXInternal.GenericEventHandler<HTMLInputElement> = (event) => {
+    const toggleMute: JSXInternal.GenericEventHandler<HTMLElement> = (event) => {
       event.preventDefault();
       playback.toggleMute(props.partIndex);
     };
@@ -72,8 +72,22 @@ const PartRow = observer(
         >
           {part.name}
         </div>
-        <input type="checkbox" name="solo" checked={playback.soloedParts[partIndex]} onChange={toggleSolo} />
-        <input type="checkbox" name="mute" checked={playback.mutedParts[partIndex]} onChange={toggleMute} />
+        <button
+          type="button"
+          name="solo"
+          onClick={toggleSolo}
+          className="bg-gray-500 text-gray-300 m-auto w-full h-full"
+        >
+          {playback.soloedParts[partIndex] ? "✓" : ""}
+        </button>
+        <button
+          type="button"
+          name="mute"
+          onClick={toggleMute}
+          className="bg-gray-500 text-gray-300 m-auto w-full h-full"
+        >
+          {playback.mutedParts[partIndex] ? "✓" : ""}
+        </button>
         <div className="flex gap-px items-center cursor-pointer">
           {part.measures.map((measure) => (
             <MeasureBox

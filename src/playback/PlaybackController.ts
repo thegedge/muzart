@@ -48,6 +48,8 @@ export class PlaybackController {
       playing: observable,
       currentMeasure: observable.ref,
       soundFont: observable.ref,
+      mutedParts: observable,
+      soloedParts: observable,
 
       instruments: computed,
 
