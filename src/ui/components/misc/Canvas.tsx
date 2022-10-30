@@ -42,7 +42,7 @@ export const Canvas = observer((props: CanvasProps) => {
       "Meta+0": (event) => {
         event.preventDefault();
         state.setZoom(1);
-        state.centerViewport();
+        state.centerViewportOn();
       },
     });
 

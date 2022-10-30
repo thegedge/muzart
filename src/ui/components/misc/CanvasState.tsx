@@ -47,9 +47,15 @@ export class CanvasState {
     this.canvasResizeObserver = new ResizeObserver(() => {
       clearTimeout(timeoutHandle);
       timeoutHandle = window.setTimeout(() => {
+        // Compute these values before `updateCanvas`, because it will adjust the viewport
+        const x = this.viewport.centerX * this.userspaceToCanvasFactor;
+        const y = this.viewport.centerY * this.userspaceToCanvasFactor;
+
         this.updateCanvas();
         if (this.centerOnFirstResize) {
-          this.centerViewport();
+          this.centerViewportOn();
+        } else {
+          this.centerViewportOn(x, y);
         }
       }, 100);
     });
@@ -97,14 +103,14 @@ export class CanvasState {
     this.zoomCenteredOn(zoom, canvasHalfWidth, canvasHalfHeight);
   }
 
-  zoomCenteredOn(zoom: number, mouseX: number, mouseY: number) {
+  zoomCenteredOn(zoom: number, x: number, y: number) {
     const newZoom = Math.max(0.1, Math.min(5, zoom));
     if (newZoom == this.zoom) {
       return;
     }
 
-    this.scrollX = (newZoom / this.zoom) * (this.scrollX + mouseX) - mouseX;
-    this.scrollY = (newZoom / this.zoom) * (this.scrollY + mouseY) - mouseY;
+    this.scrollX = (newZoom / this.zoom) * (this.scrollX + x) - x;
+    this.scrollY = (newZoom / this.zoom) * (this.scrollY + y) - y;
     this.zoom = newZoom;
     this.updateViewport();
   }
@@ -114,16 +120,28 @@ export class CanvasState {
     this.updateCanvas();
   }
 
-  centerViewport() {
-    if (this.canvas) {
-      this.centerOnFirstResize = false;
-      const canvasSpaceWidth = this.canvasSpaceSize.width;
-      const width = this.canvas.width / this.pixelRatio;
-      if (canvasSpaceWidth < width) {
-        this.scrollX = -0.5 * (width - canvasSpaceWidth);
-      }
-      this.updateViewport();
+  centerViewportOn(): void;
+  centerViewportOn(x: number, y: number): void;
+  centerViewportOn(x?: number, y?: number): void {
+    if (!this.canvas) {
+      return;
     }
+
+    this.centerOnFirstResize = false;
+
+    const pageW = this.canvas.width / this.pixelRatio;
+    const pageH = this.canvas.height / this.pixelRatio;
+    if (typeof x == "undefined" || typeof y == "undefined") {
+      const canvasSpaceWidth = this.canvasSpaceSize.width;
+      if (canvasSpaceWidth < pageW) {
+        this.scrollX = -0.5 * (pageW - canvasSpaceWidth);
+      }
+    } else {
+      this.scrollX = x - 0.5 * pageW;
+      this.scrollY = y - 0.5 * pageH;
+    }
+
+    this.updateViewport();
   }
 
   updateCanvas() {
