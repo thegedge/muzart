@@ -93,9 +93,11 @@ export class Selection {
       if (this.measureIndex > 0) {
         this.measureIndex -= 1;
         this.chordIndex = (this.measure?.chords.length ?? 1) - 1;
+        this.updateElement();
       }
     } else {
       this.chordIndex -= 1;
+      this.updateElement();
     }
   }
 
@@ -113,15 +115,18 @@ export class Selection {
       if (this.measureIndex < lastMeasureNumber) {
         this.measureIndex += 1;
         this.chordIndex = 0;
+        this.updateElement();
       }
     } else {
       this.chordIndex += 1;
+      this.updateElement();
     }
   }
 
   previousNote() {
     if (this.noteIndex > 0) {
       this.noteIndex -= 1;
+      this.updateElement();
     }
   }
 
@@ -132,6 +137,7 @@ export class Selection {
 
     if (this.noteIndex < this.part.part.lineCount - 1) {
       this.noteIndex += 1;
+      this.updateElement();
     }
   }
 
@@ -160,5 +166,11 @@ export class Selection {
       chordIndex: 0,
       noteIndex: 0,
     });
+  }
+
+  private updateElement() {
+    this.element = this.note;
+    this.element ??= this.chord;
+    this.element ??= this.measure;
   }
 }

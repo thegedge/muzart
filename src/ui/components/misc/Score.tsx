@@ -1,3 +1,4 @@
+import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo } from "preact/hooks";
 import { createKeybindingsHandler } from "tinykeys";
@@ -54,8 +55,6 @@ export const Score = observer((_props: never) => {
     return null;
   }
 
-  // TODO Playback of note when clicking
-
   const render = useCallback<RenderFunction>(
     (context, viewport) => {
       renderScoreElement(application, context, part, viewport);
@@ -100,9 +99,27 @@ export const Score = observer((_props: never) => {
 
   const state = useMemo(() => new CanvasState(), []);
 
+  useEffect(() => {
+    return reaction(
+      () => [application.playback.playing, application.selection.element, application.playback.currentMeasure] as const,
+      ([playing, selectedElement, playbackMeasure]) => {
+        if (playing) {
+          if (playbackMeasure) {
+            const absoluteBox = toAncestorCoordinateSystem(playbackMeasure);
+            state.ensureInView(absoluteBox);
+          }
+        } else if (selectedElement) {
+          const absoluteBox = toAncestorCoordinateSystem(selectedElement);
+          state.ensureInView(absoluteBox);
+        }
+      }
+    );
+  }, [application.selection]);
+
   const onClick = (pt: Point) => {
     const hit = application.elementAtPoint(pt);
     if (hit) {
+      // TODO Playback of note when clicking (maybe best in application state?)
       application.selection.setFor(hit);
     }
   };

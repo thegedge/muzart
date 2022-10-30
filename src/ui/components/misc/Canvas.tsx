@@ -117,7 +117,7 @@ export const Canvas = observer((props: CanvasProps) => {
   const onClickProp = props.onClick;
   const onClick: JSXInternal.MouseEventHandler<HTMLElement> | undefined = onClickProp
     ? (evt) => {
-        const pt = state.canvasToUserSpace(evt);
+        const pt = state.canvasViewportToUserSpace(evt);
         onClickProp(pt);
       }
     : undefined;
@@ -125,7 +125,7 @@ export const Canvas = observer((props: CanvasProps) => {
   const onMouseMoveProp = props.onMouseMove;
   const onMouseMove: JSXInternal.MouseEventHandler<HTMLElement> | undefined = onMouseMoveProp
     ? (evt) => {
-        const pt = state.canvasToUserSpace(evt);
+        const pt = state.canvasViewportToUserSpace(evt);
         onMouseMoveProp(pt);
       }
     : undefined;
@@ -154,8 +154,7 @@ export const Canvas = observer((props: CanvasProps) => {
   );
 });
 
-export const scrollWithClamping = (current: number, delta: number, min: number, max: number) => {
-  let desired = current + delta;
+export const scrollWithClamping = (current: number, desired: number, min: number, max: number) => {
   if (desired < min) {
     if (current > min) {
       desired = min;

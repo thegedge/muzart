@@ -114,6 +114,14 @@ export class CanvasState {
       return false;
     }
 
+    this.scrollTo(this.scrollX + deltaX, this.scrollY + deltaY);
+  }
+
+  scrollTo(x: number, y: number) {
+    if (!this.canvas) {
+      return;
+    }
+
     const pageW = this.canvas.width / this.pixelRatio;
     const pageH = this.canvas.height / this.pixelRatio;
 
@@ -126,20 +134,27 @@ export class CanvasState {
       upperX = lowerX + canvasSpaceWidth - pageW;
     }
 
-    const newX = scrollWithClamping(this.scrollX, deltaX, lowerX, upperX);
-    const newY = scrollWithClamping(this.scrollY, deltaY, 0, this.canvasSpaceSize.height - pageH);
+    this.scrollX = scrollWithClamping(this.scrollX, x, lowerX, upperX);
+    this.scrollY = scrollWithClamping(this.scrollY, y, 0, this.canvasSpaceSize.height - pageH);
 
-    this.scrollTo(newX, newY);
+    this.updateViewport();
   }
 
-  scrollTo(x: number, y: number) {
+  ensureInView(userSpaceBox: Box) {
     if (!this.canvas) {
       return;
     }
 
-    this.scrollX = x;
-    this.scrollY = y;
-    this.updateViewport();
+    if (this.viewport.contains(userSpaceBox)) {
+      return;
+    }
+
+    // TODO (maybe) depending on which direction we need to scroll, change how we decide to scroll. For example,
+    //  when scrolling downwards, show an entire page after the given box, instead of centering.
+
+    const x = (userSpaceBox.centerX - 0.5 * this.viewport.width) * this.userspaceToCanvasFactor;
+    const y = (userSpaceBox.centerY - 0.5 * this.viewport.height) * this.userspaceToCanvasFactor;
+    this.scrollTo(x, y);
   }
 
   updateViewport() {
@@ -153,7 +168,7 @@ export class CanvasState {
     this.scrollX = Math.max(-pageW, Math.min(this.scrollX, this.canvasSpaceSize.width));
     this.scrollY = Math.max(-pageH, Math.min(this.scrollY, this.canvasSpaceSize.height));
 
-    const { x, y } = this.canvasToUserSpace({ x: 0, y: 0 });
+    const { x, y } = this.canvasViewportToUserSpace({ x: 0, y: 0 });
 
     this.viewport = new Box(
       x,
@@ -164,7 +179,7 @@ export class CanvasState {
     this.redraw();
   }
 
-  canvasToUserSpace(pt: Point): Point {
+  canvasViewportToUserSpace(pt: Point): Point {
     if (!this.canvas) {
       return pt;
     }
