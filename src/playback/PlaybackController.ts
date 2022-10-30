@@ -1,5 +1,5 @@
 import { range } from "lodash";
-import { action, computed, flow, makeObservable, observable } from "mobx";
+import { action, autorun, computed, flow, makeObservable, observable } from "mobx";
 import { maxMap, Measure } from "../layout";
 import { NoteValue, NoteValueName } from "../notation";
 import { Selection } from "../ui/state/Selection";
@@ -14,6 +14,12 @@ export class PlaybackController {
   /** Measure currently being played */
   public currentMeasure: Measure | undefined;
 
+  /** Whether or not a part is muted */
+  public mutedParts: boolean[] = [];
+
+  /** Whether or not a part is soloed (i.e., only play this part and other soloed parts) */
+  public soloedParts: boolean[] = [];
+
   /** @private */
   public soundFont: SoundFont | undefined;
 
@@ -25,6 +31,18 @@ export class PlaybackController {
 
   constructor(private selection: Selection) {
     this.audioContext = new AudioContext();
+
+    // Adjust size of muted/soloed track arrays when score changes
+    let score = selection.score;
+    autorun(() => {
+      if (score == selection.score) {
+        return;
+      }
+
+      this.mutedParts = new Array(selection.score?.score.parts.length).fill(false);
+      this.soloedParts = new Array(selection.score?.score.parts.length).fill(false);
+      score = selection.score;
+    });
 
     makeObservable(this, {
       playing: observable,
@@ -46,6 +64,14 @@ export class PlaybackController {
 
   get instruments(): { name: string; midiPreset: number }[] {
     return this.soundFont?.instruments ?? [];
+  }
+
+  toggleMute(index: number) {
+    this.mutedParts[index] = !this.mutedParts[index];
+  }
+
+  toggleSolo(index: number) {
+    this.soloedParts[index] = !this.soloedParts[index];
   }
 
   *loadSoundFont(source: string | URL | File | Response | ArrayBuffer): Generator<Promise<SoundFont>> {
@@ -93,6 +119,15 @@ export class PlaybackController {
         return;
       }
 
+      // Figure out which tracks to play from muted/soloed arrays
+      let partIndicesToPlay: ReadonlyArray<boolean>;
+      const hasSoloedTrack = this.soloedParts.some((v) => v);
+      if (hasSoloedTrack) {
+        partIndicesToPlay = this.soloedParts;
+      } else {
+        partIndicesToPlay = this.mutedParts.map((v) => !v);
+      }
+
       score.children.forEach((part, partIndex) => {
         const measure = part.part.measures[currentMeasureIndex];
         if (!measure) {
@@ -112,6 +147,11 @@ export class PlaybackController {
               this.setCurrentMeasure(nextMeasure);
             }, 1000 * offsetFromNowSecs);
           }
+        }
+
+        // Do this after the above so that we still set the current measure
+        if (!partIndicesToPlay[partIndex]) {
+          return;
         }
 
         const instrument = this.instrumentForPart(partIndex);

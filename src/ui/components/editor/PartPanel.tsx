@@ -28,6 +28,8 @@ export const PartPanel = observer((_props: Record<string, never>) => {
     <div className="max-h-48 w-full flex flex-col bg-black text-gray-300 overflow-auto">
       <div className="grid grid-cols-part-list items-center gap-px">
         <div className="px-4 text-gray-200">Track</div>
+        <div className="text-center">S</div>
+        <div className="text-center">M</div>
         <div className="text-gray-200 flex gap-px">
           {range(numMeasures).map((measureIndex) => (
             <div key={measureIndex} className="w-6 h-6 text-xs flex items-center justify-center">
@@ -47,9 +49,19 @@ export const PartPanel = observer((_props: Record<string, never>) => {
 const PartRow = observer(
   (props: { part: Part; partIndex: number; onChange: JSXInternal.MouseEventHandler<HTMLElement> }) => {
     const { part, partIndex, onChange } = props;
-    const { selection } = useApplicationState();
+    const { selection, playback } = useApplicationState();
     const partColor = part.color ?? "rgb(156, 163, 175)";
     const rowBackgroundColor = part == selection.part?.part ? "bg-gray-700" : "bg-gray-800";
+
+    const toggleSolo: JSXInternal.GenericEventHandler<HTMLInputElement> = (event) => {
+      event.preventDefault();
+      playback.toggleSolo(props.partIndex);
+    };
+
+    const toggleMute: JSXInternal.GenericEventHandler<HTMLInputElement> = (event) => {
+      event.preventDefault();
+      playback.toggleMute(props.partIndex);
+    };
 
     return (
       <>
@@ -60,6 +72,8 @@ const PartRow = observer(
         >
           {part.name}
         </div>
+        <input type="checkbox" name="solo" checked={playback.soloedParts[partIndex]} onChange={toggleSolo} />
+        <input type="checkbox" name="mute" checked={playback.mutedParts[partIndex]} onChange={toggleMute} />
         <div className="flex gap-px items-center cursor-pointer">
           {part.measures.map((measure) => (
             <MeasureBox

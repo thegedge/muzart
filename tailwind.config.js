@@ -4,7 +4,8 @@ module.exports = {
   theme: {
     extend: {
       gridTemplateColumns: {
-        "part-list": "max-content 1fr",
+        // Track name | Soloed | Muted | Measure box list
+        "part-list": "max-content minmax(1.5rem, max-content) minmax(1.5rem, max-content) 1fr",
       },
       minWidth: {
         screen: "100vw",
