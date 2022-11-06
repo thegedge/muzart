@@ -40,6 +40,16 @@ export const Score = observer((_props: never) => {
         selection.nextNote();
       },
 
+      // TODO should these jump a visible page, or an actual page?
+      "PageDown": (event) => {
+        event.preventDefault();
+        selection.nextPage();
+      },
+      "PageUp": (event) => {
+        event.preventDefault();
+        selection.previousPage();
+      },
+
       "$mod+ArrowLeft": (event) => {
         event.preventDefault();
         selection.previousMeasure();

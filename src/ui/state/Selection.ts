@@ -104,6 +104,26 @@ export class Selection {
     }
   }
 
+  previousPage() {
+    if (this.part) {
+      const pageIndex = this.part.children.findIndex((p) => this.page == p);
+      const measureIndex = pageIndex == 0 ? 0 : this.part.children[pageIndex - 1].measures[0].measure.number - 1;
+      this.update({ measureIndex });
+    }
+  }
+
+  nextPage() {
+    if (this.part) {
+      const pageIndex = this.part.children.findIndex((p) => this.page == p);
+      const measureIndex =
+        pageIndex == this.part.children.length - 1
+          ? this.part.children[pageIndex].measures[0].measure.number - 1
+          : this.part.children[pageIndex + 1].measures[0].measure.number - 1;
+
+      this.update({ measureIndex });
+    }
+  }
+
   previousMeasure() {
     if (this.measureIndex > 0) {
       this.update({ measureIndex: this.measureIndex - 1 });

@@ -9,6 +9,7 @@ export interface Marker {
 export interface Measure {
   staffDetails: StaffDetails;
   marker?: Marker;
+  /** 1-indexed number for this measure */
   number: number;
   chords: Chord[];
 }
