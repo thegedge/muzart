@@ -31,15 +31,15 @@ export const Canvas = observer((props: CanvasProps) => {
 
   useEffect(() => {
     const listener = createKeybindingsHandler({
-      "Meta+Equal": (event) => {
+      "$mod+Equal": (event) => {
         event.preventDefault();
         state.setZoom(state.zoom * 1.2);
       },
-      "Meta+Minus": (event) => {
+      "$mod+Minus": (event) => {
         event.preventDefault();
         state.setZoom(state.zoom / 1.2);
       },
-      "Meta+0": (event) => {
+      "$mod+0": (event) => {
         event.preventDefault();
         state.setZoom(1);
         state.centerViewportOn();
@@ -129,7 +129,7 @@ export const Canvas = observer((props: CanvasProps) => {
       <canvas
         ref={setCanvasRef}
         className="w-full h-full"
-        style={{ imageRendering: "high-quality", cursor: state.cursor }}
+        style={{ imageRendering: "crisp-edges", cursor: state.cursor }}
         onClick={onClick}
         onMouseMove={onMouseMove}
       />

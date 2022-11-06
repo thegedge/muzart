@@ -88,6 +88,22 @@ export class Selection {
     }
   }
 
+  previousPart() {
+    if (this.partIndex > 0) {
+      this.update({ partIndex: this.partIndex - 1 });
+    }
+  }
+
+  nextPart() {
+    if (!this.score) {
+      return;
+    }
+
+    if (this.partIndex < this.score.score.parts.length - 1) {
+      this.update({ partIndex: this.partIndex + 1 });
+    }
+  }
+
   previousChord() {
     if (this.chordIndex == 0) {
       if (this.measureIndex > 0) {

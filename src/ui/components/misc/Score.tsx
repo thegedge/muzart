@@ -14,10 +14,15 @@ export const Score = observer((_props: never) => {
 
   useEffect(() => {
     const listener = createKeybindingsHandler({
+      // Playback --------------------------------------------------------------
+
       "Space": (event) => {
         event.preventDefault();
         playback.togglePlay();
       },
+
+      // Navigation ------------------------------------------------------------
+
       "ArrowLeft": (event) => {
         event.preventDefault();
         selection.previousChord();
@@ -34,6 +39,18 @@ export const Score = observer((_props: never) => {
         event.preventDefault();
         selection.nextNote();
       },
+
+      "$mod+Shift+ArrowUp": (event) => {
+        event.preventDefault();
+        selection.previousPart();
+      },
+      "$mod+Shift+ArrowDown": (event) => {
+        event.preventDefault();
+        selection.nextPart();
+      },
+
+      // Debugging -------------------------------------------------------------
+
       "Shift+D": (event) => {
         event.preventDefault();
         debug.setEnabled(!debug.enabled);
