@@ -162,7 +162,12 @@ export interface Chord extends LayoutElement<LineElement> {
   type: "Chord";
   chord: notation.Chord;
   children: (Note | Stroke)[];
+  staffHeight: number;
 }
+
+export const isChord = (value: unknown): value is Chord => {
+  return typeof value == "object" && value != null && "type" in value && value.type == "Chord";
+};
 
 export interface Rest extends LayoutElement<LineElement> {
   type: "Rest";

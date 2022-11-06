@@ -2,7 +2,7 @@ import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo } from "preact/hooks";
 import { createKeybindingsHandler } from "tinykeys";
-import { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT, toAncestorCoordinateSystem } from "../../../layout";
+import { isChord, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT, toAncestorCoordinateSystem } from "../../../layout";
 import { renderScoreElement } from "../../../render/renderScoreElement";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../misc/Canvas";
@@ -117,18 +117,25 @@ export const Score = observer((_props: never) => {
   }, [application.selection]);
 
   const onClick = (pt: Point) => {
-    const hit = application.elementAtPoint(pt);
+    const hit = application.hitTest(pt);
     if (hit) {
-      // TODO Playback of note when clicking (maybe best in application state?)
-      application.selection.setFor(hit);
+      application.selection.setFor(hit.element);
+      if (isChord(hit.element)) {
+        application.selection.update({
+          noteIndex: Math.floor(hit.point.y / hit.element.staffHeight),
+        });
+      } else {
+        // TODO Playback of note when clicking note (maybe best in application state?)
+      }
     }
   };
 
   const onMouseMove = (pt: Point) => {
     let cursor = "auto";
-    const hit = application.elementAtPoint(pt);
+    const hit = application.hitTest(pt);
     if (hit) {
-      switch (hit.type) {
+      switch (hit.element.type) {
+        case "Chord":
         case "Note":
         case "Rest":
           cursor = "pointer";

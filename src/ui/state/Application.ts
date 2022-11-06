@@ -11,6 +11,14 @@ import { Storage } from "../storage/Storage";
 import { DebugContext } from "./DebugContext";
 import { Selection } from "./Selection";
 
+export interface Hit<T> {
+  /** The thing that was hit with a hit test */
+  element: T;
+
+  /** The hit point, relative to the element that was hit */
+  point: Point;
+}
+
 export class Application {
   public loading = false;
   public error: Error | null = null;
@@ -56,15 +64,15 @@ export class Application {
     }
   }
 
-  elementAtPoint(pt: Point, element: layout.AllElements | undefined = this.selection.part): layout.AllElements | null {
-    if (!element?.box.contains(pt)) {
+  hitTest(point: Point, element: layout.AllElements | undefined = this.selection.part): Hit<layout.AllElements> | null {
+    if (!element?.box.contains(point)) {
       return null;
     }
 
     if ("children" in element && element.children.length > 0) {
-      const adjustedPoint = { x: pt.x - element.box.x, y: pt.y - element.box.y };
+      const adjustedPoint = { x: point.x - element.box.x, y: point.y - element.box.y };
       for (const child of element.children) {
-        const hit = this.elementAtPoint(adjustedPoint, child);
+        const hit = this.hitTest(adjustedPoint, child);
         if (hit) {
           return hit;
         }
@@ -75,7 +83,7 @@ export class Application {
       return null;
     }
 
-    return element;
+    return { element, point };
   }
 
   setScore(score: layout.Score | null) {

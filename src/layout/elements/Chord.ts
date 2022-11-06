@@ -8,15 +8,19 @@ export class Chord extends LayoutElement<"Chord", types.LineElement> implements 
   readonly type = "Chord";
   readonly children: (types.Note | types.Stroke)[];
 
-  constructor(readonly chord: notation.Chord, readonly numStaffLines: number) {
+  constructor(
+    readonly chord: notation.Chord,
+    readonly numStaffLines: number,
+    readonly staffHeight = STAFF_LINE_HEIGHT
+  ) {
     const maxNoteChars = maxMap(chord.notes, (note) => note.toString().length) || 1;
     const noteWidth = chordWidth(maxNoteChars);
-    super(new Box(0, 0, noteWidth, STAFF_LINE_HEIGHT * numStaffLines));
+    super(new Box(0, 0, noteWidth, staffHeight * numStaffLines));
 
     // Take away 2 line strokes so the text elements with a background fill don't obstruct the staff lines
-    const noteHeight = STAFF_LINE_HEIGHT - 2 * LINE_STROKE_WIDTH;
+    const noteHeight = staffHeight - 2 * LINE_STROKE_WIDTH;
     this.children = chord.notes.flatMap((note) => {
-      const noteY = (note.placement ? (note.placement.string - 1) * STAFF_LINE_HEIGHT : 0) + LINE_STROKE_WIDTH;
+      const noteY = (note.placement ? (note.placement.string - 1) * staffHeight : 0) + LINE_STROKE_WIDTH;
       const noteElement = new Note(new Box(0, noteY, noteWidth, noteHeight), note);
       noteElement.parent = this;
 
