@@ -136,20 +136,3 @@ export const Canvas = observer((props: CanvasProps) => {
     </div>
   );
 });
-
-export const scrollWithClamping = (current: number, desired: number, min: number, max: number) => {
-  if (desired < min) {
-    if (current > min) {
-      desired = min;
-    } else if (desired < current) {
-      desired = current;
-    }
-  } else if (desired > max) {
-    if (current < max) {
-      desired = max;
-    } else if (desired > current) {
-      desired = current;
-    }
-  }
-  return desired;
-};

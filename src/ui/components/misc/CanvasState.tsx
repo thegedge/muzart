@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { Box, LINE_STROKE_WIDTH, PX_PER_MM } from "../../../layout";
-import { Point, RenderFunction, scrollWithClamping } from "./Canvas";
+import { Point, RenderFunction } from "./Canvas";
 
 /**
  * Manages the canvas state, translating between various coordinate spaces:
@@ -278,3 +278,20 @@ export class CanvasState {
     });
   }
 }
+
+const scrollWithClamping = (current: number, desired: number, min: number, max: number) => {
+  if (desired < min) {
+    if (current > min) {
+      desired = min;
+    } else if (desired < current) {
+      desired = current;
+    }
+  } else if (desired > max) {
+    if (current < max) {
+      desired = max;
+    } else if (desired > current) {
+      desired = current;
+    }
+  }
+  return desired;
+};
