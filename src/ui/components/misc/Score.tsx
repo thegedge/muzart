@@ -40,6 +40,15 @@ export const Score = observer((_props: never) => {
         selection.nextNote();
       },
 
+      "$mod+ArrowLeft": (event) => {
+        event.preventDefault();
+        selection.previousMeasure();
+      },
+      "$mod+ArrowRight": (event) => {
+        event.preventDefault();
+        selection.nextMeasure();
+      },
+
       "$mod+Shift+ArrowUp": (event) => {
         event.preventDefault();
         selection.previousPart();

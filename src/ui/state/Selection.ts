@@ -104,6 +104,22 @@ export class Selection {
     }
   }
 
+  previousMeasure() {
+    if (this.measureIndex > 0) {
+      this.update({ measureIndex: this.measureIndex - 1 });
+    }
+  }
+
+  nextMeasure() {
+    if (!this.part) {
+      return;
+    }
+
+    if (this.measureIndex < this.part.part.measures.length - 1) {
+      this.update({ measureIndex: this.measureIndex + 1 });
+    }
+  }
+
   previousChord() {
     if (this.chordIndex == 0) {
       if (this.measureIndex > 0) {
