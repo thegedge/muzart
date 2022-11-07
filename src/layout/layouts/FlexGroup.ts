@@ -241,6 +241,7 @@ export abstract class FlexGroup<
         child.box[this.startAttribute.cross] = crossAxisStart + offset;
       }
 
+      // TODO support a separate gap for the cross axis
       crossAxisStart += crossAxisSize + this.gap;
     }
 
