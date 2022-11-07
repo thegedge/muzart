@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { RefCallback } from "preact";
-import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
+import { useCallback, useEffect, useState } from "preact/hooks";
 import { JSXInternal } from "preact/src/jsx";
 import { createKeybindingsHandler } from "tinykeys";
 import { Box, PX_PER_MM } from "../../../layout";
@@ -18,7 +18,7 @@ export interface Point {
 interface CanvasProps {
   size: Box;
   render: RenderFunction;
-  state?: CanvasState;
+  state: CanvasState;
 
   onClick?: (p: Point) => void;
   onMouseMove?: (p: Point) => void;
@@ -27,7 +27,7 @@ interface CanvasProps {
 // eslint-disable-next-line react/display-name
 export const Canvas = observer((props: CanvasProps) => {
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
-  const state = useMemo(() => props.state ?? new CanvasState(), [props.state]);
+  const state = props.state;
 
   useEffect(() => {
     const listener = createKeybindingsHandler({
@@ -118,7 +118,9 @@ export const Canvas = observer((props: CanvasProps) => {
 
   const setCanvasRef = useCallback<RefCallback<HTMLCanvasElement>>(
     (canvas) => {
-      state.setCanvas(canvas);
+      if (canvas) {
+        state.setCanvas(canvas);
+      }
     },
     [state]
   );
