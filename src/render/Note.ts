@@ -1,4 +1,4 @@
-import layout, { LINE_STROKE_WIDTH } from "../layout";
+import layout from "../layout";
 import { Application } from "../ui/state/Application";
 import { Text } from "./Text";
 
@@ -13,12 +13,7 @@ export const Note = (application: Application, context: CanvasRenderingContext2D
   }
 
   context.fillStyle = "#FFFFFF";
-  context.fillRect(
-    element.box.x,
-    element.box.centerY - 2 * LINE_STROKE_WIDTH,
-    element.box.width,
-    4 * LINE_STROKE_WIDTH
-  );
+  context.fillRect(element.box.x, element.box.y, element.box.width, element.box.height);
 
   Text(application, context, {
     box: element.box,
