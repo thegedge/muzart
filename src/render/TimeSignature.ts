@@ -18,8 +18,8 @@ export const TimeSignature = (
   const topDigitElements = topDigits.map((digit) => timeSignatureDigit(digit, undefined, size));
   const bottomDigitElements = bottomDigits.map((digit) => timeSignatureDigit(digit, undefined, size));
 
-  const topOffsetX = element.box.centerX - 0.5 * (topDigits.length * size);
-  const bottomOffsetX = element.box.centerX - 0.5 * (bottomDigits.length * size);
+  const topOffsetX = 0.5 * (element.box.width - topDigits.length * size);
+  const bottomOffsetX = 0.5 * (element.box.width - bottomDigits.length * size);
 
   context.fillStyle = "#000000";
 
