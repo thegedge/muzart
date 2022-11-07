@@ -71,10 +71,14 @@ export class Box {
   }
 
   /**
-   * Returns whether or not this box contains the given point.
+   * Returns whether or not this box contains the given point or box.
    */
-  contains(point: Point): boolean {
-    return this.x <= point.x && point.x <= this.right && this.y <= point.y && point.y <= this.bottom;
+  contains(geom: Point | Box): boolean {
+    if (geom instanceof Box) {
+      return this.x <= geom.x && geom.right <= this.right && this.y <= geom.y && geom.bottom <= this.bottom;
+    }
+
+    return this.x <= geom.x && geom.x <= this.right && this.y <= geom.y && geom.y <= this.bottom;
   }
 
   /**

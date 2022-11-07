@@ -204,6 +204,7 @@ export class PlaybackController {
       this.playbackHandle = undefined;
       this.setCurrentMeasureHandle = undefined;
       this.playing = false;
+      this.currentMeasure = undefined;
 
       for (const instrument of Object.values(this.instruments_)) {
         instrument?.stop();

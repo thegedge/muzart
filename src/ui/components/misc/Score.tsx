@@ -2,7 +2,13 @@ import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo } from "preact/hooks";
 import { createKeybindingsHandler } from "tinykeys";
-import { isChord, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT, toAncestorCoordinateSystem } from "../../../layout";
+import {
+  ancestorOfType,
+  isChord,
+  LINE_STROKE_WIDTH,
+  STAFF_LINE_HEIGHT,
+  toAncestorCoordinateSystem,
+} from "../../../layout";
 import { renderScoreElement } from "../../../render/renderScoreElement";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../misc/Canvas";
@@ -137,17 +143,15 @@ export const Score = observer((_props: never) => {
 
   useEffect(() => {
     return reaction(
-      () => [application.playback.playing, application.selection.element, application.playback.currentMeasure] as const,
-      ([playing, selectedElement, playbackMeasure]) => {
-        if (playing) {
-          if (playbackMeasure) {
-            const absoluteBox = toAncestorCoordinateSystem(playbackMeasure);
-            state.ensureInView(absoluteBox);
-          }
-        } else if (selectedElement) {
-          const absoluteBox = toAncestorCoordinateSystem(selectedElement);
-          state.ensureInView(absoluteBox);
+      () => application.playback.currentMeasure ?? application.selection.element,
+      (element) => {
+        if (!element) {
+          return;
         }
+
+        const line = ancestorOfType(element, "PageLine") ?? element;
+        const absoluteBox = toAncestorCoordinateSystem(line);
+        state.ensureInView(absoluteBox);
       }
     );
   }, [application.selection]);
