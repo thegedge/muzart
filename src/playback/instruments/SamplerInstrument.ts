@@ -99,8 +99,8 @@ export abstract class SamplerInstrument implements Instrument {
   protected createToneBufferSource(sample: SampleZone, offset: number, loop = true) {
     const source = this.context.createBufferSource();
     source.buffer = sample.buffer;
-    source.detune.value = -100 * offset;
-    // source.playbackRate.value = Math.pow(2, -offset / 12);
+    // source.detune.value = -100 * offset; // TODO figure out why large values don't seem to work (at least in Firefox)
+    source.playbackRate.value = Math.pow(2, -offset / 12);
     source.loop = loop;
     source.loopStart = (sample.startLoop - sample.start) / sample.sampleRate;
     source.loopEnd = (sample.endLoop - sample.start) / sample.sampleRate;

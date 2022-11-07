@@ -1,7 +1,7 @@
 import { compact, memoize } from "lodash";
 import * as notation from "../../notation";
 import { SampleZone, SoundFontGeneratorType } from "../SoundFont";
-import { noteValueToSeconds } from "../util/durations";
+import { noteDurationInSeconds, noteValueToSeconds } from "../util/durations";
 import { SamplerInstrument, SamplerOptions } from "./SamplerInstrument";
 
 /**
@@ -119,33 +119,30 @@ export class PitchAdjustableInstrument extends SamplerInstrument {
     return amplitude;
   }
 
-  private maybeBend(note: notation.Note, bend: AudioParam, when: number) {
+  private maybeBend(note: notation.Note, playbackRate: AudioParam, when: number) {
     if (!note.bend) {
       return null;
     }
 
-    const source = this.context.createConstantSource();
-    source.offset.value = 0.1;
-
     // TODO why doesn't a constant source node with offset events feeding into the playbackRate param work?
 
-    // TODO incoroprate tempo + tied notes into duration
-    const duration = noteValueToSeconds(note.value);
+    const duration = noteDurationInSeconds(note);
     const gain = this.context.createGain();
+    const initialRate = playbackRate.value;
 
-    bend.setValueAtTime(1, when);
+    playbackRate.setValueAtTime(initialRate, when);
 
     let previousEventEnd = when;
     let previousPoint = 0;
     for (const { time, amplitude } of note.bend.points) {
-      const value = Math.pow(2, (amplitude * 2) / 12);
+      const value = initialRate * Math.pow(2, (amplitude * 2) / 12);
       const bendPointDuration = duration * (time - previousPoint);
-      bend.linearRampToValueAtTime(value, previousEventEnd + bendPointDuration);
+      playbackRate.linearRampToValueAtTime(value, previousEventEnd + bendPointDuration);
       previousPoint = time;
       previousEventEnd += bendPointDuration;
     }
 
-    source.start();
+    playbackRate.setValueAtTime(initialRate, previousEventEnd);
 
     return gain;
   }
