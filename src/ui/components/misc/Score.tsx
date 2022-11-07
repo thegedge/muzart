@@ -56,20 +56,20 @@ export const Score = observer((_props: never) => {
         selection.previousPage();
       },
 
-      "$mod+ArrowLeft": (event) => {
+      "$mod+Shift+ArrowLeft": (event) => {
         event.preventDefault();
         selection.previousMeasure();
       },
-      "$mod+ArrowRight": (event) => {
+      "$mod+Shift+ArrowRight": (event) => {
         event.preventDefault();
         selection.nextMeasure();
       },
 
-      "$mod+Shift+ArrowUp": (event) => {
+      "$mod+Alt+ArrowUp": (event) => {
         event.preventDefault();
         selection.previousPart();
       },
-      "$mod+Shift+ArrowDown": (event) => {
+      "$mod+Alt+ArrowDown": (event) => {
         event.preventDefault();
         selection.nextPart();
       },
