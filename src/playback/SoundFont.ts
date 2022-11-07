@@ -422,6 +422,9 @@ export class SoundFont {
         case SoundFontGeneratorType.EnvelopeVolumeRelease:
           amount = Math.pow(2, cursor.nextNumber(NumberType.Int16) / 1200);
           break;
+        case SoundFontGeneratorType.CoarseTune:
+          amount = cursor.nextNumber(NumberType.Int16);
+          break;
         default:
           amount = cursor.nextNumber(NumberType.Uint16);
           break;

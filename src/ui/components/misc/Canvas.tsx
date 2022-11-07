@@ -79,7 +79,6 @@ export const Canvas = observer((props: CanvasProps) => {
         event.stopPropagation();
 
         if (zooming) {
-          // TODO if zooming out and everything fits on screen, may need to scroll up
           state.zoomCenteredOn(state.zoom * Math.exp(-event.deltaY / PX_PER_MM / 100), event.x, event.y);
         }
       }
