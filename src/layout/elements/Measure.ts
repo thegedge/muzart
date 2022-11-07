@@ -32,10 +32,10 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
     const spacerWidth = QUARTER_NOTE_WIDTH / 2;
     this.box.height = part.lineCount * STAFF_LINE_HEIGHT;
 
+    this.addElement(Space.fromDimensions(0.5 * STAFF_LINE_HEIGHT, spacerHeight), 0);
+
     if (measure.staffDetails.time?.changed) {
-      const timeSig = new TimeSignature(measure.staffDetails.time.value);
-      this.addElement(Space.fromDimensions(0.5 * spacerWidth, spacerHeight));
-      this.addElement(timeSig);
+      this.addElement(new TimeSignature(measure.staffDetails.time.value));
     }
 
     if (singleWholeRest) {
@@ -66,7 +66,7 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
     //      right-hand side is too close. Generally things look good, but sometimes it's unbalanced.
 
     // An empty spacer where, used to help us place the measure number
-    this.addElement(Space.fromDimensions(0, spacerHeight));
+    this.addElement(Space.fromDimensions(0.5 * STAFF_LINE_HEIGHT, spacerHeight), 0);
   }
 
   override tryAddElement(element: LineElement, factor?: number) {

@@ -51,6 +51,12 @@ export const Text = (
       break;
   }
 
+  const fill = props.style?.backgroundColor;
+  if (fill) {
+    context.fillStyle = typeof fill == "string" ? fill : "#ffffff";
+    context.fillRect(props.box.x, props.box.y, props.box.width, props.box.height);
+  }
+
   const style = props.style?.color ?? props.style?.fill;
   context.fillStyle = typeof style == "string" ? style : "#000000";
   context.textAlign = align;

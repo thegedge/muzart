@@ -145,8 +145,8 @@ export class AboveStaff extends GridGroup<LineElement> {
   }
 
   private addIntraMeasureAboveStaffDecorations() {
-    const numberSize = 2;
-    const tempoSize = 2.5;
+    const numberSize = 0.8 * STAFF_LINE_HEIGHT;
+    const tempoSize = STAFF_LINE_HEIGHT;
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
 
     for (let index = 0; index < this.staffElements.length; ) {
@@ -160,13 +160,14 @@ export class AboveStaff extends GridGroup<LineElement> {
           valign: "end",
           style: {
             userSelect: "none",
-            fill: "#888888",
+            color: "#888888",
+            backgroundColor: "#ffffff",
           },
         }),
         {
           mustBeBottomRow: true,
           startColumn: index, // this is the empty spacer at the end of the measure
-          endColumn: index,
+          endColumn: index + 1,
         }
       );
 
@@ -178,6 +179,7 @@ export class AboveStaff extends GridGroup<LineElement> {
             style: {
               userSelect: "none",
               fontWeight: "bold",
+              backgroundColor: "#ffffff",
             },
           }),
           {
@@ -195,6 +197,7 @@ export class AboveStaff extends GridGroup<LineElement> {
             style: {
               fontWeight: "bold",
               fill: measure.marker.color,
+              backgroundColor: "#ffffff",
             },
           }),
           {

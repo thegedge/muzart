@@ -12,14 +12,14 @@ export const Note = (application: Application, context: CanvasRenderingContext2D
     return;
   }
 
-  context.fillStyle = "#FFFFFF";
-  context.fillRect(element.box.x, element.box.y, element.box.width, element.box.height);
-
   Text(application, context, {
     box: element.box,
     halign: "center",
     valign: "center",
     size: element.box.height,
     text,
+    style: {
+      backgroundColor: "#ffffff",
+    },
   });
 };
