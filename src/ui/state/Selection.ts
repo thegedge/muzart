@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { inRange, last } from "lodash";
 import { makeAutoObservable } from "mobx";
-import layout, { Chord, getAncestorOfType, LayoutElement, Measure, Note, Page, Part, Rest, Score } from "../../layout";
+import layout, { Chord, getAncestorOfType, Measure, Note, Page, Part, Rest, Score } from "../../layout";
 
 export class Selection {
   public score: Score | null = null;
@@ -10,7 +10,6 @@ export class Selection {
   public measureIndex = 0;
   public chordIndex = 0;
   public noteIndex = 0;
-  public element: LayoutElement | undefined;
 
   constructor() {
     makeAutoObservable(this, undefined, { deep: false });
@@ -54,22 +53,24 @@ export class Selection {
     ) as Note | undefined;
   }
 
+  get element() {
+    return this.note ?? this.chord ?? this.measure;
+  }
+
   update(selection: Partial<Selection>) {
     const p = selection.partIndex != undefined && selection.partIndex != this.partIndex;
     const m = selection.measureIndex != undefined && selection.measureIndex != this.measureIndex;
     const c = selection.chordIndex != undefined && selection.chordIndex != this.chordIndex;
     const n = selection.noteIndex != undefined && selection.noteIndex != this.noteIndex;
-    const e = selection.element != this.element;
 
-    if (p || m || c || n || e) {
+    if (p || m || c || n) {
       if (p) this.partIndex = selection.partIndex!;
       if (m) this.measureIndex = selection.measureIndex!;
       if (c) this.chordIndex = selection.chordIndex!;
       if (n) this.noteIndex = selection.noteIndex!;
-      if (e) this.element = selection.element;
     }
 
-    if (!this.element && this.score) {
+    if (this.score) {
       const measure = this.measure;
       if (measure) {
         let chord = measure.chords[this.chordIndex];
@@ -77,12 +78,6 @@ export class Selection {
           this.chordIndex = 0;
           this.noteIndex = 0;
           chord = measure.chords[0];
-        }
-
-        if (chord.type == "Rest") {
-          this.element = chord;
-        } else {
-          this.element = chord.children[this.noteIndex];
         }
       }
     }
@@ -145,11 +140,9 @@ export class Selection {
       if (this.measureIndex > 0) {
         this.measureIndex -= 1;
         this.chordIndex = (this.measure?.chords.length ?? 1) - 1;
-        this.updateElement();
       }
     } else {
       this.chordIndex -= 1;
-      this.updateElement();
     }
   }
 
@@ -167,18 +160,15 @@ export class Selection {
       if (this.measureIndex < lastMeasureNumber) {
         this.measureIndex += 1;
         this.chordIndex = 0;
-        this.updateElement();
       }
     } else {
       this.chordIndex += 1;
-      this.updateElement();
     }
   }
 
   previousNote() {
     if (this.noteIndex > 0) {
       this.noteIndex -= 1;
-      this.updateElement();
     }
   }
 
@@ -189,7 +179,6 @@ export class Selection {
 
     if (this.noteIndex < this.part.part.lineCount - 1) {
       this.noteIndex += 1;
-      this.updateElement();
     }
   }
 
@@ -206,7 +195,6 @@ export class Selection {
           ? measureElement.measure.chords.findIndex((n) => Object.is(n, chordElement.chord))
           : undefined,
       noteIndex: noteElement && noteElement.note.placement ? noteElement.note.placement.string - 1 : undefined,
-      element,
     });
   }
 
@@ -218,11 +206,5 @@ export class Selection {
       chordIndex: 0,
       noteIndex: 0,
     });
-  }
-
-  private updateElement() {
-    this.element = this.note;
-    this.element ??= this.chord;
-    this.element ??= this.measure;
   }
 }

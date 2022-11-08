@@ -1,8 +1,10 @@
+import { mapValues } from "lodash";
 import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo } from "preact/hooks";
 import { createKeybindingsHandler } from "tinykeys";
 import {
+  AllElements,
   ancestorOfType,
   isChord,
   LINE_STROKE_WIDTH,
@@ -14,91 +16,95 @@ import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../misc/Canvas";
 import { CanvasState } from "../misc/CanvasState";
 
+const preventDefault = (f: (event: KeyboardEvent) => void) => {
+  return (event: KeyboardEvent) => {
+    event.preventDefault();
+    f(event);
+  };
+};
+
 export const Score = observer((_props: never) => {
   const application = useApplicationState();
-  const { error, selection, playback, debug } = application;
-
-  useEffect(() => {
-    const listener = createKeybindingsHandler({
-      // Playback --------------------------------------------------------------
-
-      "Space": (event) => {
-        event.preventDefault();
-        playback.togglePlay();
-      },
-
-      // Navigation ------------------------------------------------------------
-
-      "ArrowLeft": (event) => {
-        event.preventDefault();
-        selection.previousChord();
-      },
-      "ArrowRight": (event) => {
-        event.preventDefault();
-        selection.nextChord();
-      },
-      "ArrowUp": (event) => {
-        event.preventDefault();
-        selection.previousNote();
-      },
-      "ArrowDown": (event) => {
-        event.preventDefault();
-        selection.nextNote();
-      },
-
-      // TODO should these jump a visible page, or an actual page?
-      "PageDown": (event) => {
-        event.preventDefault();
-        selection.nextPage();
-      },
-      "PageUp": (event) => {
-        event.preventDefault();
-        selection.previousPage();
-      },
-
-      "$mod+Shift+ArrowLeft": (event) => {
-        event.preventDefault();
-        selection.previousMeasure();
-      },
-      "$mod+Shift+ArrowRight": (event) => {
-        event.preventDefault();
-        selection.nextMeasure();
-      },
-
-      "$mod+Alt+ArrowUp": (event) => {
-        event.preventDefault();
-        selection.previousPart();
-      },
-      "$mod+Alt+ArrowDown": (event) => {
-        event.preventDefault();
-        selection.nextPart();
-      },
-
-      // Debugging -------------------------------------------------------------
-
-      "Shift+D": (event) => {
-        event.preventDefault();
-        debug.setEnabled(!debug.enabled);
-      },
-    });
-
-    document.body.addEventListener("keydown", listener);
-    return () => {
-      document.body.removeEventListener("keydown", listener);
-    };
-  }, [selection, playback]);
+  const { error, selection, playback } = application;
 
   if (error) {
     throw error; // Let the ErrorBoundary figure it out
   }
 
   const part = selection.part;
-  if (!part) {
-    return null;
-  }
+  const state = useMemo(() => new CanvasState(), []);
+
+  useEffect(() => {
+    const listener = createKeybindingsHandler(
+      mapValues(
+        {
+          // Playback ----------------------------------------------------------
+
+          "Space": () => {
+            playback.togglePlay();
+          },
+
+          // Navigation --------------------------------------------------------
+
+          // TODO some of these shouldn't work when playing
+
+          "ArrowLeft": () => {
+            application.selection.previousChord();
+          },
+          "ArrowRight": () => {
+            application.selection.nextChord();
+          },
+          "ArrowUp": () => {
+            application.selection.previousNote();
+          },
+          "ArrowDown": () => {
+            application.selection.nextNote();
+          },
+
+          // TODO should these jump a visible page, or an actual page?
+          "PageDown": () => {
+            application.selection.nextPage();
+          },
+          "PageUp": () => {
+            application.selection.previousPage();
+          },
+
+          "$mod+Shift+ArrowLeft": () => {
+            application.selection.previousMeasure();
+          },
+          "$mod+Shift+ArrowRight": () => {
+            application.selection.nextMeasure();
+          },
+
+          "$mod+Alt+ArrowUp": () => {
+            application.selection.previousPart();
+          },
+          "$mod+Alt+ArrowDown": () => {
+            application.selection.nextPart();
+          },
+
+          // Debugging ---------------------------------------------------------
+
+          "Shift+D": () => {
+            application.debug.setEnabled(!application.debug.enabled);
+          },
+        },
+        preventDefault
+      )
+    );
+
+    document.body.addEventListener("keydown", listener);
+    return () => {
+      document.body.removeEventListener("keydown", listener);
+    };
+  }, [application, state]);
 
   const render = useCallback<RenderFunction>(
     (context, viewport) => {
+      if (!part) {
+        return;
+      }
+
       renderScoreElement(application, context, part, viewport);
 
       if (application.playback.playing) {
@@ -139,8 +145,6 @@ export const Score = observer((_props: never) => {
     ]
   );
 
-  const state = useMemo(() => new CanvasState(), []);
-
   useEffect(() => {
     return reaction(
       () => application.playback.currentMeasure ?? application.selection.element,
@@ -149,12 +153,16 @@ export const Score = observer((_props: never) => {
           return;
         }
 
-        const line = ancestorOfType(element, "PageLine") ?? element;
+        const line = ancestorOfType<AllElements>(element, "PageLine") ?? element;
         const absoluteBox = toAncestorCoordinateSystem(line);
         state.ensureInView(absoluteBox);
       }
     );
   }, [application.selection]);
+
+  if (!part) {
+    return null;
+  }
 
   const onClick = (pt: Point) => {
     const hit = application.hitTest(pt);
