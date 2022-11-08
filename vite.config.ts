@@ -1,7 +1,7 @@
 import preact from "@preact/preset-vite";
 import fs from "node:fs/promises";
 import { TlsOptions } from "node:tls";
-import { defineConfig } from "vite";
+import { defineConfig, ModuleNode } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig(async ({ mode }) => {
@@ -38,7 +38,43 @@ export default defineConfig(async ({ mode }) => {
       },
     },
 
-    plugins: [preact()],
+    plugins: [
+      preact(),
+
+      {
+        name: "re-render-score",
+        enforce: "post",
+        handleHotUpdate({ file, modules }) {
+          if (file.includes("/render/")) {
+            const modulesToUpdate: ModuleNode[] = [];
+            const includeAllImporters = (module: ModuleNode) => {
+              if (modulesToUpdate.includes(module)) {
+                return;
+              }
+
+              if (module.id?.endsWith(".css")) {
+                return;
+              }
+
+              modulesToUpdate.push(module);
+              if (module.id?.endsWith("/Score.tsx")) {
+                return;
+              }
+
+              for (const importer of module.importers) {
+                includeAllImporters(importer);
+              }
+            };
+
+            for (const module of modules) {
+              includeAllImporters(module);
+            }
+
+            return modulesToUpdate;
+          }
+        },
+      },
+    ],
 
     server: {
       port: 3001,
