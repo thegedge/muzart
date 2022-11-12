@@ -135,10 +135,8 @@ export const Score = observer((_props: never) => {
       }
     },
     [
-      application.selection.partIndex,
-      application.selection.measureIndex,
-      application.selection.chordIndex,
-      application.selection.noteIndex,
+      application.selection.part,
+      application.selection.element,
       application.debug.enabled,
       application.playback.playing,
       application.playback.currentMeasure,
