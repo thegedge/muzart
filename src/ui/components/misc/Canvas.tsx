@@ -16,8 +16,6 @@ export interface Point {
 }
 
 interface CanvasProps {
-  size: Box;
-  render: RenderFunction;
   state: CanvasState;
 
   onClick?: (p: Point) => void;
@@ -51,9 +49,6 @@ export const Canvas = observer((props: CanvasProps) => {
       document.body.removeEventListener("keydown", listener);
     };
   }, [state]);
-
-  useEffect(() => state.setUserSpaceSize(props.size), [props.size]);
-  useEffect(() => state.setRenderFunction(props.render), [props.render]);
 
   useEffect(() => {
     if (!container) {

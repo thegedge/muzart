@@ -1,7 +1,7 @@
 import { mapValues } from "lodash";
 import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useCallback, useEffect, useMemo } from "preact/hooks";
+import { useEffect, useMemo } from "preact/hooks";
 import { createKeybindingsHandler } from "tinykeys";
 import {
   AllElements,
@@ -99,12 +99,12 @@ export const Score = observer((_props: never) => {
     };
   }, [application, state]);
 
-  const render = useCallback<RenderFunction>(
-    (context, viewport) => {
-      if (!part) {
-        return;
-      }
+  useEffect(() => {
+    if (!part) {
+      return;
+    }
 
+    const render: RenderFunction = (context, viewport) => {
       renderScoreElement(application, context, part, viewport);
 
       if (application.playback.playing) {
@@ -133,15 +133,24 @@ export const Score = observer((_props: never) => {
         context.fillRect(selectionBox.x, selectionBox.y, selectionBox.width, selectionBox.height);
         context.strokeRect(selectionBox.x, selectionBox.y, selectionBox.width, selectionBox.height);
       }
-    },
-    [
-      application.selection.part,
-      application.selection.element,
-      application.debug.enabled,
-      application.playback.playing,
-      application.playback.currentMeasure,
-    ]
-  );
+    };
+
+    state.setRenderFunction(render);
+    state.setUserSpaceSize(part.box);
+
+    return reaction(
+      () => [
+        application.selection.part,
+        application.selection.element,
+        application.debug.enabled,
+        application.playback.playing,
+        application.playback.currentMeasure,
+      ],
+      () => {
+        state.redraw();
+      }
+    );
+  }, [part]);
 
   useEffect(() => {
     return reaction(
@@ -192,5 +201,5 @@ export const Score = observer((_props: never) => {
     state.setCursor(cursor);
   };
 
-  return <Canvas render={render} size={part.box} onClick={onClick} onMouseMove={onMouseMove} state={state} />;
+  return <Canvas onClick={onClick} onMouseMove={onMouseMove} state={state} />;
 });
