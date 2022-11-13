@@ -69,6 +69,14 @@ export const Score = observer((_props: never) => {
             application.selection.previousPage();
           },
 
+          "Home": () => {
+            application.selection.update({ measureIndex: 0 });
+          },
+          "End": () => {
+            const part = selection.part;
+            application.selection.update({ measureIndex: part && part.part.measures.length - 1 });
+          },
+
           "$mod+Shift+ArrowLeft": () => {
             application.selection.previousMeasure();
           },
