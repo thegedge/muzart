@@ -144,30 +144,46 @@ export const numCharsToRepresent = (v: number): number => {
  * Find runs of elements in a bigger list.
  *
  * @param values the list of values to find runs in
- * @param partOfRun a function that determines if a given element should be part of a run
+ * @param mapper a function that maps a given element to a run value. It is compared against the
+ *   previously mapped value. If they are the same, the make up a run.
  *
  * @returns a list of `[start, end]` tuples for all the runs in the given list
  *
  * @example
- * runs([0, 1, 2, 4, 3, 5, 7, 1, 4, 14], (v) => v % 2 == 0) == [[0, 0], [2, 3], [8, 9]]
+ * runs([0, 1, 2, 4, 3, 5, 7, 1, 4, 14], (v) => v % 2 == 0 ? true : undefined) == [[0, 0], [2, 3], [8, 9]]
+ *
+ * @example
+ * runs([1, 2, 2, 3, 3, 3, 4], (v) => v) == [[0, 0], [1, 2], [3, 5], [6, 6]]
  */
-export function runs<T>(values: Iterable<T>, partOfRun: (v: T) => boolean): [number, number][] {
-  const runs: [number, number][] = [];
+export function runs<T, V>(
+  values: Iterable<T>,
+  mapper: (v: T, lastValue: V | undefined) => V | undefined
+): [number, number, V][] {
+  const runs: [number, number, V][] = [];
+  let mapped: V | undefined = undefined;
   let start: number | null = null;
   let index = 0;
   for (const v of values) {
-    if (partOfRun(v)) {
-      start ??= index;
-    } else if (start !== null) {
-      runs.push([start, index - 1]);
+    const newMapped = mapper(v, mapped);
+    const endCurrentRun = newMapped == undefined || newMapped != mapped;
+    if (endCurrentRun && start !== null) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      runs.push([start, index - 1, mapped!]);
       start = null;
+      mapped = undefined;
+    }
+
+    if (mapped == undefined && newMapped != undefined) {
+      start = index;
+      mapped = newMapped;
     }
 
     ++index;
   }
 
   if (start !== null) {
-    runs.push([start, index - 1]);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    runs.push([start, index - 1, mapped!]);
   }
 
   return runs;

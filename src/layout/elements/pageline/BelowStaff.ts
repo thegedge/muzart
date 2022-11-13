@@ -1,4 +1,13 @@
-import types, { BEAM_HEIGHT, Box, runs, STAFF_LINE_HEIGHT, STEM_BEAM_COLOR, STEM_HEIGHT, TUPLET_SIZE } from "../..";
+import types, {
+  BEAM_HEIGHT,
+  Box,
+  LINE_STROKE_WIDTH,
+  runs,
+  STAFF_LINE_HEIGHT,
+  STEM_BEAM_COLOR,
+  STEM_HEIGHT,
+  TUPLET_SIZE,
+} from "../..";
 import * as notation from "../../../notation";
 import { NoteValueName } from "../../../notation";
 import { SimpleGroupElement } from "../../layouts/SimpleGroup";
@@ -102,23 +111,45 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
   }
 
   private layOutTuplets(measureBox: Box, beatElements: BeatElements[]) {
-    // TODO "bracket" multiple notes in a row, e.g., └─ 3 ─┘. It's a little challenging though, because there are
-    //  a lot of special cases:
-    //     1. If the entire beat is the same tuplet value, and it's beamed, no bracketing
-    //     2. Bracketing regardless if we're crossing a beat? Is it the entire set of n notes, or just what falls in the beat?
+    const tupletValueForChord = (chord: notation.Chord) => {
+      const tupletNote = chord.notes.find((n) => n.value.tuplet?.n);
+      return tupletNote?.value.tuplet?.n;
+    };
 
-    for (const beatElement of beatElements) {
-      const noteWithTuplet = beatElement.chord.notes.find((note) => !!note.value.tuplet);
-      const tuplet = noteWithTuplet?.value.tuplet;
-      if (tuplet) {
-        const y = STEM_HEIGHT + BEAM_HEIGHT;
+    const tupletRuns = runs(beatElements, (e) => tupletValueForChord(e.chord));
+    for (const [start, end, tuplet] of tupletRuns) {
+      const y = STEM_HEIGHT + BEAM_HEIGHT;
+      const beatElement = beatElements[start];
+      if (start == end) {
         this.addElement(
           Text.centered({
             box: new Box(measureBox.x + beatElement.box.x, y, beatElement.box.width, TUPLET_SIZE),
-            value: String(tuplet.n),
+            value: String(tuplet),
             size: TUPLET_SIZE,
           })
         );
+      } else if (tuplet == end - start + 1 && tuplet == beatElements.length) {
+        const width = beatElements[end].box.centerX - beatElement.box.centerX;
+        this.addElement(
+          Text.centered({
+            box: new Box(measureBox.x + beatElement.box.centerX, y, width, TUPLET_SIZE),
+            value: String(tuplet),
+            size: TUPLET_SIZE,
+          })
+        );
+      } else {
+        // TODO if end - start + 1 > tuplet, split up into multiple brackets groups
+        const extensionWidth = 6 * LINE_STROKE_WIDTH;
+        const width = beatElements[end].box.centerX - beatElement.box.centerX + extensionWidth;
+        this.addElement({
+          type: "DecoratedText",
+          box: new Box(measureBox.x + beatElement.box.centerX - 0.5 * extensionWidth, y, width, TUPLET_SIZE),
+          text: String(tuplet),
+          size: TUPLET_SIZE,
+          parent: null,
+          startDecoration: { upTick: true },
+          endDecoration: { upTick: true },
+        });
       }
     }
   }
@@ -129,7 +160,7 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       // Find runs of elements that still need a beam drawn, then draw a beam between the two
-      const beamRuns = runs(beamCounts, (v) => v > 0);
+      const beamRuns = runs(beamCounts, (v) => (v > 0 ? true : undefined));
       if (beamRuns.length === 0) {
         break;
       }

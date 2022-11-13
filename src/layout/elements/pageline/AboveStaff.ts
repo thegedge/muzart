@@ -3,7 +3,7 @@ import { AccentStyle } from "../../../notation";
 import { BEAM_HEIGHT, chordWidth, STAFF_LINE_HEIGHT } from "../../constants";
 import { GridGroup } from "../../layouts/GridGroup";
 import { SimpleGroupElement } from "../../layouts/SimpleGroup";
-import { LineElement, Measure } from "../../types";
+import { DecoratedText, LineElement, Measure } from "../../types";
 import { Box } from "../../utils";
 import { Beam } from "../Beam";
 import { Bend } from "../Bend";
@@ -34,40 +34,46 @@ export class AboveStaff extends GridGroup<LineElement> {
     this.layOutBends();
 
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
+    const textElement = (text: string, amount: number): DecoratedText | Text => {
+      if (amount > 1) {
+        return {
+          type: "DecoratedText",
+          box: new Box(0, 0, 0, baseSize),
+          size: baseSize,
+          text,
+          endDecoration: {
+            downTick: true,
+            upTick: true,
+            dashed: true,
+          },
+          parent: null,
+        };
+      }
+
+      return new Text({
+        box: new Box(0, 0, 0, baseSize),
+        size: baseSize,
+        value: text,
+        halign: "start",
+        valign: "center",
+      });
+    };
 
     this.addInterMeasureStaffDecorations(
       (chord: notation.Chord) => chord.notes.some((n) => n.palmMute),
-      (_hasPalmMute: boolean, amount: number) => ({
-        type: amount > 1 ? "DashedLineText" : "Text",
-        box: new Box(0, 0, 0, baseSize),
-        size: baseSize,
-        text: "P.M.",
-        parent: null,
-      })
+      (_hasPalmMute: boolean, amount: number) => textElement("P.M.", amount)
     );
 
     this.addInterMeasureStaffDecorations(
       (chord: notation.Chord) => {
         return chord.notes.find((n) => n.harmonic)?.harmonicString;
       },
-      (harmonicString: string, amount: number) => ({
-        type: amount > 1 ? "DashedLineText" : "Text",
-        box: new Box(0, 0, 0, baseSize),
-        size: baseSize,
-        text: harmonicString,
-        parent: null,
-      })
+      (harmonicString: string, amount: number) => textElement(harmonicString, amount)
     );
 
     this.addInterMeasureStaffDecorations(
       (chord: notation.Chord) => chord.notes.some((n) => n.letRing),
-      (_letRing: boolean, amount: number) => ({
-        type: amount > 1 ? "DashedLineText" : "Text",
-        box: new Box(0, 0, 0, baseSize),
-        size: baseSize,
-        text: "let ring",
-        parent: null,
-      })
+      (_letRing: boolean, amount: number) => textElement("let ring", amount)
     );
 
     this.addInterMeasureStaffDecorations(

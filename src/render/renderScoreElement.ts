@@ -5,7 +5,7 @@ import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
 import { Bend } from "./Bend";
 import { ChordDiagram } from "./ChordDiagram";
-import { DashedLineText } from "./DashedLineText";
+import { DecoratedText } from "./DecoratedText";
 import { Dot } from "./Dot";
 import { Line } from "./Line";
 import { Note } from "./Note";
@@ -71,7 +71,7 @@ const RenderFunctions: Record<string, RenderFunc<any>> = {
   Bend,
   Beam,
   ChordDiagram,
-  DashedLineText,
+  DecoratedText,
   Dot,
   Line,
   Note,

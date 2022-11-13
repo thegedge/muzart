@@ -69,7 +69,7 @@ export type LineElement =
   | Bend
   | Chord
   | ChordDiagram
-  | DashedLineText
+  | DecoratedText
   | Dot
   | Group<LineElement>
   | Line
@@ -144,10 +144,18 @@ export interface Text extends LayoutElement<LineElement> {
   style?: CSSProperties;
 }
 
-export interface DashedLineText extends LayoutElement<LineElement> {
-  type: "DashedLineText";
+export interface TextDecoration {
+  upTick?: boolean;
+  downTick?: boolean;
+  dashed?: boolean;
+}
+
+export interface DecoratedText extends LayoutElement<LineElement> {
+  type: "DecoratedText";
   text: string;
   size: Millimetres;
+  startDecoration?: TextDecoration;
+  endDecoration?: TextDecoration;
 }
 
 export interface Measure extends LayoutElement<LineElement> {
