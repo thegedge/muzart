@@ -108,6 +108,18 @@ export const Score = observer((_props: never) => {
   }, [application, state]);
 
   useEffect(() => {
+    return reaction(
+      () => application.selection.part?.box,
+      (box) => {
+        if (box) {
+          state.setUserSpaceSize(box);
+        }
+      }
+    );
+  }, [state, application]);
+
+  useEffect(() => {
+    const part = application.selection.part;
     if (!part) {
       return;
     }
@@ -144,7 +156,6 @@ export const Score = observer((_props: never) => {
     };
 
     state.setRenderFunction(render);
-    state.setUserSpaceSize(part.box);
 
     return reaction(
       () => [
@@ -158,7 +169,7 @@ export const Score = observer((_props: never) => {
         state.redraw();
       }
     );
-  }, [part]);
+  }, [state, application, application.selection.part]);
 
   useEffect(() => {
     return reaction(
