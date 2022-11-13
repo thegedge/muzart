@@ -101,7 +101,7 @@ const ScoreLoader = (props: { source: SongTypes["source"]; name: string }) => {
         return;
       }
       case "storage": {
-        const tabData = application.storage.getBlob(TABS_NAMESPACE, name);
+        const tabData = application.storage.loadBlob(TABS_NAMESPACE, name);
         if (!tabData) {
           throw new Error(`${name} not found in local storage!`);
         }

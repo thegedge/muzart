@@ -25,14 +25,14 @@ const preventDefault = (f: (event: KeyboardEvent) => void) => {
 
 export const Score = observer((_props: never) => {
   const application = useApplicationState();
-  const { error, selection, playback } = application;
+  const { storage, error, selection, playback } = application;
 
   if (error) {
     throw error; // Let the ErrorBoundary figure it out
   }
 
   const part = selection.part;
-  const state = useMemo(() => new CanvasState(), []);
+  const state = useMemo(() => new CanvasState(storage), []);
 
   useEffect(() => {
     return () => state.dispose();
@@ -183,12 +183,14 @@ export const Score = observer((_props: never) => {
           return;
         }
 
+        // TODO ideally we ensure the selection box is within view,
+
         const line = ancestorOfType<AllElements>(element, "PageLine") ?? element;
         const absoluteBox = toAncestorCoordinateSystem(line);
         state.ensureInView(absoluteBox);
       }
     );
-  }, [application.selection]);
+  }, [application]);
 
   if (!part) {
     return null;

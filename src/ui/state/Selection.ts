@@ -2,8 +2,10 @@
 import { inRange, last } from "lodash";
 import { makeAutoObservable } from "mobx";
 import layout, { Chord, getAncestorOfType, Measure, Note, Page, Part, Rest, Score } from "../../layout";
+import { VIEW_STATE_NAMESPACE } from "../storage/namespaces";
+import { numberOrDefault, StorableObject, Storage } from "../storage/Storage";
 
-export class Selection {
+export class Selection implements StorableObject {
   public score: Score | null = null;
 
   public partIndex = 0;
@@ -11,7 +13,8 @@ export class Selection {
   public chordIndex = 0;
   public noteIndex = 0;
 
-  constructor() {
+  constructor(readonly storage: Storage) {
+    this.storage.loadObject(VIEW_STATE_NAMESPACE, "selection", this);
     makeAutoObservable(this, undefined, { deep: false });
   }
 
@@ -68,6 +71,8 @@ export class Selection {
       if (m) this.measureIndex = selection.measureIndex!;
       if (c) this.chordIndex = selection.chordIndex!;
       if (n) this.noteIndex = selection.noteIndex!;
+
+      void this.storage.store(VIEW_STATE_NAMESPACE, "selection", this);
     }
 
     if (this.score) {
@@ -201,10 +206,26 @@ export class Selection {
   setScore(score: Score | null) {
     this.score = score;
     this.update({
-      partIndex: 0,
-      measureIndex: 0,
-      chordIndex: 0,
-      noteIndex: 0,
+      partIndex: this.partIndex,
+      measureIndex: this.measureIndex,
+      chordIndex: this.chordIndex,
+      noteIndex: this.noteIndex,
     });
+  }
+
+  toJSON() {
+    return {
+      partIndex: this.partIndex,
+      measureIndex: this.measureIndex,
+      chordIndex: this.chordIndex,
+      noteIndex: this.noteIndex,
+    };
+  }
+
+  fromJSON(value: Record<string, unknown>): void {
+    this.partIndex = numberOrDefault(value.partIndex, 0);
+    this.measureIndex = numberOrDefault(value.measureIndex, 0);
+    this.chordIndex = numberOrDefault(value.chordIndex, 0);
+    this.noteIndex = numberOrDefault(value.noteIndex, 0);
   }
 }

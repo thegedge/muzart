@@ -1,6 +1,10 @@
 import { makeAutoObservable } from "mobx";
 import { Box, LINE_STROKE_WIDTH, PX_PER_MM } from "../../../layout";
+import { VIEW_STATE_NAMESPACE } from "../../storage/namespaces";
+import { isRecord, numberOrDefault, Storage } from "../../storage/Storage";
 import { Point, RenderFunction } from "./Canvas";
+
+const STORAGE_SUBKEY = "canvasState";
 
 /**
  * Manages the canvas state, translating between various coordinate spaces:
@@ -10,6 +14,7 @@ import { Point, RenderFunction } from "./Canvas";
  * 3. device space; the space in which rendering is performed (canvas space * pixel ratio)
  */
 export class CanvasState {
+  /** The canvas element this state manages */
   canvas: HTMLCanvasElement | null = null;
 
   /** The zoom level, a linear scaling factor applied to the entire canvas */
@@ -20,9 +25,6 @@ export class CanvasState {
 
   /** The viewport, in userspace coordinates */
   viewport = Box.empty();
-
-  /** The handle of the last request animation frame */
-  frameHandle = -1;
 
   /** The horizontal scroll offset, in canvas space */
   scrollX = 0;
@@ -42,7 +44,9 @@ export class CanvasState {
   private canvasResizeObserver: ResizeObserver;
   private centerOnFirstResize = true;
 
-  constructor() {
+  constructor(readonly storage: Storage) {
+    this.storage.loadObject(VIEW_STATE_NAMESPACE, STORAGE_SUBKEY, this);
+
     // "debounce" events to avoid having the canvas flicker, at the cost of stretching what's currently painted
     let timeoutHandle = -1;
     this.canvasResizeObserver = new ResizeObserver(() => {
@@ -227,6 +231,9 @@ export class CanvasState {
       this.canvas.width / this.userspaceToDeviceFactor,
       this.canvas.height / this.userspaceToDeviceFactor
     );
+
+    void this.storage.store(VIEW_STATE_NAMESPACE, STORAGE_SUBKEY, this);
+
     this.redraw();
   }
 
@@ -258,6 +265,9 @@ export class CanvasState {
     return this.userspaceToCanvasFactor * this.pixelRatio;
   }
 
+  /** The handle of the last request animation frame */
+  private frameHandle = -1;
+
   redraw() {
     if (!this.canvas || !this.viewport) {
       return;
@@ -281,6 +291,29 @@ export class CanvasState {
       context.lineWidth = LINE_STROKE_WIDTH;
       this.render(context, this.viewport);
     });
+  }
+
+  toJSON() {
+    return {
+      scrollX: this.scrollX,
+      scrollY: this.scrollY,
+      viewport: this.viewport,
+      zoom: this.zoom,
+    };
+  }
+
+  fromJSON(value: Record<string, unknown>) {
+    this.scrollX = numberOrDefault(value.scrollX, 0);
+    this.scrollY = numberOrDefault(value.scrollY, 0);
+    this.zoom = numberOrDefault(value.zoom, 0);
+
+    if (isRecord(value.viewport)) {
+      const x = numberOrDefault(value.viewport.x, 0);
+      const y = numberOrDefault(value.viewport.y, 0);
+      const w = numberOrDefault(value.viewport.width, 0);
+      const h = numberOrDefault(value.viewport.height, 0);
+      this.viewport = new Box(x, y, w, h);
+    }
   }
 }
 

@@ -1,10 +1,11 @@
 import { ComponentChildren, createContext } from "preact";
-import React, { Suspense } from "preact/compat";
+import { Suspense } from "preact/compat";
 import { useContext, useEffect, useMemo } from "preact/hooks";
 import { PlaybackController } from "../../playback/PlaybackController";
 import { Loading } from "../components/misc/Loading";
 import { Application } from "../state/Application";
 import { Selection } from "../state/Selection";
+import { LocalStorage } from "../storage/LocalStorage";
 
 declare global {
   interface Window {
@@ -24,9 +25,10 @@ export const useApplicationState = (): Application => {
 
 export const ApplicationState = (props: { children?: ComponentChildren }) => {
   const application = useMemo(() => {
-    const selection = new Selection();
+    const storage = new LocalStorage(globalThis.localStorage);
+    const selection = new Selection(storage);
     const playback = new PlaybackController(selection);
-    const application = new Application(selection, playback);
+    const application = new Application(storage, selection, playback);
     window.Muzart = application;
     return application;
   }, []);

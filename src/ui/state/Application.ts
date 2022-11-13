@@ -5,7 +5,6 @@ import { Point } from "../../layout";
 import { load } from "../../loaders";
 import { Score } from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
-import { LocalStorage } from "../storage/LocalStorage";
 import { TABS_NAMESPACE, VIEW_STATE_NAMESPACE } from "../storage/namespaces";
 import { Storage } from "../storage/Storage";
 import { DebugContext } from "./DebugContext";
@@ -25,9 +24,8 @@ export class Application {
   public score: layout.Score | null = null;
 
   public debug: DebugContext = new DebugContext();
-  public storage: Storage = new LocalStorage(globalThis.localStorage);
 
-  constructor(public selection: Selection, public playback: PlaybackController) {
+  constructor(public storage: Storage, public selection: Selection, public playback: PlaybackController) {
     makeAutoObservable(this, undefined, { deep: false });
   }
 
@@ -42,7 +40,7 @@ export class Application {
       if (source instanceof File) {
         const buffer = (yield source.arrayBuffer()) as ArrayBuffer;
         const blob = new Blob([buffer], { type: "application/octet-stream" });
-        this.storage.setBlob(TABS_NAMESPACE, source.name, blob);
+        yield this.storage.store(TABS_NAMESPACE, source.name, blob);
         this.storage.set(VIEW_STATE_NAMESPACE, "lastTab", source.name);
       } else if (typeof source == "string") {
         const [_songs, songName] = source.split("/");
