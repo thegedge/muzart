@@ -43,6 +43,7 @@ export class CanvasState {
   private centerOnFirstResize = true;
 
   constructor() {
+    // "debounce" events to avoid having the canvas flicker, at the cost of stretching what's currently painted
     let timeoutHandle = -1;
     this.canvasResizeObserver = new ResizeObserver(() => {
       clearTimeout(timeoutHandle);
@@ -62,6 +63,10 @@ export class CanvasState {
     });
 
     makeAutoObservable(this, {});
+  }
+
+  dispose() {
+    this.canvasResizeObserver.disconnect();
   }
 
   setCanvas(canvas: HTMLCanvasElement | null) {

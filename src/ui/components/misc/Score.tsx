@@ -35,6 +35,10 @@ export const Score = observer((_props: never) => {
   const state = useMemo(() => new CanvasState(), []);
 
   useEffect(() => {
+    return () => state.dispose();
+  }, [state]);
+
+  useEffect(() => {
     const listener = createKeybindingsHandler(
       mapValues(
         {
