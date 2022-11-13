@@ -6,8 +6,12 @@ import { createKeybindingsHandler } from "tinykeys";
 import {
   AllElements,
   ancestorOfType,
+  Box,
+  Chord,
   isChord,
+  LineElement,
   LINE_STROKE_WIDTH,
+  Rest,
   STAFF_LINE_HEIGHT,
   toAncestorCoordinateSystem,
 } from "../../../layout";
@@ -122,6 +126,18 @@ export const Score = observer((_props: never) => {
     );
   }, [state, application]);
 
+  const selectionBoxFor = (chord: Chord | Rest, selectedNoteIndex: number) => {
+    const PADDING = 3 * LINE_STROKE_WIDTH;
+    const chordBox = toAncestorCoordinateSystem(chord);
+    return chordBox
+      .update({
+        y: chordBox.y + selectedNoteIndex * STAFF_LINE_HEIGHT,
+        width: chord.type == "Chord" ? chordBox.width : STAFF_LINE_HEIGHT,
+        height: STAFF_LINE_HEIGHT,
+      })
+      .expand(PADDING);
+  };
+
   useEffect(() => {
     const part = application.selection.part;
     if (!part) {
@@ -142,15 +158,7 @@ export const Score = observer((_props: never) => {
         }
       } else if (selection.chord) {
         // Selection box
-        const PADDING = 3 * LINE_STROKE_WIDTH;
-        const chordBox = toAncestorCoordinateSystem(selection.chord);
-        const selectionBox = chordBox
-          .update({
-            y: chordBox.y + selection.noteIndex * STAFF_LINE_HEIGHT,
-            width: selection.chord.type == "Chord" ? chordBox.width : STAFF_LINE_HEIGHT,
-            height: STAFF_LINE_HEIGHT,
-          })
-          .expand(PADDING);
+        const selectionBox = selectionBoxFor(selection.chord, selection.noteIndex);
 
         context.fillStyle = "#f0f0a055";
         context.strokeStyle = "#a0a050";
@@ -177,17 +185,33 @@ export const Score = observer((_props: never) => {
 
   useEffect(() => {
     return reaction(
-      () => application.playback.currentMeasure ?? application.selection.element,
-      (element) => {
+      () =>
+        [
+          application.playback.currentMeasure ?? application.selection.element,
+          application.selection.noteIndex,
+        ] as const,
+      ([element, selectedNoteIndex]) => {
         if (!element) {
           return;
         }
 
-        // TODO ideally we ensure the selection box is within view,
+        let box: Box;
+        if (element.type == "Chord" || element.type == "Rest") {
+          box = selectionBoxFor(element, selectedNoteIndex);
+        } else if (element.type == "Note") {
+          const chord = ancestorOfType<LineElement, Chord>(element, "Chord");
+          if (chord) {
+            box = selectionBoxFor(chord, selectedNoteIndex);
+          } else {
+            const line = ancestorOfType<AllElements>(element, "PageLine") ?? element;
+            box = toAncestorCoordinateSystem(line);
+          }
+        } else {
+          const line = ancestorOfType<AllElements>(element, "PageLine") ?? element;
+          box = toAncestorCoordinateSystem(line);
+        }
 
-        const line = ancestorOfType<AllElements>(element, "PageLine") ?? element;
-        const absoluteBox = toAncestorCoordinateSystem(line);
-        state.ensureInView(absoluteBox);
+        state.ensureInView(box);
       }
     );
   }, [application]);

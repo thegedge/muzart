@@ -6,15 +6,15 @@ export * from "./Box";
 /**
  * Get an ancestor of a given type for an element.
  */
-export function ancestorOfType<LayoutT extends LayoutElement>(
-  source: LayoutT,
-  ancestorType: LayoutT["type"]
-): LayoutElement | null {
+export function ancestorOfType<SourceT extends LayoutElement, AncestorT extends LayoutElement = SourceT>(
+  source: SourceT,
+  ancestorType: AncestorT["type"]
+): AncestorT | null {
   let e: LayoutElement | null | undefined = source.parent;
   while (e && e.type != ancestorType) {
     e = e.parent;
   }
-  return e ?? null;
+  return (e as AncestorT) ?? null;
 }
 
 /**
