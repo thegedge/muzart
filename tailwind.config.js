@@ -7,6 +7,9 @@ module.exports = {
         // Track name | Soloed | Muted | Measure box list
         "part-list": "max-content minmax(1.5rem, max-content) minmax(1.5rem, max-content) 1fr",
       },
+      flexGrow: {
+        2: "2",
+      },
       minWidth: {
         screen: "100vw",
       },

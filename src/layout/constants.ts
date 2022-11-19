@@ -1,6 +1,6 @@
 import { Margins, Millimetres } from "./types";
 
-export const PX_PER_MM = 4; // assuming 96 pixels per inch, rounded up so we have integers
+export const PX_PER_MM = 4; // assuming 96 pixels per inch, rounded up (from 3.7795275591) so we have integers
 
 export const DEFAULT_PAGE_WIDTH: Millimetres = 210;
 export const DEFAULT_PAGE_HEIGHT: Millimetres = 297;
