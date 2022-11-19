@@ -39,8 +39,7 @@ export class PlaybackController {
         return;
       }
 
-      this.mutedParts = new Array(selection.score?.score.parts.length).fill(false);
-      this.soloedParts = new Array(selection.score?.score.parts.length).fill(false);
+      this.reset();
       score = selection.score;
     });
 
@@ -58,6 +57,11 @@ export class PlaybackController {
       stop: action,
       loadSoundFont: flow,
     });
+  }
+
+  reset() {
+    this.mutedParts = new Array(this.selection.score?.score.parts.length).fill(false);
+    this.soloedParts = new Array(this.selection.score?.score.parts.length).fill(false);
   }
 
   get instrument() {

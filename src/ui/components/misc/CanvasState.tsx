@@ -56,8 +56,7 @@ export class CanvasState {
         const x = this.viewport.centerX * this.userspaceToCanvasFactor;
         const y = this.viewport.centerY * this.userspaceToCanvasFactor;
 
-        this.pixelRatio = devicePixelRatio;
-        this.updateCanvas();
+        this.setPixelRatio(devicePixelRatio);
         if (this.centerOnFirstResize) {
           this.centerViewportOn();
         } else {
