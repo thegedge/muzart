@@ -110,7 +110,7 @@ export class AboveStaff extends GridGroup<LineElement> {
     for (let index = 0; index < this.staffElements.length; ++index) {
       const element = this.staffElements[index].element;
       if (element.type == "Space") {
-        return;
+        continue;
       }
 
       let newPredicateValue;
