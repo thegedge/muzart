@@ -1,13 +1,9 @@
 import { useEffect, useState } from "preact/hooks";
-import { BaseLocationHook, Route, Router } from "wouter";
-import { determineScoreType, getFilenameAndMimeType, ScoreDataType } from "../loaders";
+import { BaseLocationHook, Router } from "wouter";
 import "./app.css";
-import { PartPanel } from "./components/editor/PartPanel";
+import { ScoreDropZone } from "./components/editor/ScoreDropZone";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { InitialPage, SongTypes } from "./components/misc/InitialPage";
-import { Score } from "./components/misc/Score";
-import { TABS_NAMESPACE } from "./storage/namespaces";
-import { ApplicationState, useApplicationState } from "./utils/ApplicationStateContext";
+import { ApplicationState } from "./utils/ApplicationStateContext";
 
 export const App = () => {
   return (
@@ -22,100 +18,13 @@ export const App = () => {
           </svg>
         </a>
       </div>
-      <ErrorBoundary>
-        <ApplicationState>
-          <ScoreDropZone />
-        </ApplicationState>
-      </ErrorBoundary>
-    </div>
-  );
-};
-
-const ScoreDropZone = () => {
-  const application = useApplicationState();
-
-  const onDrop = (event: DragEvent) => {
-    event.preventDefault();
-    if (!event.dataTransfer) {
-      return;
-    }
-
-    const sources = filesFromDataTransfer(event.dataTransfer);
-    const soundfontFile = sources.find((file) => getFilenameAndMimeType(file).filename.endsWith(".sf2"));
-    const tabFile = sources.find((file) => determineScoreType(file) != ScoreDataType.Unknown);
-
-    if (soundfontFile) {
-      void application.playback.loadSoundFont(soundfontFile);
-    }
-
-    if (tabFile) {
-      void application.loadScore(tabFile);
-    }
-  };
-
-  return (
-    <div
-      className="min-w-screen min-h-screen"
-      onDrop={onDrop}
-      onDragOver={(e) => {
-        e.preventDefault();
-      }}
-    >
-      <div className="flex flex-col items-center w-screen h-screen max-w-screen max-h-screen overflow-clip">
-        <Router hook={useHashLocation}>
-          <Route path="/:source/:name">
-            {(params: { source: SongTypes["source"]; name: string }) => {
-              const name = decodeURIComponent(params.name);
-              return <ScoreLoader name={name} source={params.source} />;
-            }}
-          </Route>
-          <Route path="/">
-            {(_params: undefined) => {
-              application.setScore(null);
-              return (
-                <div className="w-full overflow-auto">
-                  <InitialPage />
-                </div>
-              );
-            }}
-          </Route>
-        </Router>
-      </div>
-    </div>
-  );
-};
-
-const ScoreLoader = (props: { source: SongTypes["source"]; name: string }) => {
-  const { source, name } = props;
-  const application = useApplicationState();
-
-  useEffect(() => {
-    switch (source) {
-      case "demo": {
-        const base = import.meta.env.BASE_URL;
-        if (base == "") {
-          void application.loadScore(`${base}songs/${name}`);
-        } else {
-          void application.loadScore(`songs/${name}`);
-        }
-        return;
-      }
-      case "storage": {
-        const tabData = application.storage.loadBlob(TABS_NAMESPACE, name);
-        if (!tabData) {
-          throw new Error(`${name} not found in local storage!`);
-        }
-
-        const file = new File([tabData], name);
-        void application.loadScore(file);
-      }
-    }
-  }, [source, name]);
-
-  return (
-    <div className="flex flex-col w-screen h-screen max-w-screen max-h-screen">
-      <Score />
-      <PartPanel />
+      <Router hook={useHashLocation}>
+        <ErrorBoundary>
+          <ApplicationState>
+            <ScoreDropZone />
+          </ApplicationState>
+        </ErrorBoundary>
+      </Router>
     </div>
   );
 };
@@ -128,7 +37,7 @@ const navigate = (to: string) => {
   window.location.hash = to;
 };
 
-const useHashLocation: BaseLocationHook = () => {
+export const useHashLocation: BaseLocationHook = () => {
   const [location, setLocation] = useState(currentLocation());
 
   useEffect(() => {
@@ -138,24 +47,4 @@ const useHashLocation: BaseLocationHook = () => {
   }, []);
 
   return [location, navigate];
-};
-
-const filesFromDataTransfer = (dataTransfer: DataTransfer): File[] => {
-  const sources: File[] = [];
-
-  for (let i = 0; i < dataTransfer.items.length; i++) {
-    if (dataTransfer.items[i].kind === "file") {
-      const file = dataTransfer.items[i].getAsFile();
-      if (file) {
-        sources.push(file);
-      }
-    }
-  }
-
-  for (let i = 0; i < dataTransfer.files.length; i++) {
-    const file = dataTransfer.files[i];
-    sources.push(file);
-  }
-
-  return sources;
 };
