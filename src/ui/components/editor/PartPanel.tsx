@@ -3,6 +3,7 @@ import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "preact/hooks";
 import { JSXInternal } from "preact/src/jsx";
+import { Ear, EarFill, Mic, MicMute } from "react-bootstrap-icons";
 import { Measure, Part } from "../../../notation";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 
@@ -25,25 +26,29 @@ export const PartPanel = observer((_props: Record<string, never>) => {
   const numMeasures = score.score.parts[0]?.measures.length ?? 0;
 
   return (
-    <div className="w-full max-h-48 flex flex-col bg-black text-gray-300 overflow-y-auto overflow-x-hidden">
-      <div className="grid grid-cols-part-list gap-y-px bg-inherit overflow-auto">
-        <div className="flex gap-px text-gray-200 bg-inherit sticky left-0 pr-px">
+    <div className="w-full max-h-48 flex flex-col bg-gray-900 text-gray-200 overflow-y-auto">
+      <div className="grid grid-cols-part-list gap-y-px bg-inherit overflow-auto items-center">
+        <div className="flex items-center gap-px bg-inherit sticky left-0 pr-px h-7">
           <div className="flex-1 px-4">Track</div>
-          <div className="text-center w-6">S</div>
-          <div className="text-center w-6">M</div>
+          <div className="flex items-center justify-center w-6 text-gray-500">
+            <Ear title="Solo tracks" />
+          </div>
+          <div className="flex items-center justify-center w-6 text-gray-500">
+            <MicMute title="Muted tracks" />
+          </div>
         </div>
-        <div className="text-gray-200 flex gap-px text-xs">
+        <div className="flex gap-px text-xs bg-inherit">
           {range(numMeasures).map((measureIndex) => {
             const marker = score.score.parts[0]?.measures[measureIndex]?.marker;
             const showNumber = measureIndex == 0 || measureIndex % 10 == 9;
             return (
               <div
                 key={measureIndex}
-                className={`w-6 h-6 flex items-center ${
+                className={`w-6 h-6 flex items-center font-light ${
                   marker
-                    ? "pl-1 text-2xs whitespace-nowrap justify-start text-gray-400 bg-black"
+                    ? "pl-1 text-2xs whitespace-nowrap justify-start text-gray-400 bg-inherit"
                     : showNumber
-                    ? "justify-center bg-black" // if a marker happens to flow into a number, the two won't "clash"
+                    ? "justify-center bg-inherit" // if a marker happens to flow into a number, the two won't "clash"
                     : "justify-center"
                 }`}
               >
@@ -66,7 +71,7 @@ const PartRow = observer(
     const { part, partIndex, onChange } = props;
     const { selection, playback } = useApplicationState();
     const partColor = part.color ?? "rgb(156, 163, 175)";
-    const rowBackgroundColor = part == selection.part?.part ? "bg-gray-700" : "bg-gray-800";
+    const rowBackgroundColor = partIndex == selection.partIndex ? "bg-gray-700" : "bg-gray-800";
 
     const toggleSolo: JSXInternal.GenericEventHandler<HTMLElement> = (event) => {
       event.preventDefault();
@@ -80,22 +85,30 @@ const PartRow = observer(
 
     return (
       <>
-        <div className="flex gap-px h-full sticky left-0 bg-inherit pr-px">
+        <div className={`flex gap-px h-full sticky left-0 pr-px ${rowBackgroundColor}`}>
           <div
-            className={`flex flex-1 sticky h-full text-xs font-extralight items-center px-4 cursor-pointer ${rowBackgroundColor}`}
+            className={`flex flex-1 sticky h-full text-xs font-extralight items-center px-4 cursor-pointer`}
             onClick={onChange}
             data-part={partIndex}
           >
             {part.name}
           </div>
-          <button type="button" name="solo" onClick={toggleSolo} className="bg-gray-500 text-gray-300 m-auto w-6 h-6">
-            {playback.soloedParts[partIndex] ? "✓" : ""}
+          <button type="button" name="solo" onClick={toggleSolo} className="flex items-center justify-center w-6 h-6">
+            {playback.soloedParts[partIndex] ? (
+              <EarFill className="text-white" title="Only play this track" />
+            ) : (
+              <Ear className="text-gray-500" title="Only play this track" />
+            )}
           </button>
-          <button type="button" name="mute" onClick={toggleMute} className="bg-gray-500 text-gray-300 m-auto w-6 h-6">
-            {playback.mutedParts[partIndex] ? "✓" : ""}
+          <button type="button" name="mute" onClick={toggleMute} className="flex items-center justify-center w-6 h-6">
+            {playback.mutedParts[partIndex] ? (
+              <MicMute className="text-white" title="Mute this track" />
+            ) : (
+              <Mic className="text-gray-500" title="Mute this track" />
+            )}
           </button>
         </div>
-        <div className="flex gap-px items-center cursor-pointer">
+        <div className="flex gap-px items-center cursor-pointer bg-gray-900">
           {part.measures.map((measure) => (
             <MeasureBox
               key={measure.number}
@@ -122,8 +135,10 @@ const MeasureBox = (props: {
   const { playback, selection } = useApplicationState();
   const [selected, setSelected] = useState(false);
 
-  const baseOpacity = partIndex == selection.partIndex ? 0.6 : 0.4;
-  const opacity = baseOpacity + 0.4 * measure.chords.reduce((sum, ch) => sum + (ch.rest ? 0 : ch.value.toDecimal()), 0);
+  const baseOpacity = 0.2;
+  const scale = partIndex == selection.partIndex ? 1 : 0.4;
+  const nonRestDuration = measure.chords.reduce((sum, ch) => sum + (ch.rest ? 0 : ch.value.toDecimal()), 0);
+  const opacity = baseOpacity + (1 - baseOpacity) * scale * Math.sqrt(nonRestDuration);
 
   useEffect(() => {
     return reaction(
@@ -141,7 +156,7 @@ const MeasureBox = (props: {
 
   return (
     <div
-      className="w-6 h-6 p-0.8 rounded-sm flex justify-center items-center"
+      className="w-6 h-6 p-0.8 rounded-sm flex justify-center items-center text-2xs"
       style={{ backgroundColor: replaceAlpha(color, opacity) }}
       onClick={onChange}
       data-measure={measure.number - 1}
