@@ -228,8 +228,8 @@ export const Score = observer((_props: never) => {
         application.selection.update({
           noteIndex: Math.floor(hit.point.y / hit.element.staffHeight),
         });
-      } else {
-        // TODO Playback of note when clicking note (maybe best in application state?)
+      } else if (hit.element.type == "Note") {
+        playback.playSelectedNote();
       }
     }
   };

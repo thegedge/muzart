@@ -191,14 +191,7 @@ export class PlaybackController {
 
     this.playing = true;
     this.currentMeasure = this.selection.measure;
-
-    if (this.audioContext.state == "suspended") {
-      void this.audioContext.resume().then(() => {
-        queueNextMeasureAudio();
-      });
-    } else {
-      queueNextMeasureAudio();
-    }
+    this.withPlayback(queueNextMeasureAudio);
   }
 
   stop() {
@@ -221,7 +214,9 @@ export class PlaybackController {
   playSelectedNote(): void {
     const note = this.selection.note?.note;
     if (note) {
-      this.instrument?.playNote(note, this.tempoOfSelection, undefined, true);
+      this.withPlayback(() => {
+        this.instrument?.playNote(note, this.tempoOfSelection, undefined, true);
+      });
     }
   }
 
@@ -269,5 +264,15 @@ export class PlaybackController {
     }
 
     return instrument;
+  }
+
+  private withPlayback(f: () => void) {
+    if (this.audioContext.state == "suspended") {
+      void this.audioContext.resume().then(() => {
+        f();
+      });
+    } else {
+      f();
+    }
   }
 }
