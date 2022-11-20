@@ -7,8 +7,8 @@ module.exports = {
         2: "2",
       },
       gridTemplateColumns: {
-        // Track name | Soloed | Muted | Measure box list
-        "part-list": "max-content minmax(1.5rem, max-content) minmax(1.5rem, max-content) 1fr",
+        // Track name/solo/mute :: Measure box list
+        "part-list": "max-content 1fr",
       },
       keyframes: {
         bounce: {

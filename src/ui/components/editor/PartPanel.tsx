@@ -25,11 +25,13 @@ export const PartPanel = observer((_props: Record<string, never>) => {
   const numMeasures = score.score.parts[0]?.measures.length ?? 0;
 
   return (
-    <div className="max-h-48 w-full flex flex-col bg-black text-gray-300 overflow-auto">
-      <div className="grid grid-cols-part-list items-center gap-px">
-        <div className="px-4 text-gray-200">Track</div>
-        <div className="text-center">S</div>
-        <div className="text-center">M</div>
+    <div className="w-full max-h-48 flex flex-col bg-black text-gray-300 overflow-y-auto overflow-x-hidden">
+      <div className="grid grid-cols-part-list gap-y-px bg-inherit overflow-auto">
+        <div className="flex gap-px text-gray-200 bg-inherit sticky left-0 pr-px">
+          <div className="flex-1 px-4">Track</div>
+          <div className="text-center w-6">S</div>
+          <div className="text-center w-6">M</div>
+        </div>
         <div className="text-gray-200 flex gap-px text-xs">
           {range(numMeasures).map((measureIndex) => {
             const marker = score.score.parts[0]?.measures[measureIndex]?.marker;
@@ -78,29 +80,21 @@ const PartRow = observer(
 
     return (
       <>
-        <div
-          className={`flex h-full text-xs font-extralight items-center px-4 cursor-pointer ${rowBackgroundColor}`}
-          onClick={onChange}
-          data-part={partIndex}
-        >
-          {part.name}
+        <div className="flex gap-px h-full sticky left-0 bg-inherit pr-px">
+          <div
+            className={`flex flex-1 sticky h-full text-xs font-extralight items-center px-4 cursor-pointer ${rowBackgroundColor}`}
+            onClick={onChange}
+            data-part={partIndex}
+          >
+            {part.name}
+          </div>
+          <button type="button" name="solo" onClick={toggleSolo} className="bg-gray-500 text-gray-300 m-auto w-6 h-6">
+            {playback.soloedParts[partIndex] ? "✓" : ""}
+          </button>
+          <button type="button" name="mute" onClick={toggleMute} className="bg-gray-500 text-gray-300 m-auto w-6 h-6">
+            {playback.mutedParts[partIndex] ? "✓" : ""}
+          </button>
         </div>
-        <button
-          type="button"
-          name="solo"
-          onClick={toggleSolo}
-          className="bg-gray-500 text-gray-300 m-auto w-full h-full"
-        >
-          {playback.soloedParts[partIndex] ? "✓" : ""}
-        </button>
-        <button
-          type="button"
-          name="mute"
-          onClick={toggleMute}
-          className="bg-gray-500 text-gray-300 m-auto w-full h-full"
-        >
-          {playback.mutedParts[partIndex] ? "✓" : ""}
-        </button>
         <div className="flex gap-px items-center cursor-pointer">
           {part.measures.map((measure) => (
             <MeasureBox
