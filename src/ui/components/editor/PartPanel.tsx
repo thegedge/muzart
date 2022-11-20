@@ -30,12 +30,25 @@ export const PartPanel = observer((_props: Record<string, never>) => {
         <div className="px-4 text-gray-200">Track</div>
         <div className="text-center">S</div>
         <div className="text-center">M</div>
-        <div className="text-gray-200 flex gap-px">
-          {range(numMeasures).map((measureIndex) => (
-            <div key={measureIndex} className="w-6 h-6 text-xs flex items-center justify-center">
-              <div>{(measureIndex == 0 || measureIndex % 10 == 9) && measureIndex + 1}</div>
-            </div>
-          ))}
+        <div className="text-gray-200 flex gap-px text-xs">
+          {range(numMeasures).map((measureIndex) => {
+            const marker = score.score.parts[0]?.measures[measureIndex]?.marker;
+            const showNumber = measureIndex == 0 || measureIndex % 10 == 9;
+            return (
+              <div
+                key={measureIndex}
+                className={`w-6 h-6 flex items-center ${
+                  marker
+                    ? "pl-1 text-2xs whitespace-nowrap justify-start text-gray-400 bg-black"
+                    : showNumber
+                    ? "justify-center bg-black" // if a marker happens to flow into a number, the two won't "clash"
+                    : "justify-center"
+                }`}
+              >
+                {marker ? marker.text : showNumber ? measureIndex + 1 : null}
+              </div>
+            );
+          })}
         </div>
 
         {score.score.parts.map((part, partIndex) => {
@@ -134,13 +147,13 @@ const MeasureBox = (props: {
 
   return (
     <div
-      className="w-6 h-6 p-1 rounded-sm"
+      className="w-6 h-6 p-0.8 rounded-sm flex justify-center items-center"
       style={{ backgroundColor: replaceAlpha(color, opacity) }}
       onClick={onChange}
       data-measure={measure.number - 1}
       data-part={partIndex}
     >
-      {selected && <div className="w-full h-full rounded-sm bg-white/50" />}
+      {selected && <div className="flex justify-center items-center w-full h-full rounded-sm bg-white/50" />}
     </div>
   );
 };
