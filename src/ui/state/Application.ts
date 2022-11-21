@@ -5,7 +5,7 @@ import { Point } from "../../layout";
 import { load } from "../../loaders";
 import { Score } from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
-import { TABS_NAMESPACE, VIEW_STATE_NAMESPACE } from "../storage/namespaces";
+import { TABS_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY, VIEW_STATE_NAMESPACE } from "../storage/namespaces";
 import { Storage } from "../storage/Storage";
 import { DebugContext } from "./DebugContext";
 import { Selection } from "./Selection";
@@ -51,6 +51,8 @@ export class Application {
           this.storage.set(VIEW_STATE_NAMESPACE, "lastTab", songName);
         }
       }
+
+      this.storage.delete(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY);
     } catch (error) {
       if (error instanceof Error) {
         this.error = error;

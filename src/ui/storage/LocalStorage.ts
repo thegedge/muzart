@@ -9,6 +9,10 @@ export class LocalStorage extends Storage {
     this.localStorage.setItem(`${namespace}/${subkey}`, value);
   }
 
+  delete(namespace: string, subkey: string): void {
+    return this.localStorage.removeItem(`${namespace}/${subkey}`);
+  }
+
   get(namespace: string, subkey: string): string | null {
     return this.localStorage.getItem(`${namespace}/${subkey}`);
   }

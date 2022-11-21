@@ -1,10 +1,8 @@
 import { makeAutoObservable } from "mobx";
 import { Box, LINE_STROKE_WIDTH, PX_PER_MM } from "../../../layout";
-import { VIEW_STATE_NAMESPACE } from "../../storage/namespaces";
+import { VIEW_STATE_CANVAS_SUBKEY, VIEW_STATE_NAMESPACE } from "../../storage/namespaces";
 import { isRecord, numberOrDefault, Storage } from "../../storage/Storage";
 import { Point, RenderFunction } from "./Canvas";
-
-const STORAGE_SUBKEY = "canvasState";
 
 /**
  * Manages the canvas state, translating between various coordinate spaces:
@@ -45,7 +43,7 @@ export class CanvasState {
   private centerOnFirstResize = true;
 
   constructor(readonly storage: Storage) {
-    this.storage.loadObject(VIEW_STATE_NAMESPACE, STORAGE_SUBKEY, this);
+    this.storage.loadObject(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY, this);
 
     // "debounce" events to avoid having the canvas flicker, at the cost of stretching what's currently painted
     let timeoutHandle = -1;
@@ -231,7 +229,7 @@ export class CanvasState {
       this.canvas.height / this.userspaceToDeviceFactor
     );
 
-    void this.storage.store(VIEW_STATE_NAMESPACE, STORAGE_SUBKEY, this);
+    void this.storage.store(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY, this);
 
     this.redraw();
   }

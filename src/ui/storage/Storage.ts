@@ -12,6 +12,9 @@ export abstract class Storage {
   /** Get the raw string value in this storage instance */
   abstract get(namespace: string, subkey: string): string | null;
 
+  /** Delete a given value from storage */
+  abstract delete(namespace: string, subkey: string): void;
+
   /** List all keys in the given namespace */
   abstract list(namespace: string): string[];
 
