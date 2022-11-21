@@ -135,7 +135,7 @@ const MeasureBox = (props: {
   const { playback, selection } = useApplicationState();
   const [selected, setSelected] = useState(false);
 
-  const baseOpacity = 0.2;
+  const baseOpacity = partIndex == selection.partIndex ? 0.3 : 0.2;
   const scale = partIndex == selection.partIndex ? 1 : 0.4;
   const nonRestDuration = measure.chords.reduce((sum, ch) => sum + (ch.rest ? 0 : ch.value.toDecimal()), 0);
   const opacity = baseOpacity + (1 - baseOpacity) * scale * Math.sqrt(nonRestDuration);
