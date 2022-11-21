@@ -122,7 +122,8 @@ export const Score = observer((_props: never) => {
         if (box) {
           state.setUserSpaceSize(box);
         }
-      }
+      },
+      { fireImmediately: true }
     );
   }, [state, application]);
 
