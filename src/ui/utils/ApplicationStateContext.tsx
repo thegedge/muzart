@@ -44,7 +44,8 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
     }
 
     if (!/^https?:\/\//.test(defaultSoundfont)) {
-      defaultSoundfont = `soundfonts/${encodeURIComponent(defaultSoundfont)}`;
+      const sfPath = defaultSoundfont.split("/").map(encodeURIComponent).join("/");
+      defaultSoundfont = `soundfonts/${sfPath}`;
     }
 
     void application.playback.loadSoundFont(defaultSoundfont);
