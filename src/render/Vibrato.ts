@@ -3,11 +3,12 @@ import layout, { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../layout";
 import { Application } from "../ui/state/Application";
 
 export const Vibrato = (_application: Application, context: CanvasRenderingContext2D, element: layout.Vibrato) => {
-  const startX = element.box.x + 0.2 * STAFF_LINE_HEIGHT;
+  const paddingX = 0.2 * STAFF_LINE_HEIGHT;
+  const startX = element.box.x + paddingX;
   const startY = element.box.y + 0.6 * element.box.height;
   const amplitude = 0.3 * STAFF_LINE_HEIGHT;
   const wavelength = 0.3 * STAFF_LINE_HEIGHT;
-  const numPeaks = Math.floor((element.box.right - 2 * startX) / wavelength / 2) * 2; // 2* startX for padding on the right
+  const numPeaks = Math.floor((element.box.width - 2 * paddingX) / wavelength / 2) * 2; // 2* startX for padding on the right
   const points = range(numPeaks - 1).map((_) => `${wavelength},0`);
 
   const path = new Path2D(`
