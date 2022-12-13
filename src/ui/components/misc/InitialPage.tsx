@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useMemo } from "preact/hooks";
+import { useMemo, useReducer } from "preact/hooks";
 import { DEFAULT_MARGINS, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH } from "../../../layout";
 import { TABS_NAMESPACE, VIEW_STATE_NAMESPACE } from "../../storage/namespaces";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
@@ -11,6 +11,7 @@ export type SongTypes = DemoType | StorageType;
 export const InitialPage = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
   const { loading, storage } = application;
+  const [epoch, refresh] = useReducer<number, void>((v) => v + 1, 0);
 
   const lines = useMemo(() => {
     if (loading) {
@@ -23,14 +24,15 @@ export const InitialPage = observer((_props: Record<string, never>) => {
     ];
 
     return songs.map((song) => {
-      const lastViewedTab = application.storage.get(VIEW_STATE_NAMESPACE, "lastTab");
+      const lastViewedTab = storage.get(VIEW_STATE_NAMESPACE, "lastTab");
       return {
         key: song.key,
         href: `#/${song.source}/${encodeURIComponent(song.key)}`,
         text: `${song.name}${song.key == lastViewedTab ? " (last viewed)" : ""}`,
+        remove: song.source == "storage" ? () => storage.delete(TABS_NAMESPACE, song.name) : undefined,
       };
     });
-  }, [loading, storage]);
+  }, [loading, storage, epoch]);
 
   return (
     <div className="mx-auto w-fit">
@@ -68,10 +70,27 @@ export const InitialPage = observer((_props: Record<string, never>) => {
           <h1 className="font-bold text-center text-6xl">Drop a Guitar Pro 3/4 file here</h1>
           <p className="my-6 font-extralight">Or load one from storage:</p>
           <ul className="font-light list-inside" style={{ color: "#88aaff" }}>
-            {lines.map(({ key, href, text }) => {
+            {lines.map(({ key, href, text, remove }) => {
               return (
-                <li key={key} style={{ listStyleType: '"▸ "' }}>
-                  <a href={href}>{text}</a>
+                <li key={key} style={{ listStyleType: "none" }}>
+                  <div className="flex w-full p-1 items-center hover:bg-gray-50">
+                    <a className="flex-1" href={href}>
+                      ▸ {text}
+                    </a>
+                    {remove && (
+                      <a
+                        href="#"
+                        className="inline-flex rounded-sm hover:bg-gray-200 justify-center items-center px-2 py-1"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          refresh();
+                          remove();
+                        }}
+                      >
+                        ✕
+                      </a>
+                    )}
+                  </div>
                 </li>
               );
             })}
