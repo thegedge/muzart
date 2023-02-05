@@ -1,8 +1,9 @@
 import { observer } from "mobx-react-lite";
-import { useMemo, useReducer } from "preact/hooks";
+import { useReducer } from "preact/hooks";
 import { DEFAULT_MARGINS, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH } from "../../../layout";
 import { TABS_NAMESPACE, VIEW_STATE_NAMESPACE } from "../../storage/namespaces";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
+import { useAsync } from "../../utils/useAsync";
 
 export type DemoType = { name: string; key: string; source: "demo" };
 export type StorageType = { name: string; key: string; source: "storage" };
@@ -10,29 +11,34 @@ export type SongTypes = DemoType | StorageType;
 
 export const InitialPage = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
-  const { loading, storage } = application;
+  const { loading, settingsStorage, tabStorage } = application;
   const [epoch, refresh] = useReducer<number, void>((v) => v + 1, 0);
 
-  const lines = useMemo(() => {
+  const { value: lines } = useAsync(async () => {
     if (loading) {
       return [];
     }
 
+    const lastViewedTab = settingsStorage.get(VIEW_STATE_NAMESPACE, "lastTab");
+    const tabs = await tabStorage.list(TABS_NAMESPACE);
     const songs: SongTypes[] = [
-      ...storage.list(TABS_NAMESPACE).map((name) => ({ name, key: name, source: "storage" as const })),
+      ...tabs.map((name) => ({ name, key: name, source: "storage" as const })),
       { name: "Demo Song", key: "Song13.gp4", source: "demo" },
     ];
 
     return songs.map((song) => {
-      const lastViewedTab = storage.get(VIEW_STATE_NAMESPACE, "lastTab");
       return {
         key: song.key,
         href: `#/${song.source}/${encodeURIComponent(song.key)}`,
         text: `${song.name}${song.key == lastViewedTab ? " (last viewed)" : ""}`,
-        remove: song.source == "storage" ? () => storage.delete(TABS_NAMESPACE, song.name) : undefined,
+        remove: song.source == "storage" ? async () => await tabStorage.delete(TABS_NAMESPACE, song.name) : undefined,
       };
     });
-  }, [loading, storage, epoch]);
+  }, [loading, settingsStorage, tabStorage, epoch]);
+
+  if (!lines) {
+    return null;
+  }
 
   return (
     <div className="mx-auto w-fit">
@@ -84,7 +90,7 @@ export const InitialPage = observer((_props: Record<string, never>) => {
                         onClick={(e) => {
                           e.preventDefault();
                           refresh();
-                          remove();
+                          void remove();
                         }}
                       >
                         ✕

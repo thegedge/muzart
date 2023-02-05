@@ -1,9 +1,9 @@
 import { noop } from "lodash";
-import { useEffect } from "preact/hooks";
 import { Route, useLocation } from "wouter";
 import { determineScoreType, getFilenameAndMimeType, ScoreDataType } from "../../../loaders";
 import { TABS_NAMESPACE } from "../../storage/namespaces";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
+import { useAsync } from "../../utils/useAsync";
 import { InitialPage, SongTypes } from "../misc/InitialPage";
 import { Score } from "../misc/Score";
 import { PartPanel } from "./PartPanel";
@@ -69,28 +69,32 @@ const ScoreLoader = (props: { source: SongTypes["source"]; name: string }) => {
   const { source, name } = props;
   const application = useApplicationState();
 
-  useEffect(() => {
+  const { pending, error } = useAsync(async () => {
     switch (source) {
       case "demo": {
         const base = import.meta.env.BASE_URL;
         if (base == "") {
-          void application.loadScore(`${base}songs/${name}`);
+          await application.loadScore(`${base}songs/${name}`);
         } else {
-          void application.loadScore(`songs/${name}`);
+          await application.loadScore(`songs/${name}`);
         }
         return;
       }
       case "storage": {
-        const tabData = application.storage.loadBlob(TABS_NAMESPACE, name);
+        const tabData = await application.tabStorage.loadBlob(TABS_NAMESPACE, name);
         if (!tabData) {
           throw new Error(`${name} not found in local storage!`);
         }
 
         const file = new File([tabData], name);
-        void application.loadScore(file);
+        await application.loadScore(file);
       }
     }
   }, [source, name]);
+
+  if (pending || error) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col w-screen h-screen max-w-screen max-h-screen">

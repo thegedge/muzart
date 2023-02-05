@@ -6,7 +6,7 @@ import { load } from "../../loaders";
 import { Score } from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
 import { TABS_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY, VIEW_STATE_NAMESPACE } from "../storage/namespaces";
-import { Storage } from "../storage/Storage";
+import { Storage, SyncStorage } from "../storage/Storage";
 import { DebugContext } from "./DebugContext";
 import { Selection } from "./Selection";
 
@@ -25,7 +25,12 @@ export class Application {
 
   public debug: DebugContext = new DebugContext();
 
-  constructor(public storage: Storage, public selection: Selection, public playback: PlaybackController) {
+  constructor(
+    public settingsStorage: SyncStorage,
+    public tabStorage: Storage,
+    public selection: Selection,
+    public playback: PlaybackController
+  ) {
     makeAutoObservable(this, undefined, { deep: false });
   }
 
@@ -40,19 +45,19 @@ export class Application {
       if (source instanceof File) {
         const buffer = (yield source.arrayBuffer()) as ArrayBuffer;
         const blob = new Blob([buffer], { type: "application/octet-stream" });
-        yield this.storage.store(TABS_NAMESPACE, source.name, blob);
-        this.storage.set(VIEW_STATE_NAMESPACE, "lastTab", source.name);
+        yield this.tabStorage.store(TABS_NAMESPACE, source.name, blob);
+        yield this.tabStorage.set(VIEW_STATE_NAMESPACE, "lastTab", source.name);
       } else if (typeof source == "string") {
         const [_songs, songName] = source.split("/");
-        this.storage.set(VIEW_STATE_NAMESPACE, "lastTab", songName);
+        yield this.tabStorage.set(VIEW_STATE_NAMESPACE, "lastTab", songName);
       } else {
         const songName = last(source.pathname.split("/"));
         if (songName) {
-          this.storage.set(VIEW_STATE_NAMESPACE, "lastTab", songName);
+          yield this.tabStorage.set(VIEW_STATE_NAMESPACE, "lastTab", songName);
         }
       }
 
-      this.storage.delete(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY);
+      yield this.tabStorage.delete(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY);
     } catch (error) {
       if (error instanceof Error) {
         this.error = error;

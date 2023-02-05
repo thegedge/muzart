@@ -3,7 +3,7 @@ import { inRange, last } from "lodash";
 import { makeAutoObservable } from "mobx";
 import layout, { Chord, getAncestorOfType, Measure, Note, Page, Part, Rest, Score } from "../../layout";
 import { VIEW_STATE_NAMESPACE } from "../storage/namespaces";
-import { numberOrDefault, StorableObject, Storage } from "../storage/Storage";
+import { numberOrDefault, StorableObject, SyncStorage } from "../storage/Storage";
 
 export class Selection implements StorableObject {
   public score: Score | null = null;
@@ -13,7 +13,7 @@ export class Selection implements StorableObject {
   public chordIndex = 0;
   public noteIndex = 0;
 
-  constructor(readonly storage: Storage) {
+  constructor(readonly storage: SyncStorage) {
     this.storage.loadObject(VIEW_STATE_NAMESPACE, "selection", this);
     makeAutoObservable(this, undefined, { deep: false });
   }

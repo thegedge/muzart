@@ -29,14 +29,14 @@ const preventDefault = (f: (event: KeyboardEvent) => void) => {
 
 export const Score = observer((_props: never) => {
   const application = useApplicationState();
-  const { storage, error, selection, playback } = application;
+  const { settingsStorage, error, selection, playback } = application;
 
   if (error) {
     throw error; // Let the ErrorBoundary figure it out
   }
 
   const part = selection.part;
-  const state = useMemo(() => new CanvasState(storage), []);
+  const state = useMemo(() => new CanvasState(settingsStorage), []);
 
   useEffect(() => {
     return () => state.dispose();

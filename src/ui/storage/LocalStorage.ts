@@ -1,23 +1,27 @@
-import { Storage } from "./Storage";
+import { SyncStorage } from "./Storage";
 
-export class LocalStorage extends Storage {
+export class LocalStorage extends SyncStorage {
   constructor(private localStorage: Window["localStorage"]) {
     super();
   }
 
-  set(namespace: string, subkey: string, value: string): void {
+  /** @override */
+  set(namespace: string, subkey: string, value: string) {
     this.localStorage.setItem(`${namespace}/${subkey}`, value);
   }
 
-  delete(namespace: string, subkey: string): void {
+  /** @override */
+  delete(namespace: string, subkey: string) {
     return this.localStorage.removeItem(`${namespace}/${subkey}`);
   }
 
-  get(namespace: string, subkey: string): string | null {
+  /** @override */
+  get(namespace: string, subkey: string) {
     return this.localStorage.getItem(`${namespace}/${subkey}`);
   }
 
-  list(namespace: string): string[] {
+  /** @override */
+  list(namespace: string) {
     const files = [];
     for (let index = 0; index < this.localStorage.length; ++index) {
       const key = this.localStorage.key(index);

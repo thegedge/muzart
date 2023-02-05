@@ -26,6 +26,7 @@ module.exports = {
         argsIgnorePattern: "^_",
       },
     ],
+    "@typescript-eslint/require-await": "off",
     "@typescript-eslint/restrict-template-expressions": "off",
     "lodash/import-scope": ["error", "member"],
     "lodash/prefer-constant": "off",

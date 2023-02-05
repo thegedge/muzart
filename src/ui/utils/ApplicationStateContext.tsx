@@ -28,7 +28,7 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
     const storage = new LocalStorage(globalThis.localStorage);
     const selection = new Selection(storage);
     const playback = new PlaybackController(selection);
-    const application = new Application(storage, selection, playback);
+    const application = new Application(storage, storage, selection, playback);
     window.Muzart = application;
     return application;
   }, []);
