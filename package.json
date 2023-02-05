@@ -17,39 +17,44 @@
   },
   "dependencies": {
     "lodash": "^4.17.21",
-    "mobx": "^6.6.0",
+    "mobx": "^6.7.0",
     "mobx-react-lite": "^3.4.0",
-    "preact": "^10.10.1",
-    "react-bootstrap-icons": "^1.9.1",
+    "preact": "^10.11.3",
+    "react-bootstrap-icons": "^1.10.2",
     "tinykeys": "^1.4.0",
-    "wouter": "^2.9.0"
+    "wouter": "^2.9.2"
   },
   "devDependencies": {
-    "@preact/preset-vite": "^2.4.0",
-    "@types/lodash": "^4.14.182",
-    "@types/node": "^18.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.28.0",
-    "@typescript-eslint/parser": "^5.28.0",
-    "autoprefixer": "^10.4.7",
-    "css-loader": "^6.7.1",
-    "eslint": "^8.26.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
+    "@preact/preset-vite": "^2.5.0",
+    "@types/lodash": "^4.14.191",
+    "@types/node": "^18.11.19",
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^5.50.0",
+    "autoprefixer": "^10.4.13",
+    "css-loader": "^6.7.3",
+    "eslint": "^8.33.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-lodash": "^7.4.0",
     "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-react": "^7.31.10",
+    "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-standard": "^5.0.0",
-    "postcss": "^8.4.14",
-    "postcss-loader": "^7.0.0",
-    "postcss-preset-env": "^7.6.0",
-    "prettier": "^2.6.2",
+    "postcss": "^8.4.21",
+    "postcss-loader": "^7.0.2",
+    "postcss-preset-env": "^8.0.1",
+    "prettier": "^2.8.3",
     "style-loader": "^3.3.1",
-    "tailwindcss": "^3.0.24",
-    "ts-node": "^10.8.0",
-    "typescript": "^4.9.3",
-    "vite": "^4.0.0"
+    "tailwindcss": "^3.2.4",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5",
+    "vite": "^4.1.1"
   },
   "resolutions": {
     "eslint": "8.26.0"
-  }
+  },
+  "volta": {
+    "node": "18.14.0",
+    "yarn": "3.4.1"
+  },
+  "packageManager": "yarn@3.4.1"
 }
