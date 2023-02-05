@@ -1,3 +1,4 @@
+import { noop } from "lodash";
 import { useEffect } from "preact/hooks";
 import { Route, useLocation } from "wouter";
 import { determineScoreType, getFilenameAndMimeType, ScoreDataType } from "../../../loaders";
@@ -27,7 +28,10 @@ export const ScoreDropZone = () => {
 
     if (tabFile) {
       const { filename } = getFilenameAndMimeType(tabFile);
-      navigate(`#/storage/${filename}`);
+      application
+        .loadScore(tabFile)
+        .then(() => navigate(`#/storage/${filename}`))
+        .catch(noop); // TODO error
     }
   };
 

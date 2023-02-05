@@ -1,5 +1,5 @@
 import { last } from "lodash";
-import { makeAutoObservable } from "mobx";
+import { flow, makeAutoObservable } from "mobx";
 import * as layout from "../../layout";
 import { Point } from "../../layout";
 import { load } from "../../loaders";
@@ -29,7 +29,7 @@ export class Application {
     makeAutoObservable(this, undefined, { deep: false });
   }
 
-  *loadScore(source: string | File | URL) {
+  loadScore = flow(function* (this: Application, source: string | File | URL) {
     try {
       this.error = null;
       this.loading = true;
@@ -62,7 +62,7 @@ export class Application {
     } finally {
       this.loading = false;
     }
-  }
+  });
 
   hitTest(point: Point, element: layout.AllElements | undefined = this.selection.part): Hit<layout.AllElements> | null {
     if (!element?.box.contains(point)) {
