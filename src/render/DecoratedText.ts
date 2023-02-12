@@ -44,8 +44,7 @@ export const DecoratedText = (
             y: element.box.centerY - 0.5 * textHeight,
             width: element.box.width - textWidth - textMargin,
             height: textHeight,
-          }),
-          true
+          })
         );
         break;
       case "end":
@@ -58,7 +57,8 @@ export const DecoratedText = (
             y: element.box.centerY - 0.5 * textHeight,
             width: element.box.width - textWidth - textMargin,
             height: textHeight,
-          })
+          }),
+          true
         );
         break;
       case "center":
