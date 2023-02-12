@@ -1,4 +1,3 @@
-import { noop } from "lodash";
 import { Route, useLocation } from "wouter";
 import { determineScoreType, getFilenameAndMimeType, ScoreDataType } from "../../../loaders";
 import { TABS_NAMESPACE } from "../../storage/namespaces";
@@ -31,7 +30,7 @@ export const ScoreDropZone = () => {
       application
         .loadScore(tabFile)
         .then(() => navigate(`#/storage/${filename}`))
-        .catch(noop); // TODO error
+        .catch(console.error); // TODO better error handling
     }
   };
 
@@ -78,21 +77,26 @@ const ScoreLoader = (props: { source: SongTypes["source"]; name: string }) => {
         } else {
           await application.loadScore(`songs/${name}`);
         }
-        return;
+        break;
       }
       case "storage": {
         const tabData = await application.tabStorage.loadBlob(TABS_NAMESPACE, name);
         if (!tabData) {
-          throw new Error(`${name} not found in local storage!`);
+          throw new Error(`${name} not found!`);
         }
 
         const file = new File([tabData], name);
         await application.loadScore(file);
+        break;
       }
     }
   }, [source, name]);
 
-  if (pending || error) {
+  if (error) {
+    throw error;
+  }
+
+  if (pending) {
     return null;
   }
 

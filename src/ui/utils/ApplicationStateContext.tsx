@@ -5,7 +5,9 @@ import { PlaybackController } from "../../playback/PlaybackController";
 import { Loading } from "../components/misc/Loading";
 import { Application } from "../state/Application";
 import { Selection } from "../state/Selection";
+import { IndexedDbStorage } from "../storage/IndexedDbStorage";
 import { LocalStorage } from "../storage/LocalStorage";
+import { TABS_NAMESPACE } from "../storage/namespaces";
 
 declare global {
   interface Window {
@@ -25,10 +27,15 @@ export const useApplicationState = (): Application => {
 
 export const ApplicationState = (props: { children?: ComponentChildren }) => {
   const application = useMemo(() => {
-    const storage = new LocalStorage(globalThis.localStorage);
-    const selection = new Selection(storage);
+    const settingsStorage = new LocalStorage();
+    const tabStorage = new IndexedDbStorage("muzart_tabs", 1, (oldVersion, _newVersion, db) => {
+      if (oldVersion < 1) {
+        db.createObjectStore(TABS_NAMESPACE);
+      }
+    });
+    const selection = new Selection(settingsStorage);
     const playback = new PlaybackController(selection);
-    const application = new Application(storage, storage, selection, playback);
+    const application = new Application(settingsStorage, tabStorage, selection, playback);
     window.Muzart = application;
     return application;
   }, []);

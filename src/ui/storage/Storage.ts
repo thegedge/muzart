@@ -5,8 +5,6 @@ export interface StorableObject {
   fromJSON(value: Record<string, unknown>): void;
 }
 
-export type Storage = SyncStorage | AsyncStorage;
-
 export abstract class SyncStorage {
   /** Set a value in this storage instance */
   abstract set(namespace: string, subkey: string, value: string): void;

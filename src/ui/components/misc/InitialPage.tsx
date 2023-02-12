@@ -14,7 +14,7 @@ export const InitialPage = observer((_props: Record<string, never>) => {
   const { loading, settingsStorage, tabStorage } = application;
   const [epoch, refresh] = useReducer<number, void>((v) => v + 1, 0);
 
-  const { value: lines } = useAsync(async () => {
+  const { value: lines, error } = useAsync(async () => {
     if (loading) {
       return [];
     }
@@ -35,6 +35,10 @@ export const InitialPage = observer((_props: Record<string, never>) => {
       };
     });
   }, [loading, settingsStorage, tabStorage, epoch]);
+
+  if (error) {
+    throw error;
+  }
 
   if (!lines) {
     return null;

@@ -6,7 +6,7 @@ import { load } from "../../loaders";
 import { Score } from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
 import { TABS_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY, VIEW_STATE_NAMESPACE } from "../storage/namespaces";
-import { Storage, SyncStorage } from "../storage/Storage";
+import { AsyncStorage, SyncStorage } from "../storage/Storage";
 import { DebugContext } from "./DebugContext";
 import { Selection } from "./Selection";
 
@@ -27,7 +27,7 @@ export class Application {
 
   constructor(
     public settingsStorage: SyncStorage,
-    public tabStorage: Storage,
+    public tabStorage: AsyncStorage,
     public selection: Selection,
     public playback: PlaybackController
   ) {
@@ -46,18 +46,18 @@ export class Application {
         const buffer = (yield source.arrayBuffer()) as ArrayBuffer;
         const blob = new Blob([buffer], { type: "application/octet-stream" });
         yield this.tabStorage.store(TABS_NAMESPACE, source.name, blob);
-        yield this.tabStorage.set(VIEW_STATE_NAMESPACE, "lastTab", source.name);
+        this.settingsStorage.set(VIEW_STATE_NAMESPACE, "lastTab", source.name);
       } else if (typeof source == "string") {
         const [_songs, songName] = source.split("/");
-        yield this.tabStorage.set(VIEW_STATE_NAMESPACE, "lastTab", songName);
+        this.settingsStorage.set(VIEW_STATE_NAMESPACE, "lastTab", songName);
       } else {
         const songName = last(source.pathname.split("/"));
         if (songName) {
-          yield this.tabStorage.set(VIEW_STATE_NAMESPACE, "lastTab", songName);
+          this.settingsStorage.set(VIEW_STATE_NAMESPACE, "lastTab", songName);
         }
       }
 
-      yield this.tabStorage.delete(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY);
+      this.settingsStorage.delete(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY);
     } catch (error) {
       if (error instanceof Error) {
         this.error = error;
