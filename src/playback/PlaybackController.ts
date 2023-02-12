@@ -14,6 +14,8 @@ export class PlaybackController {
   /** Measure currently being played */
   public currentMeasure: Measure | undefined;
 
+  public startOfCurrentMeasure = 0; // In audio context time
+
   /** Whether or not a part is muted */
   public mutedParts: boolean[] = [];
 
@@ -102,6 +104,8 @@ export class PlaybackController {
     if (!score) {
       return;
     }
+
+    this.startOfCurrentMeasure = this.audioContext.currentTime;
 
     // The (approximate) number of seconds before the next measure where we queue up its note events
     const nextMeasureBufferTime = 0.1;
@@ -222,6 +226,15 @@ export class PlaybackController {
 
   setCurrentMeasure(measure: Measure | undefined) {
     this.currentMeasure = measure;
+    this.startOfCurrentMeasure = this.audioContext.currentTime;
+  }
+
+  get currentTime(): number {
+    return this.audioContext.currentTime;
+  }
+
+  get tempoOfSelection() {
+    return this.selection.measure?.measure.staffDetails.tempo?.value ?? 128;
   }
 
   private measureTimes(): number[] {
@@ -238,10 +251,6 @@ export class PlaybackController {
       // TODO Does a whole note always span an entire measure?
       return noteValueToSeconds(new NoteValue(NoteValueName.Whole), currentTempo);
     });
-  }
-
-  private get tempoOfSelection() {
-    return this.selection.measure?.measure.staffDetails.tempo?.value ?? 128;
   }
 
   private instrumentForPart(partIndex: number): Instrument | null {

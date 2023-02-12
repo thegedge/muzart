@@ -1,13 +1,14 @@
-import { mapValues } from "lodash";
+import { mapValues, sumBy } from "lodash";
 import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useEffect, useMemo } from "preact/hooks";
+import { useEffect, useMemo, useRef } from "preact/hooks";
 import { createKeybindingsHandler } from "tinykeys";
 import {
   AllElements,
   ancestorOfType,
   Box,
   Chord,
+  chordWidth,
   isChord,
   LineElement,
   LINE_STROKE_WIDTH,
@@ -15,6 +16,7 @@ import {
   STAFF_LINE_HEIGHT,
   toAncestorCoordinateSystem,
 } from "../../../layout";
+import { noteValueToSeconds } from "../../../playback/util/durations";
 import { renderScoreElement } from "../../../render/renderScoreElement";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../misc/Canvas";
@@ -139,6 +141,31 @@ export const Score = observer((_props: never) => {
       .expand(PADDING);
   };
 
+  const currentPlayingRefreshInterval = useRef(0);
+  useEffect(() => {
+    const disposer = reaction(
+      () => application.playback.playing,
+      (playing) => {
+        if (playing) {
+          if (currentPlayingRefreshInterval.current == 0) {
+            currentPlayingRefreshInterval.current = window.setInterval(() => {
+              state.redraw();
+            }, 20);
+          }
+        } else {
+          clearInterval(currentPlayingRefreshInterval.current);
+          currentPlayingRefreshInterval.current = 0;
+          state.redraw();
+        }
+      }
+    );
+
+    return () => {
+      disposer();
+      clearInterval(currentPlayingRefreshInterval.current);
+    };
+  });
+
   useEffect(() => {
     const part = application.selection.part;
     if (!part) {
@@ -152,10 +179,24 @@ export const Score = observer((_props: never) => {
         // Playback box
         const measure = application.playback.currentMeasure;
         if (measure) {
+          const currentTempo = application.playback.tempoOfSelection;
+          const measureTime = sumBy(measure.measure.chords, (chord) => noteValueToSeconds(chord.value, currentTempo));
+          const timeIntoMeasure = application.playback.currentTime - application.playback.startOfCurrentMeasure;
+
+          const firstChordX = measure.chords[0].box.x;
+          const lastChordX = measure.chords[measure.chords.length - 1].box.right;
           const measureBox = toAncestorCoordinateSystem(measure);
-          context.strokeStyle = "#ff000033";
-          context.lineWidth = LINE_STROKE_WIDTH * 8;
-          context.strokeRect(measureBox.x, measureBox.y, measureBox.width, measureBox.height);
+
+          const x = measureBox.x + firstChordX + (lastChordX - firstChordX) * (timeIntoMeasure / measureTime);
+          const halfW = chordWidth(1.5);
+
+          context.fillStyle = "#ff000033";
+          context.fillRect(
+            x - halfW,
+            measureBox.y - 0.75 * STAFF_LINE_HEIGHT,
+            2 * halfW,
+            measureBox.height + 1.5 * STAFF_LINE_HEIGHT
+          );
         }
       } else if (selection.chord) {
         // Selection box
@@ -171,13 +212,7 @@ export const Score = observer((_props: never) => {
     state.setRenderFunction(render);
 
     return reaction(
-      () => [
-        application.selection.part,
-        application.selection.element,
-        application.debug.enabled,
-        application.playback.playing,
-        application.playback.currentMeasure,
-      ],
+      () => [application.selection.part, application.selection.element, application.debug.enabled],
       () => {
         state.redraw();
       }
