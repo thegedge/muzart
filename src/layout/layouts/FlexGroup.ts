@@ -215,6 +215,7 @@ export abstract class FlexGroup<
         child.box[this.startAttribute.main] = mainAxisStart;
         child.box[this.dimensionAttribute.main] += extraSpace * (factor / factorsSum);
 
+        // TODO should this come first, then the above two lines?
         child.layout?.();
 
         mainAxisStart += child.box[this.dimensionAttribute.main] + this.gap;

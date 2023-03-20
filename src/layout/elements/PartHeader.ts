@@ -152,7 +152,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
 
       const offset = Math.round(texts.length / 2);
       for (let index = 0; index < offset; ++index) {
-        const group = new SimpleGroupElement<LineElement>(new Box(0, 0, textSize * 10, 1.3 * textSize));
+        const group = new SimpleGroupElement<LineElement>();
         group.addElement(texts[index]);
 
         if (offset + index < texts.length) {
@@ -160,6 +160,8 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
           text.box.x = textSize * 5;
           group.addElement(text);
         }
+
+        group.layout();
 
         this.addElement(group);
       }
