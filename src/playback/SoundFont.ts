@@ -207,7 +207,7 @@ export class SoundFont {
       });
     });
 
-    const buffers = uniqBy(compact(sampleKeyPairs), "[0]");
+    const buffers = uniqBy(compact(sampleKeyPairs), (v) => v[0]);
     if (buffers.length == 0) {
       throw new Error(`instrument for preset ${midiPreset} has no samples`);
     }
