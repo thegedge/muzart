@@ -2,6 +2,8 @@ import { last } from "lodash";
 import types, { Alignment } from "..";
 import { Box } from "../utils/Box";
 
+export type Axis = "vertical" | "horizontal";
+
 export type FlexGroupConfig = {
   box: Box;
 
@@ -9,7 +11,7 @@ export type FlexGroupConfig = {
   gap: number;
 
   /** The direction of the main axis. */
-  axis: "vertical" | "horizontal";
+  axis: Axis;
 
   /** Wrap elements that overflow the main axis size. */
   wrap: boolean;
@@ -18,7 +20,7 @@ export type FlexGroupConfig = {
   defaultStretchFactor: number;
 
   /**
-   * How to ditribute space among elements on the main axis, like `justify-content` in CSS
+   * How to distribute space among elements on the main axis, like `justify-content` in CSS
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
    */
@@ -103,6 +105,8 @@ export abstract class FlexGroup<
   /**
    * Add an element to this flex group.
    *
+   * **Note**: The element should already be set to its desired size along the main axis.
+   *
    * @param element the element to add
    * @param factor optional stretch factor to use
    */
@@ -124,6 +128,8 @@ export abstract class FlexGroup<
 
   /**
    * Try adding an element to this flex group, but only if it will fit along the main axis.
+   *
+   * **Note**: The element should already be set to its desired size along the main axis.
    *
    * @param element the element to add
    * @param factor optional stretch factor to use
@@ -166,7 +172,7 @@ export abstract class FlexGroup<
           if (index == startIndex) {
             // We need this branch to ensure a child too large for a line is still added, avoiding an otherwise infinite loop
             remainingMain -= childMainAxisSize;
-          } else if (childMainAxisSize + this.gap < remainingMain) {
+          } else if (childMainAxisSize + this.gap <= remainingMain) {
             remainingMain -= childMainAxisSize + this.gap;
           } else {
             break;

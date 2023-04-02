@@ -103,4 +103,8 @@ export class Box {
   get centerY() {
     return this.y + 0.5 * this.height;
   }
+
+  toString() {
+    return `Box(${this.x}, ${this.y}, ${this.width}, ${this.height})`;
+  }
 }

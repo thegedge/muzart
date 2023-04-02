@@ -14,7 +14,8 @@
     "lint:prettier:fix": "prettier --write --check \"src/**/*.{js,ts,tsx}\"",
     "preview": "vite preview",
     "tc": "tsc --noEmit",
-    "test": "globstar -- node --loader tsx --test \"test/**/*.test.ts\""
+    "test": "globstar -- node --loader tsx --test \"test/**/*.test.ts\"",
+    "test:watch": "globstar -- node --loader tsx --test --watch \"test/**/*.test.ts\""
   },
   "dependencies": {
     "lodash": "^4.17.21",
