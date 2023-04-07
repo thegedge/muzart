@@ -3,6 +3,14 @@ import types, { Alignment } from "..";
 import { Box, maxMap } from "../utils";
 import { AbstractGroup } from "./AbstractGroup";
 
+export interface Options {
+  /** The initial box for the group */
+  box?: Box;
+
+  /** The gap between elements */
+  gap?: number;
+}
+
 export interface Constraint {
   /** Column must be in the bottom row of the grid group */
   mustBeBottomRow?: boolean;
@@ -36,9 +44,11 @@ export class GridGroup<T extends types.LayoutElement> extends AbstractGroup<T> {
 
   private constraints: Constraint[] = [];
   private leftEdges: number[] = [];
+  private gap: number;
 
-  constructor(private readonly gap = 0) {
-    super(Box.empty());
+  constructor(options?: Options) {
+    super(options?.box);
+    this.gap = options?.gap ?? 0;
   }
 
   addElement(element: T, constraint: Constraint) {

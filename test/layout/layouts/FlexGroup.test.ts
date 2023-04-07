@@ -1,11 +1,11 @@
 import { maxBy } from "lodash";
 import { describe, it } from "node:test";
-import { Box, HasBox } from "../../../src/layout";
-import { Axis, FlexGroupConfig, FlexGroupElement } from "../../../src/layout/layouts/FlexGroup";
+import { Box } from "../../../src/layout";
+import { FlexGroupConfig, FlexGroupElement } from "../../../src/layout/layouts/FlexGroup";
 import assert from "../../assert";
-import { elem } from "../../elementHelpers";
+import { elem, end, size, start } from "../../elementHelpers";
 
-interface FlexGroupLayoutTestScenario {
+interface TestScenario {
   /** Options for the flex group element */
   options: Partial<FlexGroupConfig>;
 
@@ -22,7 +22,7 @@ interface FlexGroupLayoutTestScenario {
 describe("FlexGroup", () => {
   describe("layout", () => {
     // TODO maybe find a way to randomize these a bit
-    const scenarios: FlexGroupLayoutTestScenario[] = [
+    const scenarios: TestScenario[] = [
       {
         options: {
           box: new Box(521, 0, 26241, 1),
@@ -97,34 +97,7 @@ describe("FlexGroup", () => {
       },
     ];
 
-    const size = (elem: HasBox, axis: Axis) => {
-      switch (axis) {
-        case "horizontal":
-          return elem.box.width;
-        case "vertical":
-          return elem.box.height;
-      }
-    };
-
-    const start = (elem: HasBox, axis: Axis) => {
-      switch (axis) {
-        case "horizontal":
-          return elem.box.x;
-        case "vertical":
-          return elem.box.y;
-      }
-    };
-
-    const end = (elem: HasBox, axis: Axis) => {
-      switch (axis) {
-        case "horizontal":
-          return elem.box.right;
-        case "vertical":
-          return elem.box.bottom;
-      }
-    };
-
-    const scenarioName = (scenario: FlexGroupLayoutTestScenario) => {
+    const scenarioName = (scenario: TestScenario) => {
       const pieces = [];
       if (scenario.options.gap) {
         pieces.push("with gap");

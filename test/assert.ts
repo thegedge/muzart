@@ -79,6 +79,16 @@ const equal = <T>(actual: T, expected: T, message?: string | Error) => {
   nodeAssert.deepStrictEqual(actual, expected, message);
 };
 
+const atLeast = (actual: number, expected: number, epsilon = EPSILON, message?: string | Error) => {
+  if (actual < expected) {
+    const diff = Math.abs(actual - expected);
+    const norm = Math.min(Math.abs(actual + expected), Number.MAX_VALUE);
+    if (diff > Math.max(Number.MIN_VALUE, epsilon * norm)) {
+      nodeAssert.fail(message || `${actual} is not at least ${expected}`);
+    }
+  }
+};
+
 const almostEqual = (actual: number, expected: number, epsilon = EPSILON, message?: string | Error) => {
   if (actual != expected) {
     const diff = Math.abs(actual - expected);
@@ -93,6 +103,7 @@ const assert = {
   contains,
   equal,
   almostEqual,
+  atLeast,
 
   isAfter,
   isBefore,

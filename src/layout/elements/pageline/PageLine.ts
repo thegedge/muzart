@@ -31,7 +31,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
     super(box);
 
     this.staffOverlay = new StaffOverlay();
-    this.aboveStaffLayout = new AboveStaff(STAFF_LINE_HEIGHT * 0.25);
+    this.aboveStaffLayout = new AboveStaff({ gap: STAFF_LINE_HEIGHT * 0.25 });
     this.staffLayout = new FlexGroupElement<LineElement>({ box: box.clone(), crossAxisAlignment: "center" });
     this.belowStaff = new BelowStaff();
 
