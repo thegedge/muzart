@@ -1,5 +1,5 @@
 module.exports = {
-  plugins: ["@typescript-eslint", "react", "lodash", "import", "promise", "standard"],
+  plugins: ["@typescript-eslint", "react", "lodash", "import", "promise"],
   parserOptions: {
     tsconfigRootDir: __dirname,
     project: ["tsconfig.json"],

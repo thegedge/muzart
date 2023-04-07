@@ -6,23 +6,23 @@
     "build": "vite build",
     "build:github": "vite build --base /muzart/",
     "dev": "vite",
-    "lint": "yarn run lint:prettier && yarn run lint:eslint",
+    "lint": "pnpm run lint:prettier && pnpm run lint:eslint",
     "lint:eslint": "eslint --cache --max-warnings=0 --ext ts,tsx src",
     "lint:eslint:fix": "eslint --max-warnings=0 --ext ts,tsx --fix src",
-    "lint:fix": "yarn run lint:prettier:fix && yarn run lint:eslint:fix",
+    "lint:fix": "pnpm run lint:prettier:fix && pnpm run lint:eslint:fix",
     "lint:prettier": "prettier --check \"src/**/*.{js,ts,tsx}\"",
     "lint:prettier:fix": "prettier --write --check \"src/**/*.{js,ts,tsx}\"",
     "preview": "vite preview",
     "tc": "tsc --noEmit",
-    "test": "tsx --test test/**/*.test.ts",
-    "test:watch": "tsx watch --test test/**/*.test.ts"
+    "test": "globstar --node -- node_modules/.bin/tsx --test test/**/*.test.ts",
+    "test:watch": "globstar --node  -- node_modules/.bin/tsx watch --test test/**/*.test.ts"
   },
   "dependencies": {
     "lodash": "^4.17.21",
     "mobx": "^6.9.0",
     "mobx-react-lite": "^3.4.3",
     "preact": "^10.13.2",
-    "react-bootstrap-icons": "^1.10.2",
+    "react-bootstrap-icons": "^1.10.3",
     "tinykeys": "^1.4.0",
     "wouter": "^2.10.0"
   },
@@ -30,34 +30,27 @@
     "@preact/preset-vite": "^2.5.0",
     "@types/lodash": "^4.14.192",
     "@types/node": "^18.15.11",
-    "@typescript-eslint/eslint-plugin": "^5.57.0",
-    "@typescript-eslint/parser": "^5.57.0",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
     "autoprefixer": "^10.4.14",
     "css-loader": "^6.7.3",
+    "globstar": "^1.0.0",
     "eslint": "^8.37.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-lodash": "^7.4.0",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.32.2",
-    "eslint-plugin-standard": "^5.0.0",
+    "pnpm": "^8.1.1",
     "postcss": "^8.4.21",
-    "postcss-loader": "^7.1.0",
+    "postcss-loader": "^7.2.4",
     "postcss-preset-env": "^8.3.0",
     "prettier": "^2.8.7",
     "style-loader": "^3.3.2",
     "tailwindcss": "^3.3.1",
     "ts-node": "^10.9.1",
     "tsx": "^3.12.6",
-    "typescript": "^5.0.3",
+    "typescript": "^5.0.4",
     "vite": "^4.2.1"
-  },
-  "resolutions": {
-    "eslint": "8.26.0"
-  },
-  "volta": {
-    "node": "18.14.0",
-    "yarn": "3.4.1"
-  },
-  "packageManager": "yarn@3.4.1"
+  }
 }
