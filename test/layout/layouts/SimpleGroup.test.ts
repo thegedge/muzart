@@ -1,12 +1,12 @@
-import { describe, it, mock } from "node:test";
+import { describe } from "node:test";
 import { Box } from "../../../src/layout";
 import { SimpleGroupElement } from "../../../src/layout/layouts/SimpleGroup";
-import assert from "../../assert";
 import { LayoutFn, elem } from "../../elementHelpers";
+import { assert, mock, test } from "../../testing";
 
 describe("SimpleGroup", () => {
   describe("layout", () => {
-    it("sets its own box to a box encompassing all of its children", () => {
+    test("sets its own box to a box encompassing all of its children", () => {
       const group = new SimpleGroupElement();
       group.addElement(elem(-5, 0, 10, 10));
       group.addElement(elem(20, 20, 1, 1));
@@ -19,7 +19,7 @@ describe("SimpleGroup", () => {
       assert.equal(group.box, new Box(0, 0, 40, 21));
     });
 
-    it("lays out all of its children", () => {
+    test("lays out all of its children", () => {
       const group = new SimpleGroupElement();
       const layoutMock = mock.fn<LayoutFn>();
       group.addElement(elem(0, 0, 1, 1, { layout: layoutMock }));
@@ -34,7 +34,7 @@ describe("SimpleGroup", () => {
   });
 
   describe("addElement", () => {
-    it("adds the child to its children list", () => {
+    test("adds the child to its children list", () => {
       const group = new SimpleGroupElement();
       const child = elem(5, 8, 30, 5);
       const currentChildCount = group.children.length;
@@ -45,7 +45,7 @@ describe("SimpleGroup", () => {
       assert.contains(group.children, child);
     });
 
-    it("sets the parent of children elements to itself", () => {
+    test("sets the parent of children elements to itself", () => {
       const group = new SimpleGroupElement();
       const child = elem(5, 8, 30, 5);
 

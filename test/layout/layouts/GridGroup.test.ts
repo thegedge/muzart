@@ -1,9 +1,8 @@
 import { maxBy } from "lodash";
-import { describe, it } from "node:test";
 import { Constraint, GridGroup, Options } from "../../../src/layout/layouts/GridGroup";
 import { Box } from "../../../src/layout/utils/Box";
-import assert from "../../assert";
 import { elem, end } from "../../elementHelpers";
+import { assert, describe, test } from "../../testing";
 
 interface TestScenario {
   /** Display name for this scenario. */
@@ -120,7 +119,7 @@ describe("GridGroup", () => {
         group.setRightEdges(scenario.edges);
         group.layout();
 
-        it("doesn't have overlap between adjacent children", () => {
+        test("doesn't have overlap between adjacent children", () => {
           for (const line of scenario.lines) {
             for (let index = 1; index < line.length; ++index) {
               const child1 = children[line[index - 1]];
@@ -131,7 +130,7 @@ describe("GridGroup", () => {
         });
 
         if (gap > 0 && scenario.lines.length > 1) {
-          it("puts a gap between adjacent lines", () => {
+          test("puts a gap between adjacent lines", () => {
             for (let lineIndex = 1; lineIndex < scenario.lines.length; ++lineIndex) {
               const lowestChildIndex = maxBy(scenario.lines[lineIndex - 1], (index) => end(children[index], crossAxis));
               const lowestChildPreviousLine = children[lowestChildIndex ?? 0];
@@ -142,7 +141,7 @@ describe("GridGroup", () => {
           });
         }
 
-        it("doesn't overlap adjacent lines", () => {
+        test("doesn't overlap adjacent lines", () => {
           for (let lineIndex = 1; lineIndex < scenario.lines.length; ++lineIndex) {
             const lowestChildIndex = maxBy(scenario.lines[lineIndex - 1], (index) => end(children[index], crossAxis));
             const lowestChildPreviousLine = children[lowestChildIndex ?? 0];
@@ -156,7 +155,7 @@ describe("GridGroup", () => {
   });
 
   describe("addElement", () => {
-    it("adds the child to its children list", () => {
+    test("adds the child to its children list", () => {
       const group = new GridGroup();
       const child = elem(5, 8, 30, 5);
       const currentChildCount = group.children.length;
@@ -167,7 +166,7 @@ describe("GridGroup", () => {
       assert.contains(group.children, child);
     });
 
-    it("sets the parent of children elements to itself", () => {
+    test("sets the parent of children elements to itself", () => {
       const group = new GridGroup();
       const child = elem(5, 8, 30, 5);
 

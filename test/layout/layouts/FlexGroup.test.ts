@@ -1,9 +1,8 @@
 import { maxBy } from "lodash";
-import { describe, it } from "node:test";
 import { Box } from "../../../src/layout";
 import { FlexGroupConfig, FlexGroupElement } from "../../../src/layout/layouts/FlexGroup";
-import assert from "../../assert";
 import { elem, end, size, start } from "../../elementHelpers";
+import { assert, describe, test } from "../../testing";
 
 interface TestScenario {
   /** Options for the flex group element */
@@ -138,7 +137,7 @@ describe("FlexGroup", () => {
 
         group.layout();
 
-        it("doesn't have overlap between adjacent children", () => {
+        test("doesn't have overlap between adjacent children", () => {
           for (const line of scenario.lines) {
             for (let index = 1; index < line.length; ++index) {
               const child1 = children[line[index - 1]];
@@ -149,7 +148,7 @@ describe("FlexGroup", () => {
         });
 
         if (gap > 0) {
-          it("puts a gap between adjacent children", () => {
+          test("puts a gap between adjacent children", () => {
             for (const line of scenario.lines) {
               for (let index = 1; index < line.length; ++index) {
                 const child1 = children[line[index - 1]];
@@ -161,7 +160,7 @@ describe("FlexGroup", () => {
         }
 
         if (hasStretchyChild) {
-          it("has last child on each line at the ending edge", () => {
+          test("has last child on each line at the ending edge", () => {
             for (const line of scenario.lines) {
               const lineHasStretchyChild = line.some((ci) => scenario.children[ci][1] ?? defaultFactor != 0);
 
@@ -173,7 +172,7 @@ describe("FlexGroup", () => {
             }
           });
 
-          it("distributes extra space according to each child's stretch factor", () => {
+          test("distributes extra space according to each child's stretch factor", () => {
             for (const line of scenario.lines) {
               const lineHasStretchyChild = line.some((ci) => scenario.children[ci][1] ?? defaultFactor != 0);
 
@@ -196,7 +195,7 @@ describe("FlexGroup", () => {
         }
 
         if (wrapping) {
-          it("doesn't overlap adjacent lines", () => {
+          test("doesn't overlap adjacent lines", () => {
             for (let lineIndex = 1; lineIndex < scenario.lines.length; ++lineIndex) {
               const lowestChildIndex = maxBy(scenario.lines[lineIndex - 1], (index) => end(children[index], crossAxis));
               const lowestChildPreviousLine = children[lowestChildIndex ?? 0];
@@ -214,7 +213,7 @@ describe("FlexGroup", () => {
   });
 
   describe("tryAddElement", () => {
-    it("adds the child to its children list", () => {
+    test("adds the child to its children list", () => {
       const group = new FlexGroupElement();
       const child = elem(5, 8, 30, 5);
       const currentChildCount = group.children.length;
@@ -226,7 +225,7 @@ describe("FlexGroup", () => {
       assert.contains(group.children, child);
     });
 
-    it("sets the left edge of each child to right edge of the previous child", () => {
+    test("sets the left edge of each child to right edge of the previous child", () => {
       const group = new FlexGroupElement({ box: new Box(0, 0, 1000, 1) });
       const child1 = elem(1, 1, 30, 1);
       const child2 = elem(1, 1, 12, 1);
@@ -246,7 +245,7 @@ describe("FlexGroup", () => {
       assert.equal(child3.box.x, child2.box.right);
     });
 
-    it("return true and adds element if it's the first and there's no room for it", () => {
+    test("return true and adds element if it's the first and there's no room for it", () => {
       const group = new FlexGroupElement({ box: new Box(0, 0, 10, 1) });
       const child = elem(1, 1, 30, 1);
 
@@ -257,7 +256,7 @@ describe("FlexGroup", () => {
       assert.contains(group.children, child);
     });
 
-    it("return false and doesn't add element if there's no room for it", () => {
+    test("return false and doesn't add element if there's no room for it", () => {
       const group = new FlexGroupElement({ box: new Box(0, 0, 50, 1) });
       const child1 = elem(1, 1, 30, 1);
       const child2 = elem(1, 1, 12, 1);
@@ -275,7 +274,7 @@ describe("FlexGroup", () => {
       assert.not.contains(group.children, child3);
     });
 
-    it("sets the parent of children elements to itself", () => {
+    test("sets the parent of children elements to itself", () => {
       const group = new FlexGroupElement();
       const child = elem(5, 8, 30, 5);
 
@@ -286,7 +285,7 @@ describe("FlexGroup", () => {
   });
 
   describe("addElement", () => {
-    it("adds the child to its children list", () => {
+    test("adds the child to its children list", () => {
       const group = new FlexGroupElement();
       const child = elem(5, 8, 30, 5);
       const currentChildCount = group.children.length;
@@ -297,7 +296,7 @@ describe("FlexGroup", () => {
       assert.contains(group.children, child);
     });
 
-    it("sets the left edge of each child to right edge of the previous child", () => {
+    test("sets the left edge of each child to right edge of the previous child", () => {
       const group = new FlexGroupElement({ box: new Box(0, 0, 50, 1) });
       const child1 = elem(1, 1, 30, 1);
       const child2 = elem(1, 1, 12, 1);
@@ -317,7 +316,7 @@ describe("FlexGroup", () => {
       assert.equal(child3.box.x, child2.box.right);
     });
 
-    it("sets the parent of children elements to itself", () => {
+    test("sets the parent of children elements to itself", () => {
       const group = new FlexGroupElement();
       const child = elem(5, 8, 30, 5);
 

@@ -1,4 +1,6 @@
-import nodeAssert from "assert";
+import { isMatch } from "lodash";
+import * as nodeAssert from "node:assert";
+import * as nodeTest from "node:test";
 import { inspect } from "util";
 import { LayoutElement } from "../src/layout";
 
@@ -83,6 +85,14 @@ const identityEqual = <T>(actual: T, expected: T, message?: string | Error) => {
   nodeAssert.equal(actual, expected, message);
 };
 
+const matches = <T1 extends object, T2 extends object>(actual: T1, expected: T2, message?: string | Error) => {
+  if (!isMatch(actual, expected)) {
+    const actualString = JSON.stringify(actual);
+    const expectedString = JSON.stringify(expected);
+    nodeAssert.fail(message || `${actualString} does not match ${expectedString}`);
+  }
+};
+
 const atLeast = (actual: number, expected: number, epsilon = EPSILON, message?: string | Error) => {
   if (actual < expected) {
     const diff = Math.abs(actual - expected);
@@ -103,12 +113,17 @@ const almostEqual = (actual: number, expected: number, epsilon = EPSILON, messag
   }
 };
 
-const assert = {
+export const describe = nodeTest.describe;
+export const test = nodeTest.it;
+export const mock = nodeTest.mock;
+
+export const assert = {
   almostEqual,
   atLeast,
   contains,
   equal,
   identityEqual,
+  matches,
 
   // Geometrical assertions
 
@@ -124,5 +139,3 @@ const assert = {
     contains: doesNotContain,
   },
 };
-
-export default assert;
