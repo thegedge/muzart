@@ -1,7 +1,6 @@
 import { isMatch } from "lodash";
-import * as nodeAssert from "node:assert";
-import * as nodeTest from "node:test";
 import { inspect } from "util";
+import * as vitest from "vitest";
 import { LayoutElement } from "../src/layout";
 
 type Axis = "horizontal" | "vertical";
@@ -15,28 +14,28 @@ const formatLayoutElement = (e: LayoutElement) => {
 
 const contains = <T>(actual: unknown, expected: T): void => {
   if (!Array.isArray(actual) || !actual.includes(expected)) {
-    nodeAssert.fail(`${inspect(actual)} does not contain ${inspect(expected)}`);
+    vitest.expect.fail(`${inspect(actual)} does not contain ${inspect(expected)}`);
   }
 };
 
 const doesNotContain = <T>(actual: unknown, expected: T): void => {
   if (!Array.isArray(actual)) {
-    nodeAssert.fail(`${inspect(actual)} is not an array`);
+    vitest.expect.fail(`${inspect(actual)} is not an array`);
   }
 
   if (actual.includes(expected)) {
-    nodeAssert.fail(`${inspect(actual)} contains ${inspect(expected)}`);
+    vitest.expect.fail(`${inspect(actual)} contains ${inspect(expected)}`);
   }
 };
 
 const isAfter = (after: LayoutElement, before: LayoutElement, axis: Axis): void => {
   if (axis == "horizontal") {
     if (after.box.x + EPSILON < before.box.x) {
-      nodeAssert.fail(`${formatLayoutElement(after)}'s left edge is not after ${formatLayoutElement(before)}`);
+      vitest.expect.fail(`${formatLayoutElement(after)}'s left edge is not after ${formatLayoutElement(before)}`);
     }
   } else {
     if (after.box.y + EPSILON < before.box.y) {
-      nodeAssert.fail(`${formatLayoutElement(after)}'s top edge is not after ${formatLayoutElement(before)}`);
+      vitest.expect.fail(`${formatLayoutElement(after)}'s top edge is not after ${formatLayoutElement(before)}`);
     }
   }
 };
@@ -44,11 +43,11 @@ const isAfter = (after: LayoutElement, before: LayoutElement, axis: Axis): void 
 const isBefore = (before: LayoutElement, after: LayoutElement, axis: Axis): void => {
   if (axis == "horizontal") {
     if (before.box.x >= after.box.x + EPSILON) {
-      nodeAssert.fail(`${formatLayoutElement(before)} is not to the left of ${formatLayoutElement(after)}`);
+      vitest.expect.fail(`${formatLayoutElement(before)} is not to the left of ${formatLayoutElement(after)}`);
     }
   } else {
     if (before.box.y >= after.box.y + EPSILON) {
-      nodeAssert.fail(`${formatLayoutElement(before)} is not above ${formatLayoutElement(after)}`);
+      vitest.expect.fail(`${formatLayoutElement(before)} is not above ${formatLayoutElement(after)}`);
     }
   }
 };
@@ -56,11 +55,11 @@ const isBefore = (before: LayoutElement, after: LayoutElement, axis: Axis): void
 const isNonOverlappingAfter = (after: LayoutElement, before: LayoutElement, axis: Axis): void => {
   if (axis == "horizontal") {
     if (after.box.x + EPSILON < before.box.right) {
-      nodeAssert.fail(`${formatLayoutElement(after)}'s left edge is not after ${formatLayoutElement(before)}`);
+      vitest.expect.fail(`${formatLayoutElement(after)}'s left edge is not after ${formatLayoutElement(before)}`);
     }
   } else {
     if (after.box.y + EPSILON < before.box.bottom) {
-      nodeAssert.fail(`${formatLayoutElement(after)}'s top edge is not after ${formatLayoutElement(before)}`);
+      vitest.expect.fail(`${formatLayoutElement(after)}'s top edge is not after ${formatLayoutElement(before)}`);
     }
   }
 };
@@ -68,54 +67,54 @@ const isNonOverlappingAfter = (after: LayoutElement, before: LayoutElement, axis
 const isNonOverlappingBefore = (before: LayoutElement, after: LayoutElement, axis: Axis): void => {
   if (axis == "horizontal") {
     if (before.box.right >= after.box.x + EPSILON) {
-      nodeAssert.fail(`${formatLayoutElement(before)}'s right edge is not before ${formatLayoutElement(after)}`);
+      vitest.expect.fail(`${formatLayoutElement(before)}'s right edge is not before ${formatLayoutElement(after)}`);
     }
   } else {
     if (before.box.bottom >= after.box.y + EPSILON) {
-      nodeAssert.fail(`${formatLayoutElement(before)}'s bottom edge is not before ${formatLayoutElement(after)}`);
+      vitest.expect.fail(`${formatLayoutElement(before)}'s bottom edge is not before ${formatLayoutElement(after)}`);
     }
   }
 };
 
-const equal = <T>(actual: T, expected: T, message?: string | Error) => {
-  nodeAssert.deepStrictEqual(actual, expected, message);
+const equal = <T>(actual: T, expected: T, message?: string) => {
+  vitest.expect(actual, message).toEqual(expected);
 };
 
-const identityEqual = <T>(actual: T, expected: T, message?: string | Error) => {
-  nodeAssert.equal(actual, expected, message);
+const identityEqual = <T>(actual: T, expected: T, message?: string) => {
+  vitest.expect(actual, message).toBe(expected);
 };
 
-const matches = <T1 extends object, T2 extends object>(actual: T1, expected: T2, message?: string | Error) => {
+const matches = <T1 extends object, T2 extends object>(actual: T1, expected: T2, message?: string) => {
   if (!isMatch(actual, expected)) {
     const actualString = JSON.stringify(actual);
     const expectedString = JSON.stringify(expected);
-    nodeAssert.fail(message || `${actualString} does not match ${expectedString}`);
+    vitest.expect.fail(message || `${actualString} does not match ${expectedString}`);
   }
 };
 
-const atLeast = (actual: number, expected: number, epsilon = EPSILON, message?: string | Error) => {
+const atLeast = (actual: number, expected: number, epsilon = EPSILON, message?: string) => {
   if (actual < expected) {
     const diff = Math.abs(actual - expected);
     const norm = Math.min(Math.abs(actual + expected), Number.MAX_VALUE);
     if (diff > Math.max(Number.MIN_VALUE, epsilon * norm)) {
-      nodeAssert.fail(message || `${actual} is not at least ${expected}`);
+      vitest.expect.fail(message || `${actual} is not at least ${expected}`);
     }
   }
 };
 
-const almostEqual = (actual: number, expected: number, epsilon = EPSILON, message?: string | Error) => {
+const almostEqual = (actual: number, expected: number, epsilon = EPSILON, message?: string) => {
   if (actual != expected) {
     const diff = Math.abs(actual - expected);
     const norm = Math.min(Math.abs(actual + expected), Number.MAX_VALUE);
     if (diff > Math.max(Number.MIN_VALUE, epsilon * norm)) {
-      nodeAssert.fail(message || `${actual} is not almost equal to ${expected}`);
+      vitest.expect.fail(message || `${actual} is not almost equal to ${expected}`);
     }
   }
 };
 
-export const describe = nodeTest.describe;
-export const test = nodeTest.it;
-export const mock = nodeTest.mock;
+export const describe = vitest.describe;
+export const test = vitest.test;
+export const mock = vitest.vi;
 
 export const assert = {
   almostEqual,

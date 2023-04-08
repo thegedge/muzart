@@ -1,8 +1,7 @@
-import { describe } from "node:test";
 import { Box } from "../../../src/layout";
 import { SimpleGroupElement } from "../../../src/layout/layouts/SimpleGroup";
 import { LayoutFn, elem } from "../../elementHelpers";
-import { assert, mock, test } from "../../testing";
+import { assert, describe, mock, test } from "../../testing";
 
 describe("SimpleGroup", () => {
   describe("layout", () => {
@@ -21,15 +20,15 @@ describe("SimpleGroup", () => {
 
     test("lays out all of its children", () => {
       const group = new SimpleGroupElement();
-      const layoutMock = mock.fn<LayoutFn>();
+      const layoutMock = mock.fn<Parameters<LayoutFn>, ReturnType<LayoutFn>>();
       group.addElement(elem(0, 0, 1, 1, { layout: layoutMock }));
       group.addElement(elem(0, 0, 2, 4, { layout: layoutMock }));
       group.addElement(elem(0, 0, 3, 9, { layout: layoutMock }));
-      assert.equal(layoutMock.mock.callCount(), 0);
+      assert.equal(layoutMock.mock.calls.length, 0);
 
       group.layout();
 
-      assert.equal(layoutMock.mock.callCount(), 3);
+      assert.equal(layoutMock.mock.calls.length, 3);
     });
   });
 

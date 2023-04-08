@@ -38,6 +38,10 @@ export default defineConfig(async ({ mode }) => {
       },
     },
 
+    test: {
+      exclude: [".direnv", "node_modules", ".git", "dist"],
+    },
+
     plugins: [
       preact(),
 
