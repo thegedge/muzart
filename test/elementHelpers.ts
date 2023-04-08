@@ -1,14 +1,21 @@
-import { Box, HasBox, MaybeLayout } from "../src/layout";
+import { Box, HasBox, LayoutElement, MaybeLayout } from "../src/layout";
+
 import { Axis } from "../src/layout/layouts/FlexGroup";
 
 export type LayoutFn = Exclude<MaybeLayout["layout"], undefined>;
 
-export const elem = (x: number, y: number, w: number, h: number, layout?: LayoutFn) => {
+export const elem = (
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  options?: { parent?: LayoutElement; type?: string; layout?: LayoutFn }
+) => {
   return {
-    type: "Child",
+    type: options?.type ?? "Child",
     box: new Box(x, y, w, h),
-    parent: null,
-    layout,
+    parent: options?.parent ?? null,
+    layout: options?.layout,
   };
 };
 

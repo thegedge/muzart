@@ -22,9 +22,9 @@ describe("SimpleGroup", () => {
     it("lays out all of its children", () => {
       const group = new SimpleGroupElement();
       const layoutMock = mock.fn<LayoutFn>();
-      group.addElement(elem(0, 0, 1, 1, layoutMock));
-      group.addElement(elem(0, 0, 2, 4, layoutMock));
-      group.addElement(elem(0, 0, 3, 9, layoutMock));
+      group.addElement(elem(0, 0, 1, 1, { layout: layoutMock }));
+      group.addElement(elem(0, 0, 2, 4, { layout: layoutMock }));
+      group.addElement(elem(0, 0, 3, 9, { layout: layoutMock }));
       assert.equal(layoutMock.mock.callCount(), 0);
 
       group.layout();

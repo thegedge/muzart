@@ -119,15 +119,15 @@ export function maxMap<T, MaxT>(
  * Efficient computation for the number of characters to display the given number.
  *
  * @example
- * numCharsToRepresent(0)     // 1
- * numCharsToRepresent(1337)  // 4
- * numCharsToRepresent(-14)   // 3
+ * numCharsToRepresent(0) == 1
+ * numCharsToRepresent(1337) == 4
+ * numCharsToRepresent(-14) == 3
  *
  * @returns the number of characters to represent the number, equivalent to `number.toString().length`
  */
 export const numCharsToRepresent = (v: number): number => {
   let num = 1;
-  if (v > 0) {
+  if (v < 0) {
     v = -v;
     num += 1;
   }
@@ -145,9 +145,13 @@ export const numCharsToRepresent = (v: number): number => {
  *
  * @param values the list of values to find runs in
  * @param mapper a function that maps a given element to a run value. It is compared against the
- *   previously mapped value. If they are the same, the make up a run.
+ *   previously mapped value. If they are the same, the make up a run. If it is undefined, stop
+ *   any current run but don't start a new one.
  *
- * @returns a list of `[start, end]` tuples for all the runs in the given list
+ * @returns a list of `[start, end]` indexes for all the runs in the given list, `end` being inclusive
+ *
+ * * @example
+ * runs([0, 1, 2, 4, 3, 5, 7, 1, 4, 14], (v) => v % 2 == 0) == [[0, 0], [1, 1], [2, 3], [4, 7], [8, 9]]
  *
  * @example
  * runs([0, 1, 2, 4, 3, 5, 7, 1, 4, 14], (v) => v % 2 == 0 ? true : undefined) == [[0, 0], [2, 3], [8, 9]]

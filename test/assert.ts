@@ -79,6 +79,10 @@ const equal = <T>(actual: T, expected: T, message?: string | Error) => {
   nodeAssert.deepStrictEqual(actual, expected, message);
 };
 
+const identityEqual = <T>(actual: T, expected: T, message?: string | Error) => {
+  nodeAssert.equal(actual, expected, message);
+};
+
 const atLeast = (actual: number, expected: number, epsilon = EPSILON, message?: string | Error) => {
   if (actual < expected) {
     const diff = Math.abs(actual - expected);
@@ -100,10 +104,13 @@ const almostEqual = (actual: number, expected: number, epsilon = EPSILON, messag
 };
 
 const assert = {
-  contains,
-  equal,
   almostEqual,
   atLeast,
+  contains,
+  equal,
+  identityEqual,
+
+  // Geometrical assertions
 
   isAfter,
   isBefore,
