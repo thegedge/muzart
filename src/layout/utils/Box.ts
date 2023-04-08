@@ -15,7 +15,7 @@ export class Box {
    * Compute a box that encompasses all of the given boxes.
    */
   static encompass(...boxes: Box[]) {
-    return boxes.reduce((encompassBox, box) => encompassBox.encompass(box), Box.empty());
+    return boxes.reduce((encompassBox, box) => encompassBox.encompass(box));
   }
 
   constructor(public x: number, public y: number, public width: number, public height: number) {}
@@ -72,6 +72,8 @@ export class Box {
 
   /**
    * Returns whether or not this box contains the given point or box.
+   *
+   * A box or point that overlaps an edge is also contained.
    */
   contains(geom: Point | Box): boolean {
     if (geom instanceof Box) {
