@@ -6,7 +6,12 @@ import { load } from "../../loaders";
 import { Score } from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
 import { AsyncStorage, SyncStorage } from "../storage/Storage";
-import { TABS_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY, VIEW_STATE_NAMESPACE } from "../storage/namespaces";
+import {
+  TABS_NAMESPACE,
+  VIEW_STATE_CANVAS_SUBKEY,
+  VIEW_STATE_LAST_TAB_SUBKEY,
+  VIEW_STATE_NAMESPACE,
+} from "../storage/namespaces";
 import { DebugContext } from "./DebugContext";
 import { Selection } from "./Selection";
 
@@ -60,11 +65,12 @@ export class Application {
         tabName = songName;
       }
 
-      const lastTab = this.settingsStorage.get(VIEW_STATE_NAMESPACE, "lastTab");
+      const lastTab = this.settingsStorage.get(VIEW_STATE_NAMESPACE, VIEW_STATE_LAST_TAB_SUBKEY);
       if (lastTab != tabName) {
         this.settingsStorage.delete(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY);
+        this.selection.reset();
       }
-      this.settingsStorage.set(VIEW_STATE_NAMESPACE, "lastTab", tabName);
+      this.settingsStorage.set(VIEW_STATE_NAMESPACE, VIEW_STATE_LAST_TAB_SUBKEY, tabName);
     } catch (error) {
       if (error instanceof Error) {
         this.error = error;

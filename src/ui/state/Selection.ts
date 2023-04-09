@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { inRange, last } from "lodash";
 import { makeAutoObservable } from "mobx";
-import layout, { Chord, getAncestorOfType, Measure, Note, Page, Part, Rest, Score } from "../../layout";
-import { VIEW_STATE_NAMESPACE } from "../storage/namespaces";
-import { numberOrDefault, StorableObject, SyncStorage } from "../storage/Storage";
+import layout, { Chord, Measure, Note, Page, Part, Rest, Score, getAncestorOfType } from "../../layout";
+import { StorableObject, SyncStorage, numberOrDefault } from "../storage/Storage";
+import { VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY } from "../storage/namespaces";
 
 export class Selection implements StorableObject {
   public score: Score | null = null;
@@ -14,7 +14,7 @@ export class Selection implements StorableObject {
   public noteIndex = 0;
 
   constructor(readonly storage: SyncStorage) {
-    this.storage.loadObject(VIEW_STATE_NAMESPACE, "selection", this);
+    this.storage.loadObject(VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY, this);
     makeAutoObservable(this, undefined, { deep: false });
   }
 
@@ -60,6 +60,13 @@ export class Selection implements StorableObject {
     return this.note ?? this.chord ?? this.measure;
   }
 
+  reset() {
+    this.partIndex = 0;
+    this.measureIndex = 0;
+    this.chordIndex = 0;
+    this.noteIndex = 0;
+  }
+
   update(selection: Partial<Selection>) {
     const p = selection.partIndex != undefined && selection.partIndex != this.partIndex;
     const m = selection.measureIndex != undefined && selection.measureIndex != this.measureIndex;
@@ -72,7 +79,7 @@ export class Selection implements StorableObject {
       if (c) this.chordIndex = selection.chordIndex!;
       if (n) this.noteIndex = selection.noteIndex!;
 
-      void this.storage.store(VIEW_STATE_NAMESPACE, "selection", this);
+      void this.storage.store(VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY, this);
     }
 
     if (this.score) {
