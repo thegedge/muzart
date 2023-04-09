@@ -16,7 +16,7 @@ import { Box } from "./utils/Box";
  * vertically. For example, the first page will often be some lines of text describing the composition (name,
  * artist, etc) followed by many staff lines.
  */
-export const layout = (score: notation.Score): Score => {
+export const layOutScore = (score: notation.Score): Score => {
   console.time("layout");
   try {
     const layoutScore = new Score(score);

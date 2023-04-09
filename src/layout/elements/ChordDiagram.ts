@@ -8,9 +8,6 @@ export class ChordDiagram extends LayoutElement<"ChordDiagram", types.LineElemen
   readonly textSize = 1.25 * STAFF_LINE_HEIGHT;
 
   constructor(readonly diagram: notation.ChordDiagram) {
-    const height = (diagram ? 7 : 1) * STAFF_LINE_HEIGHT;
-
-    // TODO default width, ignoring its placement in the above staff layout
-    super(new Box(0, 0, 4 * STAFF_LINE_HEIGHT, height));
+    super(new Box(0, 0, 4 * STAFF_LINE_HEIGHT, (diagram ? 7 : 1) * STAFF_LINE_HEIGHT));
   }
 }

@@ -22,6 +22,7 @@ export class TimeSignature {
    */
   toBeat(): Beat {
     // TODO figure out if an eighth note can be simple metre
+    // TODO maybe allow specifying the beat on construction
 
     switch (this.value.name) {
       case NoteValueName.Eighth: {

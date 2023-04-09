@@ -40,7 +40,7 @@ export class Application {
       this.loading = true;
 
       const score = (yield load(source)) as Score;
-      this.setScore(layout.layout(score));
+      this.setScore(layout.layOutScore(score));
 
       let tabName: string;
       if (source instanceof File) {

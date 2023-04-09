@@ -28,7 +28,7 @@ export class Chord extends LayoutElement<"Chord", types.LineElement> implements 
         // TODO this placement will go outside the chord box, which also means that lots of grace notes in a dense measure may look bad
         const graceNoteElement = new Note(
           new Box(-1.2 * noteWidth, noteY + 0.125 * noteHeight, noteWidth, 0.75 * noteHeight),
-          note
+          note.graceNote
         );
         graceNoteElement.parent = this;
         return [noteElement, graceNoteElement];
