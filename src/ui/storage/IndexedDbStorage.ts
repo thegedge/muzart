@@ -1,7 +1,7 @@
 import { AsyncStorage } from "./Storage";
 
 export class IndexedDbStorage extends AsyncStorage {
-  private db: Promise<IDBDatabase>;
+  private db: Promise<IDBDatabase> | IDBDatabase;
 
   constructor(
     name: string,
@@ -31,6 +31,7 @@ export class IndexedDbStorage extends AsyncStorage {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
         const db: IDBDatabase = (target as any).result;
         upgrade(event.oldVersion, event.newVersion, db);
+        this.db = db;
       };
     });
   }

@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { Box, LINE_STROKE_WIDTH, PX_PER_MM } from "../../../layout";
+import { SyncStorage, isRecord, numberOrDefault } from "../../storage/Storage";
 import { VIEW_STATE_CANVAS_SUBKEY, VIEW_STATE_NAMESPACE } from "../../storage/namespaces";
-import { isRecord, numberOrDefault, SyncStorage } from "../../storage/Storage";
 import { Point, RenderFunction } from "./Canvas";
 
 /**
@@ -210,7 +210,7 @@ export class CanvasState {
   }
 
   updateViewport() {
-    if (!this.canvas) {
+    if (!this.canvas || this.canvas.width == 0 || this.canvas.height == 0) {
       return;
     }
 

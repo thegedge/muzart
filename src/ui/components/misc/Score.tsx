@@ -5,15 +5,15 @@ import { useEffect, useMemo, useRef } from "preact/hooks";
 import { createKeybindingsHandler } from "tinykeys";
 import {
   AllElements,
-  ancestorOfType,
   Box,
   Chord,
-  chordWidth,
-  isChord,
-  LineElement,
   LINE_STROKE_WIDTH,
+  LineElement,
   Rest,
   STAFF_LINE_HEIGHT,
+  ancestorOfType,
+  chordWidth,
+  isChord,
   toAncestorCoordinateSystem,
 } from "../../../layout";
 import { noteValueToSeconds } from "../../../playback/util/durations";

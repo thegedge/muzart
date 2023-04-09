@@ -5,8 +5,8 @@ import { Point } from "../../layout";
 import { load } from "../../loaders";
 import { Score } from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
-import { TABS_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY, VIEW_STATE_NAMESPACE } from "../storage/namespaces";
 import { AsyncStorage, SyncStorage } from "../storage/Storage";
+import { TABS_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY, VIEW_STATE_NAMESPACE } from "../storage/namespaces";
 import { DebugContext } from "./DebugContext";
 import { Selection } from "./Selection";
 
@@ -42,22 +42,29 @@ export class Application {
       const score = (yield load(source)) as Score;
       this.setScore(layout.layout(score));
 
+      let tabName: string;
       if (source instanceof File) {
         const buffer = (yield source.arrayBuffer()) as ArrayBuffer;
         const blob = new Blob([buffer], { type: "application/octet-stream" });
         yield this.tabStorage.store(TABS_NAMESPACE, source.name, blob);
-        this.settingsStorage.set(VIEW_STATE_NAMESPACE, "lastTab", source.name);
+        tabName = source.name;
       } else if (typeof source == "string") {
         const [_songs, songName] = source.split("/");
-        this.settingsStorage.set(VIEW_STATE_NAMESPACE, "lastTab", songName);
+        tabName = songName;
       } else {
         const songName = last(source.pathname.split("/"));
-        if (songName) {
-          this.settingsStorage.set(VIEW_STATE_NAMESPACE, "lastTab", songName);
+        if (!songName) {
+          throw new Error(`Couldn't load tab from URL ${source.pathname}`);
         }
+
+        tabName = songName;
       }
 
-      this.settingsStorage.delete(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY);
+      const lastTab = this.settingsStorage.get(VIEW_STATE_NAMESPACE, "lastTab");
+      if (lastTab != tabName) {
+        this.settingsStorage.delete(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY);
+      }
+      this.settingsStorage.set(VIEW_STATE_NAMESPACE, "lastTab", tabName);
     } catch (error) {
       if (error instanceof Error) {
         this.error = error;
