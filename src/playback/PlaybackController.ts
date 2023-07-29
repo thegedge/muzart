@@ -124,7 +124,7 @@ export class PlaybackController {
       if (offsetFromNowSecs > nextMeasureBufferTime) {
         this.playbackHandle = window.setTimeout(
           queueNextMeasureAudio,
-          1000 * (offsetFromNowSecs - nextMeasureBufferTime)
+          1000 * (offsetFromNowSecs - nextMeasureBufferTime),
         );
         return;
       }
@@ -189,7 +189,7 @@ export class PlaybackController {
       nextMeasureTime += currentMeasureDurationSecs;
       this.playbackHandle = window.setTimeout(
         queueNextMeasureAudio,
-        1000 * (nextMeasureTime - nextMeasureBufferTime - this.audioContext.currentTime)
+        1000 * (nextMeasureTime - nextMeasureBufferTime - this.audioContext.currentTime),
       );
     };
 

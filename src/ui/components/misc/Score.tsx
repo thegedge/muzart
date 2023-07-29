@@ -29,7 +29,7 @@ const preventDefault = (f: (event: KeyboardEvent) => void) => {
   };
 };
 
-export const Score = observer((_props: never) => {
+export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
   const { settingsStorage, error, selection, playback } = application;
 
@@ -107,8 +107,8 @@ export const Score = observer((_props: never) => {
             application.debug.setEnabled(!application.debug.enabled);
           },
         },
-        preventDefault
-      )
+        preventDefault,
+      ),
     );
 
     document.body.addEventListener("keydown", listener);
@@ -125,7 +125,7 @@ export const Score = observer((_props: never) => {
           state.setUserSpaceSize(box);
         }
       },
-      { fireImmediately: true }
+      { fireImmediately: true },
     );
   }, [state, application]);
 
@@ -157,7 +157,7 @@ export const Score = observer((_props: never) => {
           currentPlayingRefreshInterval.current = 0;
           state.redraw();
         }
-      }
+      },
     );
 
     return () => {
@@ -195,7 +195,7 @@ export const Score = observer((_props: never) => {
             x - halfW,
             measureBox.y - 0.75 * STAFF_LINE_HEIGHT,
             2 * halfW,
-            measureBox.height + 1.5 * STAFF_LINE_HEIGHT
+            measureBox.height + 1.5 * STAFF_LINE_HEIGHT,
           );
         }
       } else if (selection.chord) {
@@ -215,7 +215,7 @@ export const Score = observer((_props: never) => {
       () => [application.selection.part, application.selection.element, application.debug.enabled],
       () => {
         state.redraw();
-      }
+      },
     );
   }, [state, application, application.selection.part]);
 
@@ -248,7 +248,7 @@ export const Score = observer((_props: never) => {
         }
 
         state.ensureInView(box);
-      }
+      },
     );
   }, [application]);
 

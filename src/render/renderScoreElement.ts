@@ -21,14 +21,14 @@ import { Vibrato } from "./Vibrato";
 type RenderFunc<E = layout.AllElements> = (
   application: Application,
   context: CanvasRenderingContext2D,
-  element: E
+  element: E,
 ) => void;
 
 export const renderScoreElement = (
   application: Application,
   context: CanvasRenderingContext2D,
   element: layout.AllElements,
-  viewport: Box
+  viewport: Box,
 ) => {
   if (!element.box.overlaps(viewport)) {
     return;

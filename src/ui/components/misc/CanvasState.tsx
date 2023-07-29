@@ -226,7 +226,7 @@ export class CanvasState {
       x,
       y,
       this.canvas.width / this.userspaceToDeviceFactor,
-      this.canvas.height / this.userspaceToDeviceFactor
+      this.canvas.height / this.userspaceToDeviceFactor,
     );
 
     void this.storage.store(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY, this);
@@ -250,7 +250,7 @@ export class CanvasState {
       0,
       0,
       this.userSpaceSize.width * this.userspaceToCanvasFactor,
-      this.userSpaceSize.height * this.userspaceToCanvasFactor
+      this.userSpaceSize.height * this.userspaceToCanvasFactor,
     );
   }
 

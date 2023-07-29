@@ -5,7 +5,7 @@ import { Text } from "./Text";
 export const DecoratedText = (
   application: Application,
   context: CanvasRenderingContext2D,
-  element: layout.DecoratedText
+  element: layout.DecoratedText,
 ) => {
   let halign: Alignment;
   if (element.startDecoration && !element.endDecoration) {
@@ -44,7 +44,7 @@ export const DecoratedText = (
             y: element.box.centerY - 0.5 * textHeight,
             width: element.box.width - textWidth - textMargin,
             height: textHeight,
-          })
+          }),
         );
         break;
       case "end":
@@ -58,7 +58,7 @@ export const DecoratedText = (
             width: element.box.width - textWidth - textMargin,
             height: textHeight,
           }),
-          true
+          true,
         );
         break;
       case "center":
@@ -72,7 +72,7 @@ export const DecoratedText = (
               width: 0.5 * (element.box.width - textWidth) - textMargin,
               height: textHeight,
             }),
-            true
+            true,
           );
         }
 
@@ -85,7 +85,7 @@ export const DecoratedText = (
               y: element.box.centerY - 0.5 * textHeight,
               width: 0.5 * (element.box.width - textWidth) - textMargin,
               height: textHeight,
-            })
+            }),
           );
         }
         break;
@@ -97,7 +97,7 @@ const drawDecoration = (
   context: CanvasRenderingContext2D,
   decoration: TextDecoration,
   box: Box,
-  tickOnLeft = false
+  tickOnLeft = false,
 ) => {
   context.beginPath();
   if (decoration.dashed) {

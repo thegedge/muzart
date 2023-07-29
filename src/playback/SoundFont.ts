@@ -156,7 +156,7 @@ export class SoundFont {
       zonesWithInstrument.map((zoneWithInstrument) => {
         const instrumentIndex = zoneWithInstrument.generators[SoundFontGeneratorType.Instrument];
         return instrumentIndex && this.instruments_[instrumentIndex];
-      })
+      }),
     );
 
     if (sfInstruments.length == 0) {
@@ -311,7 +311,7 @@ export class SoundFont {
     instances: { zones: SoundFontZone[]; zoneIndex: number }[],
     zoneIndexes: SoundFontZoneIndex[],
     generators: [number, number][],
-    modulators: SoundFontModulator[]
+    modulators: SoundFontModulator[],
   ) {
     for (let instanceIndex = 0; instanceIndex < instances.length; ++instanceIndex) {
       const instance = instances[instanceIndex];

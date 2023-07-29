@@ -8,7 +8,7 @@ export * from "./Box";
  */
 export function ancestorOfType<SourceT extends LayoutElement, AncestorT extends LayoutElement = SourceT>(
   source: SourceT,
-  ancestorType: AncestorT["type"]
+  ancestorType: AncestorT["type"],
 ): AncestorT | null {
   let e: LayoutElement | null | undefined = source.parent;
   while (e && e.type != ancestorType) {
@@ -26,7 +26,7 @@ export function ancestorOfType<SourceT extends LayoutElement, AncestorT extends 
  */
 export function toAncestorCoordinateSystem<LayoutT extends LayoutElement>(
   source: LayoutT,
-  ancestorType?: LayoutT["type"]
+  ancestorType?: LayoutT["type"],
 ): Box {
   const box = source.box.clone();
   let e: LayoutElement | null | undefined = source.parent;
@@ -62,7 +62,7 @@ export function toAncestorCoordinateSystem<LayoutT extends LayoutElement>(
 export function minMap<T, MinT>(
   collection: Iterable<T>,
   mapper: (v: T) => MinT,
-  lessThan: (a: MinT, b: MinT) => boolean = (a, b) => a < b
+  lessThan: (a: MinT, b: MinT) => boolean = (a, b) => a < b,
 ): MinT | undefined {
   let minValue: MinT | undefined;
   for (const v of collection) {
@@ -98,7 +98,7 @@ export function minMap<T, MinT>(
 export function maxMap<T, MaxT>(
   collection: ReadonlyArray<T>,
   mapper: (v: T) => MaxT,
-  lessThan: (a: MaxT, b: MaxT) => boolean = (a, b) => a < b
+  lessThan: (a: MaxT, b: MaxT) => boolean = (a, b) => a < b,
 ): MaxT | undefined {
   if (collection.length == 0) {
     return undefined;
@@ -161,7 +161,7 @@ export const numCharsToRepresent = (v: number): number => {
  */
 export function runs<T, V>(
   values: Iterable<T>,
-  mapper: (v: T, lastValue: V | undefined) => V | undefined
+  mapper: (v: T, lastValue: V | undefined) => V | undefined,
 ): [number, number, V][] {
   const runs: [number, number, V][] = [];
   let mapped: V | undefined = undefined;

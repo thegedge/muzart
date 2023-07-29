@@ -126,7 +126,7 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
             box: new Box(measureBox.x + beatElement.box.x, y, beatElement.box.width, TUPLET_SIZE),
             value: String(tuplet),
             size: TUPLET_SIZE,
-          })
+          }),
         );
       } else if (tuplet == end - start + 1 && tuplet == beatElements.length) {
         const width = beatElements[end].box.centerX - beatElement.box.centerX;
@@ -135,7 +135,7 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
             box: new Box(measureBox.x + beatElement.box.centerX, y, width, TUPLET_SIZE),
             value: String(tuplet),
             size: TUPLET_SIZE,
-          })
+          }),
         );
       } else {
         // TODO if end - start + 1 > tuplet, split up into multiple brackets groups

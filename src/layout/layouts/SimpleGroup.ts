@@ -9,7 +9,7 @@ import { AbstractGroup } from "./AbstractGroup";
 export abstract class SimpleGroup<
   T extends types.LayoutElement,
   Type extends string = "Group",
-  ParentT extends types.LayoutElement | null = types.LayoutElement
+  ParentT extends types.LayoutElement | null = types.LayoutElement,
 > extends AbstractGroup<T, Type, ParentT> {
   addElement(element: T) {
     this.children.push(element);

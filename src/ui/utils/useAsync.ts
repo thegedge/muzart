@@ -7,7 +7,7 @@ export type AsyncResult<ValueT, ErrorT = unknown> =
 
 export const useAsync = <ValueT, ErrorT = unknown>(
   f: () => Promise<ValueT>,
-  inputs: Inputs = []
+  inputs: Inputs = [],
 ): AsyncResult<ValueT, ErrorT> => {
   const [result, setResult] = useState<AsyncResult<ValueT, ErrorT>>({
     pending: true,

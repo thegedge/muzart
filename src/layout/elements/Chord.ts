@@ -11,7 +11,7 @@ export class Chord extends LayoutElement<"Chord", types.LineElement> implements 
   constructor(
     readonly chord: notation.Chord,
     readonly numStaffLines: number,
-    readonly staffHeight = STAFF_LINE_HEIGHT
+    readonly staffHeight = STAFF_LINE_HEIGHT,
   ) {
     const maxNoteChars = maxMap(chord.notes, (note) => note.toString().length) || 1;
     const noteWidth = chordWidth(maxNoteChars);
@@ -28,7 +28,7 @@ export class Chord extends LayoutElement<"Chord", types.LineElement> implements 
         // TODO this placement will go outside the chord box, which also means that lots of grace notes in a dense measure may look bad
         const graceNoteElement = new Note(
           new Box(-1.2 * noteWidth, noteY + 0.125 * noteHeight, noteWidth, 0.75 * noteHeight),
-          note.graceNote
+          note.graceNote,
         );
         graceNoteElement.parent = this;
         return [noteElement, graceNoteElement];

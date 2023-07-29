@@ -121,7 +121,7 @@ const PartRow = observer(
         </div>
       </>
     );
-  }
+  },
 );
 
 // Parent is observed, and will re-render all children
@@ -150,7 +150,7 @@ const MeasureBox = (props: {
         return partIndex == selection.partIndex && currentMeasure == measure.number;
       },
       (isSelected) => setSelected(isSelected),
-      { fireImmediately: true }
+      { fireImmediately: true },
     );
   }, [playback, selection]);
 

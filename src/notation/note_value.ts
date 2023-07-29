@@ -83,7 +83,10 @@ export class NoteValue {
   readonly dots: number;
   readonly tuplet?: Tuplet;
 
-  constructor(readonly name: NoteValueName, options?: Partial<NoteValueOptions>) {
+  constructor(
+    readonly name: NoteValueName,
+    options?: Partial<NoteValueOptions>,
+  ) {
     this.dots = clamp(options?.dots || 0, 0, 3);
     this.tuplet = options?.tuplet;
   }

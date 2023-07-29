@@ -61,19 +61,19 @@ export class AboveStaff extends GridGroup<LineElement> {
 
     this.addInterMeasureStaffDecorations(
       (chord: notation.Chord) => chord.notes.some((n) => n.palmMute),
-      (_hasPalmMute: boolean, amount: number) => textElement("P.M.", amount)
+      (_hasPalmMute: boolean, amount: number) => textElement("P.M.", amount),
     );
 
     this.addInterMeasureStaffDecorations(
       (chord: notation.Chord) => {
         return chord.notes.find((n) => n.harmonic)?.harmonicString;
       },
-      (harmonicString: string, amount: number) => textElement(harmonicString, amount)
+      (harmonicString: string, amount: number) => textElement(harmonicString, amount),
     );
 
     this.addInterMeasureStaffDecorations(
       (chord: notation.Chord) => chord.notes.some((n) => n.letRing),
-      (_letRing: boolean, amount: number) => textElement("let ring", amount)
+      (_letRing: boolean, amount: number) => textElement("let ring", amount),
     );
 
     this.addInterMeasureStaffDecorations(
@@ -81,7 +81,7 @@ export class AboveStaff extends GridGroup<LineElement> {
       (_vibrato: boolean, _amount: number) => new Vibrato(),
       {
         includeChordSpacer: true,
-      }
+      },
     );
 
     this.addIntraMeasureAboveStaffDecorations();
@@ -97,7 +97,7 @@ export class AboveStaff extends GridGroup<LineElement> {
     options?: {
       group?: string;
       includeChordSpacer?: boolean;
-    }
+    },
   ) {
     // TODO the endColumn goes to the end of the chord box, but we probably only want it to go to the end of part of the chord
     //      box that contains the notes, not including the spacing at the right.
@@ -174,7 +174,7 @@ export class AboveStaff extends GridGroup<LineElement> {
           mustBeBottomRow: true,
           startColumn: index, // this is the empty spacer at the end of the measure
           endColumn: index + 1,
-        }
+        },
       );
 
       if (measure.staffDetails.tempo?.changed) {
@@ -191,7 +191,7 @@ export class AboveStaff extends GridGroup<LineElement> {
           {
             startColumn: index + 1,
             endColumn: index + 2,
-          }
+          },
         );
       }
 
@@ -209,7 +209,7 @@ export class AboveStaff extends GridGroup<LineElement> {
           {
             startColumn: index + 1,
             endColumn: index + 2,
-          }
+          },
         );
       }
 
@@ -242,7 +242,7 @@ export class AboveStaff extends GridGroup<LineElement> {
                 startColumn: index + 1,
                 endColumn: index + 1,
                 group: "chords",
-              }
+              },
             );
           }
         }
@@ -258,7 +258,7 @@ export class AboveStaff extends GridGroup<LineElement> {
               startColumn: index + 1,
               endColumn: index + 2,
               group: "lyricsAndText",
-            }
+            },
           );
         }
 
@@ -352,7 +352,7 @@ export class AboveStaff extends GridGroup<LineElement> {
           {
             startColumn: index + 1,
             endColumn: index + 1,
-          }
+          },
         );
       }
     });

@@ -62,10 +62,10 @@ export class StaffOverlay extends SimpleGroupElement<LineElement> {
               x,
               measure.box.y + element.box.y + STAFF_LINE_HEIGHT * ((note.placement?.string || 1) - 1.6),
               w,
-              0.7 * STAFF_LINE_HEIGHT
+              0.7 * STAFF_LINE_HEIGHT,
             ),
-            "above"
-          )
+            "above",
+          ),
         );
       }
     });
@@ -127,10 +127,10 @@ export class StaffOverlay extends SimpleGroupElement<LineElement> {
               x,
               measure.box.y + element.box.y + STAFF_LINE_HEIGHT * ((note.placement?.string || 1) - 1) + yoffset,
               w,
-              STAFF_LINE_HEIGHT - 2 * yoffset
+              STAFF_LINE_HEIGHT - 2 * yoffset,
             ),
-            note.slide.upwards
-          )
+            note.slide.upwards,
+          ),
         );
       }
     });
@@ -153,9 +153,9 @@ export class StaffOverlay extends SimpleGroupElement<LineElement> {
                 measure.box.x,
                 measure.box.y + element.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
                 STAFF_LINE_HEIGHT,
-                0.5 * STAFF_LINE_HEIGHT
-              )
-            )
+                0.5 * STAFF_LINE_HEIGHT,
+              ),
+            ),
           );
         }
 
@@ -182,9 +182,9 @@ export class StaffOverlay extends SimpleGroupElement<LineElement> {
                 x,
                 measure.box.y + element.box.y + STAFF_LINE_HEIGHT * (note.placement?.string || 1),
                 width,
-                0.5 * STAFF_LINE_HEIGHT
-              )
-            )
+                0.5 * STAFF_LINE_HEIGHT,
+              ),
+            ),
           );
         }
       }

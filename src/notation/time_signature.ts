@@ -6,7 +6,10 @@ export interface Beat {
 }
 
 export class TimeSignature {
-  constructor(readonly value: NoteValue, readonly count: number) {}
+  constructor(
+    readonly value: NoteValue,
+    readonly count: number,
+  ) {}
 
   /**
    * Return the length of a beat from the current time signature.

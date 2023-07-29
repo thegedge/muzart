@@ -18,7 +18,12 @@ export class Box {
     return boxes.reduce((encompassBox, box) => encompassBox.encompass(box));
   }
 
-  constructor(public x: number, public y: number, public width: number, public height: number) {}
+  constructor(
+    public x: number,
+    public y: number,
+    public width: number,
+    public height: number,
+  ) {}
 
   /**
    * Create a copy of this box.
@@ -55,7 +60,7 @@ export class Box {
       components.x ?? this.x,
       components.y ?? this.y,
       components.width ?? this.width,
-      components.height ?? this.height
+      components.height ?? this.height,
     );
   }
 

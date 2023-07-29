@@ -3,7 +3,7 @@ export interface Suspenseful<T> {
 }
 
 /** Wrap a promise so that it works with React Suspense */
-export function suspenseful<T>(promiseOrAsyncFunc: () => Promise<T> | Promise<T>): Suspenseful<T> {
+export function suspenseful<T>(promiseOrAsyncFunc: () => Promise<T>): Suspenseful<T> {
   let response: T;
   let error: Error;
   let status: "pending" | "success" | "error" = "pending";
@@ -17,7 +17,7 @@ export function suspenseful<T>(promiseOrAsyncFunc: () => Promise<T> | Promise<T>
     (err: Error) => {
       status = "error";
       error = err;
-    }
+    },
   );
 
   const read = () => {

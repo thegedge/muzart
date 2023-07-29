@@ -24,7 +24,7 @@ export const Slide = (application: Application, context: CanvasRenderingContext2
       element.box.x - 0.5 * STAFF_LINE_HEIGHT,
       element.box.y - STAFF_LINE_HEIGHT,
       element.box.width + STAFF_LINE_HEIGHT,
-      0.8 * STAFF_LINE_HEIGHT
+      0.8 * STAFF_LINE_HEIGHT,
     ),
     orientation: "above",
   });

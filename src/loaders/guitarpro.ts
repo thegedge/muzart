@@ -213,7 +213,7 @@ class GuitarProLoader {
       // TODO could these be set but not changing?
       timeSignature = new TimeSignature(
         denominator ? NoteValue.fromNumber(denominator) : defaultTimeSignature.value,
-        numerator ?? defaultTimeSignature.count
+        numerator ?? defaultTimeSignature.count,
       );
     }
 
@@ -490,7 +490,7 @@ class GuitarProLoader {
     }
 
     const [_blank1, _blank2, _tremoloAll, _phaserAll, _reverbAll, _chorusAll, _panAll, _volumeAll] = bits(
-      this.cursor.nextNumber(NumberType.Uint8)
+      this.cursor.nextNumber(NumberType.Uint8),
     );
 
     if (tempo !== -1 && tempo !== this.currentMeasureTempo) {

@@ -18,7 +18,10 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
 
   public chords: (types.Chord | types.Rest)[] = [];
 
-  constructor(readonly part: notation.Part, readonly measure: notation.Measure) {
+  constructor(
+    readonly part: notation.Part,
+    readonly measure: notation.Measure,
+  ) {
     super({
       box: Box.empty(),
       axis: "horizontal",

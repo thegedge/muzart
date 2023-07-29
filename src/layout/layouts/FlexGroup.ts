@@ -43,7 +43,7 @@ export type FlexGroupConfig = {
 export abstract class FlexGroup<
   T extends types.LayoutElement,
   Type extends string = "Group",
-  Parent extends types.LayoutElement | null = types.LayoutElement
+  Parent extends types.LayoutElement | null = types.LayoutElement,
 > {
   abstract readonly type: Type;
 

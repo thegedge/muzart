@@ -27,7 +27,10 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
 
   public measures: Measure[] = [];
 
-  constructor(box: Box, private numStaffLines = 6) {
+  constructor(
+    box: Box,
+    private numStaffLines = 6,
+  ) {
     super(box);
 
     this.staffOverlay = new StaffOverlay();
@@ -135,7 +138,7 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
           style: {
             userSelect: "none",
           },
-        })
+        }),
       );
     }
 

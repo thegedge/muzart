@@ -67,7 +67,11 @@ export class Pitch {
     return new Pitch(pitch[0] as Step, octave, pitch.length - 1);
   }
 
-  constructor(readonly step: Step, readonly octave: number, readonly alterations = 0) {}
+  constructor(
+    readonly step: Step,
+    readonly octave: number,
+    readonly alterations = 0,
+  ) {}
 
   /**
    * Return a new pitch that is this note adjusted by the given number of semitones.

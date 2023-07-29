@@ -34,7 +34,7 @@ export class Application {
     public settingsStorage: SyncStorage,
     public tabStorage: AsyncStorage,
     public selection: Selection,
-    public playback: PlaybackController
+    public playback: PlaybackController,
   ) {
     makeAutoObservable(this, undefined, { deep: false });
   }

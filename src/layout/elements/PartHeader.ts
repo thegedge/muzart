@@ -13,7 +13,11 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
   /** If true, show chord diagrams for all chords used in the tab  */
   readonly summarizeChords = true;
 
-  constructor(readonly score: notation.Score, readonly part: notation.Part, readonly contentWidth: number) {
+  constructor(
+    readonly score: notation.Score,
+    readonly part: notation.Part,
+    readonly contentWidth: number,
+  ) {
     super({
       box: new Box(0, 0, contentWidth, 0),
       axis: "vertical",
@@ -34,7 +38,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
           style: {
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,
           },
-        })
+        }),
       );
     }
 
@@ -51,7 +55,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,
             fontWeight: "bold",
           },
-        })
+        }),
       );
     }
 
@@ -67,7 +71,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
           style: {
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,
           },
-        })
+        }),
       );
     }
 
@@ -85,7 +89,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
               fontFamily: DEFAULT_SERIF_FONT_FAMILY,
               fontStyle: "italic",
             },
-          })
+          }),
         );
       }
     }
@@ -108,7 +112,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
           style: {
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,
           },
-        })
+        }),
       );
     }
 
@@ -126,7 +130,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
           style: {
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,
           },
-        })
+        }),
       );
     }
 
@@ -147,7 +151,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
             style: {
               fontFamily: DEFAULT_SERIF_FONT_FAMILY,
             },
-          })
+          }),
       );
 
       const offset = Math.round(texts.length / 2);

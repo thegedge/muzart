@@ -218,7 +218,7 @@ export interface TimeSignature extends LayoutElement<LineElement> {
  */
 export const getAncestorOfType = <T extends LayoutElement<unknown>>(
   e: LayoutElement<unknown>,
-  type: string
+  type: string,
 ): T | null => {
   let current: LayoutElement<unknown> | undefined | null = e;
   while (current) {

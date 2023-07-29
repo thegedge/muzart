@@ -12,7 +12,7 @@ export const Text = (
     halign?: Alignment;
     valign?: Alignment;
     style?: JSXInternal.CSSProperties;
-  }
+  },
 ) => {
   let x;
   let align: CanvasTextAlign;

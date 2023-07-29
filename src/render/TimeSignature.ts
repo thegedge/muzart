@@ -6,7 +6,7 @@ import { digits } from "../utils/digits";
 export const TimeSignature = (
   _application: Application,
   context: CanvasRenderingContext2D,
-  element: layout.TimeSignature
+  element: layout.TimeSignature,
 ) => {
   const topDigits = digits(element.timeSignature.count);
   const bottomDigits = digits(element.timeSignature.value.toNumber());

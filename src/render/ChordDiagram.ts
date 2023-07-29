@@ -6,7 +6,7 @@ import { Text } from "./Text";
 export const ChordDiagram = (
   application: Application,
   context: CanvasRenderingContext2D,
-  element: layout.ChordDiagram
+  element: layout.ChordDiagram,
 ) => {
   const textBox = new Box(element.box.x, element.box.y, element.box.width, STAFF_LINE_HEIGHT);
 
@@ -32,7 +32,7 @@ export const ChordDiagram = (
     element.box.x,
     element.box.y + textBox.height,
     element.box.width,
-    element.box.height - textBox.height
+    element.box.height - textBox.height,
   );
   FretboardDiagram(application, context, element, diagramBox);
 };
@@ -41,7 +41,7 @@ const FretboardDiagram = (
   application: Application,
   context: CanvasRenderingContext2D,
   chordDiagram: layout.ChordDiagram,
-  box: Box
+  box: Box,
 ) => {
   const numStrings = application.selection.part?.part?.instrument?.tuning?.length;
   if (!numStrings) {

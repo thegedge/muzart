@@ -27,8 +27,8 @@ export class Selection implements StorableObject {
       inRange(
         this.measureIndex + 1,
         p.measures[0]?.measure?.number ?? -1,
-        (last(p.measures)?.measure?.number ?? -1) + 1
-      )
+        (last(p.measures)?.measure?.number ?? -1) + 1,
+      ),
     );
   }
 
@@ -52,7 +52,7 @@ export class Selection implements StorableObject {
 
     // Need the `as` here because TS doesn't understand that the type check internally prevents returning anything else
     return this.chord?.children.find(
-      (note) => note.type == "Note" && note.note.placement?.string == this.noteIndex + 1
+      (note) => note.type == "Note" && note.note.placement?.string == this.noteIndex + 1,
     ) as Note | undefined;
   }
 

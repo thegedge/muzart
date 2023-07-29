@@ -7,7 +7,7 @@ export class IndexedDbStorage extends AsyncStorage {
     name: string,
     version: number,
     upgrade: (oldVersion: number, newVersion: number | null, db: IDBDatabase) => void,
-    indexedDB = globalThis.indexedDB
+    indexedDB = globalThis.indexedDB,
   ) {
     if (version <= 0) {
       throw new Error("IndexedDbStorage version must be a positive integer");
@@ -79,7 +79,7 @@ export class IndexedDbStorage extends AsyncStorage {
     const objectStore = transaction.objectStore(namespace);
     const request = objectStore.getAllKeys();
     return await new Promise<string[]>((resolve, reject) => {
-      request.onsuccess = () => resolve(request.result.map((key) => key.toString()));
+      request.onsuccess = () => resolve(request.result.map((key) => String(key)));
       request.onerror = () => reject(request.error);
     });
   }

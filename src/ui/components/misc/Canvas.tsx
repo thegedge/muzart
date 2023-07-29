@@ -117,7 +117,7 @@ export const Canvas = observer((props: CanvasProps) => {
         state.setCanvas(canvas);
       }
     },
-    [state]
+    [state],
   );
 
   return (
