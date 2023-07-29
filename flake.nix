@@ -16,10 +16,8 @@
           packages = {
             direnv = pkgs.nix-direnv;
             nixpkgs-fmt = pkgs.nixpkgs-fmt;
-            nodejs = pkgs.nodejs-19_x;
-            yarn = pkgs.yarn.override {
-              nodejs = flake.packages.nodejs;
-            };
+            nodejs = pkgs.nodejs_20;
+            pnpm = pkgs.nodePackages.pnpm;
           };
 
           devShell = pkgs.mkShell {
