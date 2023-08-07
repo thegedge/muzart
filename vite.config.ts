@@ -5,6 +5,7 @@ import { defineConfig, ModuleNode } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig(async ({ mode }) => {
+  let port = 80;
   let https: TlsOptions | false = false;
   if (mode !== "production") {
     const certFileExists = await fs
@@ -13,6 +14,7 @@ export default defineConfig(async ({ mode }) => {
       .catch(() => false);
 
     if (certFileExists) {
+      port = 443;
       https = {
         cert: "muzart.dev+4.pem",
         key: "muzart.dev+4-key.pem",
@@ -81,14 +83,16 @@ export default defineConfig(async ({ mode }) => {
     ],
 
     server: {
-      port: 3001,
-      host: "muzart.dev",
+      port,
+      strictPort: true,
+      host: "::",
       https,
     },
 
     preview: {
-      port: 3001,
-      host: "muzart.dev",
+      port,
+      strictPort: true,
+      host: "::",
       https,
     },
   };
