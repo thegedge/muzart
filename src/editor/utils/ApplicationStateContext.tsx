@@ -28,9 +28,27 @@ export const useApplicationState = (): Application => {
   return state;
 };
 
+export const CREDENTIALS_NAMESPACE = "credentials";
+export const CREDENTIALS_ACCESS_TOKEN_KEY = "access_token";
+
 export const ApplicationState = (props: { children?: ComponentChildren }) => {
   const application = useMemo(() => {
     const settingsStorage = new LocalStorage();
+
+    // Check for access tokens from external storages
+    if (window.location.hash) {
+      const params = new URLSearchParams(window.location.hash.slice(1));
+      if (params.has("error")) {
+        console.error(params);
+      } else if (params.has("access_token")) {
+        const accessToken = params.get("access_token");
+        if (accessToken) {
+          settingsStorage.set(CREDENTIALS_NAMESPACE, CREDENTIALS_ACCESS_TOKEN_KEY, accessToken);
+        }
+        window.location.hash = "";
+      }
+    }
+
     const tabStorage = new TabStorage({
       "demo": new DemoStorage(["Song13.gp4"]),
       "indexed-db": new IndexedDbStorage("muzart_tabs", 1, (oldVersion, _newVersion, db) => {
