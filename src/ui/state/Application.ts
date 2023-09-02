@@ -1,17 +1,12 @@
-import { last } from "lodash";
 import { flow, makeAutoObservable } from "mobx";
 import * as layout from "../../layout";
 import { Point } from "../../layout";
 import { load } from "../../loaders";
 import { Score } from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
-import { AsyncStorage, SyncStorage } from "../storage/Storage";
-import {
-  TABS_NAMESPACE,
-  VIEW_STATE_CANVAS_SUBKEY,
-  VIEW_STATE_LAST_TAB_SUBKEY,
-  VIEW_STATE_NAMESPACE,
-} from "../storage/namespaces";
+import { SyncStorage } from "../storage/Storage";
+import { TabStorage } from "../storage/TabStorage";
+import { VIEW_STATE_CANVAS_SUBKEY, VIEW_STATE_LAST_TAB_SUBKEY, VIEW_STATE_NAMESPACE } from "../storage/namespaces";
 import { DebugContext } from "./DebugContext";
 import { Selection } from "./Selection";
 
@@ -32,45 +27,33 @@ export class Application {
 
   constructor(
     public settingsStorage: SyncStorage,
-    public tabStorage: AsyncStorage,
+    public tabStorage: TabStorage,
     public selection: Selection,
     public playback: PlaybackController,
   ) {
     makeAutoObservable(this, undefined, { deep: false });
   }
 
-  loadScore = flow(function* (this: Application, source: string | File | URL) {
+  loadScore = flow(function* (this: Application, url: URL) {
     try {
       this.error = null;
       this.loading = true;
 
+      const blob: Blob = yield this.tabStorage.load(url);
+      if (!blob) {
+        throw new Error(`couldn't load tab: ${url.pathname}`);
+      }
+
+      const source = new File([blob], url.pathname);
       const score = (yield load(source)) as Score;
       this.setScore(layout.layOutScore(score));
 
-      let tabName: string;
-      if (source instanceof File) {
-        const buffer = (yield source.arrayBuffer()) as ArrayBuffer;
-        const blob = new Blob([buffer], { type: "application/octet-stream" });
-        yield this.tabStorage.store(TABS_NAMESPACE, source.name, blob);
-        tabName = source.name;
-      } else if (typeof source == "string") {
-        const [_songs, songName] = source.split("/");
-        tabName = songName;
-      } else {
-        const songName = last(source.pathname.split("/"));
-        if (!songName) {
-          throw new Error(`Couldn't load tab from URL ${source.pathname}`);
-        }
-
-        tabName = songName;
-      }
-
       const lastTab = this.settingsStorage.get(VIEW_STATE_NAMESPACE, VIEW_STATE_LAST_TAB_SUBKEY);
-      if (lastTab != tabName) {
+      if (lastTab != url.toString()) {
+        this.settingsStorage.set(VIEW_STATE_NAMESPACE, VIEW_STATE_LAST_TAB_SUBKEY, url.toString());
         this.settingsStorage.delete(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY);
         this.selection.reset();
       }
-      this.settingsStorage.set(VIEW_STATE_NAMESPACE, VIEW_STATE_LAST_TAB_SUBKEY, tabName);
     } catch (error) {
       if (error instanceof Error) {
         this.error = error;

@@ -1,13 +1,9 @@
 import { observer } from "mobx-react-lite";
 import { useReducer } from "preact/hooks";
 import { DEFAULT_MARGINS, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH } from "../../../layout";
-import { TABS_NAMESPACE, VIEW_STATE_NAMESPACE } from "../../storage/namespaces";
+import { VIEW_STATE_NAMESPACE } from "../../storage/namespaces";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { useAsync } from "../../utils/useAsync";
-
-export type DemoType = { name: string; key: string; source: "demo" };
-export type StorageType = { name: string; key: string; source: "storage" };
-export type SongTypes = DemoType | StorageType;
 
 export const InitialPage = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
@@ -20,18 +16,13 @@ export const InitialPage = observer((_props: Record<string, never>) => {
     }
 
     const lastViewedTab = settingsStorage.get(VIEW_STATE_NAMESPACE, "lastTab");
-    const tabs = await tabStorage.list(TABS_NAMESPACE);
-    const songs: SongTypes[] = [
-      ...tabs.map((name) => ({ name, key: name, source: "storage" as const })),
-      { name: "Demo Song", key: "Song13.gp4", source: "demo" },
-    ];
-
-    return songs.map((song) => {
+    const tabs = await tabStorage.list();
+    return tabs.map((tab) => {
       return {
-        key: song.key,
-        href: `#/${song.source}/${encodeURIComponent(song.key)}`,
-        text: `${song.name}${song.key == lastViewedTab ? " (last viewed)" : ""}`,
-        remove: song.source == "storage" ? async () => await tabStorage.delete(TABS_NAMESPACE, song.name) : undefined,
+        key: tab,
+        href: `#/${encodeURIComponent(tab.toString())}`,
+        text: `${tab.pathname}${tab.toString() == lastViewedTab ? " (last viewed)" : ""}`,
+        remove: tab.protocol == "demo:" ? null : () => tabStorage.delete(tab),
       };
     });
   }, [loading, settingsStorage, tabStorage, epoch]);

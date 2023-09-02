@@ -5,8 +5,10 @@ import { PlaybackController } from "../../playback/PlaybackController";
 import { Loading } from "../components/misc/Loading";
 import { Application } from "../state/Application";
 import { Selection } from "../state/Selection";
+import { DemoStorage } from "../storage/DemoStorage";
 import { IndexedDbStorage } from "../storage/IndexedDbStorage";
 import { LocalStorage } from "../storage/LocalStorage";
+import { TabStorage } from "../storage/TabStorage";
 import { TABS_NAMESPACE } from "../storage/namespaces";
 
 declare global {
@@ -28,10 +30,13 @@ export const useApplicationState = (): Application => {
 export const ApplicationState = (props: { children?: ComponentChildren }) => {
   const application = useMemo(() => {
     const settingsStorage = new LocalStorage();
-    const tabStorage = new IndexedDbStorage("muzart_tabs", 1, (oldVersion, _newVersion, db) => {
-      if (oldVersion < 1) {
-        db.createObjectStore(TABS_NAMESPACE);
-      }
+    const tabStorage = new TabStorage({
+      "demo": new DemoStorage(["Song13.gp4"]),
+      "indexed-db": new IndexedDbStorage("muzart_tabs", 1, (oldVersion, _newVersion, db) => {
+        if (oldVersion < 1) {
+          db.createObjectStore(TABS_NAMESPACE);
+        }
+      }),
     });
     const selection = new Selection(settingsStorage);
     const playback = new PlaybackController(selection);
@@ -58,27 +63,23 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
     void application.playback.loadSoundFont(defaultSoundfont);
   }, [application]);
 
-  // if (import.meta.env.DEV) {
-  //   useEffect(() => {
-  //     if (application.score != null) {
-  //       return;
-  //     }
+  if (import.meta.env.DEV) {
+    useEffect(() => {
+      if (application.score != null) {
+        return;
+      }
 
-  //     let defaultFile: string | File | null = null;
-
-  //     const lastViewedTab = application.storage.get("view", "lastTab");
-  //     if (lastViewedTab) {
-  //       const lastViewedTabData = application.storage.getBlob("tabs", lastViewedTab);
-  //       if (lastViewedTabData) {
-  //         defaultFile = new File([lastViewedTabData], lastViewedTab);
-  //       }
-  //     }
-
-  //     defaultFile ??= "songs/Song13.gp4";
-
-  //     void application.loadScore(defaultFile);
-  //   }, [application]);
-  // }
+      const defaultFile = application.settingsStorage.get("view", "lastTab");
+      if (defaultFile) {
+        try {
+          const defaultFileURL = new URL(defaultFile);
+          void application.loadScore(defaultFileURL);
+        } catch (error) {
+          // Assume old data that is incorrect
+        }
+      }
+    }, [application]);
+  }
 
   return (
     <Suspense fallback={<Loading />}>

@@ -1,10 +1,13 @@
 import { isString, pickBy, range } from "lodash";
-import { changed, Chord, Measure, Note, Score, StaffDetails } from "../notation";
+import { Chord, Measure, Note, Score, StaffDetails, changed } from "../notation";
 import guitarPro from "./guitarpro";
 import musicXml from "./musicxml";
 
-export async function load(source: File | URL | string, type?: ScoreDataType): Promise<Score> {
-  if (isString(source) || "hostname" in source) {
+export async function load(source: File | Response | URL | string, type?: ScoreDataType): Promise<Score> {
+  if (source instanceof Response) {
+    const buffer = await source.arrayBuffer();
+    return loadScore(buffer, type ?? determineScoreType(source));
+  } else if (isString(source) || "hostname" in source) {
     const response = await fetch(source.toString());
     const buffer = await response.arrayBuffer();
     return loadScore(buffer, type ?? determineScoreType(response));

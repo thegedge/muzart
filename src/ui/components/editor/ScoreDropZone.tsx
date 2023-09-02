@@ -1,9 +1,8 @@
 import { Route, useLocation } from "wouter";
-import { determineScoreType, getFilenameAndMimeType, ScoreDataType } from "../../../loaders";
-import { TABS_NAMESPACE } from "../../storage/namespaces";
+import { ScoreDataType, determineScoreType, getFilenameAndMimeType } from "../../../loaders";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { useAsync } from "../../utils/useAsync";
-import { InitialPage, SongTypes } from "../misc/InitialPage";
+import { InitialPage } from "../misc/InitialPage";
 import { Score } from "../misc/Score";
 import { PartPanel } from "./PartPanel";
 
@@ -11,42 +10,53 @@ export const ScoreDropZone = () => {
   const application = useApplicationState();
   const [_location, navigate] = useLocation();
 
-  const onDrop = (event: DragEvent) => {
+  const onDrop = async (event: DragEvent) => {
     event.preventDefault();
     if (!event.dataTransfer) {
       return;
     }
 
     const sources = filesFromDataTransfer(event.dataTransfer);
-    const soundfontFile = sources.find((file) => getFilenameAndMimeType(file).filename.endsWith(".sf2"));
-    const tabFile = sources.find((file) => determineScoreType(file) != ScoreDataType.Unknown);
 
+    const soundfontFile = sources.find((file) => getFilenameAndMimeType(file).filename.endsWith(".sf2"));
     if (soundfontFile) {
       void application.playback.loadSoundFont(soundfontFile);
     }
 
-    if (tabFile) {
-      const { filename } = getFilenameAndMimeType(tabFile);
-      application
-        .loadScore(tabFile)
-        .then(() => navigate(`#/storage/${filename}`))
-        .catch(console.error); // TODO better error handling
+    const tabFiles = sources.filter((file) => determineScoreType(file) != ScoreDataType.Unknown);
+    if (tabFiles.length > 0) {
+      const urls = await Promise.all(
+        tabFiles.map(async (tabFile) => {
+          const { filename } = getFilenameAndMimeType(tabFile);
+
+          const buffer = await tabFile.arrayBuffer();
+          const blob = new Blob([buffer], { type: "application/octet-stream" });
+          const url = new URL(`indexed-db:${filename}`);
+          await application.tabStorage.store(url, blob);
+
+          return url;
+        }),
+      );
+
+      navigate(`#/${urls[0].toString()}`);
     }
   };
 
   return (
     <div
       className="min-w-screen min-h-screen"
-      onDrop={onDrop}
+      onDrop={(e) => {
+        onDrop(e).catch(console.error);
+      }}
       onDragOver={(e) => {
         e.preventDefault();
       }}
     >
       <div className="flex flex-col items-center w-screen h-screen max-w-screen max-h-screen overflow-clip">
-        <Route path="/:source/:name">
-          {(params: { source: SongTypes["source"]; name: string }) => {
-            const name = decodeURIComponent(params.name);
-            return <ScoreLoader name={name} source={params.source} />;
+        <Route path="/:url">
+          {(params: { url: string }) => {
+            const url = new URL(decodeURIComponent(params.url));
+            return <ScoreLoader loaderUrl={url} />;
           }}
         </Route>
         <Route path="/">
@@ -64,33 +74,11 @@ export const ScoreDropZone = () => {
   );
 };
 
-const ScoreLoader = (props: { source: SongTypes["source"]; name: string }) => {
-  const { source, name } = props;
+const ScoreLoader = (props: { loaderUrl: URL }) => {
+  const { loaderUrl: url } = props;
+
   const application = useApplicationState();
-
-  const { pending, error } = useAsync(async () => {
-    switch (source) {
-      case "demo": {
-        const base = import.meta.env.BASE_URL;
-        if (base == "") {
-          await application.loadScore(`${base}songs/${name}`);
-        } else {
-          await application.loadScore(`songs/${name}`);
-        }
-        break;
-      }
-      case "storage": {
-        const tabData = await application.tabStorage.loadBlob(TABS_NAMESPACE, name);
-        if (!tabData) {
-          throw new Error(`${name} not found!`);
-        }
-
-        const file = new File([tabData], name);
-        await application.loadScore(file);
-        break;
-      }
-    }
-  }, [source, name]);
+  const { pending, error } = useAsync(() => application.loadScore(url), [application, url]);
 
   if (error) {
     throw error;
