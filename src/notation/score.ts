@@ -1,7 +1,9 @@
-import { Instrument } from "./instrument";
-import { Measure } from "./measure";
+import { Part } from "./part";
 
-export interface Score {
+export interface ScoreOptions {
+  parts: Part[];
+
+  comments?: string[];
   title?: string;
   subTitle?: string;
   artist?: string;
@@ -10,15 +12,48 @@ export interface Score {
   copyright?: string;
   transcriber?: string;
   instructions?: string;
-  comments?: string[];
-
-  parts: Part[];
 }
 
-export interface Part {
-  name: string;
-  color?: string;
-  instrument?: Instrument;
-  lineCount: number;
-  measures: Measure[];
+export class Score {
+  constructor(private options: ScoreOptions) {}
+
+  get parts() {
+    return this.options.parts;
+  }
+
+  get comments() {
+    return this.options.comments;
+  }
+
+  get title() {
+    return this.options.title;
+  }
+
+  get subTitle() {
+    return this.options.subTitle;
+  }
+
+  get artist() {
+    return this.options.artist;
+  }
+
+  get album() {
+    return this.options.album;
+  }
+
+  get composer() {
+    return this.options.composer;
+  }
+
+  get copyright() {
+    return this.options.copyright;
+  }
+
+  get transcriber() {
+    return this.options.transcriber;
+  }
+
+  get instructions() {
+    return this.options.instructions;
+  }
 }

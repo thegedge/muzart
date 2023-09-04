@@ -1,10 +1,9 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck not working on this right now
 import { compact, range } from "lodash";
 import {
   Chord,
   Clef,
   ClefSign,
+  Instrument,
   Key,
   Measure,
   Note,
@@ -43,34 +42,29 @@ function load(source: string): Score {
 
   const score = single(document, document, "//score-partwise");
   if (!score) {
-    return { parts: [] };
+    return new Score({ parts: [] });
   }
 
   const title = textQueryMaybe(document, score, "work/work-title");
   const composer = textQueryMaybe(document, score, "identification/creator[@type='composer']");
-  return {
+  return new Score({
     title,
     composer,
     parts: parts(document, score),
-  };
+  });
 }
 
 function parts(document: Document, node: Node): Part[] {
-  return many(document, node, "part").map((item) => {
+  return many(document, node, "part").map((item, index) => {
     const id = textQueryMaybe(document, item, "@id");
     const name = textQueryMaybe(document, node, `part-list/score-part[@id='${id}']/part-name`);
     const staffLines = textQueryMaybe(document, item, "//staff-details/staff-lines");
 
-    const result: Part = {
-      name,
-      lineCount: parseInt(staffLines || "6"), // TODO default to previous in same staff?
-      measures: measures(document, item),
-    };
-
+    let instrument: Instrument | undefined = undefined;
     const attributes = single(document, item, "measure[1]/attributes");
     const maybeTuning = attributes && tuning(document, attributes);
     if (maybeTuning) {
-      result.instrument = {
+      instrument = {
         type: "regular",
         midiPreset: 24, // TODO where to get midi preset?
         volume: 1,
@@ -78,16 +72,24 @@ function parts(document: Document, node: Node): Part[] {
       };
     }
 
-    return result;
+    return new Part({
+      name: name ?? `Part ${index + 1}`,
+      lineCount: parseInt(staffLines || "6"), // TODO default to previous in same staff?
+      measures: measures(document, item),
+      instrument,
+    });
   });
 }
 
 function measures(document: Document, node: Node): Measure[] {
-  return many(document, node, "measure").map((item, index) => ({
-    number: index + 1,
-    staffDetails: staves(document, item)[0],
-    chords: chords(document, item),
-  }));
+  return many(document, node, "measure").map(
+    (item, index) =>
+      new Measure({
+        chords: chords(document, item),
+        number: index + 1,
+        staffDetails: staves(document, item)[0],
+      }),
+  );
 }
 
 function staves(document: Document, node: Node): StaffDetails[] {
@@ -183,8 +185,7 @@ function chords(document: Document, node: Node): Chord[] {
     }
 
     if (notes.length > 0) {
-      // TODO rest?
-      chords.push({ notes, value: notes[0].value, rest: false });
+      chords.push(new Chord({ notes, value: notes[0].value }));
     }
   }
 

@@ -7,9 +7,11 @@ import {
   ChordDiagram,
   HarmonicStyle,
   Marker,
+  Measure,
   Note,
   NoteDynamic,
   NoteOptions,
+  Part,
   Pitch,
   Score,
   Slide,
@@ -113,11 +115,11 @@ class GuitarProLoader {
     const numTracks = this.cursor.nextNumber(NumberType.Uint32);
     this.debug({ numTracks, numMeasures });
 
-    const score: Score = {
+    const score = new Score({
       parts: [],
       comments,
       ...tabInformation,
-    };
+    });
 
     //------------------------------------------------------------------------------------------------
     // Measure props
@@ -140,18 +142,20 @@ class GuitarProLoader {
       const trackData = this.readTrackData();
       this.trackData.push(trackData);
       const midiData = midiPorts[trackData.midiPort - 1][trackData.midiChannel - 1];
-      score.parts.push({
-        name: trackData.name,
-        color: trackData.color,
-        lineCount: trackData.strings.length,
-        measures: [],
-        instrument: {
-          type: trackData.midiChannel == 10 ? "percussion" : "regular",
-          midiPreset: midiData.instrument ?? 24,
-          volume: midiData.volume,
-          tuning: trackData.strings,
-        },
-      });
+      score.parts.push(
+        new Part({
+          name: trackData.name,
+          color: trackData.color,
+          lineCount: trackData.strings.length,
+          measures: [],
+          instrument: {
+            type: trackData.midiChannel == 10 ? "percussion" : "regular",
+            midiPreset: midiData.instrument ?? 24,
+            volume: midiData.volume,
+            tuning: trackData.strings,
+          },
+        }),
+      );
     }
 
     //------------------------------------------------------------------------------------------------
@@ -166,18 +170,20 @@ class GuitarProLoader {
         const numBeats = this.cursor.nextNumber(NumberType.Uint32);
         const chords = range(numBeats).map(() => this.readBeat(this.trackData[trackIndex]));
 
-        score.parts[trackIndex].measures.push({
-          chords,
-          number: measureIndex + 1,
-          marker: this.measureData[measureIndex].marker,
-          staffDetails: {
-            time: this.measureData[measureIndex].timeSignature,
-            tempo: {
-              value: this.currentMeasureTempo,
-              changed: measureIndex == 0 || tempoBefore != this.currentMeasureTempo,
+        score.parts[trackIndex].measures.push(
+          new Measure({
+            chords,
+            number: measureIndex + 1,
+            marker: this.measureData[measureIndex].marker,
+            staffDetails: {
+              time: this.measureData[measureIndex].timeSignature,
+              tempo: {
+                value: this.currentMeasureTempo,
+                changed: measureIndex == 0 || tempoBefore != this.currentMeasureTempo,
+              },
             },
-          },
-        });
+          }),
+        );
       }
     }
 
@@ -326,7 +332,7 @@ class GuitarProLoader {
       text = this.cursor.nextLengthPrefixedString(NumberType.Uint32);
     }
 
-    let effects: Partial<Chord> | undefined;
+    let effects: ReturnType<typeof this.readBeatEffects> | undefined;
     if (hasEffects) {
       effects = this.readBeatEffects();
     }
@@ -339,22 +345,25 @@ class GuitarProLoader {
     const strings = bits(this.cursor.nextNumber(NumberType.Uint8)).slice(1);
     const notes = [];
     for (let string = 0; string < trackData.strings.length; ++string) {
-      if (strings[string]) {
-        const noteOptions = this.readNote(trackData.strings[string], duration);
-        noteOptions.placement ??= { fret: 0, string };
-        noteOptions.placement.string = string + 1;
+      if (!strings[string]) {
+        continue;
+      }
+
+      const noteOptions = this.readNote(trackData.strings[string], duration);
+      noteOptions.placement ??= { fret: 0, string };
+      noteOptions.placement.string = string + 1;
+      if (!rest) {
         notes.push(new Note(noteOptions));
       }
     }
 
-    return {
+    return new Chord({
       notes,
       chordDiagram,
       text,
       value: duration,
-      rest: rest || notes.length == 0,
       ...effects,
-    };
+    });
   }
 
   readBeatEffects(): Pick<Chord, "tapped" | "stroke"> {
