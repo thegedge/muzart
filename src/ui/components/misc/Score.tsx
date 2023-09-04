@@ -212,7 +212,13 @@ export const Score = observer((_props: Record<string, never>) => {
     state.setRenderFunction(render);
 
     return reaction(
-      () => [application.selection.part, application.selection.element, application.debug.enabled],
+      () => [
+        application.selection.partIndex,
+        application.selection.measureIndex,
+        application.selection.chordIndex,
+        application.selection.noteIndex,
+        application.debug.enabled,
+      ],
       () => {
         state.redraw();
       },
