@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { inRange, last } from "lodash";
 import { makeAutoObservable } from "mobx";
-import layout, { Chord, Measure, Note, Page, Part, Rest, Score, getAncestorOfType } from "../../layout";
+import layout, { getAncestorOfType, layOutScore } from "../../layout";
+import * as notation from "../../notation";
 import { StorableObject, SyncStorage, numberOrDefault } from "../storage/Storage";
 import { VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY } from "../storage/namespaces";
 
 export class Selection implements StorableObject {
-  public score: Score | null = null;
+  public score: layout.Score | null = null;
 
   public partIndex = 0;
   public measureIndex = 0;
@@ -18,11 +19,16 @@ export class Selection implements StorableObject {
     makeAutoObservable(this, undefined, { deep: false });
   }
 
-  get part(): Part | undefined {
-    return this.score?.children[this.partIndex];
+  get part(): layout.Part | undefined {
+    if (!this.score) {
+      return;
+    }
+
+    const part = this.score.score.parts[this.partIndex];
+    return this.score.children.find((element) => element.part == part);
   }
 
-  get page(): Page | undefined {
+  get page(): layout.Page | undefined {
     return this.part?.children.find((p) =>
       inRange(
         this.measureIndex + 1,
@@ -32,7 +38,7 @@ export class Selection implements StorableObject {
     );
   }
 
-  get measure(): Measure | undefined {
+  get measure(): layout.Measure | undefined {
     if (!this.page) {
       return;
     }
@@ -41,11 +47,11 @@ export class Selection implements StorableObject {
     return this.page.measures[measureIndex];
   }
 
-  get chord(): Chord | Rest | undefined {
+  get chord(): layout.Chord | layout.Rest | undefined {
     return this.measure?.chords[this.chordIndex];
   }
 
-  get note(): Note | undefined {
+  get note(): layout.Note | undefined {
     if (this.chord?.type != "Chord") {
       return undefined;
     }
@@ -53,7 +59,7 @@ export class Selection implements StorableObject {
     // Need the `as` here because TS doesn't understand that the type check internally prevents returning anything else
     return this.chord?.children.find(
       (note) => note.type == "Note" && note.note.placement?.string == this.noteIndex + 1,
-    ) as Note | undefined;
+    ) as layout.Note | undefined;
   }
 
   get element() {
@@ -68,21 +74,32 @@ export class Selection implements StorableObject {
   }
 
   update(selection: Partial<Selection>) {
-    const p = selection.partIndex != undefined && selection.partIndex != this.partIndex;
-    const m = selection.measureIndex != undefined && selection.measureIndex != this.measureIndex;
-    const c = selection.chordIndex != undefined && selection.chordIndex != this.chordIndex;
-    const n = selection.noteIndex != undefined && selection.noteIndex != this.noteIndex;
-
-    if (p || m || c || n) {
-      if (p) this.partIndex = selection.partIndex!;
-      if (m) this.measureIndex = selection.measureIndex!;
-      if (c) this.chordIndex = selection.chordIndex!;
-      if (n) this.noteIndex = selection.noteIndex!;
-
-      void this.storage.store(VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY, this);
+    if (!this.score) {
+      return;
     }
 
-    if (this.score) {
+    const partChanged = selection.partIndex != undefined && selection.partIndex != this.partIndex;
+    if (partChanged) {
+      this.partIndex = selection.partIndex!;
+      this.score = layOutScore(this.score.score, [this.partIndex]);
+    }
+
+    const measureChanged = selection.measureIndex != undefined && selection.measureIndex != this.measureIndex;
+    if (measureChanged) {
+      this.measureIndex = selection.measureIndex!;
+    }
+
+    const chordChanged = selection.chordIndex != undefined && selection.chordIndex != this.chordIndex;
+    if (chordChanged) {
+      this.chordIndex = selection.chordIndex!;
+    }
+
+    const noteChanged = selection.noteIndex != undefined && selection.noteIndex != this.noteIndex;
+    if (noteChanged) {
+      this.noteIndex = selection.noteIndex!;
+    }
+
+    if (partChanged || measureChanged) {
       const measure = this.measure;
       if (measure) {
         let chord = measure.chords[this.chordIndex];
@@ -92,6 +109,10 @@ export class Selection implements StorableObject {
           chord = measure.chords[0];
         }
       }
+    }
+
+    if (partChanged || measureChanged || chordChanged || noteChanged) {
+      void this.storage.store(VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY, this);
     }
   }
 
@@ -196,9 +217,9 @@ export class Selection implements StorableObject {
 
   setFor(element: layout.AllElements) {
     // TODO optimize getting indexes (context?)
-    const noteElement = getAncestorOfType<Note>(element, "Note");
-    const chordElement = getAncestorOfType<Chord>(noteElement ?? element, "Chord");
-    const measureElement = getAncestorOfType<Measure>(chordElement ?? element, "Measure");
+    const noteElement = getAncestorOfType<layout.Note>(element, "Note");
+    const chordElement = getAncestorOfType<layout.Chord>(noteElement ?? element, "Chord");
+    const measureElement = getAncestorOfType<layout.Measure>(chordElement ?? element, "Measure");
 
     this.update({
       measureIndex: measureElement ? measureElement.measure.number - 1 : undefined,
@@ -210,13 +231,20 @@ export class Selection implements StorableObject {
     });
   }
 
-  setScore(score: Score | null) {
-    this.score = score;
+  setScore(score: notation.Score | null) {
+    this.score = score ? layOutScore(score, [0]) : null;
+
+    // This forces an update in `this.update` below
+    this.partIndex = -1;
+    this.measureIndex = -1;
+    this.chordIndex = -1;
+    this.noteIndex = -1;
+
     this.update({
-      partIndex: this.partIndex,
-      measureIndex: this.measureIndex,
-      chordIndex: this.chordIndex,
-      noteIndex: this.noteIndex,
+      partIndex: 0,
+      measureIndex: 0,
+      chordIndex: 0,
+      noteIndex: 0,
     });
   }
 

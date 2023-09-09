@@ -46,7 +46,7 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
   }, []);
 
   useEffect(() => {
-    if (application.score != null) {
+    if (application.selection.score != null) {
       return;
     }
 
@@ -65,7 +65,7 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
 
   if (import.meta.env.DEV) {
     useEffect(() => {
-      if (application.score != null) {
+      if (application.selection.score != null) {
         return;
       }
 

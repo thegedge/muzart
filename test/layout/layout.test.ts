@@ -1,3 +1,4 @@
+import { range } from "lodash";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, test } from "vitest";
@@ -10,9 +11,11 @@ describe("layout", () => {
   test("can lay out a tab", async () => {
     const fileData = await readFile(path.join(__dirname, "../../public/songs/Song13.gp4"));
     const score = load(fileData.buffer).load();
-    const layout = layOutScore(score);
 
-    for (const part of layout.children) {
+    for (const partIndex of range(score.parts.length)) {
+      const layout = layOutScore(score, [partIndex]);
+      const part = layout.children[0];
+
       for (const [before, after] of adjacent(part.children)) {
         assert.nonOverlapping.isBefore(before, after, "vertical");
       }

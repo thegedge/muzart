@@ -1,10 +1,10 @@
 import { range } from "lodash";
 import { action, autorun, computed, flow, makeObservable, observable } from "mobx";
-import { maxMap, Measure } from "../layout";
+import layout, { maxMap } from "../layout";
 import { NoteValue, NoteValueName } from "../notation";
 import { Selection } from "../ui/state/Selection";
-import { Instrument } from "./instruments/Instrument";
 import { SoundFont } from "./SoundFont";
+import { Instrument } from "./instruments/Instrument";
 import { noteValueToSeconds } from "./util/durations";
 
 export class PlaybackController {
@@ -12,7 +12,7 @@ export class PlaybackController {
   public playing = false;
 
   /** Measure currently being played */
-  public currentMeasure: Measure | undefined;
+  public currentMeasure: layout.Measure | undefined;
 
   public startOfCurrentMeasure = 0; // In audio context time
 
@@ -138,14 +138,16 @@ export class PlaybackController {
         partIndicesToPlay = this.mutedParts.map((v) => !v);
       }
 
-      score.children.forEach((part, partIndex) => {
-        const measure = part.part.measures[currentMeasureIndex];
+      score.score.parts.forEach((part, partIndex) => {
+        const measure = part.measures[currentMeasureIndex];
         if (!measure) {
           return;
         }
 
-        if (part == this.selection.part) {
-          const pageWithMeasure = part.children.find((page) => !!page.measures.find((m) => m.measure == measure));
+        if (part == this.selection.part?.part) {
+          const pageWithMeasure = this.selection.part.children.find(
+            (page) => !!page.measures.find((m) => m.measure == measure),
+          );
           const nextMeasure = pageWithMeasure?.measures.find((m) => m.measure == measure);
 
           if (offsetFromNowSecs < 0.001) {
@@ -224,7 +226,7 @@ export class PlaybackController {
     }
   }
 
-  setCurrentMeasure(measure: Measure | undefined) {
+  setCurrentMeasure(measure: layout.Measure | undefined) {
     this.currentMeasure = measure;
     this.startOfCurrentMeasure = this.audioContext.currentTime;
   }
@@ -254,7 +256,7 @@ export class PlaybackController {
   }
 
   private instrumentForPart(partIndex: number): Instrument | null {
-    const part = this.selection.score?.children[partIndex]?.part;
+    const part = this.selection.score?.score.parts[partIndex];
     if (!this.soundFont || !part?.instrument) {
       return null;
     }

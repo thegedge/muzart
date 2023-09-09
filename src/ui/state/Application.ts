@@ -2,7 +2,7 @@ import { flow, makeAutoObservable } from "mobx";
 import * as layout from "../../layout";
 import { Point } from "../../layout";
 import { load } from "../../loaders";
-import { Score } from "../../notation";
+import * as notation from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
 import { SyncStorage } from "../storage/Storage";
 import { TabStorage } from "../storage/TabStorage";
@@ -21,7 +21,6 @@ export interface Hit<T> {
 export class Application {
   public loading = false;
   public error: Error | null = null;
-  public score: layout.Score | null = null;
 
   public debug: DebugContext = new DebugContext();
 
@@ -45,8 +44,7 @@ export class Application {
       }
 
       const source = new File([blob], url.pathname);
-      const score = (yield load(source)) as Score;
-      this.setScore(layout.layOutScore(score));
+      this.selection.setScore((yield load(source)) as notation.Score);
 
       const lastTab = this.settingsStorage.get(VIEW_STATE_NAMESPACE, VIEW_STATE_LAST_TAB_SUBKEY);
       if (lastTab != url.toString()) {
@@ -87,9 +85,8 @@ export class Application {
     return { element, point };
   }
 
-  setScore(score: layout.Score | null) {
+  setScore(score: notation.Score | null) {
     this.playback.stop();
-    this.score = score;
     this.selection.setScore(score);
   }
 }

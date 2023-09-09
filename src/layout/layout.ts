@@ -16,12 +16,12 @@ import { Box } from "./utils/Box";
  * vertically. For example, the first page will often be some lines of text describing the composition (name,
  * artist, etc) followed by many staff lines.
  */
-export const layOutScore = (score: notation.Score): Score => {
+export const layOutScore = (score: notation.Score, partIndexes: [number]): Score => {
   console.time("layout");
   try {
     const layoutScore = new Score(score);
-    for (const part of score.parts) {
-      const layoutPart = layOutPart(score, part);
+    for (const partIndex of partIndexes) {
+      const layoutPart = layOutPart(score, score.parts[partIndex]);
       layoutScore.addElement(layoutPart);
     }
 

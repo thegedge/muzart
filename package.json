@@ -13,9 +13,10 @@
     "lint:prettier": "prettier --check \"src/**/*.{js,ts,tsx}\"",
     "lint:prettier:fix": "prettier --write --check \"src/**/*.{js,ts,tsx}\"",
     "preview": "vite preview",
-    "tc": "tsc --noEmit",
+    "tc": "pnpm typecheck",
     "test": "vitest run",
-    "test:watch": "vitest watch"
+    "test:watch": "vitest watch",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "lodash": "^4.17.21",
