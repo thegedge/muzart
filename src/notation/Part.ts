@@ -1,5 +1,5 @@
 import { Instrument } from "./instrument";
-import { Measure } from "./measure";
+import { Measure } from "./Measure";
 
 export interface PartOptions {
   name: string;

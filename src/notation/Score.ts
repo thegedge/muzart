@@ -1,4 +1,4 @@
-import { Part } from "./part";
+import { Part } from "./Part";
 
 export interface ScoreOptions {
   parts: Part[];

@@ -1,4 +1,4 @@
-import { Note } from "./note";
+import { Note } from "./Note";
 import { NoteValue } from "./note_value";
 
 export interface Barre {

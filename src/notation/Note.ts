@@ -1,4 +1,4 @@
-import { Chord } from "./chord";
+import { Chord } from "./Chord";
 import { NoteValue } from "./note_value";
 import { Pitch } from "./pitch";
 

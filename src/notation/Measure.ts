@@ -1,4 +1,4 @@
-import { Chord } from "./chord";
+import { Chord } from "./Chord";
 import { StaffDetails } from "./staff";
 
 export interface Marker {
