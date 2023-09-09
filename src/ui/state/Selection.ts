@@ -8,6 +8,7 @@ import { VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY } from "../storage/na
 
 export class Selection implements StorableObject {
   public score: layout.Score | null = null;
+  private score_: notation.Score | null = null;
 
   public partIndex = 0;
   public measureIndex = 0;
@@ -74,14 +75,14 @@ export class Selection implements StorableObject {
   }
 
   update(selection: Partial<Selection>) {
-    if (!this.score) {
+    if (!this.score_) {
       return;
     }
 
     const partChanged = selection.partIndex != undefined && selection.partIndex != this.partIndex;
     if (partChanged) {
       this.partIndex = selection.partIndex!;
-      this.score = layOutScore(this.score.score, [this.partIndex]);
+      this.score = layOutScore(this.score_, [this.partIndex]);
     }
 
     const measureChanged = selection.measureIndex != undefined && selection.measureIndex != this.measureIndex;
@@ -232,7 +233,7 @@ export class Selection implements StorableObject {
   }
 
   setScore(score: notation.Score | null) {
-    this.score = score ? layOutScore(score, [0]) : null;
+    this.score_ = score;
 
     // This forces an update in `this.update` below
     this.partIndex = -1;
