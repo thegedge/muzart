@@ -17,11 +17,11 @@ import {
 } from "../../../layout";
 import { noteValueToSeconds } from "../../../playback/util/durations";
 import { renderScoreElement } from "../../../render/renderScoreElement";
-import { useEditorKeybindings } from "../../utils/useEditorKeybindings";
+import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../misc/Canvas";
 
 export const Score = observer((_props: Record<string, never>) => {
-  const application = useEditorKeybindings();
+  const application = useApplicationState();
 
   useEffect(() => {
     return reaction(

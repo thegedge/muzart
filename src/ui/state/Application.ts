@@ -24,9 +24,6 @@ export class Application {
   public error: Error | null = null;
   private currentUrl: URL | null = null;
 
-  /** If true, display an overlay with all of the keybindings */
-  public showKeybindings = false;
-
   public debug: DebugContext = new DebugContext();
   public canvas: CanvasState;
 

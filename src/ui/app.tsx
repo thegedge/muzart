@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { BaseLocationHook, Router } from "wouter";
 import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { EditorKeybindings } from "./components/editor/EditorKeybindings";
 import { ScoreDropZone } from "./components/editor/ScoreDropZone";
 import { ApplicationState } from "./utils/ApplicationStateContext";
 
@@ -12,6 +13,7 @@ export const App = () => {
       <Router hook={useHashLocation}>
         <ErrorBoundary>
           <ApplicationState>
+            <EditorKeybindings />
             <ScoreDropZone />
           </ApplicationState>
         </ErrorBoundary>

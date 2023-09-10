@@ -1,6 +1,11 @@
+/** @typedef { import('tailwindcss/defaultConfig') } DefaultConfig */
+/** @typedef { import('tailwindcss/defaultTheme') } DefaultTheme */
+
+/** @type { DefaultConfig & { theme: { extend: DefaultTheme } } } */
 module.exports = {
   mode: "jit",
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  safelist: ["grid-cols-1", "grid-cols-2", "grid-cols-3", "grid-cols-4"],
   theme: {
     extend: {
       flexGrow: {
