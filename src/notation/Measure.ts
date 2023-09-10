@@ -1,3 +1,4 @@
+import { makeAutoObservable } from "mobx";
 import { Chord } from "./Chord";
 import { StaffDetails } from "./staff";
 
@@ -16,7 +17,9 @@ interface MeasureOptions {
 }
 
 export class Measure {
-  constructor(private options: MeasureOptions) {}
+  constructor(private options: MeasureOptions) {
+    makeAutoObservable(this, undefined, { deep: true });
+  }
 
   get number() {
     return this.options.number;

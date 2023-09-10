@@ -13,7 +13,7 @@ export interface Instrument {
   midiPreset: number;
 
   /** Tuning of the instrument strings */
-  tuning?: Pitch[];
+  tuning: Pitch[];
 
   /** Volume the instrument should be played back at (between 0 and 1) */
   volume: number;

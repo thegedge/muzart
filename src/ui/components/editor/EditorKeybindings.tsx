@@ -1,7 +1,8 @@
-import { mapValues } from "lodash";
+import { mapValues, range } from "lodash";
 import { Fragment } from "preact";
 import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
 import { createKeybindingsHandler } from "tinykeys";
+import { Application } from "../../state/Application";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 
 export const EditorKeybindings = (_props: Record<string, never>) => {
@@ -18,21 +19,28 @@ export const EditorKeybindings = (_props: Record<string, never>) => {
       <h1 className="text-2xl my-4 font-bold text-center">Keyboard shortcuts</h1>
       <div className="flex items-center justify-start w-full h-full overflow-auto">
         <div className="flex flex-col flex-wrap gap-4 justify-start items-stretch h-full">
-          {Object.entries(keybindingGroups).map(([groupName, group]) => (
-            <div key={groupName} className="rounded-lg py-2 px-4 bg-white/10">
-              <h2 className="text-3 font-bold mb-2 border-b-2 border-b-white/25">{groupName}</h2>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                {Object.entries(group).map(([binding, { name }]) => (
-                  <Fragment key={binding}>
-                    <div>
-                      <KeyBinding binding={binding} />
-                    </div>
-                    <span>{name}</span>
-                  </Fragment>
-                ))}
+          {Object.entries(keybindingGroups).map(([groupName, group]) => {
+            const bindingsWithName = Object.entries(group).filter(([_binding, { name }]) => !!name);
+            if (bindingsWithName.length == 0) {
+              return null;
+            }
+
+            return (
+              <div key={groupName} className="rounded-lg py-2 px-4 bg-white/10">
+                <h2 className="text-3 font-bold mb-2 border-b-2 border-b-white/25">{groupName}</h2>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                  {bindingsWithName.map(([binding, { name }]) => (
+                    <Fragment key={binding}>
+                      <div>
+                        <KeyBinding binding={binding} />
+                      </div>
+                      <span>{name}</span>
+                    </Fragment>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
@@ -80,7 +88,36 @@ const presentKey = (key: string): string => {
   }
 };
 
-const useEditorKeybindings = (toggleHelp: () => void) => {
+type KeyBindingAction = (event: KeyboardEvent) => void;
+
+interface KeyBinding {
+  name?: string;
+  action: KeyBindingAction;
+}
+
+type KeybindingGroups = Record<string, Record<string, KeyBinding>>;
+
+const changeNoteAction = (application: Application, fret: number): KeyBindingAction => {
+  return () => {
+    const instrument = application.selection.part?.part.instrument;
+    const chord = application.selection.chord?.chord;
+    if (instrument && chord) {
+      // TODO assuming a stringed + fretted instrument below. Will need to fix eventually.
+      const string = application.selection.noteIndex + 1;
+      const tuning = instrument.tuning[application.selection.noteIndex];
+      chord.changeNote({
+        pitch: tuning.adjust(fret),
+        placement: {
+          fret,
+          string,
+        },
+        dead: undefined,
+      });
+    }
+  };
+};
+
+const useEditorKeybindings = (toggleHelp: () => void): KeybindingGroups => {
   const application = useApplicationState();
 
   const keybindingGroups = useMemo(
@@ -116,6 +153,17 @@ const useEditorKeybindings = (toggleHelp: () => void) => {
             application.canvas.centerViewportOn();
           },
         },
+      },
+
+      Editing: {
+        ...Object.fromEntries(
+          range(10).map((fret) => [
+            String(fret),
+            {
+              action: changeNoteAction(application, fret),
+            },
+          ]),
+        ),
       },
 
       Navigation: {

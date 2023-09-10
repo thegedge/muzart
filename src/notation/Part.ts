@@ -1,5 +1,6 @@
-import { Instrument } from "./instrument";
+import { makeAutoObservable } from "mobx";
 import { Measure } from "./Measure";
+import { Instrument } from "./instrument";
 
 export interface PartOptions {
   name: string;
@@ -11,7 +12,9 @@ export interface PartOptions {
 }
 
 export class Part {
-  constructor(private options: PartOptions) {}
+  constructor(private options: PartOptions) {
+    makeAutoObservable(this, undefined, { deep: true });
+  }
 
   get name() {
     return this.options.name;

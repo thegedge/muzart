@@ -231,6 +231,13 @@ export class Note {
     }
   }
 
+  withChanges(changes: Partial<NoteOptions>) {
+    return new Note({
+      ...this.options,
+      ...changes,
+    });
+  }
+
   toString() {
     return this.text;
   }
