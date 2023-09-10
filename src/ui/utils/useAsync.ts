@@ -16,9 +16,14 @@ export const useAsync = <ValueT, ErrorT = unknown>(
   });
 
   useEffect(() => {
+    let cancelled = false;
     f()
-      .then((value) => setResult({ pending: false, error: undefined, value }))
-      .catch((error) => setResult({ pending: false, error, value: undefined }));
+      .then((value) => !cancelled && setResult({ pending: false, error: undefined, value }))
+      .catch((error) => !cancelled && setResult({ pending: false, error, value: undefined }));
+
+    return () => {
+      cancelled = true;
+    };
   }, inputs);
 
   return result;
