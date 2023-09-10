@@ -1,10 +1,11 @@
+import { useEffect } from "preact/hooks";
 import { Route, useLocation } from "wouter";
 import { ScoreDataType, determineScoreType, getFilenameAndMimeType } from "../../../loaders";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { useAsync } from "../../utils/useAsync";
 import { InitialPage } from "../misc/InitialPage";
 import { Score } from "../misc/Score";
 import { PartPanel } from "./PartPanel";
+import { observer } from "mobx-react-lite";
 
 export const ScoreDropZone = () => {
   const application = useApplicationState();
@@ -55,7 +56,7 @@ export const ScoreDropZone = () => {
       <div className="flex flex-col items-center w-screen h-screen max-w-screen max-h-screen overflow-clip">
         <Route path="/:url">
           {(params: { url: string }) => {
-            const url = new URL(decodeURIComponent(params.url));
+            const url = decodeURIComponent(params.url);
             return <ScoreLoader loaderUrl={url} />;
           }}
         </Route>
@@ -74,17 +75,19 @@ export const ScoreDropZone = () => {
   );
 };
 
-const ScoreLoader = (props: { loaderUrl: URL }) => {
+const ScoreLoader = observer((props: { loaderUrl: string }) => {
   const { loaderUrl: url } = props;
 
   const application = useApplicationState();
-  const { pending, error } = useAsync(() => application.loadScore(url), [application, url]);
+  useEffect(() => {
+    application.loadScore(url).catch(console.error);
+  }, [application, url]);
 
-  if (error) {
-    throw error;
+  if (application.error) {
+    throw application.error;
   }
 
-  if (pending) {
+  if (application.loading) {
     return null;
   }
 
@@ -94,7 +97,7 @@ const ScoreLoader = (props: { loaderUrl: URL }) => {
       <PartPanel />
     </div>
   );
-};
+});
 
 export const filesFromDataTransfer = (dataTransfer: DataTransfer): File[] => {
   const sources: File[] = [];

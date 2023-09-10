@@ -37,7 +37,6 @@ export const Score = observer((_props: Record<string, never>) => {
     throw error; // Let the ErrorBoundary figure it out
   }
 
-  const part = selection.part;
   const state = useMemo(() => new CanvasState(settingsStorage), []);
 
   useEffect(() => {
@@ -257,10 +256,6 @@ export const Score = observer((_props: Record<string, never>) => {
       },
     );
   }, [application]);
-
-  if (!part) {
-    return null;
-  }
 
   const onClick = (pt: Point) => {
     const hit = application.hitTest(pt);

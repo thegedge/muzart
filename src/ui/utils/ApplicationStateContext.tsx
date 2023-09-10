@@ -69,11 +69,10 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
         return;
       }
 
-      const defaultFile = application.settingsStorage.get("view", "lastTab");
-      if (defaultFile) {
+      const defaultURL = application.settingsStorage.get("view", "lastTab");
+      if (defaultURL) {
         try {
-          const defaultFileURL = new URL(defaultFile);
-          void application.loadScore(defaultFileURL);
+          void application.loadScore(defaultURL);
         } catch (error) {
           // Assume old data that is incorrect
         }

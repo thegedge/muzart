@@ -35,28 +35,26 @@ export class Application {
     makeAutoObservable(this, undefined, { deep: false });
   }
 
-  loadScore = flow(function* (this: Application, url: URL) {
+  loadScore = flow(function* (this: Application, url: string) {
     if (url.toString() == this.currentUrl?.toString()) {
       return;
     }
 
-    console.trace(url);
-
     try {
-      this.currentUrl = url;
+      this.currentUrl = new URL(url);
       this.error = null;
       this.loading = true;
 
-      const blob: Blob = yield this.tabStorage.load(url);
+      const blob: Blob = yield this.tabStorage.load(this.currentUrl);
       if (!blob) {
-        throw new Error(`couldn't load tab: ${url.pathname}`);
+        throw new Error(`couldn't load tab: ${this.currentUrl.pathname}`);
       }
 
-      const source = new File([blob], url.pathname);
+      const source = new File([blob], this.currentUrl.pathname);
       this.selection.setScore((yield load(source)) as notation.Score);
 
       const lastTab = this.settingsStorage.get(VIEW_STATE_NAMESPACE, VIEW_STATE_LAST_TAB_SUBKEY);
-      if (lastTab != url.toString()) {
+      if (lastTab != url) {
         this.settingsStorage.set(VIEW_STATE_NAMESPACE, VIEW_STATE_LAST_TAB_SUBKEY, url.toString());
         this.settingsStorage.delete(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY);
         this.selection.reset();
