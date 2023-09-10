@@ -4,6 +4,7 @@ import { Point } from "../../layout";
 import { load } from "../../loaders";
 import * as notation from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
+import { CanvasState } from "../components/misc/CanvasState";
 import { SyncStorage } from "../storage/Storage";
 import { TabStorage } from "../storage/TabStorage";
 import { VIEW_STATE_CANVAS_SUBKEY, VIEW_STATE_LAST_TAB_SUBKEY, VIEW_STATE_NAMESPACE } from "../storage/namespaces";
@@ -21,10 +22,13 @@ export interface Hit<T> {
 export class Application {
   public loading = false;
   public error: Error | null = null;
+  private currentUrl: URL | null = null;
+
+  /** If true, display an overlay with all of the keybindings */
+  public showKeybindings = false;
 
   public debug: DebugContext = new DebugContext();
-
-  private currentUrl: URL | null = null;
+  public canvas: CanvasState;
 
   constructor(
     public settingsStorage: SyncStorage,
@@ -32,6 +36,7 @@ export class Application {
     public selection: Selection,
     public playback: PlaybackController,
   ) {
+    this.canvas = new CanvasState(this.settingsStorage);
     makeAutoObservable(this, undefined, { deep: false });
   }
 

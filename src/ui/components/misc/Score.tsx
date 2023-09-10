@@ -17,25 +17,23 @@ import {
 } from "../../../layout";
 import { noteValueToSeconds } from "../../../playback/util/durations";
 import { renderScoreElement } from "../../../render/renderScoreElement";
-import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { useEditorKeybindings } from "../../utils/useEditorKeybindings";
 import { Canvas, Point, RenderFunction } from "../misc/Canvas";
 
 export const Score = observer((_props: Record<string, never>) => {
-  const application = useApplicationState();
-  const state = useEditorKeybindings();
+  const application = useEditorKeybindings();
 
   useEffect(() => {
     return reaction(
       () => application.selection.part?.box,
       (box) => {
         if (box) {
-          state.setUserSpaceSize(box);
+          application.canvas.setUserSpaceSize(box);
         }
       },
       { fireImmediately: true },
     );
-  }, [state, application]);
+  }, [application.canvas]);
 
   const selectionBoxFor = (chord: Chord | Rest, selectedNoteIndex: number) => {
     const PADDING = 3 * LINE_STROKE_WIDTH;
@@ -57,13 +55,13 @@ export const Score = observer((_props: Record<string, never>) => {
         if (playing) {
           if (currentPlayingRefreshInterval.current == 0) {
             currentPlayingRefreshInterval.current = window.setInterval(() => {
-              state.redraw();
+              application.canvas.redraw();
             }, 20);
           }
         } else {
           clearInterval(currentPlayingRefreshInterval.current);
           currentPlayingRefreshInterval.current = 0;
-          state.redraw();
+          application.canvas.redraw();
         }
       },
     );
@@ -117,7 +115,7 @@ export const Score = observer((_props: Record<string, never>) => {
       }
     };
 
-    state.setRenderFunction(render);
+    application.canvas.setRenderFunction(render);
 
     return reaction(
       () => [
@@ -128,10 +126,10 @@ export const Score = observer((_props: Record<string, never>) => {
         application.debug.enabled,
       ],
       () => {
-        state.redraw();
+        application.canvas.redraw();
       },
     );
-  }, [state, application, application.selection.part]);
+  }, [application.canvas, application, application.selection.part]);
 
   useEffect(() => {
     return reaction(
@@ -161,7 +159,7 @@ export const Score = observer((_props: Record<string, never>) => {
           box = toAncestorCoordinateSystem(line);
         }
 
-        state.ensureInView(box);
+        application.canvas.ensureInView(box);
       },
     );
   }, [application]);
@@ -196,8 +194,8 @@ export const Score = observer((_props: Record<string, never>) => {
       }
     }
 
-    state.setCursor(cursor);
+    application.canvas.setCursor(cursor);
   };
 
-  return <Canvas onClick={onClick} onMouseMove={onMouseMove} state={state} />;
+  return <Canvas onClick={onClick} onMouseMove={onMouseMove} state={application.canvas} />;
 });

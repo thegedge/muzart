@@ -1,8 +1,8 @@
 import { useEffect, useState } from "preact/hooks";
 import { BaseLocationHook, Router } from "wouter";
 import "./app.css";
-import { ScoreDropZone } from "./components/editor/ScoreDropZone";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { ScoreDropZone } from "./components/editor/ScoreDropZone";
 import { ApplicationState } from "./utils/ApplicationStateContext";
 
 export const App = () => {
