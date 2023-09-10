@@ -1,8 +1,7 @@
-import { mapValues, sumBy } from "lodash";
+import { sumBy } from "lodash";
 import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useEffect, useMemo, useRef } from "preact/hooks";
-import { createKeybindingsHandler } from "tinykeys";
+import { useCallback, useEffect, useRef } from "preact/hooks";
 import {
   AllElements,
   Box,
@@ -19,102 +18,12 @@ import {
 import { noteValueToSeconds } from "../../../playback/util/durations";
 import { renderScoreElement } from "../../../render/renderScoreElement";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
+import { useEditorKeybindings } from "../../utils/useEditorKeybindings";
 import { Canvas, Point, RenderFunction } from "../misc/Canvas";
-import { CanvasState } from "../misc/CanvasState";
-
-const preventDefault = (f: (event: KeyboardEvent) => void) => {
-  return (event: KeyboardEvent) => {
-    event.preventDefault();
-    f(event);
-  };
-};
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
-  const { settingsStorage, error, selection, playback } = application;
-
-  if (error) {
-    throw error; // Let the ErrorBoundary figure it out
-  }
-
-  const state = useMemo(() => new CanvasState(settingsStorage), []);
-
-  useEffect(() => {
-    return () => state.dispose();
-  }, [state]);
-
-  useEffect(() => {
-    const listener = createKeybindingsHandler(
-      mapValues(
-        {
-          // Playback ----------------------------------------------------------
-
-          "Space": () => {
-            playback.togglePlay();
-          },
-
-          // Navigation --------------------------------------------------------
-
-          // TODO some of these shouldn't work when playing
-
-          "ArrowLeft": () => {
-            application.selection.previousChord();
-          },
-          "ArrowRight": () => {
-            application.selection.nextChord();
-          },
-          "ArrowUp": () => {
-            application.selection.previousNote();
-          },
-          "ArrowDown": () => {
-            application.selection.nextNote();
-          },
-
-          // TODO should these jump a visible page, or an actual page?
-          "PageDown": () => {
-            application.selection.nextPage();
-          },
-          "PageUp": () => {
-            application.selection.previousPage();
-          },
-
-          "Home": () => {
-            application.selection.update({ measureIndex: 0 });
-          },
-          "End": () => {
-            const part = selection.part;
-            application.selection.update({ measureIndex: part && part.part.measures.length - 1 });
-          },
-
-          "$mod+Shift+ArrowLeft": () => {
-            application.selection.previousMeasure();
-          },
-          "$mod+Shift+ArrowRight": () => {
-            application.selection.nextMeasure();
-          },
-
-          "$mod+Alt+ArrowUp": () => {
-            application.selection.previousPart();
-          },
-          "$mod+Alt+ArrowDown": () => {
-            application.selection.nextPart();
-          },
-
-          // Debugging ---------------------------------------------------------
-
-          "Shift+D": () => {
-            application.debug.setEnabled(!application.debug.enabled);
-          },
-        },
-        preventDefault,
-      ),
-    );
-
-    document.body.addEventListener("keydown", listener);
-    return () => {
-      document.body.removeEventListener("keydown", listener);
-    };
-  }, [application, state]);
+  const state = useEditorKeybindings();
 
   useEffect(() => {
     return reaction(
@@ -197,9 +106,9 @@ export const Score = observer((_props: Record<string, never>) => {
             measureBox.height + 1.5 * STAFF_LINE_HEIGHT,
           );
         }
-      } else if (selection.chord) {
+      } else if (application.selection.chord) {
         // Selection box
-        const selectionBox = selectionBoxFor(selection.chord, selection.noteIndex);
+        const selectionBox = selectionBoxFor(application.selection.chord, application.selection.noteIndex);
 
         context.fillStyle = "#f0f0a055";
         context.strokeStyle = "#a0a050";
@@ -257,19 +166,22 @@ export const Score = observer((_props: Record<string, never>) => {
     );
   }, [application]);
 
-  const onClick = (pt: Point) => {
-    const hit = application.hitTest(pt);
-    if (hit) {
-      application.selection.setFor(hit.element);
-      if (isChord(hit.element)) {
-        application.selection.update({
-          noteIndex: Math.floor(hit.point.y / hit.element.staffHeight),
-        });
-      } else if (hit.element.type == "Note") {
-        playback.playSelectedNote();
+  const onClick = useCallback(
+    (pt: Point) => {
+      const hit = application.hitTest(pt);
+      if (hit) {
+        application.selection.setFor(hit.element);
+        if (isChord(hit.element)) {
+          application.selection.update({
+            noteIndex: Math.floor(hit.point.y / hit.element.staffHeight),
+          });
+        } else if (hit.element.type == "Note") {
+          application.playback.playSelectedNote();
+        }
       }
-    }
-  };
+    },
+    [application],
+  );
 
   const onMouseMove = (pt: Point) => {
     let cursor = "auto";
