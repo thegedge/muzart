@@ -24,6 +24,8 @@ export class Application {
 
   public debug: DebugContext = new DebugContext();
 
+  private currentUrl: URL | null = null;
+
   constructor(
     public settingsStorage: SyncStorage,
     public tabStorage: TabStorage,
@@ -34,7 +36,14 @@ export class Application {
   }
 
   loadScore = flow(function* (this: Application, url: URL) {
+    if (url.toString() == this.currentUrl?.toString()) {
+      return;
+    }
+
+    console.trace(url);
+
     try {
+      this.currentUrl = url;
       this.error = null;
       this.loading = true;
 
