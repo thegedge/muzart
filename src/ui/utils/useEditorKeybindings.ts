@@ -22,6 +22,21 @@ export const useEditorKeybindings = () => {
             application.playback.togglePlay();
           },
 
+          // Zoom --------------------------------------------------------------
+
+          "$mod+Equal": () => {
+            state.setZoom(state.zoom * 1.2);
+          },
+
+          "$mod+Minus": () => {
+            state.setZoom(state.zoom / 1.2);
+          },
+
+          "$mod+0": () => {
+            state.setZoom(1);
+            state.centerViewportOn();
+          },
+
           // Navigation --------------------------------------------------------
 
           // TODO some of these shouldn't work when playing
@@ -39,7 +54,7 @@ export const useEditorKeybindings = () => {
             application.selection.nextNote();
           },
 
-          // TODO should these jump a visible page, or an actual page?
+          // TODO should these jump a visible page, or an actual page based on zoom level?
           "PageDown": () => {
             application.selection.nextPage();
           },
@@ -88,7 +103,7 @@ export const useEditorKeybindings = () => {
   return state;
 };
 
-const preventDefault = (f: (event: KeyboardEvent) => void) => {
+const preventDefault = (f: (event: KeyboardEvent) => void): ((event: KeyboardEvent) => void) => {
   return (event: KeyboardEvent) => {
     event.preventDefault();
     f(event);
