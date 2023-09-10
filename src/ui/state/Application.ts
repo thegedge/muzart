@@ -4,6 +4,7 @@ import { Point } from "../../layout";
 import { load } from "../../loaders";
 import * as notation from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
+import { UndoStack } from "../../utils/UndoStack";
 import { CanvasState } from "../components/misc/CanvasState";
 import { SyncStorage } from "../storage/Storage";
 import { TabStorage } from "../storage/TabStorage";
@@ -23,6 +24,13 @@ export class Application {
   public loading = false;
   public error: Error | null = null;
   private currentUrl: URL | null = null;
+
+  /**
+   * The undo stack for the editor.
+   *
+   * Expressed by a 2-tuple, where the first item is the "apply" action and the second item is the "undo" action.
+   */
+  public undoStack = new UndoStack<[(event: KeyboardEvent) => void, (event: KeyboardEvent) => void]>();
 
   public debug: DebugContext = new DebugContext();
   public canvas: CanvasState;

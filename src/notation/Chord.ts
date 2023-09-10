@@ -76,23 +76,33 @@ export class Chord {
     return this.options.notes.length == 0;
   }
 
-  changeNote(changes: Partial<NoteOptions>) {
+  removeNote(note: Note) {
+    const existingIndex = this.notes.findIndex((n) => n.placement?.string == note.placement?.string);
+    if (existingIndex >= 0) {
+      this.notes.splice(existingIndex, 1);
+    }
+  }
+
+  changeNote(changes: Partial<NoteOptions>): [Note | undefined, Note] {
     const existingIndex = this.notes.findIndex((n) => n.placement?.string == changes?.placement?.string);
     if (existingIndex >= 0) {
       const existing = this.notes[existingIndex];
-      this.notes[existingIndex] = existing.withChanges(changes);
-    } else {
-      if (!changes.pitch) {
-        throw new Error("must provide pitching when adding a new note");
-      }
-
-      this.notes.push(
-        new Note({
-          value: this.value,
-          pitch: changes.pitch,
-          ...changes,
-        }),
-      );
+      const note = existing.withChanges(changes);
+      this.notes[existingIndex] = note;
+      return [existing, note];
     }
+
+    if (!changes.pitch) {
+      throw new Error("must provide pitching when adding a new note");
+    }
+
+    const note = new Note({
+      value: this.value,
+      pitch: changes.pitch,
+      ...changes,
+    });
+    this.notes.push(note);
+
+    return [undefined, note];
   }
 }

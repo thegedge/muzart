@@ -95,17 +95,24 @@ interface KeyBinding {
   action: KeyBindingAction;
 }
 
-type KeybindingGroups = Record<string, Record<string, KeyBinding>>;
+type KeyBindingGroups = Record<string, Record<string, KeyBinding>>;
 
 const changeNoteAction = (application: Application, fret: number): KeyBindingAction => {
-  return () => {
-    const instrument = application.selection.part?.part.instrument;
-    const chord = application.selection.chord?.chord;
-    if (instrument && chord) {
+  // TODO capture selection and move to it when undoing/redoing this action
+
+  return undoableAction(
+    application,
+    () => {
       // TODO assuming a stringed + fretted instrument below. Will need to fix eventually.
+      const instrument = application.selection.part?.part.instrument;
+      const chord = application.selection.chord?.chord;
+      if (!instrument || !chord) {
+        return;
+      }
+
       const string = application.selection.noteIndex + 1;
       const tuning = instrument.tuning[application.selection.noteIndex];
-      chord.changeNote({
+      const notes = chord.changeNote({
         pitch: tuning.adjust(fret),
         placement: {
           fret,
@@ -113,14 +120,25 @@ const changeNoteAction = (application: Application, fret: number): KeyBindingAct
         },
         dead: undefined,
       });
-    }
-  };
+
+      return [chord, notes] as const;
+    },
+    (state) => {
+      const [chord, [oldNote, newNote]] = state;
+
+      if (oldNote) {
+        chord.changeNote(oldNote.options);
+      } else if (newNote) {
+        chord.removeNote(newNote);
+      }
+    },
+  );
 };
 
-const useEditorKeybindings = (toggleHelp: () => void): KeybindingGroups => {
+const useEditorKeybindings = (toggleHelp: () => void): KeyBindingGroups => {
   const application = useApplicationState();
 
-  const keybindingGroups = useMemo(
+  const keybindingGroups = useMemo<KeyBindingGroups>(
     () => ({
       Playback: {
         Space: {
@@ -164,6 +182,26 @@ const useEditorKeybindings = (toggleHelp: () => void): KeybindingGroups => {
             },
           ]),
         ),
+
+        "$mod+z": {
+          name: "Undo",
+          action(event) {
+            const action = application.undoStack.undo();
+            if (action) {
+              action[1](event);
+            }
+          },
+        },
+
+        "Shift+$mod+z": {
+          name: "Undo",
+          action(event) {
+            const action = application.undoStack.redo();
+            if (action) {
+              action[0](event);
+            }
+          },
+        },
       },
 
       Navigation: {
@@ -225,28 +263,28 @@ const useEditorKeybindings = (toggleHelp: () => void): KeybindingGroups => {
           },
         },
 
-        "$mod+Shift+ArrowLeft": {
+        "Shift+$mod+ArrowLeft": {
           name: "Previous Measure",
           action() {
             application.selection.previousMeasure();
           },
         },
 
-        "$mod+Shift+ArrowRight": {
+        "Shift+$mod+ArrowRight": {
           name: "Next Measure",
           action() {
             application.selection.nextMeasure();
           },
         },
 
-        "$mod+Alt+ArrowUp": {
+        "Alt+$mod+ArrowUp": {
           name: "Previous Part",
           action() {
             application.selection.previousPart();
           },
         },
 
-        "$mod+Alt+ArrowDown": {
+        "Alt+$mod+ArrowDown": {
           name: "Next Part",
           action() {
             application.selection.nextPart();
@@ -256,7 +294,6 @@ const useEditorKeybindings = (toggleHelp: () => void): KeybindingGroups => {
 
       Miscellaneous: {
         "Shift+?": {
-          name: "Toggle Help",
           action() {
             toggleHelp();
           },
@@ -290,7 +327,27 @@ const useEditorKeybindings = (toggleHelp: () => void): KeybindingGroups => {
   return keybindingGroups;
 };
 
-const preventDefault = (f: (event: KeyboardEvent) => void): ((event: KeyboardEvent) => void) => {
+function undoableAction<T>(application: Application, apply: () => T | undefined, undo: (state: T) => void): () => void {
+  return () => {
+    const selectionBeforeApply = application.selection.toJSON();
+    const state = apply();
+    if (state !== undefined) {
+      const selectionAfterApply = application.selection.toJSON();
+      application.undoStack.push([
+        () => {
+          application.selection.fromJSON(selectionBeforeApply);
+          apply();
+        },
+        () => {
+          application.selection.fromJSON(selectionAfterApply);
+          undo(state);
+        },
+      ]);
+    }
+  };
+}
+
+const preventDefault = (f: KeyBindingAction): KeyBindingAction => {
   return (event: KeyboardEvent) => {
     event.preventDefault();
     f(event);
