@@ -2,8 +2,9 @@ import { useEffect, useState } from "preact/hooks";
 import { BaseLocationHook, Router } from "wouter";
 import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { EditorKeybindings } from "./components/editor/EditorKeybindings";
+import { KeyBindingsOverlay } from "./components/editor/KeyBindingsOverlay";
 import { ScoreDropZone } from "./components/editor/ScoreDropZone";
+import { useEditorKeyBindings } from "./components/editor/useEditorKeyBindings";
 import { ApplicationState } from "./utils/ApplicationStateContext";
 
 export const App = () => {
@@ -13,13 +14,18 @@ export const App = () => {
       <Router hook={useHashLocation}>
         <ErrorBoundary>
           <ApplicationState>
-            <EditorKeybindings />
+            <KeyBindings />
             <ScoreDropZone />
           </ApplicationState>
         </ErrorBoundary>
       </Router>
     </div>
   );
+};
+
+const KeyBindings = () => {
+  const bindings = useEditorKeyBindings();
+  return <KeyBindingsOverlay bindings={bindings} />;
 };
 
 const GithubFork = () => {

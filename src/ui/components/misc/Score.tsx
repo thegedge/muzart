@@ -123,6 +123,7 @@ export const Score = observer((_props: Record<string, never>) => {
         application.selection.measureIndex,
         application.selection.chordIndex,
         application.selection.noteIndex,
+        application.selection.note,
         application.debug.enabled,
       ],
       () => {

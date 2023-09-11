@@ -1,4 +1,4 @@
-import { Chord } from "./chord";
+import { Chord } from "./Chord";
 import { NoteValue } from "./note_value";
 import { Pitch } from "./pitch";
 
@@ -229,6 +229,13 @@ export class Note {
       case HarmonicStyle.Semi:
         return "S.H.";
     }
+  }
+
+  withChanges(changes: Partial<NoteOptions>) {
+    return new Note({
+      ...this.options,
+      ...changes,
+    });
   }
 
   toString() {

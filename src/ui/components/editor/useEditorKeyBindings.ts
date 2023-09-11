@@ -1,89 +1,22 @@
-import { mapValues } from "lodash";
-import { Fragment } from "preact";
-import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
+import { mapValues, range } from "lodash";
+import { useEffect, useMemo } from "preact/hooks";
 import { createKeybindingsHandler } from "tinykeys";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
+import { changeNoteAction } from "./actions/changeNoteAction";
 
-export const EditorKeybindings = (_props: Record<string, never>) => {
-  const [helpVisible, setHelpVisible] = useState(false);
-  const toggleHelp = useCallback(() => setHelpVisible((v) => !v), [setHelpVisible]);
-  const keybindingGroups = useEditorKeybindings(toggleHelp);
+export type KeyBindingAction = (event: KeyboardEvent) => void;
 
-  return (
-    <div
-      className={`absolute z-50 bg-black/80 backdrop-blur-md text-gray-300 top-0 bottom-0 left-0 right-0 overflow-clip p-4 ${
-        helpVisible ? "block" : "hidden"
-      }`}
-    >
-      <h1 className="text-2xl my-4 font-bold text-center">Keyboard shortcuts</h1>
-      <div className="flex items-center justify-start w-full h-full overflow-auto">
-        <div className="flex flex-col flex-wrap gap-4 justify-start items-stretch h-full">
-          {Object.entries(keybindingGroups).map(([groupName, group]) => (
-            <div key={groupName} className="rounded-lg py-2 px-4 bg-white/10">
-              <h2 className="text-3 font-bold mb-2 border-b-2 border-b-white/25">{groupName}</h2>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                {Object.entries(group).map(([binding, { name }]) => (
-                  <Fragment key={binding}>
-                    <div>
-                      <KeyBinding binding={binding} />
-                    </div>
-                    <span>{name}</span>
-                  </Fragment>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
+export interface KeyBinding {
+  name?: string;
+  action: KeyBindingAction;
+}
 
-const KeyBinding = (props: { binding: string }) => {
-  const pieces = props.binding.split("+");
-  return (
-    <div className={`grid grid-cols-${pieces.length} gap-x-0.5 w-fit`}>
-      {pieces.map((piece) => (
-        <span className="inline-block border rounded border-b-2 bg-white/5 px-1 text-center">{presentKey(piece)}</span>
-      ))}
-    </div>
-  );
-};
+export type KeyBindingGroups = Record<string, Record<string, KeyBinding>>;
 
-const presentKey = (key: string): string => {
-  const isMac = window.navigator.userAgent.includes("Macintosh");
-  switch (key) {
-    case "$mod":
-      return isMac ? presentKey("Command") : presentKey("Control");
-    case "ArrowDown":
-      return "↓";
-    case "ArrowLeft":
-      return "←";
-    case "ArrowRight":
-      return "→";
-    case "ArrowUp":
-      return "↑";
-    case "Alt":
-      return isMac ? "⌥" : "Alt";
-    case "Command":
-      return "⌘";
-    case "Control":
-      return isMac ? "⌃" : "Ctrl";
-    case "Return":
-      return "⏎";
-    case "Shift":
-      return isMac ? "⇧" : "Shift";
-    case "Space":
-      return "␣";
-    default:
-      return key;
-  }
-};
-
-const useEditorKeybindings = (toggleHelp: () => void) => {
+export const useEditorKeyBindings = (): KeyBindingGroups => {
   const application = useApplicationState();
 
-  const keybindingGroups = useMemo(
+  const keybindingGroups = useMemo<KeyBindingGroups>(
     () => ({
       Playback: {
         Space: {
@@ -114,6 +47,37 @@ const useEditorKeybindings = (toggleHelp: () => void) => {
           action() {
             application.canvas.setZoom(1);
             application.canvas.centerViewportOn();
+          },
+        },
+      },
+
+      Editing: {
+        ...Object.fromEntries(
+          range(10).map((fret) => [
+            String(fret),
+            {
+              action: changeNoteAction(application, fret),
+            },
+          ]),
+        ),
+
+        "$mod+z": {
+          name: "Undo",
+          action(event) {
+            const action = application.undoStack.undo();
+            if (action) {
+              action[1](event);
+            }
+          },
+        },
+
+        "Shift+$mod+z": {
+          name: "Undo",
+          action(event) {
+            const action = application.undoStack.redo();
+            if (action) {
+              action[0](event);
+            }
           },
         },
       },
@@ -177,28 +141,28 @@ const useEditorKeybindings = (toggleHelp: () => void) => {
           },
         },
 
-        "$mod+Shift+ArrowLeft": {
+        "Shift+$mod+ArrowLeft": {
           name: "Previous Measure",
           action() {
             application.selection.previousMeasure();
           },
         },
 
-        "$mod+Shift+ArrowRight": {
+        "Shift+$mod+ArrowRight": {
           name: "Next Measure",
           action() {
             application.selection.nextMeasure();
           },
         },
 
-        "$mod+Alt+ArrowUp": {
+        "Alt+$mod+ArrowUp": {
           name: "Previous Part",
           action() {
             application.selection.previousPart();
           },
         },
 
-        "$mod+Alt+ArrowDown": {
+        "Alt+$mod+ArrowDown": {
           name: "Next Part",
           action() {
             application.selection.nextPart();
@@ -208,9 +172,8 @@ const useEditorKeybindings = (toggleHelp: () => void) => {
 
       Miscellaneous: {
         "Shift+?": {
-          name: "Toggle Help",
           action() {
-            toggleHelp();
+            application.toggleHelp();
           },
         },
 
@@ -222,7 +185,7 @@ const useEditorKeybindings = (toggleHelp: () => void) => {
         },
       },
     }),
-    [application, application.canvas, toggleHelp],
+    [application, application.canvas],
   );
 
   useEffect(() => {
@@ -242,7 +205,7 @@ const useEditorKeybindings = (toggleHelp: () => void) => {
   return keybindingGroups;
 };
 
-const preventDefault = (f: (event: KeyboardEvent) => void): ((event: KeyboardEvent) => void) => {
+const preventDefault = (f: KeyBindingAction): KeyBindingAction => {
   return (event: KeyboardEvent) => {
     event.preventDefault();
     f(event);

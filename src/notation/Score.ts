@@ -1,4 +1,5 @@
-import { Part } from "./part";
+import { makeAutoObservable } from "mobx";
+import { Part } from "./Part";
 
 export interface ScoreOptions {
   parts: Part[];
@@ -15,7 +16,9 @@ export interface ScoreOptions {
 }
 
 export class Score {
-  constructor(private options: ScoreOptions) {}
+  constructor(private options: ScoreOptions) {
+    makeAutoObservable(this, undefined, { deep: true });
+  }
 
   get parts() {
     return this.options.parts;

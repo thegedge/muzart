@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { inRange, last } from "lodash";
-import { makeAutoObservable } from "mobx";
+import { autorun, makeAutoObservable } from "mobx";
 import layout, { getAncestorOfType, layOutScore } from "../../layout";
 import * as notation from "../../notation";
 import { StorableObject, SyncStorage, numberOrDefault } from "../storage/Storage";
@@ -75,14 +75,17 @@ export class Selection implements StorableObject {
   }
 
   update(selection: Partial<Selection>) {
-    if (!this.score_) {
+    const score = this.score_;
+    if (!score) {
       return;
     }
 
     const partChanged = selection.partIndex != undefined && selection.partIndex != this.partIndex;
     if (partChanged) {
       this.partIndex = selection.partIndex!;
-      this.score = layOutScore(this.score_, [this.partIndex]);
+      autorun(() => {
+        this.score = layOutScore(score, [this.partIndex]);
+      });
     }
 
     const measureChanged = selection.measureIndex != undefined && selection.measureIndex != this.measureIndex;

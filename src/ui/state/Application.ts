@@ -4,6 +4,7 @@ import { Point } from "../../layout";
 import { load } from "../../loaders";
 import * as notation from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
+import { UndoStack } from "../../utils/UndoStack";
 import { CanvasState } from "../components/misc/CanvasState";
 import { SyncStorage } from "../storage/Storage";
 import { TabStorage } from "../storage/TabStorage";
@@ -24,6 +25,15 @@ export class Application {
   public error: Error | null = null;
   private currentUrl: URL | null = null;
 
+  public showHelp = false;
+
+  /**
+   * The undo stack for the editor.
+   *
+   * Expressed by a 2-tuple, where the first item is the "apply" action and the second item is the "undo" action.
+   */
+  public undoStack = new UndoStack<[(event: KeyboardEvent) => void, (event: KeyboardEvent) => void]>();
+
   public debug: DebugContext = new DebugContext();
   public canvas: CanvasState;
 
@@ -35,6 +45,10 @@ export class Application {
   ) {
     this.canvas = new CanvasState(this.settingsStorage);
     makeAutoObservable(this, undefined, { deep: false });
+  }
+
+  toggleHelp() {
+    this.showHelp = !this.showHelp;
   }
 
   loadScore = flow(function* (this: Application, url: string) {
