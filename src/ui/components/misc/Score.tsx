@@ -12,6 +12,7 @@ import {
   STAFF_LINE_HEIGHT,
   ancestorOfType,
   chordWidth,
+  hitTest,
   isChord,
   toAncestorCoordinateSystem,
 } from "../../../layout";
@@ -167,7 +168,7 @@ export const Score = observer((_props: Record<string, never>) => {
 
   const onClick = useCallback(
     (pt: Point) => {
-      const hit = application.hitTest(pt);
+      const hit = hitTest(pt, application.selection.part);
       if (hit) {
         application.selection.setFor(hit.element);
         if (isChord(hit.element)) {
@@ -184,7 +185,7 @@ export const Score = observer((_props: Record<string, never>) => {
 
   const onMouseMove = (pt: Point) => {
     let cursor = "auto";
-    const hit = application.hitTest(pt);
+    const hit = hitTest(pt, application.selection.part);
     if (hit) {
       switch (hit.element.type) {
         case "Chord":
