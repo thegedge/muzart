@@ -25,6 +25,8 @@ export class Application {
   public error: Error | null = null;
   private currentUrl: URL | null = null;
 
+  public showHelp = false;
+
   /**
    * The undo stack for the editor.
    *
@@ -43,6 +45,10 @@ export class Application {
   ) {
     this.canvas = new CanvasState(this.settingsStorage);
     makeAutoObservable(this, undefined, { deep: false });
+  }
+
+  toggleHelp() {
+    this.showHelp = !this.showHelp;
   }
 
   loadScore = flow(function* (this: Application, url: string) {
