@@ -17,7 +17,8 @@ export interface Point {
 interface CanvasProps {
   state: CanvasState;
 
-  onClick?: (p: Point) => void;
+  onMouseDown?: (p: Point) => void;
+  onDoubleClick?: (p: Point) => void;
   onMouseMove?: (p: Point) => void;
 }
 
@@ -71,22 +72,6 @@ export const Canvas = observer((props: CanvasProps) => {
     };
   }, [state, container]);
 
-  const onClickProp = props.onClick;
-  const onClick: JSXInternal.MouseEventHandler<HTMLElement> | undefined = onClickProp
-    ? (evt) => {
-        const pt = state.canvasViewportToUserSpace(evt);
-        onClickProp(pt);
-      }
-    : undefined;
-
-  const onMouseMoveProp = props.onMouseMove;
-  const onMouseMove: JSXInternal.MouseEventHandler<HTMLElement> | undefined = onMouseMoveProp
-    ? (evt) => {
-        const pt = state.canvasViewportToUserSpace(evt);
-        onMouseMoveProp(pt);
-      }
-    : undefined;
-
   const setCanvasRef = useCallback<RefCallback<HTMLCanvasElement>>(
     (canvas) => {
       if (canvas) {
@@ -97,14 +82,25 @@ export const Canvas = observer((props: CanvasProps) => {
   );
 
   return (
-    <div ref={setContainer} className="flex-1 overflow-hidden">
+    <div ref={setContainer} className="w-full h-full flex-1 overflow-hidden">
       <canvas
         ref={setCanvasRef}
-        className="w-full h-full"
+        className="w-full h-full flex-1"
         style={{ imageRendering: "crisp-edges", cursor: state.cursor }}
-        onClick={onClick}
-        onMouseMove={onMouseMove}
+        onMouseDown={props.onMouseDown && wrapMouseEvent(state, props.onMouseDown)}
+        onDblClick={props.onDoubleClick && wrapMouseEvent(state, props.onDoubleClick)}
+        onMouseMove={props.onMouseMove && wrapMouseEvent(state, props.onMouseMove)}
       />
     </div>
   );
 });
+
+const wrapMouseEvent = (
+  state: CanvasState,
+  handler: (p: Point) => void,
+): JSXInternal.MouseEventHandler<HTMLElement> => {
+  return (evt) => {
+    const pt = state.canvasViewportToUserSpace(evt);
+    handler(pt);
+  };
+};

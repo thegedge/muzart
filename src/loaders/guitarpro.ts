@@ -115,12 +115,6 @@ class GuitarProLoader {
     const numTracks = this.cursor.nextNumber(NumberType.Uint32);
     this.debug({ numTracks, numMeasures });
 
-    const score = new Score({
-      parts: [],
-      comments,
-      ...tabInformation,
-    });
-
     //------------------------------------------------------------------------------------------------
     // Measure props
     //------------------------------------------------------------------------------------------------
@@ -137,12 +131,14 @@ class GuitarProLoader {
     // Track props
     //------------------------------------------------------------------------------------------------
 
+    const parts: Part[] = [];
+
     this.debug("track data");
     for (let trackIndex = 0; trackIndex < numTracks; ++trackIndex) {
       const trackData = this.readTrackData();
       this.trackData.push(trackData);
       const midiData = midiPorts[trackData.midiPort - 1][trackData.midiChannel - 1];
-      score.parts.push(
+      parts.push(
         new Part({
           name: trackData.name,
           color: trackData.color,
@@ -170,7 +166,7 @@ class GuitarProLoader {
         const numBeats = this.cursor.nextNumber(NumberType.Uint32);
         const chords = range(numBeats).map(() => this.readBeat(this.trackData[trackIndex]));
 
-        score.parts[trackIndex].measures.push(
+        parts[trackIndex].measures.push(
           new Measure({
             chords,
             number: measureIndex + 1,
@@ -187,7 +183,11 @@ class GuitarProLoader {
       }
     }
 
-    return score;
+    return new Score({
+      parts,
+      comments,
+      ...tabInformation,
+    });
   }
 
   readMeasureData(defaultTimeSignature: TimeSignature): MeasureData {

@@ -1,14 +1,13 @@
+import type * as CSS from "csstype";
 import { sumBy } from "lodash";
 import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useCallback, useEffect, useRef } from "preact/hooks";
-import {
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
+import layout, {
   AllElements,
   Box,
-  Chord,
   LINE_STROKE_WIDTH,
   LineElement,
-  Rest,
   STAFF_LINE_HEIGHT,
   ancestorOfType,
   chordWidth,
@@ -20,6 +19,7 @@ import { noteValueToSeconds } from "../../../playback/util/durations";
 import { renderScoreElement } from "../../../render/renderScoreElement";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../misc/Canvas";
+import { StatefulInput, StatefulTextInputState } from "./StatefulInput";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
@@ -36,7 +36,7 @@ export const Score = observer((_props: Record<string, never>) => {
     );
   }, [application.canvas]);
 
-  const selectionBoxFor = (chord: Chord | Rest, selectedNoteIndex: number) => {
+  const selectionBoxFor = (chord: layout.Chord | layout.Rest, selectedNoteIndex: number) => {
     const PADDING = 3 * LINE_STROKE_WIDTH;
     const chordBox = toAncestorCoordinateSystem(chord);
     return chordBox
@@ -149,7 +149,7 @@ export const Score = observer((_props: Record<string, never>) => {
         if (element.type == "Chord" || element.type == "Rest") {
           box = selectionBoxFor(element, selectedNoteIndex);
         } else if (element.type == "Note") {
-          const chord = ancestorOfType<LineElement, Chord>(element, "Chord");
+          const chord = ancestorOfType<LineElement, layout.Chord>(element, "Chord");
           if (chord) {
             box = selectionBoxFor(chord, selectedNoteIndex);
           } else {
@@ -166,7 +166,9 @@ export const Score = observer((_props: Record<string, never>) => {
     );
   }, [application]);
 
-  const onClick = useCallback(
+  const [textInputState, showTextInput] = useState<StatefulTextInputState | null>(null);
+
+  const onMouseDown = useCallback(
     (pt: Point) => {
       const hit = hitTest(pt, application.selection.part);
       if (hit) {
@@ -180,24 +182,55 @@ export const Score = observer((_props: Record<string, never>) => {
         }
       }
     },
+    [application, textInputState],
+  );
+
+  const onDoubleClick = useCallback(
+    (pt: Point) => {
+      const hit = hitTest(pt, application.selection.part);
+      if (hit) {
+        if (hit?.element.type == "Text" && !hit.element.isReadOnly) {
+          showTextInput(new StatefulTextInputState(application, hit.element));
+        }
+      }
+    },
+    [application, textInputState],
+  );
+
+  const onMouseMove = useCallback(
+    (pt: Point) => {
+      let cursor: CSS.Properties["cursor"] = "auto";
+
+      const hit = hitTest(pt, application.selection.part);
+      if (hit) {
+        switch (hit.element.type) {
+          case "Chord":
+          case "Note":
+          case "Rest":
+            cursor = "pointer";
+            break;
+          case "Text":
+            if (!hit.element.isReadOnly) {
+              cursor = "text";
+            }
+            break;
+        }
+      }
+
+      application.canvas.setCursor(cursor);
+    },
     [application],
   );
 
-  const onMouseMove = (pt: Point) => {
-    let cursor = "auto";
-    const hit = hitTest(pt, application.selection.part);
-    if (hit) {
-      switch (hit.element.type) {
-        case "Chord":
-        case "Note":
-        case "Rest":
-          cursor = "pointer";
-          break;
-      }
-    }
-
-    application.canvas.setCursor(cursor);
-  };
-
-  return <Canvas onClick={onClick} onMouseMove={onMouseMove} state={application.canvas} />;
+  return (
+    <div className="relative flex-1">
+      {textInputState?.visible && <StatefulInput state={textInputState} />}
+      <Canvas
+        onMouseDown={onMouseDown}
+        onDoubleClick={onDoubleClick}
+        onMouseMove={onMouseMove}
+        state={application.canvas}
+      />
+    </div>
+  );
 });

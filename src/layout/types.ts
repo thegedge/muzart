@@ -142,6 +142,7 @@ export interface Text extends LayoutElement<LineElement> {
   halign?: Alignment;
   valign?: Alignment;
   style?: CSSProperties;
+  readonly isReadOnly?: boolean;
 }
 
 export interface TextDecoration {

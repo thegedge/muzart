@@ -29,12 +29,11 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
     if (score.title) {
       const height = 4 * STAFF_LINE_HEIGHT;
       this.addElement(
-        new Text({
-          box: new Box(0, 0, contentWidth, height),
+        Text.boundText(score, "title", {
+          box: new Box(0, 0, contentWidth, 1.5 * height),
           halign: "center",
-          valign: "start",
+          valign: "center",
           size: height,
-          value: score.title,
           style: {
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,
           },
@@ -45,12 +44,11 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
     if (score.artist) {
       const height = 1.5 * STAFF_LINE_HEIGHT;
       this.addElement(
-        new Text({
+        Text.boundText(score, "artist", {
           box: new Box(0, 0, contentWidth, 1.2 * height),
           halign: "center",
           valign: "center",
           size: height,
-          value: score.artist,
           style: {
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,
             fontWeight: "bold",
@@ -62,12 +60,11 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
     if (score.album) {
       const height = 1.5 * STAFF_LINE_HEIGHT;
       this.addElement(
-        new Text({
+        Text.boundText(score, "album", {
           box: new Box(0, 0, contentWidth, 1.2 * height),
           halign: "center",
           valign: "center",
           size: height,
-          value: score.album,
           style: {
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,
           },
@@ -77,6 +74,8 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
 
     if (score.comments) {
       const height = STAFF_LINE_HEIGHT;
+
+      // TODO make these one text element that can do multiline, drop comments being an array
       for (const comment of score.comments) {
         this.addElement(
           new Text({
@@ -108,6 +107,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
           halign: "end",
           valign: "center",
           size: height,
+          // TODO can't do bound text when we format the display this way
           value: score.composer.includes(" by ") ? score.composer : `Composed by ${score.composer}`,
           style: {
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,
@@ -126,6 +126,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
           halign: "end",
           valign: "center",
           size: height,
+          // TODO can't do bound text when we format the display this way
           value: score.transcriber.includes(" by ") ? score.transcriber : `Transcribed by ${score.transcriber}`,
           style: {
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,

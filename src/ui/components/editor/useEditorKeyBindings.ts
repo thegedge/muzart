@@ -72,7 +72,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
         },
 
         "Shift+$mod+z": {
-          name: "Undo",
+          name: "Redo",
           action(event) {
             const action = application.undoStack.redo();
             if (action) {

@@ -16,47 +16,30 @@ export interface ScoreOptions {
 }
 
 export class Score {
-  constructor(private options: ScoreOptions) {
+  readonly parts: ReadonlyArray<Part>;
+
+  public comments: string[] | undefined;
+  public title: string | undefined;
+  public subTitle: string | undefined;
+  public artist: string | undefined;
+  public album: string | undefined;
+  public composer: string | undefined;
+  public copyright: string | undefined;
+  public transcriber: string | undefined;
+  public instructions: string | undefined;
+
+  constructor(options: ScoreOptions) {
+    this.parts = options.parts;
+    this.comments = options.comments;
+    this.title = options.title;
+    this.subTitle = options.subTitle;
+    this.artist = options.artist;
+    this.album = options.album;
+    this.composer = options.composer;
+    this.copyright = options.copyright;
+    this.transcriber = options.transcriber;
+    this.instructions = options.instructions;
+
     makeAutoObservable(this, undefined, { deep: true });
-  }
-
-  get parts() {
-    return this.options.parts;
-  }
-
-  get comments() {
-    return this.options.comments;
-  }
-
-  get title() {
-    return this.options.title;
-  }
-
-  get subTitle() {
-    return this.options.subTitle;
-  }
-
-  get artist() {
-    return this.options.artist;
-  }
-
-  get album() {
-    return this.options.album;
-  }
-
-  get composer() {
-    return this.options.composer;
-  }
-
-  get copyright() {
-    return this.options.copyright;
-  }
-
-  get transcriber() {
-    return this.options.transcriber;
-  }
-
-  get instructions() {
-    return this.options.instructions;
   }
 }
