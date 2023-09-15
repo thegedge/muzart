@@ -89,4 +89,19 @@ export class Application {
     this.playback.stop();
     this.selection.setScore(score);
   }
+
+  // Various states of the editor (primarily used to drive key bindings)
+
+  get isPlaying() {
+    return this.playback.playing;
+  }
+
+  get helpVisible() {
+    return this.showHelp;
+  }
+
+  get editorFocused() {
+    // TODO this works...for now
+    return document.activeElement == document.body;
+  }
 }

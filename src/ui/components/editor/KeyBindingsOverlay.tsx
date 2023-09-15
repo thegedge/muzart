@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { Fragment } from "preact";
+import { IS_MAC } from "../../../utils/platform";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { KeyBindingGroups } from "./useEditorKeyBindings";
 
@@ -48,17 +49,16 @@ const KeyBinding = (props: { binding: string }) => {
   return (
     <div className={`grid grid-cols-${pieces.length} gap-x-0.5 w-fit`}>
       {pieces.map((piece) => (
-        <span className="inline-block border rounded border-b-2 bg-white/5 px-1 text-center">{presentKey(piece)}</span>
+        <span className="inline-block border rounded border-b-2 px-1 text-center min-w-ex">{presentKey(piece)}</span>
       ))}
     </div>
   );
 };
 
 const presentKey = (key: string): string => {
-  const isMac = window.navigator.userAgent.includes("Macintosh");
   switch (key) {
     case "$mod":
-      return isMac ? presentKey("Command") : presentKey("Control");
+      return IS_MAC ? presentKey("Command") : presentKey("Control");
     case "ArrowDown":
       return "↓";
     case "ArrowLeft":
@@ -68,16 +68,17 @@ const presentKey = (key: string): string => {
     case "ArrowUp":
       return "↑";
     case "Alt":
-      return isMac ? "⌥" : "Alt";
+      return IS_MAC ? "⌥" : "Alt";
     case "Command":
       return "⌘";
     case "Control":
-      return isMac ? "⌃" : "Ctrl";
+      return IS_MAC ? "⌃" : "Ctrl";
     case "Return":
       return "⏎";
     case "Shift":
-      return isMac ? "⇧" : "Shift";
+      return IS_MAC ? "⇧" : "Shift";
     case "Space":
+    case " ":
       return "␣";
     default:
       return key;

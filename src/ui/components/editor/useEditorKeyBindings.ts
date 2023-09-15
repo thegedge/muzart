@@ -1,6 +1,7 @@
-import { mapValues, range } from "lodash";
+import { range } from "lodash";
 import { useEffect, useMemo } from "preact/hooks";
-import { createKeybindingsHandler } from "tinykeys";
+import { IS_MAC } from "../../../utils/platform";
+import { Application } from "../../state/Application";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { changeNoteAction } from "./actions/changeNoteAction";
 
@@ -8,6 +9,7 @@ export type KeyBindingAction = (event: KeyboardEvent) => void;
 
 export interface KeyBinding {
   name?: string;
+  when?: string;
   action: KeyBindingAction;
 }
 
@@ -19,8 +21,9 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
   const keybindingGroups = useMemo<KeyBindingGroups>(
     () => ({
       Playback: {
-        Space: {
+        " ": {
           name: "Toggle Playback",
+          when: "editorFocused",
           action() {
             application.playback.togglePlay();
           },
@@ -56,6 +59,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           range(10).map((fret) => [
             String(fret),
             {
+              when: "editorFocused && !isPlaying",
               action: changeNoteAction(application, fret),
             },
           ]),
@@ -63,6 +67,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
         "$mod+z": {
           name: "Undo",
+          when: "editorFocused && !isPlaying",
           action(event) {
             const action = application.undoStack.undo();
             if (action) {
@@ -73,6 +78,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
         "Shift+$mod+z": {
           name: "Redo",
+          when: "editorFocused && !isPlaying",
           action(event) {
             const action = application.undoStack.redo();
             if (action) {
@@ -85,6 +91,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
       Navigation: {
         "ArrowLeft": {
           name: "Previous Chord",
+          when: "editorFocused && !isPlaying",
           action() {
             application.selection.previousChord();
           },
@@ -92,6 +99,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
         "ArrowRight": {
           name: "Next Chord",
+          when: "editorFocused",
           action() {
             application.selection.nextChord();
           },
@@ -99,6 +107,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
         "ArrowUp": {
           name: "Higher Note",
+          when: "editorFocused",
           action() {
             application.selection.previousNote();
           },
@@ -114,6 +123,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
         // TODO should these jump a visible page, or an actual page based on zoom level?
         "PageDown": {
           name: "Next Page",
+          when: "editorFocused",
           action() {
             application.selection.nextPage();
           },
@@ -121,6 +131,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
         "PageUp": {
           name: "Previous Page",
+          when: "editorFocused",
           action() {
             application.selection.previousPage();
           },
@@ -128,6 +139,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
         "Home": {
           name: "First Page",
+          when: "editorFocused",
           action() {
             application.selection.update({ measureIndex: 0 });
           },
@@ -135,6 +147,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
         "End": {
           name: "Last Page",
+          when: "editorFocused",
           action() {
             const part = application.selection.part;
             application.selection.update({ measureIndex: part && part.part.measures.length - 1 });
@@ -143,6 +156,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
         "Shift+$mod+ArrowLeft": {
           name: "Previous Measure",
+          when: "editorFocused",
           action() {
             application.selection.previousMeasure();
           },
@@ -150,6 +164,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
         "Shift+$mod+ArrowRight": {
           name: "Next Measure",
+          when: "editorFocused",
           action() {
             application.selection.nextMeasure();
           },
@@ -157,6 +172,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
         "Alt+$mod+ArrowUp": {
           name: "Previous Part",
+          when: "editorFocused",
           action() {
             application.selection.previousPart();
           },
@@ -164,6 +180,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
         "Alt+$mod+ArrowDown": {
           name: "Next Part",
+          when: "editorFocused",
           action() {
             application.selection.nextPart();
           },
@@ -172,6 +189,15 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
       Miscellaneous: {
         "Shift+?": {
+          when: "editorFocused",
+          action() {
+            application.toggleHelp();
+          },
+        },
+
+        // TODO there are gonna be other uses for escape, so an object keyed by keys isn't ideal
+        "Escape": {
+          when: "helpVisible",
           action() {
             application.toggleHelp();
           },
@@ -179,6 +205,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
         "Shift+D": {
           name: "Toggle Debug View",
+          when: "editorFocused",
           action() {
             application.debug.setEnabled(!application.debug.enabled);
           },
@@ -189,25 +216,54 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
   );
 
   useEffect(() => {
-    const actions = Object.fromEntries(
+    const bindings = Object.fromEntries(
       Object.values(keybindingGroups)
         .flatMap((group) => Object.entries(group))
-        .map(([key, { action }]) => [key, action]),
+        .map(([key, binding]) => [key, binding]),
     );
-    const listener = createKeybindingsHandler(mapValues(actions, preventDefault));
+
+    const listener = (event: KeyboardEvent) => {
+      const pieces = [];
+      if (event.shiftKey) {
+        pieces.push("Shift");
+      }
+
+      if (event.altKey) {
+        pieces.push("Alt");
+      }
+
+      if ((IS_MAC && event.metaKey) || (!IS_MAC && event.ctrlKey)) {
+        pieces.push("$mod");
+      }
+
+      pieces.push(event.key);
+
+      const sequence = pieces.join("+");
+      const binding = bindings[sequence];
+      if (binding) {
+        if (binding.when) {
+          const pieces = binding.when.split("&&");
+          const validState = pieces.every((piece) => {
+            return piece[0] == "!"
+              ? !application[piece.substring(1) as keyof Application]
+              : application[piece as keyof Application];
+          });
+
+          if (!validState) {
+            return;
+          }
+        }
+
+        event.preventDefault();
+        binding.action(event);
+      }
+    };
 
     document.body.addEventListener("keydown", listener);
     return () => {
       document.body.removeEventListener("keydown", listener);
     };
-  }, [keybindingGroups]);
+  }, [keybindingGroups, application]);
 
   return keybindingGroups;
-};
-
-const preventDefault = (f: KeyBindingAction): KeyBindingAction => {
-  return (event: KeyboardEvent) => {
-    event.preventDefault();
-    f(event);
-  };
 };
