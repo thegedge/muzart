@@ -5,9 +5,16 @@ import { withSelectionTracking } from "./withSelectionTracking";
 export const changeNote = (fret: number): Action => {
   let state: [notation.Chord, [notation.Note | undefined, notation.Note]];
 
+  // TODO assuming a stringed + fretted instrument below. Will need to fix eventually.
+
   return withSelectionTracking({
+    canApplyAction(application) {
+      const instrument = application.selection.part?.part.instrument;
+      const chord = application.selection.chord?.chord;
+      return !!(instrument && chord);
+    },
+
     apply(application) {
-      // TODO assuming a stringed + fretted instrument below. Will need to fix eventually.
       const instrument = application.selection.part?.part.instrument;
       const chord = application.selection.chord?.chord;
       if (!instrument || !chord) {

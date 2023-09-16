@@ -7,6 +7,10 @@ export function withSelectionTracking(action: Action): Action {
   let selection = null as Record<string, unknown> | null;
 
   return {
+    canApplyAction(application) {
+      return action.canApplyAction(application);
+    },
+
     apply(application) {
       if (selection) {
         application.selection.fromJSON(selection);

@@ -44,11 +44,7 @@ export class StatefulTextInputState {
       return;
     }
 
-    const element = this.element;
-    if (element && element.text != text) {
-      this.application.dispatch(changeTextElement(element, text));
-    }
-
+    this.application.dispatch(changeTextElement(this.element, text));
     this.visible = false;
   }
 }

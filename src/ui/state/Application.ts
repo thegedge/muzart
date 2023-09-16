@@ -20,6 +20,7 @@ export interface Hit<T> {
 }
 
 export interface Action {
+  canApplyAction(application: Application): boolean;
   apply(application: Application): void;
   undo(application: Application): void;
 }
@@ -52,8 +53,10 @@ export class Application {
   }
 
   dispatch(action: Action) {
-    this.undoStack.push(action);
-    action.apply(this);
+    if (action.canApplyAction(this)) {
+      this.undoStack.push(action);
+      action.apply(this);
+    }
   }
 
   undo() {

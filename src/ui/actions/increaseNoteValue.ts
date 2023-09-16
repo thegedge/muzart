@@ -5,6 +5,11 @@ export const increaseNoteValue = (): Action => {
   // TODO support changing the duration of a selected note
 
   return withSelectionTracking({
+    canApplyAction(application) {
+      const chord = application.selection.chord;
+      return !!chord;
+    },
+
     apply(application) {
       const chord = application.selection.chord?.chord;
       if (!chord) {
