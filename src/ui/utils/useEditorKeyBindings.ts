@@ -1,16 +1,14 @@
 import { range } from "lodash";
 import { useEffect, useMemo } from "preact/hooks";
 import { IS_MAC } from "../../utils/platform";
-import { changeNoteAction } from "../actions/changeNoteAction";
-import { Application } from "../state/Application";
+import { changeNote } from "../actions/changeNote";
+import { Action, Application } from "../state/Application";
 import { useApplicationState } from "./ApplicationStateContext";
-
-export type KeyBindingAction = (event: KeyboardEvent) => void;
 
 export interface KeyBinding {
   name?: string;
   when?: string;
-  action: KeyBindingAction;
+  action: Action;
 }
 
 export type KeyBindingGroups = Record<string, Record<string, KeyBinding>>;
@@ -60,7 +58,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
             String(fret),
             {
               when: "editorFocused && !isPlaying",
-              action: changeNoteAction(application, fret),
+              action: changeNote(application, fret),
             },
           ]),
         ),
@@ -68,10 +66,10 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
         "$mod+z": {
           name: "Undo",
           when: "editorFocused && !isPlaying",
-          action(event) {
+          action() {
             const action = application.undoStack.undo();
             if (action) {
-              action[1](event);
+              action[1]();
             }
           },
         },
@@ -79,10 +77,10 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
         "Shift+$mod+z": {
           name: "Redo",
           when: "editorFocused && !isPlaying",
-          action(event) {
+          action() {
             const action = application.undoStack.redo();
             if (action) {
-              action[0](event);
+              action[0]();
             }
           },
         },
@@ -255,7 +253,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
         }
 
         event.preventDefault();
-        binding.action(event);
+        binding.action();
       }
     };
 

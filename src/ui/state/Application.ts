@@ -19,6 +19,8 @@ export interface Hit<T> {
   point: Point;
 }
 
+export type Action = () => void;
+
 export class Application {
   public loading = false;
   public error: Error | null = null;
@@ -31,7 +33,7 @@ export class Application {
    *
    * Expressed by a 2-tuple, where the first item is the "apply" action and the second item is the "undo" action.
    */
-  public undoStack = new UndoStack<[(event: KeyboardEvent) => void, (event: KeyboardEvent) => void]>();
+  public undoStack = new UndoStack<[Action, Action]>();
 
   public debug: DebugContext = new DebugContext();
   public canvas: CanvasState;

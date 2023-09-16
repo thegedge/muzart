@@ -1,8 +1,7 @@
 import { Application } from "../state/Application";
-import { KeyBindingAction } from "../utils/useEditorKeyBindings";
 import { undoableAction } from "./undoableAction";
 
-export const changeNoteAction = (application: Application, fret: number): KeyBindingAction => {
+export const changeNote = (application: Application, fret: number): (() => void) => {
   // TODO capture selection and move to it when undoing/redoing this action
 
   return undoableAction(
