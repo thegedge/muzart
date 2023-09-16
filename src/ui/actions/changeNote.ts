@@ -1,10 +1,10 @@
 import { Application } from "../state/Application";
-import { undoableAction } from "./undoableAction";
+import { withSelectionTracking } from "./withSelectionTracking";
 
 export const changeNote = (application: Application, fret: number): (() => void) => {
   // TODO capture selection and move to it when undoing/redoing this action
 
-  return undoableAction(
+  return withSelectionTracking(
     application,
     () => {
       // TODO assuming a stringed + fretted instrument below. Will need to fix eventually.

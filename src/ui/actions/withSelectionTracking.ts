@@ -1,6 +1,9 @@
 import { Application } from "../state/Application";
 
-export function undoableAction<T>(
+/**
+ * Create an undoable action that will restore state before undoing/redoing.
+ */
+export function withSelectionTracking<T>(
   application: Application,
   apply: () => T | undefined,
   undo: (state: T) => void,
