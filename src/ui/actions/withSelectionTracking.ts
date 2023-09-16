@@ -1,28 +1,26 @@
-import { Application } from "../state/Application";
+import { Action } from "../state/Application";
 
 /**
- * Create an undoable action that will restore state before undoing/redoing.
+ * Create an action that will restore state before undoing/redoing.
  */
-export function withSelectionTracking<T>(
-  application: Application,
-  apply: () => T | undefined,
-  undo: (state: T) => void,
-): () => void {
-  return () => {
-    const selectionBeforeApply = application.selection.toJSON();
-    const state = apply();
-    if (state !== undefined) {
-      const selectionAfterApply = application.selection.toJSON();
-      application.undoStack.push([
-        () => {
-          application.selection.fromJSON(selectionBeforeApply);
-          apply();
-        },
-        () => {
-          application.selection.fromJSON(selectionAfterApply);
-          undo(state);
-        },
-      ]);
-    }
+export function withSelectionTracking(action: Action): Action {
+  let selection = null as Record<string, unknown> | null;
+
+  return {
+    apply(application) {
+      if (selection) {
+        application.selection.fromJSON(selection);
+      }
+      action.apply(application);
+      selection = application.selection.toJSON();
+    },
+
+    undo(application) {
+      if (selection) {
+        application.selection.fromJSON(selection);
+      }
+      action.undo(application);
+      selection = application.selection.toJSON();
+    },
   };
 }

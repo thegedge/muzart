@@ -2,13 +2,13 @@ import { range } from "lodash";
 import { useEffect, useMemo } from "preact/hooks";
 import { IS_MAC } from "../../utils/platform";
 import { changeNote } from "../actions/changeNote";
-import { Action, Application } from "../state/Application";
+import { Application } from "../state/Application";
 import { useApplicationState } from "./ApplicationStateContext";
 
 export interface KeyBinding {
   name?: string;
   when?: string;
-  action: Action;
+  action: () => void;
 }
 
 export type KeyBindingGroups = Record<string, Record<string, KeyBinding>>;
@@ -58,7 +58,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
             String(fret),
             {
               when: "editorFocused && !isPlaying",
-              action: changeNote(application, fret),
+              action: () => application.dispatch(changeNote(fret)),
             },
           ]),
         ),
@@ -67,10 +67,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           name: "Undo",
           when: "editorFocused && !isPlaying",
           action() {
-            const action = application.undoStack.undo();
-            if (action) {
-              action[1]();
-            }
+            application.undo();
           },
         },
 
@@ -78,10 +75,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           name: "Redo",
           when: "editorFocused && !isPlaying",
           action() {
-            const action = application.undoStack.redo();
-            if (action) {
-              action[0]();
-            }
+            application.redo();
           },
         },
       },

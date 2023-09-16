@@ -46,7 +46,7 @@ export class StatefulTextInputState {
 
     const element = this.element;
     if (element && element.text != text) {
-      changeTextElement(this.application, element, text)();
+      this.application.dispatch(changeTextElement(element, text));
     }
 
     this.visible = false;

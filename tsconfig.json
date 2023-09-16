@@ -19,6 +19,6 @@
       "react-dom": ["./node_modules/preact/compat/"]
     }
   },
-  "include": ["src", "test", "types", "*.js", "*.ts"],
+  "include": ["src", "test", "types", "*.js", "*.ts", ".eslintrc.js"],
   "exclude": ["build", "**/node_modules", "public", "tmp"]
 }

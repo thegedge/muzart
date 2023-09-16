@@ -1,12 +1,12 @@
-import { Application } from "../state/Application";
+import * as notation from "../../notation";
+import { Action } from "../state/Application";
 import { withSelectionTracking } from "./withSelectionTracking";
 
-export const changeNote = (application: Application, fret: number): (() => void) => {
-  // TODO capture selection and move to it when undoing/redoing this action
+export const changeNote = (fret: number): Action => {
+  let state: [notation.Chord, [notation.Note | undefined, notation.Note]];
 
-  return withSelectionTracking(
-    application,
-    () => {
+  return withSelectionTracking({
+    apply(application) {
       // TODO assuming a stringed + fretted instrument below. Will need to fix eventually.
       const instrument = application.selection.part?.part.instrument;
       const chord = application.selection.chord?.chord;
@@ -25,16 +25,16 @@ export const changeNote = (application: Application, fret: number): (() => void)
         dead: undefined,
       });
 
-      return [chord, notes] as const;
+      state = [chord, notes];
     },
-    (state) => {
-      const [chord, [oldNote, newNote]] = state;
 
+    undo(_application) {
+      const [chord, [oldNote, newNote]] = state;
       if (oldNote) {
         chord.changeNote(oldNote.options);
       } else if (newNote) {
         chord.removeNote(newNote);
       }
     },
-  );
+  });
 };

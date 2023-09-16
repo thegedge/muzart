@@ -19,7 +19,10 @@ export interface Hit<T> {
   point: Point;
 }
 
-export type Action = () => void;
+export interface Action {
+  apply(application: Application): void;
+  undo(application: Application): void;
+}
 
 export class Application {
   public loading = false;
@@ -33,7 +36,7 @@ export class Application {
    *
    * Expressed by a 2-tuple, where the first item is the "apply" action and the second item is the "undo" action.
    */
-  public undoStack = new UndoStack<[Action, Action]>();
+  private undoStack = new UndoStack<Action>();
 
   public debug: DebugContext = new DebugContext();
   public canvas: CanvasState;
@@ -46,6 +49,25 @@ export class Application {
   ) {
     this.canvas = new CanvasState(this.settingsStorage);
     makeAutoObservable(this, undefined, { deep: false });
+  }
+
+  dispatch(action: Action) {
+    this.undoStack.push(action);
+    action.apply(this);
+  }
+
+  undo() {
+    const action = this.undoStack.undo();
+    if (action) {
+      action.undo(this);
+    }
+  }
+
+  redo() {
+    const action = this.undoStack.redo();
+    if (action) {
+      action.apply(this);
+    }
   }
 
   toggleHelp() {
