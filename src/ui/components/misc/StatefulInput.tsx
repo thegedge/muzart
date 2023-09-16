@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { observer } from "mobx-react-lite";
 import { CSSProperties, useEffect, useRef } from "preact/compat";
 import layout, { toAncestorCoordinateSystem } from "../../../layout";
+import { changeTextElement } from "../../actions/changeTextElement";
 import { Application } from "../../state/Application";
 
 export class StatefulTextInputState {
@@ -45,9 +46,7 @@ export class StatefulTextInputState {
 
     const element = this.element;
     if (element && element.text != text) {
-      const prev = element.text;
-      this.application?.undoStack.push([() => (element.text = text), () => (element.text = prev)]);
-      element.text = text;
+      changeTextElement(this.application, element, text)();
     }
 
     this.visible = false;
