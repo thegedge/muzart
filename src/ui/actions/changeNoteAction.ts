@@ -1,5 +1,5 @@
-import { Application } from "../../../state/Application";
-import { KeyBindingAction } from "../../../utils/useEditorKeyBindings";
+import { Application } from "../state/Application";
+import { KeyBindingAction } from "../utils/useEditorKeyBindings";
 import { undoableAction } from "./undoableAction";
 
 export const changeNoteAction = (application: Application, fret: number): KeyBindingAction => {

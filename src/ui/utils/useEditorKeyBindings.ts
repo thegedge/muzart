@@ -1,7 +1,7 @@
 import { range } from "lodash";
 import { useEffect, useMemo } from "preact/hooks";
 import { IS_MAC } from "../../utils/platform";
-import { changeNoteAction } from "../components/editor/actions/changeNoteAction";
+import { changeNoteAction } from "../actions/changeNoteAction";
 import { Application } from "../state/Application";
 import { useApplicationState } from "./ApplicationStateContext";
 

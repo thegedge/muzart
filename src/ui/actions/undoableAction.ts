@@ -1,4 +1,4 @@
-import { Application } from "../../../state/Application";
+import { Application } from "../state/Application";
 
 export function undoableAction<T>(
   application: Application,
