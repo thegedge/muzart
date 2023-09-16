@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { Note, NoteOptions } from "./Note";
-import { NoteValue } from "./note_value";
+import { NoteValue } from "./NoteValue";
 
 export interface Barre {
   baseFret: number;
@@ -81,6 +81,14 @@ export class Chord {
     if (existingIndex >= 0) {
       this.notes.splice(existingIndex, 1);
     }
+  }
+
+  setValue(value: NoteValue) {
+    this.options.value = value;
+  }
+
+  noteByString(string: number): Note | undefined {
+    return this.notes.find((n) => n.placement?.string == string);
   }
 
   changeNote(changes: Partial<NoteOptions>): [Note | undefined, Note] {

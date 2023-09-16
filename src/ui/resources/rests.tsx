@@ -1,4 +1,4 @@
-import { NoteValueName } from "../../notation/note_value";
+import { NoteValueName } from "../../notation/NoteValue";
 
 export const Rests = {
   [NoteValueName.Whole]: "M 0 0 L 1 0 L 1 0.5 L 0 0.5",

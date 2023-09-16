@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { Fragment } from "preact";
 import { IS_MAC } from "../../../utils/platform";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { KeyBindingGroups } from "../../utils/useEditorKeyBindings";
+import { KEY_BINDING_SEPARATOR, KeyBindingGroups } from "../../utils/useEditorKeyBindings";
 
 export const KeyBindingsOverlay = observer((props: { bindings: KeyBindingGroups }) => {
   const application = useApplicationState();
@@ -43,7 +43,7 @@ export const KeyBindingsOverlay = observer((props: { bindings: KeyBindingGroups 
 });
 
 const KeyBinding = (props: { binding: string }) => {
-  const pieces = props.binding.split("+");
+  const pieces = props.binding.split(KEY_BINDING_SEPARATOR);
   return (
     <div className={`grid grid-cols-${pieces.length} gap-x-0.5 w-fit`}>
       {pieces.map((piece) => (

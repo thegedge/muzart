@@ -1,5 +1,5 @@
 import { Chord } from "./Chord";
-import { NoteValue } from "./note_value";
+import { NoteValue } from "./NoteValue";
 import { Pitch } from "./pitch";
 
 export type TieType = "start" | "stop" | "middle";

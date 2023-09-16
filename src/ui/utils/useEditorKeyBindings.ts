@@ -2,6 +2,8 @@ import { range } from "lodash";
 import { useEffect, useMemo } from "preact/hooks";
 import { IS_MAC } from "../../utils/platform";
 import { changeNote } from "../actions/changeNote";
+import { decreaseNoteValue } from "../actions/decreaseNoteValue";
+import { increaseNoteValue } from "../actions/increaseNoteValue";
 import { Application } from "../state/Application";
 import { useApplicationState } from "./ApplicationStateContext";
 
@@ -10,6 +12,8 @@ export interface KeyBinding {
   when?: string;
   action: () => void;
 }
+
+export const KEY_BINDING_SEPARATOR = " + ";
 
 export type KeyBindingGroups = Record<string, Record<string, KeyBinding>>;
 
@@ -29,21 +33,21 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
       },
 
       Zoom: {
-        "$mod+=": {
+        "$mod + =": {
           name: "Zoom In",
           action() {
             application.canvas.setZoom(application.canvas.zoom * 1.2);
           },
         },
 
-        "$mod+-": {
+        "$mod + -": {
           name: "Zoom Out",
           action() {
             application.canvas.setZoom(application.canvas.zoom / 1.2);
           },
         },
 
-        "$mod+0": {
+        "$mod + 0": {
           name: "Reset Zoom",
           action() {
             application.canvas.setZoom(1);
@@ -63,7 +67,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           ]),
         ),
 
-        "$mod+z": {
+        "$mod + z": {
           name: "Undo",
           when: "editorFocused && !isPlaying",
           action() {
@@ -71,11 +75,27 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           },
         },
 
-        "Shift+$mod+z": {
+        "Shift + $mod + z": {
           name: "Redo",
           when: "editorFocused && !isPlaying",
           action() {
             application.redo();
+          },
+        },
+
+        "+": {
+          name: "Decrease Note Value",
+          when: "editorFocused && !isPlaying",
+          action() {
+            application.dispatch(decreaseNoteValue());
+          },
+        },
+
+        "-": {
+          name: "Increase Note Value",
+          when: "editorFocused && !isPlaying",
+          action() {
+            application.dispatch(increaseNoteValue());
           },
         },
       },
@@ -146,7 +166,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           },
         },
 
-        "Shift+$mod+ArrowLeft": {
+        "Shift + $mod + ArrowLeft": {
           name: "Previous Measure",
           when: "editorFocused",
           action() {
@@ -154,7 +174,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           },
         },
 
-        "Shift+$mod+ArrowRight": {
+        "Shift + $mod + ArrowRight": {
           name: "Next Measure",
           when: "editorFocused",
           action() {
@@ -162,7 +182,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           },
         },
 
-        "Alt+$mod+ArrowUp": {
+        "Alt + $mod + ArrowUp": {
           name: "Previous Part",
           when: "editorFocused",
           action() {
@@ -170,7 +190,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           },
         },
 
-        "Alt+$mod+ArrowDown": {
+        "Alt + $mod + ArrowDown": {
           name: "Next Part",
           when: "editorFocused",
           action() {
@@ -180,7 +200,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
       },
 
       Miscellaneous: {
-        "Shift+?": {
+        "Shift + ?": {
           when: "editorFocused",
           action() {
             application.toggleHelp();
@@ -195,7 +215,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           },
         },
 
-        "Shift+D": {
+        "Shift + D": {
           name: "Toggle Debug View",
           when: "editorFocused",
           action() {
@@ -230,8 +250,8 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
       pieces.push(event.key);
 
-      const sequence = pieces.join("+");
-      const binding = bindings[sequence];
+      const sequence = pieces.join(KEY_BINDING_SEPARATOR);
+      const binding = bindings[sequence] ?? bindings[event.key];
       if (binding) {
         if (binding.when) {
           const pieces = binding.when.split(" && ");
@@ -246,6 +266,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           }
         }
 
+        event.stopPropagation();
         event.preventDefault();
         binding.action();
       }

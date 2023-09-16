@@ -35,26 +35,7 @@ export interface Tuplet {
 
 export class NoteValue {
   static fromNumber(num: number): NoteValue {
-    switch (num) {
-      case 1:
-        return new NoteValue(NoteValueName.Whole);
-      case 2:
-        return new NoteValue(NoteValueName.Half);
-      case 4:
-        return new NoteValue(NoteValueName.Quarter);
-      case 8:
-        return new NoteValue(NoteValueName.Eighth);
-      case 16:
-        return new NoteValue(NoteValueName.Sixteenth);
-      case 32:
-        return new NoteValue(NoteValueName.ThirtySecond);
-      case 64:
-        return new NoteValue(NoteValueName.SixtyFourth);
-      case 128:
-        return new NoteValue(NoteValueName.OneTwentyEighth);
-      default:
-        throw new Error(`unexpected input: ${num}`);
-    }
+    return new NoteValue(nameFromNumber(num));
   }
 
   static fromString(str: NoteValueName): NoteValue {
@@ -107,6 +88,30 @@ export class NoteValue {
    */
   withTuplet(tuplet?: Tuplet) {
     return new NoteValue(this.name, { dots: this.dots, tuplet });
+  }
+
+  /**
+   * Increase this note value (i.e., make it longer).
+   *
+   * @returns a new `NoteValue` instance with a longer duration than the current
+   */
+  increase() {
+    return new NoteValue(nameFromNumber(this.toNumber() / 2), {
+      dots: this.dots,
+      tuplet: this.tuplet,
+    });
+  }
+
+  /**
+   * Decrease this note value (i.e., make it shorter).
+   *
+   * @returns a new `NoteValue` instance with a shorter duration than the current
+   */
+  decrease() {
+    return new NoteValue(nameFromNumber(2 * this.toNumber()), {
+      dots: this.dots,
+      tuplet: this.tuplet,
+    });
   }
 
   /**
@@ -186,3 +191,26 @@ export class NoteValue {
     return (2 - 1 / (1 << this.dots)) / denominator;
   }
 }
+
+const nameFromNumber = (num: number) => {
+  switch (num) {
+    case 1:
+      return NoteValueName.Whole;
+    case 2:
+      return NoteValueName.Half;
+    case 4:
+      return NoteValueName.Quarter;
+    case 8:
+      return NoteValueName.Eighth;
+    case 16:
+      return NoteValueName.Sixteenth;
+    case 32:
+      return NoteValueName.ThirtySecond;
+    case 64:
+      return NoteValueName.SixtyFourth;
+    case 128:
+      return NoteValueName.OneTwentyEighth;
+    default:
+      throw new Error(`unexpected input: ${num}`);
+  }
+};

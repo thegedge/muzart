@@ -1,4 +1,4 @@
-import { NoteValue, NoteValueName } from "./note_value";
+import { NoteValue, NoteValueName } from "./NoteValue";
 
 export interface Beat {
   value: NoteValue;

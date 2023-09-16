@@ -20,7 +20,7 @@ import {
   TapStyle,
   TimeSignature,
 } from "../notation";
-import { NoteValue, NoteValueName } from "../notation/note_value";
+import { NoteValue, NoteValueName } from "../notation/NoteValue";
 import { Loader } from "./Loader";
 import { BufferCursor, NumberType } from "./util/BufferCursor";
 

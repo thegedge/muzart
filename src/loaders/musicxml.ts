@@ -15,7 +15,7 @@ import {
   Step,
   TimeSignature,
 } from "../notation";
-import { NoteValue, NoteValueName } from "../notation/note_value";
+import { NoteValue, NoteValueName } from "../notation/NoteValue";
 import { Loader } from "./Loader";
 
 // TODO this is pretty slow, so perhaps a SAX-based parser
