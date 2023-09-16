@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { Fragment } from "preact";
 import { IS_MAC } from "../../../utils/platform";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { KeyBindingGroups } from "./useEditorKeyBindings";
+import { KeyBindingGroups } from "../../utils/useEditorKeyBindings";
 
 export const KeyBindingsOverlay = observer((props: { bindings: KeyBindingGroups }) => {
   const application = useApplicationState();
@@ -23,14 +23,12 @@ export const KeyBindingsOverlay = observer((props: { bindings: KeyBindingGroups 
             }
 
             return (
-              <div key={groupName} className="rounded-lg py-2 px-4 bg-white/10">
+              <div key={groupName} className="rounded-lg py-2 px-4 bg-white/10 shadow-lg">
                 <h2 className="text-3 font-bold mb-2 border-b-2 border-b-white/25">{groupName}</h2>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                   {bindingsWithName.map(([binding, { name }]) => (
                     <Fragment key={binding}>
-                      <div>
-                        <KeyBinding binding={binding} />
-                      </div>
+                      <KeyBinding binding={binding} />
                       <span>{name}</span>
                     </Fragment>
                   ))}
@@ -49,7 +47,7 @@ const KeyBinding = (props: { binding: string }) => {
   return (
     <div className={`grid grid-cols-${pieces.length} gap-x-0.5 w-fit`}>
       {pieces.map((piece) => (
-        <span className="inline-block border rounded border-b-2 px-1 text-center min-w-ex">{presentKey(piece)}</span>
+        <kbd>{presentKey(piece)}</kbd>
       ))}
     </div>
   );

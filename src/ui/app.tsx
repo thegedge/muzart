@@ -4,8 +4,8 @@ import "./app.css";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { KeyBindingsOverlay } from "./components/editor/KeyBindingsOverlay";
 import { ScoreDropZone } from "./components/editor/ScoreDropZone";
-import { useEditorKeyBindings } from "./components/editor/useEditorKeyBindings";
 import { ApplicationState } from "./utils/ApplicationStateContext";
+import { useEditorKeyBindings } from "./utils/useEditorKeyBindings";
 
 export const App = () => {
   return (

@@ -1,9 +1,9 @@
 import { range } from "lodash";
 import { useEffect, useMemo } from "preact/hooks";
-import { IS_MAC } from "../../../utils/platform";
-import { Application } from "../../state/Application";
-import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { changeNoteAction } from "./actions/changeNoteAction";
+import { IS_MAC } from "../../utils/platform";
+import { changeNoteAction } from "../components/editor/actions/changeNoteAction";
+import { Application } from "../state/Application";
+import { useApplicationState } from "./ApplicationStateContext";
 
 export type KeyBindingAction = (event: KeyboardEvent) => void;
 
@@ -242,7 +242,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
       const binding = bindings[sequence];
       if (binding) {
         if (binding.when) {
-          const pieces = binding.when.split("&&");
+          const pieces = binding.when.split(" && ");
           const validState = pieces.every((piece) => {
             return piece[0] == "!"
               ? !application[piece.substring(1) as keyof Application]
