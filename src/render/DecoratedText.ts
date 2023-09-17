@@ -1,12 +1,8 @@
 import layout, { Alignment, Box, LINE_STROKE_WIDTH, TextDecoration } from "../layout";
-import { Application } from "../ui/state/Application";
 import { Text } from "./Text";
+import { RenderFunc } from "./types";
 
-export const DecoratedText = (
-  application: Application,
-  context: CanvasRenderingContext2D,
-  element: layout.DecoratedText,
-) => {
+export const DecoratedText: RenderFunc<layout.DecoratedText> = (element, render, context) => {
   let halign: Alignment;
   if (element.startDecoration && !element.endDecoration) {
     halign = "end";
@@ -16,14 +12,18 @@ export const DecoratedText = (
     halign = "center";
   }
 
-  Text(application, context, {
-    box: element.box,
-    size: element.size,
-    text: element.text,
-    halign,
-    valign: "center",
-    style: { color: "#333333" },
-  });
+  Text(
+    {
+      box: element.box,
+      size: element.size,
+      text: element.text,
+      halign,
+      valign: "center",
+      style: { color: "#333333" },
+    },
+    render,
+    context,
+  );
 
   // TODO use `measureText`, just need to map to user space
   const textWidth = element.text.length * element.size * 0.6;
@@ -31,12 +31,12 @@ export const DecoratedText = (
   const textMargin = LINE_STROKE_WIDTH * 5;
 
   if (textWidth + textMargin < element.box.width) {
-    context.strokeStyle = "#333333";
+    render.strokeStyle = "#333333";
 
     switch (halign) {
       case "start":
         drawDecoration(
-          context,
+          render,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           element.endDecoration!,
           element.box.update({
@@ -49,7 +49,7 @@ export const DecoratedText = (
         break;
       case "end":
         drawDecoration(
-          context,
+          render,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           element.startDecoration!,
           element.box.update({
@@ -64,7 +64,7 @@ export const DecoratedText = (
       case "center":
         if (element.startDecoration) {
           drawDecoration(
-            context,
+            render,
             element.startDecoration,
             element.box.update({
               x: element.box.x,
@@ -78,7 +78,7 @@ export const DecoratedText = (
 
         if (element.endDecoration) {
           drawDecoration(
-            context,
+            render,
             element.endDecoration,
             element.box.update({
               x: element.box.centerX + 0.5 * textWidth + textMargin,

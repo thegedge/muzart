@@ -1,8 +1,8 @@
 import layout from "../layout";
-import { Application } from "../ui/state/Application";
 import { Text } from "./Text";
+import { RenderFunc } from "./types";
 
-export const Note = (application: Application, context: CanvasRenderingContext2D, element: layout.Note) => {
+export const Note: RenderFunc<layout.Note> = (element, render, context) => {
   if (element.note.tie && element.note.tie.type !== "start") {
     return;
   }
@@ -12,14 +12,18 @@ export const Note = (application: Application, context: CanvasRenderingContext2D
     return;
   }
 
-  Text(application, context, {
-    box: element.box,
-    halign: "center",
-    valign: "center",
-    size: element.box.height,
-    text,
-    style: {
-      backgroundColor: "#ffffff",
+  Text(
+    {
+      box: element.box,
+      halign: "center",
+      valign: "center",
+      size: element.box.height,
+      text,
+      style: {
+        backgroundColor: "#ffffff",
+      },
     },
-  });
+    render,
+    context,
+  );
 };

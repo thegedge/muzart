@@ -1,31 +1,35 @@
 import layout, { Box, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../layout";
-import { Application } from "../ui/state/Application";
 import { Arc } from "./Arc";
+import { RenderFunc } from "./types";
 
-export const Slide = (application: Application, context: CanvasRenderingContext2D, element: layout.Slide) => {
-  context.strokeStyle = "#555555";
-  context.lineWidth = 1.5 * LINE_STROKE_WIDTH;
+export const Slide: RenderFunc<layout.Slide> = (element, render, context) => {
+  render.strokeStyle = "#555555";
+  render.lineWidth = 1.5 * LINE_STROKE_WIDTH;
 
-  context.beginPath();
+  render.beginPath();
   if (element.upwards) {
-    context.moveTo(element.box.x, element.box.y);
-    context.lineTo(element.box.right, element.box.bottom);
+    render.moveTo(element.box.x, element.box.y);
+    render.lineTo(element.box.right, element.box.bottom);
   } else {
-    context.moveTo(element.box.x + 5 * LINE_STROKE_WIDTH, element.box.bottom);
-    context.lineTo(element.box.right - 5 * LINE_STROKE_WIDTH, element.box.y);
+    render.moveTo(element.box.x + 5 * LINE_STROKE_WIDTH, element.box.bottom);
+    render.lineTo(element.box.right - 5 * LINE_STROKE_WIDTH, element.box.y);
   }
-  context.stroke();
-  context.closePath();
+  render.stroke();
+  render.closePath();
 
-  Arc(application, context, {
-    type: "Arc",
-    parent: element.parent,
-    box: new Box(
-      element.box.x - 0.5 * STAFF_LINE_HEIGHT,
-      element.box.y - STAFF_LINE_HEIGHT,
-      element.box.width + STAFF_LINE_HEIGHT,
-      0.8 * STAFF_LINE_HEIGHT,
-    ),
-    orientation: "above",
-  });
+  Arc(
+    {
+      type: "Arc",
+      parent: element.parent,
+      box: new Box(
+        element.box.x - 0.5 * STAFF_LINE_HEIGHT,
+        element.box.y - STAFF_LINE_HEIGHT,
+        element.box.width + STAFF_LINE_HEIGHT,
+        0.8 * STAFF_LINE_HEIGHT,
+      ),
+      orientation: "above",
+    },
+    render,
+    context,
+  );
 };

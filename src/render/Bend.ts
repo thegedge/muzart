@@ -1,33 +1,33 @@
 import layout, { DEFAULT_SANS_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../layout";
 import { BendType } from "../notation";
-import { Application } from "../ui/state/Application";
+import { RenderFunc } from "./types";
 
 // Half width of the arrow heads
 const HEAD_HALFW = 4 * LINE_STROKE_WIDTH;
 
-export const Bend = (_application: Application, context: CanvasRenderingContext2D, element: layout.Bend) => {
+export const Bend: RenderFunc<layout.Bend> = (element, render) => {
   const points = bendPoints(element);
   const bendTextX = points[1][0];
   const path = new Path2D(bendPath(points));
 
-  context.save();
-  context.translate(element.box.x, element.box.y);
-  context.lineWidth = LINE_STROKE_WIDTH;
-  context.fillStyle = "#555555";
-  context.strokeStyle = " #555555";
-  context.stroke(path);
+  render.save();
+  render.translate(element.box.x, element.box.y);
+  render.lineWidth = LINE_STROKE_WIDTH;
+  render.fillStyle = "#555555";
+  render.strokeStyle = " #555555";
+  render.stroke(path);
 
   for (const head of bendArrowHeads(points)) {
     if (head) {
-      context.fill(head);
+      render.fill(head);
     }
   }
 
-  context.font = `${0.9 * STAFF_LINE_HEIGHT}px ${DEFAULT_SANS_SERIF_FONT_FAMILY}`;
-  context.textAlign = "center";
-  context.textBaseline = "hanging";
-  context.fillText(bendText(element), bendTextX, 0.1 * STAFF_LINE_HEIGHT);
-  context.restore();
+  render.font = `${0.9 * STAFF_LINE_HEIGHT}px ${DEFAULT_SANS_SERIF_FONT_FAMILY}`;
+  render.textAlign = "center";
+  render.textBaseline = "hanging";
+  render.fillText(bendText(element), bendTextX, 0.1 * STAFF_LINE_HEIGHT);
+  render.restore();
 };
 
 function bendArrowHeads(points: [number, number][]) {

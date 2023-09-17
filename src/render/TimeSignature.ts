@@ -1,13 +1,9 @@
 import layout from "../layout";
 import { timeSignatureDigit } from "../ui/resources/time_signature_digits";
-import { Application } from "../ui/state/Application";
 import { digits } from "../utils/digits";
+import { RenderFunc } from "./types";
 
-export const TimeSignature = (
-  _application: Application,
-  context: CanvasRenderingContext2D,
-  element: layout.TimeSignature,
-) => {
+export const TimeSignature: RenderFunc<layout.TimeSignature> = (element, render) => {
   const topDigits = digits(element.timeSignature.count);
   const bottomDigits = digits(element.timeSignature.value.toNumber());
 
@@ -21,21 +17,21 @@ export const TimeSignature = (
   const topOffsetX = 0.5 * (element.box.width - topDigits.length * digitSize);
   const bottomOffsetX = 0.5 * (element.box.width - bottomDigits.length * digitSize);
 
-  context.fillStyle = "#000000";
+  render.fillStyle = "#000000";
 
   topDigitElements.map(({ path, scaleX, scaleY }, index) => {
-    context.save();
-    context.translate(element.box.x + topOffsetX + index * digitSize, element.box.y);
-    context.scale(scaleX, scaleY);
-    context.fill(new Path2D(path));
-    context.restore();
+    render.save();
+    render.translate(element.box.x + topOffsetX + index * digitSize, element.box.y);
+    render.scale(scaleX, scaleY);
+    render.fill(new Path2D(path));
+    render.restore();
   });
 
   bottomDigitElements.map(({ path, scaleX, scaleY }, index) => {
-    context.save();
-    context.translate(element.box.x + bottomOffsetX + index * digitSize, element.box.y + topBottomGap + digitSize);
-    context.scale(scaleX, scaleY);
-    context.fill(new Path2D(path));
-    context.restore();
+    render.save();
+    render.translate(element.box.x + bottomOffsetX + index * digitSize, element.box.y + topBottomGap + digitSize);
+    render.scale(scaleX, scaleY);
+    render.fill(new Path2D(path));
+    render.restore();
   });
 };

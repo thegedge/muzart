@@ -1,7 +1,7 @@
 import layout, { LINE_STROKE_WIDTH } from "../layout";
-import { Application } from "../ui/state/Application";
+import { RenderFunc } from "./types";
 
-export const Line = (_application: Application, context: CanvasRenderingContext2D, element: layout.Line) => {
+export const Line: RenderFunc<layout.Line> = (element, context) => {
   context.lineWidth = LINE_STROKE_WIDTH;
   context.strokeStyle = element.color;
   context.beginPath();

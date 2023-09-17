@@ -1,27 +1,27 @@
 import layout from "../layout";
-import { Application } from "../ui/state/Application";
+import { RenderFunc } from "./types";
 
 const BEAM_COLOR = "#333333";
 
-export const Beam = (_application: Application, context: CanvasRenderingContext2D, beam: layout.Beam) => {
-  context.fillStyle = BEAM_COLOR;
+export const Beam: RenderFunc<layout.Beam> = (element, render) => {
+  render.fillStyle = BEAM_COLOR;
 
-  if (beam.size == beam.box.height) {
-    context.fillRect(beam.box.x, beam.box.y, beam.box.width, beam.box.height);
+  if (element.size == element.box.height) {
+    render.fillRect(element.box.x, element.box.y, element.box.width, element.box.height);
     return;
   }
 
-  const x1 = beam.box.x;
-  const y1 = beam.box.y;
-  const x2 = beam.box.right;
-  const y2 = beam.box.bottom;
-  const sz = beam.size;
+  const x1 = element.box.x;
+  const y1 = element.box.y;
+  const x2 = element.box.right;
+  const y2 = element.box.bottom;
+  const sz = element.size;
 
-  context.beginPath();
-  context.moveTo(x1, y2);
-  context.lineTo(x2, y1 + sz);
-  context.lineTo(x2, y1);
-  context.lineTo(x1, y2 - sz);
-  context.fill();
-  context.closePath();
+  render.beginPath();
+  render.moveTo(x1, y2);
+  render.lineTo(x2, y1 + sz);
+  render.lineTo(x2, y1);
+  render.lineTo(x1, y2 - sz);
+  render.fill();
+  render.closePath();
 };

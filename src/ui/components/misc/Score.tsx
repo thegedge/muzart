@@ -80,7 +80,7 @@ export const Score = observer((_props: Record<string, never>) => {
     }
 
     const render: RenderFunction = (context, viewport) => {
-      renderScoreElement(application, context, part, viewport);
+      renderScoreElement(part, context, { application, viewport });
 
       if (application.playback.playing) {
         // Playback box

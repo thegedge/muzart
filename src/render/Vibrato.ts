@@ -1,8 +1,8 @@
 import { range } from "lodash";
 import layout, { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../layout";
-import { Application } from "../ui/state/Application";
+import { RenderFunc } from "./types";
 
-export const Vibrato = (_application: Application, context: CanvasRenderingContext2D, element: layout.Vibrato) => {
+export const Vibrato: RenderFunc<layout.Vibrato> = (element, render) => {
   const paddingX = 0.2 * STAFF_LINE_HEIGHT;
   const startX = element.box.x + paddingX;
   const startY = element.box.y + 0.6 * element.box.height;
@@ -20,9 +20,9 @@ export const Vibrato = (_application: Application, context: CanvasRenderingConte
     t -${points.join(" -")}
   `);
 
-  context.lineWidth = LINE_STROKE_WIDTH;
-  context.fillStyle = "#555555";
-  context.strokeStyle = "#555555";
-  context.stroke(path);
-  context.fill(path);
+  render.lineWidth = LINE_STROKE_WIDTH;
+  render.fillStyle = "#555555";
+  render.strokeStyle = "#555555";
+  render.stroke(path);
+  render.fill(path);
 };

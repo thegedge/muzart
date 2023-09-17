@@ -1,7 +1,7 @@
 import layout, { LINE_STROKE_WIDTH } from "../layout";
-import { Application } from "../ui/state/Application";
+import { RenderFunc } from "./types";
 
-export const Arc = (_application: Application, context: CanvasRenderingContext2D, element: layout.Arc) => {
+export const Arc: RenderFunc<layout.Arc> = (element, render) => {
   const l = element.box.x;
   const t = element.box.y;
   const r = element.box.right;
@@ -9,23 +9,23 @@ export const Arc = (_application: Application, context: CanvasRenderingContext2D
   const w = element.box.width;
   const offset = 3 * LINE_STROKE_WIDTH;
 
-  context.lineCap = "round";
-  context.fillStyle = "#555555";
-  context.beginPath();
+  render.lineCap = "round";
+  render.fillStyle = "#555555";
+  render.beginPath();
 
   switch (element.orientation) {
     case "above":
-      context.moveTo(l, b);
-      context.bezierCurveTo(l + w * 0.3, t, l + w * 0.7, t, r, b);
-      context.bezierCurveTo(l + w * 0.7, t + offset, l + w * 0.3, t + offset, l, b);
+      render.moveTo(l, b);
+      render.bezierCurveTo(l + w * 0.3, t, l + w * 0.7, t, r, b);
+      render.bezierCurveTo(l + w * 0.7, t + offset, l + w * 0.3, t + offset, l, b);
       break;
     case "below":
-      context.moveTo(l, t);
-      context.bezierCurveTo(l + w * 0.3, b, l + w * 0.7, b, r, t);
-      context.bezierCurveTo(l + w * 0.7, b - offset, l + w * 0.3, b - offset, l, t);
+      render.moveTo(l, t);
+      render.bezierCurveTo(l + w * 0.3, b, l + w * 0.7, b, r, t);
+      render.bezierCurveTo(l + w * 0.7, b - offset, l + w * 0.3, b - offset, l, t);
       break;
   }
 
-  context.fill();
-  context.closePath();
+  render.fill();
+  render.closePath();
 };

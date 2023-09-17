@@ -1,5 +1,4 @@
-import layout, { Box } from "../layout";
-import { Application } from "../ui/state/Application";
+import layout from "../layout";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
@@ -10,57 +9,53 @@ import { Dot } from "./Dot";
 import { Line } from "./Line";
 import { Note } from "./Note";
 import { Page } from "./Page";
-import { Part } from "./Part";
 import { Rest } from "./Rest";
 import { Slide } from "./Slide";
 import { Stroke } from "./Stroke";
 import { Text } from "./Text";
 import { TimeSignature } from "./TimeSignature";
 import { Vibrato } from "./Vibrato";
-
-type RenderFunc<E = layout.AllElements> = (
-  application: Application,
-  context: CanvasRenderingContext2D,
-  element: E,
-) => void;
+import { RenderContext, RenderFunc } from "./types";
 
 export const renderScoreElement = (
-  application: Application,
-  context: CanvasRenderingContext2D,
   element: layout.AllElements,
-  viewport: Box,
+  renderContext: CanvasRenderingContext2D,
+  context: RenderContext,
 ) => {
-  if (!element.box.overlaps(viewport)) {
+  if (!element.box.overlaps(context.viewport)) {
     return;
   }
 
-  context.save();
+  renderContext.save();
   try {
-    RenderFunctions[element.type]?.(application, context, element);
+    RenderFunctions[element.type]?.(element, renderContext, context);
 
     if ("children" in element && element.children.length > 0) {
-      context.translate(element.box.x, element.box.y);
-      const adjustedViewport = viewport.translate(-element.box.x, -element.box.y);
+      renderContext.translate(element.box.x, element.box.y);
+      const adjustedViewport = context.viewport.translate(-element.box.x, -element.box.y);
       for (const child of element.children) {
-        renderScoreElement(application, context, child, adjustedViewport);
+        renderScoreElement(child, renderContext, {
+          ...context,
+          viewport: adjustedViewport,
+        });
       }
-      context.translate(-element.box.x, -element.box.y);
+      renderContext.translate(-element.box.x, -element.box.y);
     }
 
     // We render after children so that the parent containers are clearly visible
-    if (application.debug.enabled) {
-      const params = application.debug.paramsForType(element.type);
+    if (context.application.debug.enabled) {
+      const params = context.application.debug.paramsForType(element.type);
       if (params) {
-        context.strokeStyle = params.strokeStyle;
-        context.lineWidth = params.lineWidth;
-        context.fillStyle = params.fillStyle;
-        context.setLineDash(params.dashArray);
-        context.strokeRect(element.box.x, element.box.y, element.box.width, element.box.height);
-        context.setLineDash([]);
+        renderContext.strokeStyle = params.strokeStyle;
+        renderContext.lineWidth = params.lineWidth;
+        renderContext.fillStyle = params.fillStyle;
+        renderContext.setLineDash(params.dashArray);
+        renderContext.strokeRect(element.box.x, element.box.y, element.box.width, element.box.height);
+        renderContext.setLineDash([]);
       }
     }
   } finally {
-    context.restore();
+    renderContext.restore();
   }
 };
 
@@ -76,7 +71,6 @@ const RenderFunctions: Record<string, RenderFunc<any>> = {
   Line,
   Note,
   Page,
-  Part,
   Rest,
   Slide,
   Stroke,

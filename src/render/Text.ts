@@ -1,71 +1,67 @@
 import { JSXInternal } from "preact/src/jsx";
 import { Alignment, Box, DEFAULT_SANS_SERIF_FONT_FAMILY } from "../layout";
-import { Application } from "../ui/state/Application";
+import { RenderFunc } from "./types";
 
-export const Text = (
-  _application: Application,
-  context: CanvasRenderingContext2D,
-  props: {
-    text: string;
-    size: number;
-    box: Box;
-    halign?: Alignment;
-    valign?: Alignment;
-    style?: JSXInternal.CSSProperties;
-  },
-) => {
+export const Text: RenderFunc<{
+  text: string;
+  size: number;
+  box: Box;
+  halign?: Alignment;
+  valign?: Alignment;
+  style?: JSXInternal.CSSProperties;
+}> = (element, render) => {
   let x;
   let align: CanvasTextAlign;
-  switch (props.halign) {
+  switch (element.halign) {
     case undefined:
     case "start":
-      x = props.box.x;
+      x = element.box.x;
       align = "start";
       break;
     case "center":
-      x = props.box.centerX;
+      x = element.box.centerX;
       align = "center";
       break;
     case "end":
-      x = props.box.right;
+      x = element.box.right;
       align = "end";
       break;
   }
 
   let y;
   let baseline: CanvasTextBaseline;
-  switch (props.valign) {
+  switch (element.valign) {
     case undefined:
     case "start":
-      y = props.box.y;
+      y = element.box.y;
       baseline = "top";
       break;
     case "center": {
-      y = props.box.centerY + 0.5 * props.size;
+      y = element.box.centerY + 0.5 * element.size;
       baseline = "ideographic";
       break;
     }
     case "end":
-      y = props.box.bottom;
+      y = element.box.bottom;
       baseline = "ideographic";
       break;
   }
 
-  const fill = props.style?.backgroundColor;
+  const fill = element.style?.backgroundColor;
   if (fill) {
-    context.fillStyle = typeof fill == "string" ? fill : "#ffffff";
-    context.fillRect(props.box.x, props.box.y, props.box.width, props.box.height);
+    render.fillStyle = typeof fill == "string" ? fill : "#ffffff";
+    render.fillRect(element.box.x, element.box.y, element.box.width, element.box.height);
   }
 
-  const style = props.style?.color ?? props.style?.fill;
-  context.fillStyle = typeof style == "string" ? style : "#000000";
-  context.textAlign = align;
-  context.textBaseline = baseline;
-  context.font = `
-    ${props.style?.fontStyle ?? ""}
-    ${props.style?.fontWeight ?? ""}
-    ${props.size}px
-    ${props.style?.fontFamily ?? DEFAULT_SANS_SERIF_FONT_FAMILY}
+  const style = element.style?.color ?? element.style?.fill;
+  render.fillStyle = typeof style == "string" ? style : "#000000";
+  render.textAlign = align;
+  render.textBaseline = baseline;
+  render.font = `
+    ${element.style?.fontStyle ?? ""}
+    ${element.style?.fontWeight ?? ""}
+    ${element.size}px
+    ${element.style?.fontFamily ?? DEFAULT_SANS_SERIF_FONT_FAMILY}
   `;
-  context.fillText(props.text, x, y);
+  render.fillText(element.text, x, y);
 };

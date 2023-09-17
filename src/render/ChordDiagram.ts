@@ -1,13 +1,9 @@
 import { range } from "lodash";
 import layout, { Box, DEFAULT_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../layout";
-import { Application } from "../ui/state/Application";
 import { Text } from "./Text";
+import { RenderContext, RenderFunc } from "./types";
 
-export const ChordDiagram = (
-  application: Application,
-  context: CanvasRenderingContext2D,
-  element: layout.ChordDiagram,
-) => {
+export const ChordDiagram: RenderFunc<layout.ChordDiagram> = (element, render, context) => {
   const textBox = new Box(element.box.x, element.box.y, element.box.width, STAFF_LINE_HEIGHT);
 
   let valign: layout.Alignment;
@@ -17,16 +13,20 @@ export const ChordDiagram = (
     valign = "end";
   }
 
-  Text(application, context, {
-    size: STAFF_LINE_HEIGHT,
-    box: textBox,
-    text: element.diagram.name,
-    halign: "center",
-    valign,
-    style: {
-      fontFamily: DEFAULT_SERIF_FONT_FAMILY,
+  Text(
+    {
+      size: STAFF_LINE_HEIGHT,
+      box: textBox,
+      text: element.diagram.name,
+      halign: "center",
+      valign,
+      style: {
+        fontFamily: DEFAULT_SERIF_FONT_FAMILY,
+      },
     },
-  });
+    render,
+    context,
+  );
 
   const diagramBox = new Box(
     element.box.x,
@@ -34,26 +34,26 @@ export const ChordDiagram = (
     element.box.width,
     element.box.height - textBox.height,
   );
-  FretboardDiagram(application, context, element, diagramBox);
+  FretboardDiagram(element, render, { ...context, box: diagramBox });
 };
 
 const FretboardDiagram = (
-  application: Application,
-  context: CanvasRenderingContext2D,
-  chordDiagram: layout.ChordDiagram,
-  box: Box,
+  element: layout.ChordDiagram,
+  render: CanvasRenderingContext2D,
+  context: RenderContext & { box: Box },
 ) => {
+  const { application, box } = context;
   const numStrings = application.selection.part?.part?.instrument?.tuning?.length;
   if (!numStrings) {
     return null;
   }
 
-  const diagram = chordDiagram.diagram.diagram;
+  const diagram = element.diagram.diagram;
   if (!diagram) {
     return null;
   }
 
-  const textSize = chordDiagram.textSize;
+  const textSize = element.textSize;
   const numFrets = 5; // TODO make this configurable
   const fretboardH = box.height - 1.5 * STAFF_LINE_HEIGHT;
   const fretW = box.width / (numStrings - 1);
@@ -77,27 +77,27 @@ const FretboardDiagram = (
   // }
 
   // The lines forming the fretboard + the nut
-  context.beginPath();
-  context.strokeStyle = "#000000";
-  context.fillStyle = "#000000";
+  render.beginPath();
+  render.strokeStyle = "#000000";
+  render.fillStyle = "#000000";
   {
-    context.lineWidth = LINE_STROKE_WIDTH * (diagram.baseFret == 1 ? 5 : 1);
-    context.moveTo(box.x - 0.5 * LINE_STROKE_WIDTH, fretY);
-    context.lineTo(box.right + 0.5 * LINE_STROKE_WIDTH, fretY);
-    context.stroke();
+    render.lineWidth = LINE_STROKE_WIDTH * (diagram.baseFret == 1 ? 5 : 1);
+    render.moveTo(box.x - 0.5 * LINE_STROKE_WIDTH, fretY);
+    render.lineTo(box.right + 0.5 * LINE_STROKE_WIDTH, fretY);
+    render.stroke();
 
-    context.lineWidth = LINE_STROKE_WIDTH;
+    render.lineWidth = LINE_STROKE_WIDTH;
     range(1, numFrets + 1).forEach((fret) => {
-      context.moveTo(box.x, fretY + fretH * fret);
-      context.lineTo(box.right, fretY + fretH * fret);
+      render.moveTo(box.x, fretY + fretH * fret);
+      render.lineTo(box.right, fretY + fretH * fret);
     });
 
     range(numStrings).forEach((string) => {
-      context.moveTo(box.x + fretW * string, fretY);
-      context.lineTo(box.x + fretW * string, fretY + fretboardH);
+      render.moveTo(box.x + fretW * string, fretY);
+      render.lineTo(box.x + fretW * string, fretY + fretboardH);
     });
   }
-  context.stroke();
+  render.stroke();
 
   openUnplayed.forEach((v, index) => {
     let text;
@@ -118,22 +118,26 @@ const FretboardDiagram = (
       }
     }
 
-    Text(application, context, {
-      box: new Box(box.x + (numStrings - index - 1.5) * fretW, box.y, fretW, height),
-      halign: "center",
-      valign: "end",
-      size: textSize,
-      text: text,
-      style: { fontFamily: DEFAULT_SERIF_FONT_FAMILY },
-    });
+    Text(
+      {
+        box: new Box(box.x + (numStrings - index - 1.5) * fretW, box.y, fretW, height),
+        halign: "center",
+        valign: "end",
+        size: textSize,
+        text: text,
+        style: { fontFamily: DEFAULT_SERIF_FONT_FAMILY },
+      },
+      render,
+      context,
+    );
   });
 
   diagram.frets.forEach((fret, index) => {
     if (fret && fret > 0) {
       const cx = box.x + (numStrings - index - 1) * fretW;
       const cy = fretY + (fret - diagram.baseFret + 0.5) * fretH;
-      context.moveTo(cx, cy);
-      context.ellipse(cx, cy, 0.3 * fretW, 0.3 * fretW, 0, 0, 2 * Math.PI);
+      render.moveTo(cx, cy);
+      render.ellipse(cx, cy, 0.3 * fretW, 0.3 * fretW, 0, 0, 2 * Math.PI);
     }
   });
 
@@ -142,21 +146,21 @@ const FretboardDiagram = (
     const endX = (numStrings - barre.lastString - 1) * fretW;
     const y = fretY + (barre.baseFret - diagram.baseFret + 0.5) * fretH;
 
-    context.moveTo(box.x + startX, y);
-    context.ellipse(box.x + startX, y, 0.3 * fretW, 0.3 * fretW, 0, 0, 2 * Math.PI);
+    render.moveTo(box.x + startX, y);
+    render.ellipse(box.x + startX, y, 0.3 * fretW, 0.3 * fretW, 0, 0, 2 * Math.PI);
 
-    context.moveTo(box.x + endX, y);
-    context.ellipse(box.x + endX, y, 0.3 * fretW, 0.3 * fretW, 0, 0, 2 * Math.PI);
+    render.moveTo(box.x + endX, y);
+    render.ellipse(box.x + endX, y, 0.3 * fretW, 0.3 * fretW, 0, 0, 2 * Math.PI);
 
     const rx = box.x + endX;
     const ry = y - 0.3 * fretW;
-    context.moveTo(rx, ry);
-    context.lineTo(rx + startX - endX, ry);
-    context.lineTo(rx + startX - endX, ry + 0.6 * fretW);
-    context.lineTo(rx, ry + 0.6 * fretW);
-    context.lineTo(rx, ry);
+    render.moveTo(rx, ry);
+    render.lineTo(rx + startX - endX, ry);
+    render.lineTo(rx + startX - endX, ry + 0.6 * fretW);
+    render.lineTo(rx, ry + 0.6 * fretW);
+    render.lineTo(rx, ry);
   });
 
-  context.fill();
-  context.closePath();
+  render.fill();
+  render.closePath();
 };

@@ -1,7 +1,7 @@
 import layout from "../layout";
-import { Application } from "../ui/state/Application";
+import { RenderFunc } from "./types";
 
-export const BarLine = (_application: Application, context: CanvasRenderingContext2D, element: layout.BarLine) => {
+export const BarLine: RenderFunc<layout.BarLine> = (element, context) => {
   context.lineWidth = element.strokeSize;
   context.strokeStyle = "#000000";
   context.beginPath();
