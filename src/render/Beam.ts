@@ -1,11 +1,7 @@
 import layout from "../layout";
 import { RenderFunc } from "./types";
 
-const BEAM_COLOR = "#333333";
-
 export const Beam: RenderFunc<layout.Beam> = (element, render) => {
-  render.fillStyle = BEAM_COLOR;
-
   if (element.size == element.box.height) {
     render.fillRect(element.box.x, element.box.y, element.box.width, element.box.height);
     return;

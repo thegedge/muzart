@@ -1,5 +1,5 @@
 import { range } from "lodash";
-import layout, { LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../layout";
+import layout, { STAFF_LINE_HEIGHT } from "../layout";
 import { RenderFunc } from "./types";
 
 export const Vibrato: RenderFunc<layout.Vibrato> = (element, render) => {
@@ -11,6 +11,8 @@ export const Vibrato: RenderFunc<layout.Vibrato> = (element, render) => {
   const numPeaks = Math.floor((element.box.width - 2 * paddingX) / wavelength / 2) * 2; // 2* startX for padding on the right
   const points = range(numPeaks - 1).map((_) => `${wavelength},0`);
 
+  // TODO this looks wrong now
+
   const path = new Path2D(`
     M ${startX},${startY}
     q ${0.5 * wavelength},-${amplitude} ${wavelength},0
@@ -20,9 +22,6 @@ export const Vibrato: RenderFunc<layout.Vibrato> = (element, render) => {
     t -${points.join(" -")}
   `);
 
-  render.lineWidth = LINE_STROKE_WIDTH;
-  render.fillStyle = "#555555";
-  render.strokeStyle = "#555555";
   render.stroke(path);
   render.fill(path);
 };

@@ -12,9 +12,6 @@ export const Bend: RenderFunc<layout.Bend> = (element, render) => {
 
   render.save();
   render.translate(element.box.x, element.box.y);
-  render.lineWidth = LINE_STROKE_WIDTH;
-  render.fillStyle = "#555555";
-  render.strokeStyle = " #555555";
   render.stroke(path);
 
   for (const head of bendArrowHeads(points)) {
@@ -23,9 +20,8 @@ export const Bend: RenderFunc<layout.Bend> = (element, render) => {
     }
   }
 
+  // TODO Move to CSS (need to figure out how to get staff line height in there)
   render.font = `${0.9 * STAFF_LINE_HEIGHT}px ${DEFAULT_SANS_SERIF_FONT_FAMILY}`;
-  render.textAlign = "center";
-  render.textBaseline = "hanging";
   render.fillText(bendText(element), bendTextX, 0.1 * STAFF_LINE_HEIGHT);
   render.restore();
 };

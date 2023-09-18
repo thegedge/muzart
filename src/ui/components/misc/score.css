@@ -1,0 +1,75 @@
+.score {
+  stroke-width: 0.1;
+  stroke: none;
+  fill: none;
+}
+
+.arc {
+  stroke-linecap: round;
+  fill: #555555;
+}
+
+.bar-line {
+  stroke: #000000;
+}
+
+.beam {
+  fill: #333333;
+}
+
+.bend {
+  fill: #555555;
+  stroke: #555555;
+  stroke-width: 0.1;
+  text-align: center;
+  alignment-baseline: hanging;
+}
+
+.chord-diagram {
+  /* TODO */
+}
+
+.decorated-text {
+  /* TODO */
+}
+
+.dot {
+  fill: #000000;
+}
+
+.line {
+  stroke-width: 0.1;
+}
+
+.note {
+  /* TODO */
+}
+
+.page {
+  fill: #ffffff;
+}
+
+.rest {
+  fill: #333333;
+}
+
+.slide {
+  stroke: #555555;
+  stroke-width: 0.15; /* 1.5 * default */
+}
+
+.stroke {
+  fill: #000000;
+  stroke: #000000;
+  stroke-width: 0.1;
+}
+
+.time-signature {
+  fill: #000000;
+}
+
+.vibrato {
+  fill: #555555;
+  stroke: #555555;
+  stroke-width: 0.1;
+}

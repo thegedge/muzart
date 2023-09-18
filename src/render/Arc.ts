@@ -9,8 +9,6 @@ export const Arc: RenderFunc<layout.Arc> = (element, render) => {
   const w = element.box.width;
   const offset = 3 * LINE_STROKE_WIDTH;
 
-  render.lineCap = "round";
-  render.fillStyle = "#555555";
   render.beginPath();
 
   switch (element.orientation) {

@@ -47,6 +47,8 @@ export const Text: RenderFunc<{
       break;
   }
 
+  // TODO move these to score.css
+
   const fill = element.style?.backgroundColor;
   if (fill) {
     render.fillStyle = typeof fill == "string" ? fill : "#ffffff";

@@ -3,9 +3,6 @@ import { Arc } from "./Arc";
 import { RenderFunc } from "./types";
 
 export const Slide: RenderFunc<layout.Slide> = (element, render, context) => {
-  render.strokeStyle = "#555555";
-  render.lineWidth = 1.5 * LINE_STROKE_WIDTH;
-
   render.beginPath();
   if (element.upwards) {
     render.moveTo(element.box.x, element.box.y);

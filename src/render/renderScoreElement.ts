@@ -28,8 +28,12 @@ export const renderScoreElement = (
 
   renderContext.save();
   try {
+    const styles = context.styling.stylesFor(element, context.ancestors);
+    applyStylesToRenderContext(renderContext, styles);
+
     RenderFunctions[element.type]?.(element, renderContext, context);
 
+    // Render children, if any
     if ("children" in element && element.children.length > 0) {
       renderContext.translate(element.box.x, element.box.y);
       const adjustedViewport = context.viewport.translate(-element.box.x, -element.box.y);
@@ -56,6 +60,34 @@ export const renderScoreElement = (
     }
   } finally {
     renderContext.restore();
+  }
+};
+
+const applyStylesToRenderContext = (renderContext: CanvasRenderingContext2D, styles: Partial<CSSStyleDeclaration>) => {
+  // TODO we don't do a lot of double checking on whether or not the styles we're assigning work for canvas
+
+  if (styles.alignmentBaseline) {
+    renderContext.textBaseline = styles.alignmentBaseline as CanvasTextBaseline;
+  }
+
+  if (styles.fill) {
+    renderContext.fillStyle = styles.fill;
+  }
+
+  if (styles.stroke) {
+    renderContext.strokeStyle = styles.stroke;
+  }
+
+  if (styles.strokeLinecap) {
+    renderContext.lineCap = styles.strokeLinecap as CanvasLineCap;
+  }
+
+  if (styles.strokeWidth) {
+    renderContext.lineWidth = Number(styles.strokeWidth);
+  }
+
+  if (styles.textAlign) {
+    renderContext.textAlign = styles.textAlign as CanvasTextAlign;
   }
 };
 

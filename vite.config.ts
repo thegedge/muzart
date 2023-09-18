@@ -50,7 +50,13 @@ export default defineConfig(async ({ mode }) => {
       {
         name: "re-render-score",
         enforce: "post",
-        handleHotUpdate({ file, modules }) {
+        handleHotUpdate({ server, file, modules }) {
+          // if (file.endsWith("/score.css")) {
+          //   const module = server.moduleGraph.getModulesByFile(require.resolve("./src/ui/components/misc/Score.tsx"));
+          //   console.log(Object.keys(server.moduleGraph.fileToModulesMap));
+          //   return [module, ...modules];
+          // }
+
           if (file.includes("/render/")) {
             const modulesToUpdate: ModuleNode[] = [];
             const includeAllImporters = (module: ModuleNode) => {

@@ -17,9 +17,11 @@ import layout, {
 } from "../../../layout";
 import { noteValueToSeconds } from "../../../playback/util/durations";
 import { renderScoreElement } from "../../../render/renderScoreElement";
+import { StyleComputer } from "../../../utils/StyleComputer";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../misc/Canvas";
 import { StatefulInput, StatefulTextInputState } from "./StatefulInput";
+import "./score.css";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
@@ -80,7 +82,17 @@ export const Score = observer((_props: Record<string, never>) => {
     }
 
     const render: RenderFunction = (context, viewport) => {
-      renderScoreElement(part, context, { application, viewport });
+      const stylesheet = Array.from(document.styleSheets).find((ss) => {
+        for (let ruleIndex = 0; ruleIndex < ss.cssRules.length; ++ruleIndex) {
+          if (ss.cssRules.item(ruleIndex)?.cssText.includes(".score")) {
+            return true;
+          }
+        }
+        return false;
+      });
+
+      const styling = new StyleComputer(stylesheet);
+      renderScoreElement(part, context, { application, viewport, styling, ancestors: [] });
 
       if (application.playback.playing) {
         // Playback box

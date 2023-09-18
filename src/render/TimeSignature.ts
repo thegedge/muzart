@@ -17,8 +17,6 @@ export const TimeSignature: RenderFunc<layout.TimeSignature> = (element, render)
   const topOffsetX = 0.5 * (element.box.width - topDigits.length * digitSize);
   const bottomOffsetX = 0.5 * (element.box.width - bottomDigits.length * digitSize);
 
-  render.fillStyle = "#000000";
-
   topDigitElements.map(({ path, scaleX, scaleY }, index) => {
     render.save();
     render.translate(element.box.x + topOffsetX + index * digitSize, element.box.y);

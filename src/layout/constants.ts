@@ -13,7 +13,7 @@ export const DEFAULT_MARGINS: Margins = {
 };
 
 /** The stroke width for any lines */
-export const LINE_STROKE_WIDTH = 0.1;
+export const LINE_STROKE_WIDTH = 0.1; // TODO should pull from score.css
 
 /** The height of a single line in a staff (for example, a string for a guitar tablature staff) */
 export const STAFF_LINE_HEIGHT: Millimetres = 2.5;
