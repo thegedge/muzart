@@ -82,10 +82,10 @@ export const Canvas = observer((props: CanvasProps) => {
   );
 
   return (
-    <div ref={setContainer} className="w-full h-full flex-1 overflow-hidden">
+    <div ref={setContainer} className="w-full h-full">
       <canvas
         ref={setCanvasRef}
-        className="w-full h-full flex-1"
+        className="w-full h-full"
         style={{ imageRendering: "crisp-edges", cursor: state.cursor }}
         onMouseDown={props.onMouseDown && wrapMouseEvent(state, props.onMouseDown)}
         onDblClick={props.onDoubleClick && wrapMouseEvent(state, props.onDoubleClick)}

@@ -241,7 +241,7 @@ export const Score = observer((_props: Record<string, never>) => {
   );
 
   return (
-    <div className="relative flex-1">
+    <div className="flex-1 overflow-hidden">
       {textInputState?.visible && <StatefulInput state={textInputState} />}
       <Canvas
         onMouseDown={onMouseDown}
