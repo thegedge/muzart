@@ -11,8 +11,6 @@ export const Vibrato: RenderFunc<layout.Vibrato> = (element, render) => {
   const numPeaks = Math.floor((element.box.width - 2 * paddingX) / wavelength / 2) * 2; // 2* startX for padding on the right
   const points = range(numPeaks - 1).map((_) => `${wavelength},0`);
 
-  // TODO this looks wrong now
-
   const path = new Path2D(`
     M ${startX},${startY}
     q ${0.5 * wavelength},-${amplitude} ${wavelength},0
@@ -20,6 +18,7 @@ export const Vibrato: RenderFunc<layout.Vibrato> = (element, render) => {
     l ${0.6 * wavelength},-${0.8 * wavelength}
     q -${0.5 * wavelength},${amplitude} -${wavelength},0
     t -${points.join(" -")}
+    L ${startX},${startY}
   `);
 
   render.stroke(path);

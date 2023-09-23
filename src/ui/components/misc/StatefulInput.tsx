@@ -51,8 +51,6 @@ export const StatefulInput = observer((props: { state: StatefulTextInputState })
   const text = useRef(props.state.element.text);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // TODO zooming and whatnot can hide this input. How can we limit what causes the blur?
-
   useEffect(() => {
     inputRef.current?.select();
     inputRef.current?.focus();
