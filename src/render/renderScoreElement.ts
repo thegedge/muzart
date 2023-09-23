@@ -1,3 +1,5 @@
+import * as CSS from "csstype";
+import { merge } from "lodash";
 import layout from "../layout";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
@@ -26,9 +28,11 @@ export const renderScoreElement = (
     return;
   }
 
+  const stylesBefore = context.style;
   renderContext.save();
   try {
     const styles = context.styling.stylesFor(element, context.ancestors);
+    context.style = merge(styles, element.style); // TODO eventually we should have computed styles on elements themselves
     applyStylesToRenderContext(renderContext, styles);
 
     RenderFunctions[element.type]?.(element, renderContext, context);
@@ -59,11 +63,12 @@ export const renderScoreElement = (
       }
     }
   } finally {
+    context.style = stylesBefore;
     renderContext.restore();
   }
 };
 
-const applyStylesToRenderContext = (renderContext: CanvasRenderingContext2D, styles: Partial<CSSStyleDeclaration>) => {
+const applyStylesToRenderContext = (renderContext: CanvasRenderingContext2D, styles: CSS.Properties) => {
   // TODO we don't do a lot of double checking on whether or not the styles we're assigning work for canvas
 
   if (styles.alignmentBaseline) {

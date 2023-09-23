@@ -1,26 +1,30 @@
+import * as CSS from "csstype";
 import { range } from "lodash";
 import layout, { Box, DEFAULT_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../layout";
-import { Text } from "./Text";
+import { renderScoreElement } from "./renderScoreElement";
 import { RenderContext, RenderFunc } from "./types";
 
 export const ChordDiagram: RenderFunc<layout.ChordDiagram> = (element, render, context) => {
   const textBox = new Box(element.box.x, element.box.y, element.box.width, STAFF_LINE_HEIGHT);
 
-  let valign: layout.Alignment;
+  let verticalAlign: CSS.Properties["verticalAlign"];
   if (element.diagram.diagram) {
-    valign = "start";
+    verticalAlign = "top";
   } else {
-    valign = "end";
+    verticalAlign = "bottom";
   }
 
-  Text(
+  // TODO move this to layout
+  renderScoreElement(
     {
+      type: "Text",
+      parent: null,
       size: STAFF_LINE_HEIGHT,
       box: textBox,
       text: element.diagram.name,
-      halign: "center",
-      valign,
       style: {
+        textAlign: "center",
+        verticalAlign,
         fontFamily: DEFAULT_SERIF_FONT_FAMILY,
       },
     },
@@ -28,6 +32,7 @@ export const ChordDiagram: RenderFunc<layout.ChordDiagram> = (element, render, c
     context,
   );
 
+  // TODO move this to layout
   const diagramBox = new Box(
     element.box.x,
     element.box.y + textBox.height,
@@ -65,15 +70,23 @@ const FretboardDiagram = (
     openUnplayed.fill(1, barre.firstString, barre.lastString + 1);
   });
 
-  // TODO enable this once chord diagrams can influence the width of chords. Not enough width at the moment.
+  // // TODO enable this once chord diagrams can influence the width of chords. Not enough width at the moment.
   // if (diagram.baseFret > 1) {
-  //   Text(application, context, {
-  //     text: diagram.baseFret.toString(),
-  //     box: new Box(box.x - textSize + 2 * LINE_STROKE_WIDTH, fretY, textSize, textSize),
-  //     size: textSize,
-  //     halign: "center",
-  //     valign: "center",
-  //   });
+  //   renderScoreElement(
+  //     {
+  //       type: "Text",
+  //       parent: null,
+  //       text: diagram.baseFret.toString(),
+  //       box: new Box(box.x - textSize + 2 * LINE_STROKE_WIDTH, fretY, textSize, textSize),
+  //       size: textSize,
+  //       style: {
+  //         textAlign: "center",
+  //         verticalAlign: "center",
+  //       },
+  //     },
+  //     render,
+  //     context,
+  //   );
   // }
 
   // The lines forming the fretboard + the nut
@@ -118,14 +131,20 @@ const FretboardDiagram = (
       }
     }
 
-    Text(
+    // TODO move this to layout
+    renderScoreElement(
       {
+        type: "Text",
+        parent: null,
         box: new Box(box.x + (numStrings - index - 1.5) * fretW, box.y, fretW, height),
-        halign: "center",
-        valign: "end",
+
         size: textSize,
         text: text,
-        style: { fontFamily: DEFAULT_SERIF_FONT_FAMILY },
+        style: {
+          textAlign: "center",
+          verticalAlign: "bottom",
+          fontFamily: DEFAULT_SERIF_FONT_FAMILY,
+        },
       },
       render,
       context,

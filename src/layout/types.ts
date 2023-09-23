@@ -1,4 +1,4 @@
-import { CSSProperties } from "preact/compat";
+import * as CSS from "csstype";
 import * as notation from "../notation";
 import { Box } from "./utils/Box";
 
@@ -25,6 +25,8 @@ export interface LayoutElement<ParentT = unknown, LayoutArgs extends unknown[] =
     HasParent<ParentT>,
     MaybeLayout<LayoutArgs> {
   type: string;
+  style?: CSS.Properties;
+  className?: string;
 }
 
 export interface Margins {
@@ -139,9 +141,6 @@ export interface Text extends LayoutElement<LineElement> {
   type: "Text";
   text: string;
   size: Millimetres;
-  halign?: Alignment;
-  valign?: Alignment;
-  style?: CSSProperties;
   readonly isReadOnly?: boolean;
 }
 

@@ -1,25 +1,31 @@
-import layout, { Alignment, Box, LINE_STROKE_WIDTH, TextDecoration } from "../layout";
-import { Text } from "./Text";
+import * as CSS from "csstype";
+import layout, { Box, LINE_STROKE_WIDTH, TextDecoration } from "../layout";
+import { renderScoreElement } from "./renderScoreElement";
 import { RenderFunc } from "./types";
 
 export const DecoratedText: RenderFunc<layout.DecoratedText> = (element, render, context) => {
-  let halign: Alignment;
+  let halign: CSS.Properties["textAlign"];
   if (element.startDecoration && !element.endDecoration) {
-    halign = "end";
+    halign = "right";
   } else if (!element.startDecoration && element.endDecoration) {
-    halign = "start";
+    halign = "left";
   } else {
     halign = "center";
   }
 
-  Text(
+  // TODO move this to layout
+  renderScoreElement(
     {
+      type: "Text",
+      parent: null,
       box: element.box,
       size: element.size,
       text: element.text,
-      halign,
-      valign: "center",
-      style: { color: "#333333" },
+      style: {
+        textAlign: halign,
+        verticalAlign: "middle",
+        color: "#333333",
+      },
     },
     render,
     context,
@@ -35,7 +41,7 @@ export const DecoratedText: RenderFunc<layout.DecoratedText> = (element, render,
     render.strokeStyle = "#333333";
 
     switch (halign) {
-      case "start":
+      case "left":
         drawDecoration(
           render,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -48,7 +54,7 @@ export const DecoratedText: RenderFunc<layout.DecoratedText> = (element, render,
           }),
         );
         break;
-      case "end":
+      case "right":
         drawDecoration(
           render,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

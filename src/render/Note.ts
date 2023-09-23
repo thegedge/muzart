@@ -1,5 +1,5 @@
 import layout from "../layout";
-import { Text } from "./Text";
+import { renderScoreElement } from "./renderScoreElement";
 import { RenderFunc } from "./types";
 
 export const Note: RenderFunc<layout.Note> = (element, render, context) => {
@@ -12,14 +12,17 @@ export const Note: RenderFunc<layout.Note> = (element, render, context) => {
     return;
   }
 
-  Text(
+  // TODO move this to layout
+  renderScoreElement(
     {
+      type: "Text",
+      parent: null,
       box: element.box,
-      halign: "center",
-      valign: "center",
       size: element.box.height,
       text,
       style: {
+        textAlign: "center",
+        verticalAlign: "middle",
         backgroundColor: "#ffffff",
       },
     },

@@ -1,69 +1,66 @@
-import { JSXInternal } from "preact/src/jsx";
-import { Alignment, Box, DEFAULT_SANS_SERIF_FONT_FAMILY } from "../layout";
+import * as layout from "../layout";
+import { DEFAULT_SANS_SERIF_FONT_FAMILY } from "../layout";
 import { RenderFunc } from "./types";
 
-export const Text: RenderFunc<{
-  text: string;
-  size: number;
-  box: Box;
-  halign?: Alignment;
-  valign?: Alignment;
-  style?: JSXInternal.CSSProperties;
-}> = (element, render) => {
+export const Text: RenderFunc<layout.Text> = (element, render, context) => {
   let x;
   let align: CanvasTextAlign;
-  switch (element.halign) {
+  switch (context.style.textAlign) {
     case undefined:
-    case "start":
+    case "left":
       x = element.box.x;
-      align = "start";
+      align = "left";
       break;
     case "center":
       x = element.box.centerX;
       align = "center";
       break;
-    case "end":
+    case "right":
       x = element.box.right;
-      align = "end";
+      align = "right";
       break;
+    default:
+      throw new Error(`unsupported text-align value: ${context.style.textAlign}`);
   }
 
   let y;
   let baseline: CanvasTextBaseline;
-  switch (element.valign) {
+  switch (context.style.verticalAlign) {
     case undefined:
-    case "start":
+    case "top":
       y = element.box.y;
       baseline = "top";
       break;
-    case "center": {
+    case "middle": {
       y = element.box.centerY + 0.5 * element.size;
       baseline = "ideographic";
       break;
     }
-    case "end":
+    case "bottom":
       y = element.box.bottom;
       baseline = "ideographic";
       break;
+    default:
+      throw new Error(`unsupported vertical-align value: ${context.style.textAlign}`);
   }
 
   // TODO move these to score.css
 
-  const fill = element.style?.backgroundColor;
-  if (fill) {
-    render.fillStyle = typeof fill == "string" ? fill : "#ffffff";
+  const background = context.style.backgroundColor;
+  if (background) {
+    render.fillStyle = background;
     render.fillRect(element.box.x, element.box.y, element.box.width, element.box.height);
   }
 
-  const style = element.style?.color ?? element.style?.fill;
+  const style = context.style.color;
   render.fillStyle = typeof style == "string" ? style : "#000000";
   render.textAlign = align;
   render.textBaseline = baseline;
   render.font = `
-    ${element.style?.fontStyle ?? ""}
-    ${element.style?.fontWeight ?? ""}
+    ${context.style.fontStyle ?? ""}
+    ${context.style.fontWeight ?? ""}
     ${element.size}px
-    ${element.style?.fontFamily ?? DEFAULT_SANS_SERIF_FONT_FAMILY}
+    ${context.style.fontFamily ?? DEFAULT_SANS_SERIF_FONT_FAMILY}
   `;
   render.fillText(element.text, x, y);
 };

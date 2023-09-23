@@ -54,8 +54,10 @@ export class AboveStaff extends GridGroup<LineElement> {
         box: new Box(0, 0, 0, baseSize),
         size: baseSize,
         value: text,
-        halign: "start",
-        valign: "center",
+        style: {
+          textAlign: "left",
+          verticalAlign: "middle",
+        },
       });
     };
 
@@ -162,12 +164,12 @@ export class AboveStaff extends GridGroup<LineElement> {
         new Text({
           value: measure.number.toString(),
           size: numberSize,
-          halign: index == 0 ? "start" : "center",
-          valign: "end",
           style: {
             userSelect: "none",
             color: "#888888",
             backgroundColor: "#ffffff",
+            textAlign: index == 0 ? "left" : "center",
+            verticalAlign: "bottom",
           },
         }),
         {
@@ -347,7 +349,9 @@ export class AboveStaff extends GridGroup<LineElement> {
             box: new Box(0, 0, 0, STAFF_LINE_HEIGHT),
             size: STAFF_LINE_HEIGHT,
             value: "T",
-            halign: "center",
+            style: {
+              textAlign: "center",
+            },
           }),
           {
             startColumn: index + 1,

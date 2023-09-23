@@ -28,8 +28,6 @@ export class StatefulTextInputState {
       width: `${absoluteBox.width * canvas.userspaceToCanvasFactor}px`,
       height: `${absoluteBox.height * canvas.userspaceToCanvasFactor}px`,
       fontSize: `${this.element.size * canvas.userspaceToCanvasFactor}px`,
-      textAlign: this.element.halign,
-      verticalAlign: this.element.valign == "start" ? "top" : this.element.valign == "end" ? "bottom" : undefined,
       outline: "none",
       ...this.element.style,
     } as const;

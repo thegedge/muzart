@@ -31,10 +31,10 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       this.addElement(
         Text.boundText(score, "title", {
           box: new Box(0, 0, contentWidth, 1.5 * height),
-          halign: "center",
-          valign: "center",
           size: height,
           style: {
+            textAlign: "center",
+            verticalAlign: "middle",
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,
           },
         }),
@@ -46,10 +46,10 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       this.addElement(
         Text.boundText(score, "artist", {
           box: new Box(0, 0, contentWidth, 1.2 * height),
-          halign: "center",
-          valign: "center",
           size: height,
           style: {
+            textAlign: "center",
+            verticalAlign: "middle",
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,
             fontWeight: "bold",
           },
@@ -62,10 +62,10 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       this.addElement(
         Text.boundText(score, "album", {
           box: new Box(0, 0, contentWidth, 1.2 * height),
-          halign: "center",
-          valign: "center",
           size: height,
           style: {
+            textAlign: "center",
+            verticalAlign: "middle",
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,
           },
         }),
@@ -80,11 +80,11 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
         this.addElement(
           new Text({
             box: new Box(0, 0, contentWidth, 1.5 * height),
-            halign: "center",
-            valign: "center",
             size: height,
             value: comment,
             style: {
+              textAlign: "center",
+              verticalAlign: "middle",
               fontFamily: DEFAULT_SERIF_FONT_FAMILY,
               fontStyle: "italic",
             },
@@ -104,12 +104,12 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       this.addElement(
         new Text({
           box: new Box(0, 0, contentWidth, 1.4 * height),
-          halign: "end",
-          valign: "center",
           size: height,
           // TODO can't do bound text when we format the display this way
           value: score.composer.includes(" by ") ? score.composer : `Composed by ${score.composer}`,
           style: {
+            textAlign: "right",
+            verticalAlign: "middle",
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,
           },
         }),
@@ -123,12 +123,12 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       this.addElement(
         new Text({
           box: new Box(0, 0, contentWidth, 1.4 * height),
-          halign: "end",
-          valign: "center",
           size: height,
           // TODO can't do bound text when we format the display this way
           value: score.transcriber.includes(" by ") ? score.transcriber : `Transcribed by ${score.transcriber}`,
           style: {
+            textAlign: "right",
+            verticalAlign: "middle",
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,
           },
         }),
@@ -148,8 +148,8 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
             box: new Box(0, 0, textSize * 5, textSize * 1.3),
             size: textSize,
             value: `${stringNumbers[index]} = ${pitch}`,
-            valign: "center",
             style: {
+              verticalAlign: "middle",
               fontFamily: DEFAULT_SERIF_FONT_FAMILY,
             },
           }),

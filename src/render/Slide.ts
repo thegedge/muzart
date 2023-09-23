@@ -1,5 +1,5 @@
 import layout, { Box, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../layout";
-import { Arc } from "./Arc";
+import { renderScoreElement } from "./renderScoreElement";
 import { RenderFunc } from "./types";
 
 export const Slide: RenderFunc<layout.Slide> = (element, render, context) => {
@@ -14,7 +14,8 @@ export const Slide: RenderFunc<layout.Slide> = (element, render, context) => {
   render.stroke();
   render.closePath();
 
-  Arc(
+  // TODO move this to layout
+  renderScoreElement(
     {
       type: "Arc",
       parent: element.parent,

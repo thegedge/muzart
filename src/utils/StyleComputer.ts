@@ -1,3 +1,5 @@
+import * as CSS from "csstype";
+import { camelCase } from "lodash";
 import { LayoutElement } from "../layout";
 
 /**
@@ -20,15 +22,15 @@ import { LayoutElement } from "../layout";
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/CSS/Reference
  */
-export class StyleComputer {
+export class StyleComputer<ElementType extends LayoutElement = LayoutElement> {
   constructor(private readonly stylesheet?: CSSStyleSheet | undefined) {}
 
-  stylesFor(element: LayoutElement, _ancestors: LayoutElement[]): Partial<CSSStyleDeclaration> {
+  stylesFor(element: ElementType, _ancestors: ElementType[]): CSS.Properties {
     if (!this.stylesheet) {
       return {};
     }
 
-    const properties: Partial<CSSStyleDeclaration> = {};
+    const properties: CSS.Properties = {};
     for (let ruleIndex = 0; ruleIndex < this.stylesheet.cssRules.length; ++ruleIndex) {
       const rule = this.stylesheet.cssRules.item(ruleIndex);
       if (!(rule instanceof CSSStyleRule)) {
@@ -38,10 +40,9 @@ export class StyleComputer {
       for (const selector of rule.selectorText.split(",")) {
         const clazz = selector.substring(1);
         if (clazz == this.classForElement(element)) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          for (const property of Array.from(rule.style) as any[]) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
-            properties[property] = rule.style.getPropertyValue(property);
+          for (const property of Array.from(rule.style)) {
+            const camelCasedProperty = camelCase(property);
+            (properties as Record<string, unknown>)[camelCasedProperty] = rule.style.getPropertyValue(property);
           }
         }
       }
@@ -49,7 +50,7 @@ export class StyleComputer {
     return properties;
   }
 
-  private classForElement(element: LayoutElement): string {
+  private classForElement(element: ElementType): string {
     return (
       element.type[0].toLowerCase() +
       element.type.substring(1).replaceAll(UPPERCASE_LETTER_REGEXP, (s) => "-" + s.toLowerCase())

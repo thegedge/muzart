@@ -1,5 +1,5 @@
-import { CSSProperties } from "preact/compat";
-import types, { Alignment, Millimetres } from "..";
+import * as CSS from "csstype";
+import types, { Millimetres } from "..";
 import { Box } from "../utils";
 import { LayoutElement } from "./LayoutElement";
 
@@ -9,15 +9,20 @@ type TextOptions = {
   value: string;
   size: Millimetres;
   box?: Box;
-  halign?: Alignment;
-  valign?: Alignment;
-  style?: CSSProperties;
+  style?: CSS.Properties;
   setText?: (value: string) => void;
 };
 
 export class Text extends LayoutElement<"Text", types.PageElement | types.LineElement> implements types.Text {
   static centered(options: TextOptions): Text {
-    return new Text({ ...options, halign: "center", valign: "center" });
+    return new Text({
+      ...options,
+      style: {
+        ...options?.style,
+        textAlign: "center",
+        verticalAlign: "middle",
+      },
+    });
   }
 
   static boundText<Target, Property extends StringProperties<Target>>(
@@ -36,9 +41,6 @@ export class Text extends LayoutElement<"Text", types.PageElement | types.LineEl
 
   readonly type = "Text";
   readonly size: number;
-  readonly halign: Alignment;
-  readonly valign: Alignment;
-  readonly style: CSSProperties;
 
   private value: string;
   private setText: ((value: string) => void) | undefined;
@@ -47,11 +49,9 @@ export class Text extends LayoutElement<"Text", types.PageElement | types.LineEl
     super(options.box ?? new Box(0, 0, options.size * options.value.length, options.size));
 
     this.size = options.size;
-    this.halign = options.halign ?? "start";
-    this.valign = options.valign ?? "start";
-    this.style = options.style ?? {};
     this.value = options.value;
     this.setText = options.setText;
+    this.style = options.style ?? {};
   }
 
   get isReadOnly(): boolean {

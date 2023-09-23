@@ -1,3 +1,4 @@
+import * as CSS from "csstype";
 import layout, { Box } from "../layout";
 import { Application } from "../ui/state/Application";
 import { StyleComputer } from "../utils/StyleComputer";
@@ -14,6 +15,9 @@ export interface RenderContext {
 
   /** The stylesheet  */
   styling: StyleComputer;
+
+  /** The computed styles for the current element */
+  style: CSS.Properties;
 }
 
 export type RenderFunc<E = layout.AllElements> = (

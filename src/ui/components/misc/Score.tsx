@@ -92,7 +92,13 @@ export const Score = observer((_props: Record<string, never>) => {
       });
 
       const styling = new StyleComputer(stylesheet);
-      renderScoreElement(part, context, { application, viewport, styling, ancestors: [] });
+      renderScoreElement(part, context, {
+        application,
+        viewport,
+        styling,
+        ancestors: [],
+        style: {},
+      });
 
       if (application.playback.playing) {
         // Playback box

@@ -26,11 +26,11 @@
 }
 
 .chord-diagram {
-  /* TODO */
+  color: #000000;
 }
 
 .decorated-text {
-  /* TODO */
+  color: #000000;
 }
 
 .dot {
@@ -42,7 +42,7 @@
 }
 
 .note {
-  /* TODO */
+  color: #000000;
 }
 
 .page {
@@ -62,6 +62,10 @@
   fill: #000000;
   stroke: #000000;
   stroke-width: 0.1;
+}
+
+.text {
+  color: #000000;
 }
 
 .time-signature {
