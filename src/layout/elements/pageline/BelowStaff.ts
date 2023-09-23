@@ -13,6 +13,7 @@ import { NoteValueName } from "../../../notation";
 import { SimpleGroupElement } from "../../layouts/SimpleGroup";
 import { LineElement, Measure } from "../../types";
 import { Beam } from "../Beam";
+import { DecoratedText } from "../DecoratedText";
 import { Dot, DOT_SIZE } from "../Dot";
 import { Line } from "../Line";
 import { Text } from "../Text";
@@ -141,15 +142,17 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
         // TODO if end - start + 1 > tuplet, split up into multiple brackets groups
         const extensionWidth = 6 * LINE_STROKE_WIDTH;
         const width = beatElements[end].box.centerX - beatElement.box.centerX + extensionWidth;
-        this.addElement({
-          type: "DecoratedText",
-          box: new Box(measureBox.x + beatElement.box.centerX - 0.5 * extensionWidth, y, width, TUPLET_SIZE),
-          text: String(tuplet),
-          size: TUPLET_SIZE,
-          parent: null,
-          startDecoration: { upTick: true },
-          endDecoration: { upTick: true },
-        });
+        this.addElement(
+          new DecoratedText(
+            new Box(measureBox.x + beatElement.box.centerX - 0.5 * extensionWidth, y, width, TUPLET_SIZE),
+            String(tuplet),
+            TUPLET_SIZE,
+            {
+              start: { upTick: true },
+              end: { upTick: true },
+            },
+          ),
+        );
       }
     }
   }

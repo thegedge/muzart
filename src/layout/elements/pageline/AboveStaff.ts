@@ -3,11 +3,12 @@ import { AccentStyle } from "../../../notation";
 import { BEAM_HEIGHT, chordWidth, STAFF_LINE_HEIGHT } from "../../constants";
 import { GridGroup } from "../../layouts/GridGroup";
 import { SimpleGroupElement } from "../../layouts/SimpleGroup";
-import { DecoratedText, LineElement, Measure } from "../../types";
+import { LineElement, Measure } from "../../types";
 import { Box } from "../../utils";
 import { Beam } from "../Beam";
 import { Bend } from "../Bend";
 import { ChordDiagram } from "../ChordDiagram";
+import { DecoratedText } from "../DecoratedText";
 import { Stroke } from "../Stroke";
 import { Text } from "../Text";
 import { Vibrato } from "../Vibrato";
@@ -36,18 +37,13 @@ export class AboveStaff extends GridGroup<LineElement> {
     const baseSize = 0.8 * STAFF_LINE_HEIGHT;
     const textElement = (text: string, amount: number): DecoratedText | Text => {
       if (amount > 1) {
-        return {
-          type: "DecoratedText",
-          box: new Box(0, 0, 0, baseSize),
-          size: baseSize,
-          text,
-          endDecoration: {
+        return new DecoratedText(new Box(0, 0, 0, baseSize), text, baseSize, {
+          end: {
             downTick: true,
             upTick: true,
             dashed: true,
           },
-          parent: null,
-        };
+        });
       }
 
       return new Text({

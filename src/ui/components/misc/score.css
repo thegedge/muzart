@@ -30,7 +30,8 @@
 }
 
 .decorated-text {
-  color: #000000;
+  color: #333333;
+  vertical-align: "middle";
 }
 
 .dot {

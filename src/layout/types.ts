@@ -154,8 +154,10 @@ export interface DecoratedText extends LayoutElement<LineElement> {
   type: "DecoratedText";
   text: string;
   size: Millimetres;
-  startDecoration?: TextDecoration;
-  endDecoration?: TextDecoration;
+  decorations: {
+    start?: TextDecoration;
+    end?: TextDecoration;
+  };
 }
 
 export interface Measure extends LayoutElement<LineElement> {
