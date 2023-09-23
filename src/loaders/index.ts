@@ -73,8 +73,6 @@ function loadScore(buffer: ArrayBuffer, type: ScoreDataType): Score {
   }
 }
 
-// TODO refactor these for the editor editor, where we won't want to do a full post process
-
 function postProcess(score: Score) {
   propagateStaffDetails(score);
   linkTiedNotes(score);

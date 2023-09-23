@@ -11,7 +11,6 @@ import { Dot } from "./Dot";
 import { Line } from "./Line";
 import { Page } from "./Page";
 import { Rest } from "./Rest";
-import { Slide } from "./Slide";
 import { Stroke } from "./Stroke";
 import { Text } from "./Text";
 import { TimeSignature } from "./TimeSignature";
@@ -142,7 +141,6 @@ const RenderFunctions: Record<string, RenderFunc<any>> = {
   Line,
   Page,
   Rest,
-  Slide,
   Stroke,
   Text,
   TimeSignature,

@@ -1,4 +1,4 @@
-import { Box, Chord, LineElement, LINE_STROKE_WIDTH, Measure, STAFF_LINE_HEIGHT } from "../..";
+import { Box, Chord, LINE_STROKE_WIDTH, LineElement, Measure, STAFF_LINE_HEIGHT } from "../..";
 import * as notation from "../../../notation";
 import { SimpleGroupElement } from "../../layouts/SimpleGroup";
 import { Arc } from "../Arc";
@@ -107,6 +107,9 @@ export class StaffOverlay extends SimpleGroupElement<LineElement> {
             }
             break;
           }
+
+          // TODO these look wrong for measures 90 and 91 of "Sweet Child of Mine" (need to look at surrounding notes)
+
           case notation.SlideType.SlideIntoFromAbove:
           case notation.SlideType.SlideIntoFromBelow: {
             w = STAFF_LINE_HEIGHT;
