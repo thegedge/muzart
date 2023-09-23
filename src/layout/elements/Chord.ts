@@ -29,6 +29,9 @@ export class Chord extends LayoutElement<"Chord", types.LineElement> implements 
           const noteY = (note.placement ? (note.placement.string - 1) * staffHeight : 0) + LINE_STROKE_WIDTH;
           const noteElement = new Note(new Box(0, noteY, noteWidth, noteHeight), note);
           noteElement.parent = this;
+          noteElement.style = {
+            display: (!note.tie || note.tie.type == "start") && note.toString().length > 0 ? "block" : "none",
+          };
 
           if (note.graceNote) {
             // TODO this placement will go outside the chord box, which also means that lots of grace notes in a dense measure may look bad

@@ -1,9 +1,10 @@
 import types from "..";
 import * as notation from "../../notation";
+import { SimpleGroup } from "../layouts/SimpleGroup";
 import { Box } from "../utils";
-import { LayoutElement } from "./LayoutElement";
+import { Text } from "./Text";
 
-export class Note extends LayoutElement<"Note", types.Chord> implements types.Note {
+export class Note extends SimpleGroup<types.Text, "Note", types.Chord> implements types.Note {
   readonly type = "Note";
 
   constructor(
@@ -11,5 +12,12 @@ export class Note extends LayoutElement<"Note", types.Chord> implements types.No
     readonly note: notation.Note,
   ) {
     super(box);
+    this.addElement(
+      Text.centered({
+        box: new Box(0, 0, box.width, box.height),
+        size: box.height,
+        value: note.toString(),
+      }),
+    );
   }
 }

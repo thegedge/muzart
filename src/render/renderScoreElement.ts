@@ -9,7 +9,6 @@ import { ChordDiagram } from "./ChordDiagram";
 import { DecoratedText } from "./DecoratedText";
 import { Dot } from "./Dot";
 import { Line } from "./Line";
-import { Note } from "./Note";
 import { Page } from "./Page";
 import { Rest } from "./Rest";
 import { Slide } from "./Slide";
@@ -22,6 +21,7 @@ import { RenderContext, RenderFunc } from "./types";
 const BOX_SHADOW_REGEX =
   /^(?<color>(#?\w+|(rgba?|hsl|hwb|lab|lch|oklab|oklch)\(.+?\)|\w+))(?<offsetX> \d+\w*)?(?<offsetY> \d+\w*)?(?<blur> \d+\w*)?(?<spread> \d+\w*)?$/;
 ``;
+
 export const renderScoreElement = (
   element: layout.AllElements,
   renderContext: CanvasRenderingContext2D,
@@ -32,10 +32,14 @@ export const renderScoreElement = (
   }
 
   const stylesBefore = context.style;
+  const styles = merge(context.styling.stylesFor(element, context.ancestors), element.style);
+  if (styles.display == "none") {
+    return;
+  }
+
   renderContext.save();
   try {
-    const styles = context.styling.stylesFor(element, context.ancestors);
-    context.style = merge(styles, element.style); // TODO eventually we should have computed styles on elements themselves
+    context.style = styles;
 
     // We'll handle background + box shadow here
     if (context.style.backgroundColor || context.style.boxShadow) {
@@ -137,7 +141,6 @@ const RenderFunctions: Record<string, RenderFunc<any>> = {
   DecoratedText,
   Dot,
   Line,
-  Note,
   Page,
   Rest,
   Slide,
