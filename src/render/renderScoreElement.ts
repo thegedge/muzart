@@ -19,6 +19,9 @@ import { TimeSignature } from "./TimeSignature";
 import { Vibrato } from "./Vibrato";
 import { RenderContext, RenderFunc } from "./types";
 
+const BOX_SHADOW_REGEX =
+  /^(?<color>(#?\w+|(rgba?|hsl|hwb|lab|lch|oklab|oklch)\(.+?\)|\w+))(?<offsetX> \d+\w*)?(?<offsetY> \d+\w*)?(?<blur> \d+\w*)?(?<spread> \d+\w*)?$/;
+``;
 export const renderScoreElement = (
   element: layout.AllElements,
   renderContext: CanvasRenderingContext2D,
@@ -33,6 +36,34 @@ export const renderScoreElement = (
   try {
     const styles = context.styling.stylesFor(element, context.ancestors);
     context.style = merge(styles, element.style); // TODO eventually we should have computed styles on elements themselves
+
+    // We'll handle background + box shadow here
+    if (context.style.backgroundColor || context.style.boxShadow) {
+      if (context.style.boxShadow) {
+        console.log(context.style.boxShadow);
+        if (context.style.boxShadow.includes("inset")) {
+          console.warn("inset box shadows not supported");
+        } else {
+          const parts = context.style.boxShadow.trim().match(BOX_SHADOW_REGEX);
+          if (parts) {
+            renderContext.shadowColor = parts.groups?.["color"] ?? "";
+            renderContext.shadowOffsetX = parseInt(parts.groups?.["offsetX"] ?? "0");
+            renderContext.shadowOffsetY = parseInt(parts.groups?.["offsetY"] ?? "0");
+            renderContext.shadowBlur = parseInt(parts.groups?.["blur"] ?? "0");
+          }
+        }
+      }
+
+      renderContext.fillStyle = context.style.backgroundColor ?? "";
+      renderContext.fillRect(element.box.x, element.box.y, element.box.width, element.box.height);
+
+      renderContext.fillStyle = "";
+      renderContext.shadowBlur = 0;
+      renderContext.shadowColor = "";
+      renderContext.shadowOffsetX = 0;
+      renderContext.shadowOffsetY = 0;
+    }
+
     applyStylesToRenderContext(renderContext, styles);
 
     RenderFunctions[element.type]?.(element, renderContext, context);
