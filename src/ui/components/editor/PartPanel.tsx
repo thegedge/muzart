@@ -26,9 +26,9 @@ export const PartPanel = observer((_props: Record<string, never>) => {
   const numMeasures = score.score.parts[0]?.measures.length ?? 0;
 
   return (
-    <div className="w-full min-h-fit max-h-48 flex-1 flex flex-col bg-gray-900 text-gray-200 overflow-y-auto">
+    <div className="w-full max-h-48 flex-1 flex flex-col bg-gray-900 text-gray-200 overflow-y-auto">
       <div className="grid grid-cols-part-list gap-y-px bg-inherit overflow-auto items-center">
-        <div className="flex items-center gap-px bg-inherit sticky left-0 pr-px h-7">
+        <div className="flex items-center gap-px bg-inherit sticky z-10 left-0 top-0 h-7">
           <div className="flex-1 px-4">Track</div>
           <div className="flex items-center justify-center w-6 text-gray-500">
             <Ear title="Solo tracks" />
@@ -37,7 +37,7 @@ export const PartPanel = observer((_props: Record<string, never>) => {
             <MicMute title="Muted tracks" />
           </div>
         </div>
-        <div className="flex gap-px text-xs bg-inherit">
+        <div className="flex gap-px text-xs bg-inherit sticky z-10 left-0 top-0 h-7">
           {range(numMeasures).map((measureIndex) => {
             const marker = score.score.parts[0]?.measures[measureIndex]?.marker;
             const showNumber = measureIndex == 0 || measureIndex % 10 == 9;
