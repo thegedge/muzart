@@ -1,7 +1,7 @@
 import type * as CSS from "csstype";
 import { sumBy } from "lodash";
 import { reaction } from "mobx";
-import { observer } from "mobx-react-lite";
+import { observer, useLocalObservable } from "mobx-react-lite";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import layout, {
   AllElements,
@@ -75,6 +75,16 @@ export const Score = observer((_props: Record<string, never>) => {
     };
   });
 
+  const renderState = useLocalObservable(() => ({ epoch: 0 }));
+  useEffect(() => {
+    import.meta.hot?.on("muzart:render", () => {
+      // Set a timeout to allow the CSS to reload
+      setTimeout(() => {
+        renderState.epoch += 1;
+      }, 200);
+    });
+  }, [renderState]);
+
   useEffect(() => {
     const part = application.selection.part;
     if (!part) {
@@ -144,12 +154,13 @@ export const Score = observer((_props: Record<string, never>) => {
         application.selection.noteIndex,
         application.selection.note,
         application.debug.enabled,
+        renderState.epoch,
       ],
       () => {
         application.canvas.redraw();
       },
     );
-  }, [application.canvas, application, application.selection.part]);
+  }, [application.canvas, application, application.selection.part, renderState]);
 
   useEffect(() => {
     return reaction(

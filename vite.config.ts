@@ -3,6 +3,30 @@ import fs from "node:fs/promises";
 import { TlsOptions } from "node:tls";
 import { defineConfig, ModuleNode } from "vite";
 
+const includeAllImporters = (modules: ModuleNode[]) => {
+  const modulesToUpdate: ModuleNode[] = [];
+  const _includeAllImporters = (module: ModuleNode) => {
+    if (modulesToUpdate.includes(module)) {
+      return;
+    }
+
+    modulesToUpdate.push(module);
+    if (module.id?.endsWith("/Score.tsx")) {
+      return;
+    }
+
+    for (const importer of module.importers) {
+      _includeAllImporters(importer);
+    }
+  };
+
+  for (const module of modules) {
+    _includeAllImporters(module);
+  }
+
+  return modulesToUpdate;
+};
+
 // https://vitejs.dev/config/
 export default defineConfig(async ({ mode }) => {
   let port = 80;
@@ -46,43 +70,17 @@ export default defineConfig(async ({ mode }) => {
 
     plugins: [
       preact(),
-
       {
         name: "re-render-score",
         enforce: "post",
-        handleHotUpdate({ server, file, modules }) {
-          // if (file.endsWith("/score.css")) {
-          //   const module = server.moduleGraph.getModulesByFile(require.resolve("./src/ui/components/misc/Score.tsx"));
-          //   console.log(Object.keys(server.moduleGraph.fileToModulesMap));
-          //   return [module, ...modules];
-          // }
-
-          if (file.includes("/render/")) {
-            const modulesToUpdate: ModuleNode[] = [];
-            const includeAllImporters = (module: ModuleNode) => {
-              if (modulesToUpdate.includes(module)) {
-                return;
-              }
-
-              if (module.id?.endsWith(".css")) {
-                return;
-              }
-
-              modulesToUpdate.push(module);
-              if (module.id?.endsWith("/Score.tsx")) {
-                return;
-              }
-
-              for (const importer of module.importers) {
-                includeAllImporters(importer);
-              }
-            };
-
-            for (const module of modules) {
-              includeAllImporters(module);
-            }
-
-            return modulesToUpdate;
+        async handleHotUpdate({ server, file, modules }) {
+          if (file.endsWith("/score.css")) {
+            server.ws.send({
+              type: "custom",
+              event: "muzart:render",
+            });
+          } else if (file.includes("/render/")) {
+            return includeAllImporters(modules);
           }
         },
       },

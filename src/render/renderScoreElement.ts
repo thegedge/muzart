@@ -44,7 +44,6 @@ export const renderScoreElement = (
     // We'll handle background + box shadow here
     if (context.style.backgroundColor || context.style.boxShadow) {
       if (context.style.boxShadow) {
-        console.log(context.style.boxShadow);
         if (context.style.boxShadow.includes("inset")) {
           console.warn("inset box shadows not supported");
         } else {
