@@ -251,7 +251,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
       pieces.push(event.key);
 
       const sequence = pieces.join(KEY_BINDING_SEPARATOR);
-      const binding = bindings[sequence] ?? bindings[event.key];
+      const binding = bindings[sequence];
       if (binding) {
         if (binding.when) {
           const pieces = binding.when.split(" && ");
