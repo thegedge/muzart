@@ -57,6 +57,11 @@
   box-shadow: 0 0 12mm rgb(0, 0, 0, 0.25);
 }
 
+.path {
+  fill: none;
+  stroke: #333333;
+}
+
 .rest {
   cursor: pointer;
   fill: #333333;

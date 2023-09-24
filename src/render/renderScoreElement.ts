@@ -4,7 +4,6 @@ import layout from "../layout";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
-import { Bend } from "./Bend";
 import { DecoratedText } from "./DecoratedText";
 import { Dot } from "./Dot";
 import { Ellipse } from "./Ellipse";
@@ -110,11 +109,11 @@ const applyStylesToRenderContext = (renderContext: CanvasRenderingContext2D, sty
   }
 
   if (styles.fill) {
-    renderContext.fillStyle = styles.fill;
+    renderContext.fillStyle = styles.fill == "none" ? "transparent" : styles.fill;
   }
 
   if (styles.stroke) {
-    renderContext.strokeStyle = styles.stroke;
+    renderContext.strokeStyle = styles.stroke == "none" ? "transparent" : styles.stroke;
   }
 
   if (styles.strokeLinecap) {
@@ -134,7 +133,6 @@ const applyStylesToRenderContext = (renderContext: CanvasRenderingContext2D, sty
 const RenderFunctions: Record<string, RenderFunc<any>> = {
   Arc,
   BarLine,
-  Bend,
   Beam,
   DecoratedText,
   Dot,

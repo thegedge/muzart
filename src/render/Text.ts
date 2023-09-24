@@ -40,6 +40,10 @@ export const Text: RenderFunc<layout.Text> = (element, render, context) => {
       y = element.box.bottom;
       baseline = "ideographic";
       break;
+    case "hanging":
+      y = element.box.y;
+      baseline = "hanging";
+      break;
     default:
       throw new Error(`unsupported vertical-align value: ${context.style.textAlign}`);
   }
