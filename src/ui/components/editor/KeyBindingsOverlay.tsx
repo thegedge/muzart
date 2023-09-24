@@ -9,12 +9,12 @@ export const KeyBindingsOverlay = observer((props: { bindings: KeyBindingGroups 
 
   return (
     <div
-      className={`absolute z-50 bg-black/80 backdrop-blur-md text-gray-300 top-0 bottom-0 left-0 right-0 overflow-clip p-4 ${
+      className={`flex flex-col gap-4 absolute z-50 bg-black/80 backdrop-blur-md text-gray-300 top-0 bottom-0 left-0 right-0 overflow-clip p-4 ${
         application.showHelp ? "block" : "hidden"
       }`}
     >
-      <h1 className="text-2xl my-4 font-bold text-center">Keyboard shortcuts</h1>
-      <div className="flex items-center justify-start w-full h-full overflow-auto">
+      <h1 className="flex-none text-2xl font-bold text-center">Keyboard shortcuts</h1>
+      <div className="flex-1 flex items-center justify-start overflow-auto">
         <div className="flex flex-col flex-wrap gap-4 justify-start items-stretch h-full">
           {Object.entries(props.bindings).map(([groupName, group]) => {
             const bindingsWithName = Object.entries(group).filter(([_binding, { name }]) => !!name);
