@@ -180,6 +180,7 @@ export interface Chord extends LayoutElement<LineElement> {
   type: "Chord";
   chord: notation.Chord;
   children: (Note | Stroke)[];
+  notes: Note[];
   staffHeight: number;
 }
 

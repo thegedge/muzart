@@ -2,7 +2,7 @@ import * as notation from "../../notation";
 import { Action } from "../state/Application";
 import { withSelectionTracking } from "./withSelectionTracking";
 
-export const changeNote = (fret: number): Action => {
+export const setNoteFret = (fret: number): Action => {
   let state: [notation.Chord, [notation.Note | undefined, notation.Note]];
 
   // TODO assuming a stringed + fretted instrument below. Will need to fix eventually.

@@ -70,9 +70,8 @@ export class Selection implements StorableObject {
     }
 
     // Need the `as` here because TS doesn't understand that the type check internally prevents returning anything else
-    return this.chord?.children.find(
-      (note) => note.type == "Note" && note.note.placement?.string == this.noteIndex + 1,
-    ) as layout.Note | undefined;
+    const noteIndex = this.chord?.chord.notes.findIndex((note) => note.placement?.string == this.noteIndex + 1);
+    return noteIndex == -1 ? undefined : this.chord.notes[noteIndex];
   }
 
   get element() {

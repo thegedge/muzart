@@ -1,9 +1,10 @@
 import { range } from "lodash";
 import { useEffect, useMemo } from "preact/hooks";
 import { IS_MAC } from "../../utils/platform";
-import { changeNote } from "../actions/changeNote";
 import { decreaseNoteValue } from "../actions/decreaseNoteValue";
+import { deleteNote } from "../actions/deleteNote";
 import { increaseNoteValue } from "../actions/increaseNoteValue";
+import { setNoteFret } from "../actions/setNoteFret";
 import { Application } from "../state/Application";
 import { useApplicationState } from "./ApplicationStateContext";
 
@@ -62,7 +63,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
             String(fret),
             {
               when: "editorFocused && !isPlaying",
-              action: () => application.dispatch(changeNote(fret)),
+              action: () => application.dispatch(setNoteFret(fret)),
             },
           ]),
         ),
@@ -80,6 +81,14 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           when: "editorFocused && !isPlaying",
           action() {
             application.redo();
+          },
+        },
+
+        "Delete": {
+          name: "Delete note",
+          when: "editorFocused && !isPlaying",
+          action() {
+            application.dispatch(deleteNote());
           },
         },
 

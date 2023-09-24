@@ -9,6 +9,8 @@ export class Chord extends LayoutElement<"Chord", types.LineElement> implements 
   readonly type = "Chord";
   readonly children: (types.Note | types.Stroke)[];
 
+  readonly notes: types.Note[];
+
   constructor(
     readonly chord: notation.Chord,
     readonly numStaffLines: number,
@@ -21,7 +23,10 @@ export class Chord extends LayoutElement<"Chord", types.LineElement> implements 
     // Take away 2 line strokes so the text elements with a background fill don't obstruct the staff lines
     const noteHeight = staffHeight - 2 * LINE_STROKE_WIDTH;
     this.children = [];
+    this.notes = [];
+
     autorun(() => {
+      this.notes.length = 0;
       this.children.splice(
         0,
         this.children.length,
@@ -32,6 +37,8 @@ export class Chord extends LayoutElement<"Chord", types.LineElement> implements 
           noteElement.style = {
             display: (!note.tie || note.tie.type == "start") && note.toString().length > 0 ? "block" : "none",
           };
+
+          this.notes.push(noteElement);
 
           if (note.graceNote) {
             // TODO this placement will go outside the chord box, which also means that lots of grace notes in a dense measure may look bad
