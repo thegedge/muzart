@@ -243,7 +243,9 @@ export const Score = observer((_props: Record<string, never>) => {
             cursor = "pointer";
             break;
           case "Text":
-            if (!hit.element.isReadOnly) {
+            if (hit.element.parent?.type == "Note") {
+              cursor = "pointer";
+            } else if (!hit.element.isReadOnly) {
               cursor = "text";
             }
             break;
