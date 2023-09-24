@@ -40,6 +40,7 @@ export class DecoratedText
         value: text,
         style: {
           textAlign,
+          verticalAlign: "middle",
         },
       }),
     );
