@@ -9,9 +9,6 @@ export const DecoratedText: RenderFunc<layout.DecoratedText> = (element, render,
   const textMargin = LINE_STROKE_WIDTH * 5;
 
   if (textWidth + textMargin < element.box.width) {
-    // TODO move to CSS, don't interfere with text above
-    render.strokeStyle = element.style?.color || "#333333";
-
     switch (element.style?.textAlign) {
       case undefined:
       case "left":

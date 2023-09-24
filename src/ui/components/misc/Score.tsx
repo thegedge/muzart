@@ -2,7 +2,7 @@ import type * as CSS from "csstype";
 import { sumBy } from "lodash";
 import { reaction } from "mobx";
 import { observer, useLocalObservable } from "mobx-react-lite";
-import { useCallback, useEffect, useMemo, useRef, useState } from "preact/hooks";
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import layout, {
   AllElements,
   Box,
@@ -81,22 +81,9 @@ export const Score = observer((_props: Record<string, never>) => {
       // Set a timeout to allow the CSS to reload
       setTimeout(() => {
         renderState.epoch += 1;
-      }, 200);
+      }, 100);
     });
   }, [renderState]);
-
-  const styler = useMemo(() => {
-    const stylesheet = Array.from(document.styleSheets).find((ss) => {
-      for (let ruleIndex = 0; ruleIndex < ss.cssRules.length; ++ruleIndex) {
-        if (ss.cssRules.item(ruleIndex)?.cssText.includes(".score")) {
-          return true;
-        }
-      }
-      return false;
-    });
-
-    return new StyleComputer(stylesheet);
-  }, []);
 
   useEffect(() => {
     const part = application.selection.part;
@@ -105,6 +92,17 @@ export const Score = observer((_props: Record<string, never>) => {
     }
 
     const render: RenderFunction = (context, viewport) => {
+      const stylesheet = Array.from(document.styleSheets).find((ss) => {
+        for (let ruleIndex = 0; ruleIndex < ss.cssRules.length; ++ruleIndex) {
+          if (ss.cssRules.item(ruleIndex)?.cssText.includes(".score")) {
+            return true;
+          }
+        }
+        return false;
+      });
+
+      const styler = new StyleComputer(stylesheet);
+
       context.fillStyle = "";
       context.strokeStyle = "#000000";
 
@@ -166,7 +164,7 @@ export const Score = observer((_props: Record<string, never>) => {
         application.canvas.redraw();
       },
     );
-  }, [application.canvas, application, application.selection.part, renderState, styler]);
+  }, [application.canvas, application, application.selection.part, renderState]);
 
   useEffect(() => {
     return reaction(
@@ -229,7 +227,7 @@ export const Score = observer((_props: Record<string, never>) => {
         }
       }
     },
-    [application, textInputState],
+    [application],
   );
 
   const onMouseMove = useCallback(
