@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { inRange, last } from "lodash";
-import { autorun, makeAutoObservable } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 import layout, { getAncestorOfType, layOutScore } from "../../layout";
 import * as notation from "../../notation";
 import { StorableObject, SyncStorage, numberOrDefault } from "../storage/Storage";
@@ -18,6 +18,18 @@ export class Selection implements StorableObject {
   constructor(readonly storage: SyncStorage) {
     this.storage.loadObject(VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY, this);
     makeAutoObservable(this, undefined, { deep: false });
+
+    reaction(
+      () => [this.score_, this.partIndex] as const,
+      ([score, partIndex]) => {
+        if (score && partIndex >= 0) {
+          this.score = layOutScore(score, [partIndex]);
+        }
+      },
+      {
+        fireImmediately: true,
+      },
+    );
   }
 
   get part(): layout.Part | undefined {
@@ -83,9 +95,6 @@ export class Selection implements StorableObject {
     const partChanged = selection.partIndex != undefined && selection.partIndex != this.partIndex;
     if (partChanged) {
       this.partIndex = selection.partIndex!;
-      autorun(() => {
-        this.score = layOutScore(score, [this.partIndex]);
-      });
     }
 
     const measureChanged = selection.measureIndex != undefined && selection.measureIndex != this.measureIndex;
