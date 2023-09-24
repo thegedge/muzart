@@ -49,7 +49,7 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
     return () => {
       application.canvas.dispose();
     };
-  }, []);
+  }, [application.canvas]);
 
   useEffect(() => {
     if (application.selection.score != null) {
@@ -70,6 +70,7 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
   }, [application]);
 
   if (import.meta.env.DEV) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks -- this condition is static
     useEffect(() => {
       if (application.selection.score != null) {
         return;

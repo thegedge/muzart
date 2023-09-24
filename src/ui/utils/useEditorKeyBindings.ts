@@ -224,7 +224,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
         },
       },
     }),
-    [application, application.canvas],
+    [application],
   );
 
   useEffect(() => {

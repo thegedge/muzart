@@ -152,7 +152,7 @@ const MeasureBox = (props: {
       (isSelected) => setSelected(isSelected),
       { fireImmediately: true },
     );
-  }, [playback, selection]);
+  }, [measure.number, partIndex, playback, selection]);
 
   return (
     <div

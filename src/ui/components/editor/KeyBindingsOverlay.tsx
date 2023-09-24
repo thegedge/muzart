@@ -47,7 +47,7 @@ const KeyBinding = (props: { binding: string }) => {
   return (
     <div className={`grid grid-cols-${pieces.length} gap-x-0.5 w-fit`}>
       {pieces.map((piece) => (
-        <kbd>{presentKey(piece)}</kbd>
+        <kbd key={piece}>{presentKey(piece)}</kbd>
       ))}
     </div>
   );

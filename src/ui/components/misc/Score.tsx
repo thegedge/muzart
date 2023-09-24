@@ -2,7 +2,7 @@ import type * as CSS from "csstype";
 import { sumBy } from "lodash";
 import { reaction } from "mobx";
 import { observer, useLocalObservable } from "mobx-react-lite";
-import { useCallback, useEffect, useRef, useState } from "preact/hooks";
+import { useCallback, useEffect, useMemo, useRef, useState } from "preact/hooks";
 import layout, {
   AllElements,
   Box,
@@ -36,7 +36,7 @@ export const Score = observer((_props: Record<string, never>) => {
       },
       { fireImmediately: true },
     );
-  }, [application.canvas]);
+  }, [application]);
 
   const selectionBoxFor = (chord: layout.Chord | layout.Rest, selectedNoteIndex: number) => {
     const PADDING = 3 * LINE_STROKE_WIDTH;
@@ -85,6 +85,19 @@ export const Score = observer((_props: Record<string, never>) => {
     });
   }, [renderState]);
 
+  const styler = useMemo(() => {
+    const stylesheet = Array.from(document.styleSheets).find((ss) => {
+      for (let ruleIndex = 0; ruleIndex < ss.cssRules.length; ++ruleIndex) {
+        if (ss.cssRules.item(ruleIndex)?.cssText.includes(".score")) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    return new StyleComputer(stylesheet);
+  }, []);
+
   useEffect(() => {
     const part = application.selection.part;
     if (!part) {
@@ -92,23 +105,13 @@ export const Score = observer((_props: Record<string, never>) => {
     }
 
     const render: RenderFunction = (context, viewport) => {
-      const stylesheet = Array.from(document.styleSheets).find((ss) => {
-        for (let ruleIndex = 0; ruleIndex < ss.cssRules.length; ++ruleIndex) {
-          if (ss.cssRules.item(ruleIndex)?.cssText.includes(".score")) {
-            return true;
-          }
-        }
-        return false;
-      });
-
       context.fillStyle = "";
       context.strokeStyle = "#000000";
 
-      const styling = new StyleComputer(stylesheet);
       renderScoreElement(part, context, {
         application,
         viewport,
-        styling,
+        styler,
         ancestors: [],
         style: {},
       });
@@ -163,7 +166,7 @@ export const Score = observer((_props: Record<string, never>) => {
         application.canvas.redraw();
       },
     );
-  }, [application.canvas, application, application.selection.part, renderState]);
+  }, [application.canvas, application, application.selection.part, renderState, styler]);
 
   useEffect(() => {
     return reaction(
@@ -214,7 +217,7 @@ export const Score = observer((_props: Record<string, never>) => {
         }
       }
     },
-    [application, textInputState],
+    [application],
   );
 
   const onDoubleClick = useCallback(

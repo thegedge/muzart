@@ -1,4 +1,4 @@
-import { Inputs, useEffect, useState } from "preact/hooks";
+import { Inputs, useCallback, useEffect, useState } from "preact/hooks";
 
 export type AsyncResult<ValueT, ErrorT = unknown> =
   | { pending: true; value: undefined; error: undefined }
@@ -7,7 +7,7 @@ export type AsyncResult<ValueT, ErrorT = unknown> =
 
 export const useAsync = <ValueT, ErrorT = unknown>(
   f: () => Promise<ValueT>,
-  inputs: Inputs = [],
+  deps: Inputs = [],
 ): AsyncResult<ValueT, ErrorT> => {
   const [result, setResult] = useState<AsyncResult<ValueT, ErrorT>>({
     pending: true,
@@ -15,16 +15,19 @@ export const useAsync = <ValueT, ErrorT = unknown>(
     value: undefined,
   });
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const memoizedF = useCallback(f, deps);
+
   useEffect(() => {
     let cancelled = false;
-    f()
+    memoizedF()
       .then((value) => !cancelled && setResult({ pending: false, error: undefined, value }))
       .catch((error) => !cancelled && setResult({ pending: false, error, value: undefined }));
 
     return () => {
       cancelled = true;
     };
-  }, inputs);
+  }, [memoizedF]);
 
   return result;
 };

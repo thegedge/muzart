@@ -20,29 +20,22 @@ export const dataURItoBlob = (dataURI: string): Blob => {
 };
 
 export const blobToDataURI = (blob: Blob): Promise<string> => {
-  let resolve: (v: string) => void;
-  let reject: (err: unknown) => void;
+  return new Promise<string>((resolve, reject) => {
+    const fr = new FileReader();
 
-  const promise = new Promise<string>((res, rej) => {
-    resolve = res;
-    reject = rej;
+    fr.onload = () => {
+      if (typeof fr.result === "string") {
+        resolve(fr.result);
+        return;
+      }
+
+      reject("unexpected result when converting blob to data uri");
+    };
+
+    fr.onerror = () => {
+      reject(fr.error ?? new Error(`unknown error converting blob to data uri`));
+    };
+
+    fr.readAsDataURL(blob);
   });
-
-  const fr = new FileReader();
-  fr.onload = () => {
-    if (typeof fr.result === "string") {
-      resolve(fr.result);
-      return;
-    }
-
-    reject("unexpected result when converting blob to data uri");
-  };
-
-  fr.onerror = () => {
-    reject(fr.error ?? new Error(`unknown error converting blob to data uri`));
-  };
-
-  fr.readAsDataURL(blob);
-
-  return promise;
 };

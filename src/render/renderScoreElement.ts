@@ -32,7 +32,7 @@ export const renderScoreElement = (
   }
 
   const stylesBefore = context.style;
-  const styles = merge(context.styling.stylesFor(element, context.ancestors), element.style);
+  const styles = merge(context.styler.stylesFor(element, context.ancestors), element.style);
   if (styles.display == "none") {
     return;
   }

@@ -279,9 +279,12 @@ export class PlaybackController {
 
   private withPlayback(f: () => void) {
     if (this.audioContext.state == "suspended") {
-      void this.audioContext.resume().then(() => {
-        f();
-      });
+      this.audioContext
+        .resume()
+        .then(() => {
+          f();
+        })
+        .catch(console.error);
     } else {
       f();
     }

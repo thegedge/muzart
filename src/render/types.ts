@@ -14,7 +14,7 @@ export interface RenderContext {
   ancestors: layout.AllElements[];
 
   /** The stylesheet  */
-  styling: StyleComputer;
+  styler: StyleComputer;
 
   /** The computed styles for the current element */
   style: CSS.Properties;

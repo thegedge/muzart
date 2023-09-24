@@ -13,10 +13,12 @@ export function suspenseful<T>(promiseOrAsyncFunc: () => Promise<T>): Suspensefu
     (res: T) => {
       status = "success";
       response = res;
+      return res;
     },
     (err: Error) => {
       status = "error";
       error = err;
+      throw err;
     },
   );
 

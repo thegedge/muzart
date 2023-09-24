@@ -25,6 +25,10 @@
   alignment-baseline: hanging;
 }
 
+.chord {
+  cursor: pointer;
+}
+
 .chord-diagram {
   color: #000000;
 }
@@ -43,6 +47,7 @@
 }
 
 .note {
+  cursor: pointer;
   color: #000000;
   background-color: #ffffff;
 }
@@ -53,6 +58,7 @@
 }
 
 .rest {
+  cursor: pointer;
   fill: #333333;
 }
 
@@ -68,6 +74,7 @@
 }
 
 .text {
+  cursor: text;
   color: #000000;
 }
 

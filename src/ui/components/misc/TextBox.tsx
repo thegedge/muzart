@@ -27,7 +27,7 @@ export const TextBox = (props: TextBoxProps) => {
   const y = useMemo(() => {
     const linesHeight = lines.reduce((h, line) => h + (line.lineHeight ?? line.fontSize ?? lineHeight), 0);
     return box.y + (box.height - linesHeight) * 0.5;
-  }, [lines]);
+  }, [box, lineHeight, lines]);
 
   return (
     <text
