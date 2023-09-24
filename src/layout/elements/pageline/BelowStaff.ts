@@ -86,9 +86,9 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
 
       // Half notes have a shorter stem on tablature
       const y = this.numBeams(beatElement) < 0 ? STAFF_LINE_HEIGHT * 2 : STAFF_LINE_HEIGHT;
-      const stemBox = new Box(measureBox.x + beatElement.box.centerX, y, 0, STEM_HEIGHT - y);
-
-      this.addElement(new Line(stemBox, STEM_BEAM_COLOR));
+      const stem = new Line(new Box(measureBox.x + beatElement.box.centerX, y, 0, STEM_HEIGHT - y));
+      stem.style.stroke = STEM_BEAM_COLOR;
+      this.addElement(stem);
     }
   }
 

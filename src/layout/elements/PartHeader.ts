@@ -183,16 +183,16 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       return compact(measure.chords.map((chord) => (chord.chordDiagram?.diagram ? chord.chordDiagram : null)));
     });
 
-    const uniqueDiagrams = uniqBy(allDiagrams, (diagram) => JSON.stringify(diagram));
-    if (uniqueDiagrams.length == 0) {
+    if (allDiagrams.length == 0) {
       return;
     }
 
+    const uniqueDiagrams = uniqBy(allDiagrams, (diagram) => JSON.stringify(diagram));
     const group = new FlexGroupElement<ChordDiagram>({
-      axis: "horizontal",
       box: new Box(0, 0, this.contentWidth, 1),
       gap: 0.5 * DEFAULT_MARGIN,
       defaultStretchFactor: 0,
+      axis: "horizontal",
       mainAxisSpaceDistribution: "center",
       wrap: true,
     });

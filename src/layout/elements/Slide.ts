@@ -15,11 +15,15 @@ export class Slide extends SimpleGroup<types.Arc | types.Line, "Slide", types.Li
 
     // TODO specify line colors below in score.css
 
+    let line: Line;
     if (upwards) {
-      this.addElement(new Line(new Box(0, 0, box.width, box.height), "#555555"));
+      line = new Line(new Box(0, 0, box.width, box.height));
     } else {
-      this.addElement(new Line(new Box(box.width, box.height, 0, 0), "#555555"));
+      line = new Line(new Box(box.width, box.height, 0, 0));
     }
+
+    line.style.stroke = "#555555";
+    this.addElement(line);
 
     this.addElement(
       new Arc(

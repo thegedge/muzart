@@ -52,7 +52,8 @@ export class PageLine extends SimpleGroup<LineElement, "PageLine", Page> {
 
   private initializeElements() {
     this.staffLines = range(this.numStaffLines).map((_index) => {
-      const line = new Line(Box.empty(), "#888888");
+      const line = new Line(Box.empty());
+      line.style.stroke = "#888888";
       super.addElement(line);
       return line;
     });

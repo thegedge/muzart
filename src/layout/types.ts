@@ -15,7 +15,6 @@ export interface HasParent<ParentT = unknown> {
 }
 
 export interface MaybeLayout<Args extends unknown[] = []> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   layout?: (...args: Args) => void;
 }
 
@@ -73,10 +72,12 @@ export type LineElement =
   | ChordDiagram
   | DecoratedText
   | Dot
+  | Ellipse
   | Group<LineElement>
   | Line
   | Measure
   | Note
+  | Path
   | Stroke
   | Rest
   | Slide
@@ -111,12 +112,19 @@ export interface Group<T> extends LayoutElement<unknown> {
 export interface ChordDiagram extends LayoutElement<LineElement> {
   type: "ChordDiagram";
   diagram: notation.ChordDiagram;
-  textSize: number;
 }
 
-export interface Line extends LayoutElement<PageLine> {
+export interface Ellipse extends LayoutElement<ChordDiagram> {
+  type: "Ellipse";
+}
+
+export interface Line extends LayoutElement<PageLine | ChordDiagram> {
   type: "Line";
-  color: string;
+}
+
+export interface Path extends LayoutElement<PageLine | ChordDiagram> {
+  type: "Path";
+  path: Path2D;
 }
 
 export interface Space extends LayoutElement<LineElement> {

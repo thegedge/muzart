@@ -5,11 +5,12 @@ import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
 import { Bend } from "./Bend";
-import { ChordDiagram } from "./ChordDiagram";
 import { DecoratedText } from "./DecoratedText";
 import { Dot } from "./Dot";
+import { Ellipse } from "./Ellipse";
 import { Line } from "./Line";
 import { Page } from "./Page";
+import { Path } from "./Path";
 import { Rest } from "./Rest";
 import { Stroke } from "./Stroke";
 import { Text } from "./Text";
@@ -135,11 +136,12 @@ const RenderFunctions: Record<string, RenderFunc<any>> = {
   BarLine,
   Bend,
   Beam,
-  ChordDiagram,
   DecoratedText,
   Dot,
+  Ellipse,
   Line,
   Page,
+  Path,
   Rest,
   Stroke,
   Text,

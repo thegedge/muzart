@@ -101,6 +101,9 @@ export const Score = observer((_props: Record<string, never>) => {
         return false;
       });
 
+      context.fillStyle = "";
+      context.strokeStyle = "#000000";
+
       const styling = new StyleComputer(stylesheet);
       renderScoreElement(part, context, {
         application,
