@@ -33,7 +33,7 @@ export const deleteNote = (): Action => {
     undo(_application) {
       const [chord, oldNote] = state;
       if (oldNote) {
-        chord.changeNote(oldNote.options);
+        chord.changeNote(oldNote);
       }
     },
   });

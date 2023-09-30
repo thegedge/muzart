@@ -3,7 +3,7 @@ import { Action } from "../state/Application";
 import { withSelectionTracking } from "./withSelectionTracking";
 
 export const setNoteFret = (fret: number): Action => {
-  let state: [notation.Chord, [notation.Note | undefined, notation.Note]];
+  let state: [notation.Chord, notation.Note | undefined, notation.Note]; // chord, existing, new
 
   // TODO assuming a stringed + fretted instrument below. Will need to fix eventually.
 
@@ -23,23 +23,29 @@ export const setNoteFret = (fret: number): Action => {
 
       const string = application.selection.noteIndex + 1;
       const tuning = instrument.tuning[application.selection.noteIndex];
-      const notes = chord.changeNote({
+      const note = application.selection.note?.note;
+
+      const options = {
+        value: note?.value ?? chord.value,
         pitch: tuning.adjust(fret),
         placement: {
-          fret,
           string,
+          fret,
         },
         dead: undefined,
-      });
+      };
 
-      state = [chord, notes];
+      const newNote = note ? note.withChanges(options) : new notation.Note(options);
+      const existing = chord.changeNote(newNote);
+
+      state = [chord, existing, newNote];
     },
 
     undo(_application) {
-      const [chord, [oldNote, newNote]] = state;
+      const [chord, oldNote, newNote] = state;
       if (oldNote) {
-        chord.changeNote(oldNote.options);
-      } else if (newNote) {
+        chord.changeNote(oldNote);
+      } else {
         chord.removeNote(newNote);
       }
     },

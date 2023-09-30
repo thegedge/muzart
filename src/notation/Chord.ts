@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { Note, NoteOptions } from "./Note";
+import { Note } from "./Note";
 import { NoteValue } from "./NoteValue";
 
 export interface Barre {
@@ -91,26 +91,20 @@ export class Chord {
     return this.notes.find((n) => n.placement?.string == string);
   }
 
-  changeNote(changes: Partial<NoteOptions>): [Note | undefined, Note] {
-    const existingIndex = this.notes.findIndex((n) => n.placement?.string == changes?.placement?.string);
+  changeNote(note: Note): Note | undefined {
+    const existingIndex = this.notes.findIndex((n) => n.placement?.string == note.placement?.string);
     if (existingIndex >= 0) {
       const existing = this.notes[existingIndex];
-      const note = existing.withChanges(changes);
       this.notes[existingIndex] = note;
-      return [existing, note];
+      return existing;
     }
 
-    if (!changes.pitch) {
+    if (!note.pitch) {
       throw new Error("must provide pitching when adding a new note");
     }
 
-    const note = new Note({
-      value: this.value,
-      pitch: changes.pitch,
-      ...changes,
-    });
     this.notes.push(note);
 
-    return [undefined, note];
+    return undefined;
   }
 }

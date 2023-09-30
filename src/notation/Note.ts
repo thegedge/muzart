@@ -173,7 +173,7 @@ export class Note {
   }
 
   get dead() {
-    return this.options.dead;
+    return !!this.options.dead;
   }
 
   get ghost() {
@@ -189,11 +189,11 @@ export class Note {
   }
 
   get palmMute() {
-    return this.options.palmMute;
+    return !!this.options.palmMute;
   }
 
   get staccato() {
-    return this.options.staccato;
+    return !!this.options.staccato;
   }
 
   get dynamic() {
@@ -201,7 +201,7 @@ export class Note {
   }
 
   get hammerOnPullOff() {
-    return this.options.hammerOnPullOff;
+    return !!this.options.hammerOnPullOff;
   }
 
   get graceNote() {

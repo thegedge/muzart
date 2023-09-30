@@ -5,6 +5,7 @@ import { decreaseNoteValue } from "../actions/decreaseNoteValue";
 import { deleteNote } from "../actions/deleteNote";
 import { increaseNoteValue } from "../actions/increaseNoteValue";
 import { setNoteFret } from "../actions/setNoteFret";
+import { toggleHammerOnPullOff } from "../actions/toggleHammerOnPullOff";
 import { Application } from "../state/Application";
 import { useApplicationState } from "./ApplicationStateContext";
 
@@ -58,16 +59,6 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
       },
 
       Editing: {
-        ...Object.fromEntries(
-          range(10).map((fret) => [
-            String(fret),
-            {
-              when: "editorFocused && !isPlaying",
-              action: () => application.dispatch(setNoteFret(fret)),
-            },
-          ]),
-        ),
-
         "$mod + z": {
           name: "Undo",
           when: "editorFocused && !isPlaying",
@@ -92,6 +83,8 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           },
         },
 
+        // TODO it would be nice to show this as just "+", but supporting that will be tricky because we can't just use `event.key`,
+        //   otherwise we may accidentally call another action.
         "Shift + +": {
           name: "Decrease Note Value",
           when: "editorFocused && !isPlaying",
@@ -105,6 +98,26 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           when: "editorFocused && !isPlaying",
           action() {
             application.dispatch(increaseNoteValue());
+          },
+        },
+
+        ...Object.fromEntries(
+          range(10).map((fret) => [
+            String(fret),
+            {
+              when: "editorFocused && !isPlaying",
+              action() {
+                application.dispatch(setNoteFret(fret));
+              },
+            },
+          ]),
+        ),
+
+        "h": {
+          name: "Toggle hammer-on / pull-off",
+          when: "editorFocused && !isPlaying",
+          action() {
+            application.dispatch(toggleHammerOnPullOff());
           },
         },
       },
