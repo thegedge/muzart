@@ -2,7 +2,6 @@ import { ComponentChildren, createContext } from "preact";
 import { Suspense } from "preact/compat";
 import { useContext, useEffect, useMemo } from "preact/hooks";
 import { PlaybackController } from "../../playback/PlaybackController";
-import { Loading } from "../components/misc/Loading";
 import { Application } from "../state/Application";
 import { Selection } from "../state/Selection";
 import { DemoStorage } from "../storage/DemoStorage";
@@ -10,6 +9,7 @@ import { IndexedDbStorage } from "../storage/IndexedDbStorage";
 import { LocalStorage } from "../storage/LocalStorage";
 import { TabStorage } from "../storage/TabStorage";
 import { TABS_NAMESPACE } from "../storage/namespaces";
+import { Loading } from "../ui/misc/Loading";
 
 declare global {
   interface Window {

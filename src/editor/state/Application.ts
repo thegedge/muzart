@@ -4,10 +4,10 @@ import { load } from "../../loaders";
 import * as notation from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
 import { UndoStack } from "../../utils/UndoStack";
-import { CanvasState } from "../components/misc/CanvasState";
 import { SyncStorage } from "../storage/Storage";
 import { TabStorage } from "../storage/TabStorage";
 import { VIEW_STATE_CANVAS_SUBKEY, VIEW_STATE_LAST_TAB_SUBKEY, VIEW_STATE_NAMESPACE } from "../storage/namespaces";
+import { CanvasState } from "../ui/misc/CanvasState";
 import { DebugContext } from "./DebugContext";
 import { Selection } from "./Selection";
 

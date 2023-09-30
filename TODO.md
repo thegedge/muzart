@@ -29,18 +29,19 @@
   - Tapping
 - Notes
   - Vibrato
+  - Dead notes
+  - Palm mutes
+  - Staccato
+  - Hammer-on / pull-off
+  -
   - Bends
   - Tuplets
   - Ties
   - Dynamic
-  - Dead notes
   - Ghost notes
   - Grace notes
   - Harmonics
-  - Palm mutes
   - Slides
-  - Staccato
-  - Hammer-on / pull-off
 
 ## Rendering
 

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "preact/hooks";
 import { BaseLocationHook, Router } from "wouter";
 import "./app.css";
-import ErrorBoundary from "./components/ErrorBoundary";
-import { KeyBindingsOverlay } from "./components/editor/KeyBindingsOverlay";
-import { ScoreDropZone } from "./components/editor/ScoreDropZone";
+import ErrorBoundary from "./ui/ErrorBoundary";
+import { KeyBindingsOverlay } from "./ui/editor/KeyBindingsOverlay";
+import { ScoreDropZone } from "./ui/editor/ScoreDropZone";
 import { ApplicationState } from "./utils/ApplicationStateContext";
 import { useEditorKeyBindings } from "./utils/useEditorKeyBindings";
 

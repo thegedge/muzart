@@ -1,5 +1,5 @@
 import layout from ".";
-import { Hit } from "../ui/state/Application";
+import { Hit } from "../editor/state/Application";
 import { Point } from "./utils";
 
 export const hitTest = (point: Point, element: layout.AllElements | undefined): Hit<layout.AllElements> | null => {

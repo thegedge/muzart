@@ -1,5 +1,5 @@
+import { timeSignatureDigit } from "../editor/resources/time_signature_digits";
 import layout from "../layout";
-import { timeSignatureDigit } from "../ui/resources/time_signature_digits";
 import { digits } from "../utils/digits";
 import { RenderFunc } from "./types";
 

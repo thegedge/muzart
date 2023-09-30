@@ -1,6 +1,6 @@
 import * as CSS from "csstype";
+import { Application } from "../editor/state/Application";
 import layout, { Box } from "../layout";
-import { Application } from "../ui/state/Application";
 import { StyleComputer } from "../utils/StyleComputer";
 
 export interface RenderContext {

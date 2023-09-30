@@ -1,5 +1,5 @@
+import { Rests } from "../editor/resources/rests";
 import layout, { STAFF_LINE_HEIGHT } from "../layout";
-import { Rests } from "../ui/resources/rests";
 import { RenderFunc } from "./types";
 
 export const Rest: RenderFunc<layout.Rest> = (element, render, { application }) => {

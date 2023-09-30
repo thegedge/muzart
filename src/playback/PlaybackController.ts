@@ -1,8 +1,8 @@
 import { range } from "lodash";
 import { action, autorun, computed, flow, makeObservable, observable } from "mobx";
+import { Selection } from "../editor/state/Selection";
 import layout, { maxMap } from "../layout";
 import { NoteValue, NoteValueName } from "../notation";
-import { Selection } from "../ui/state/Selection";
 import { SoundFont } from "./SoundFont";
 import { Instrument } from "./instruments/Instrument";
 import { noteValueToSeconds } from "./util/durations";
