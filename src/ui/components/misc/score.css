@@ -46,6 +46,10 @@
   stroke-width: 0.1;
 }
 
+.measure[valid="false"] {
+  background-color: #ff000011;
+}
+
 .note {
   cursor: pointer;
   color: #000000;

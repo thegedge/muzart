@@ -90,6 +90,10 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
     }
     this.box.width += element.box.width;
   }
+
+  get valid() {
+    return this.measure.isValid;
+  }
 }
 
 function widthForValue(value: NoteValue) {

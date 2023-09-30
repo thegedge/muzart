@@ -38,12 +38,30 @@ export class StyleComputer<ElementType extends LayoutElement = LayoutElement> {
       }
 
       for (const selector of rule.selectorText.split(",")) {
-        const clazz = selector.substring(1);
-        if (clazz == this.classForElement(element)) {
-          for (const property of Array.from(rule.style)) {
-            const camelCasedProperty = camelCase(property);
-            (properties as Record<string, unknown>)[camelCasedProperty] = rule.style.getPropertyValue(property);
-          }
+        let clazz: string;
+        let attribute: [keyof ElementType, string] | undefined; // [name, value]
+
+        if (selector.includes("[")) {
+          const [first, ...rest] = selector.split("[");
+          const attributeSelector = rest.join("").slice(0, -1);
+          const [name, value] = attributeSelector.split("=");
+          clazz = first.substring(1);
+          attribute = [name as keyof ElementType, value.slice(1, -1)];
+        } else {
+          clazz = selector.substring(1);
+        }
+
+        if (clazz != this.classForElement(element)) {
+          continue;
+        }
+
+        if (attribute && !(attribute[0] in element && String(element[attribute[0]]) == attribute[1])) {
+          continue;
+        }
+
+        for (const property of Array.from(rule.style)) {
+          const camelCasedProperty = camelCase(property);
+          (properties as Record<string, unknown>)[camelCasedProperty] = rule.style.getPropertyValue(property);
         }
       }
     }
