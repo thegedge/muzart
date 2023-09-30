@@ -12,6 +12,13 @@ export class TimeSignature {
   ) {}
 
   /**
+   * Compute the expected duration for a measure under this time signature.
+   */
+  toDecimal() {
+    return this.count * this.value.toDecimal();
+  }
+
+  /**
    * Return the length of a beat from the current time signature.
    *
    * @example 4/4 has a beat on every quarter note

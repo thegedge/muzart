@@ -80,7 +80,7 @@ function postProcess(score: Score) {
 }
 
 function propagateStaffDetails(score: Score): void {
-  const previousDetails: StaffDetails = {};
+  const previousDetails: Partial<StaffDetails> = {};
 
   const updateStaffDetails = <K extends keyof StaffDetails>(key: K, measure: Measure): void => {
     const previousValue = previousDetails[key];

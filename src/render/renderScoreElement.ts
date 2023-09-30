@@ -8,6 +8,7 @@ import { DecoratedText } from "./DecoratedText";
 import { Dot } from "./Dot";
 import { Ellipse } from "./Ellipse";
 import { Line } from "./Line";
+import { Measure } from "./Measure";
 import { Page } from "./Page";
 import { Path } from "./Path";
 import { Rest } from "./Rest";
@@ -138,6 +139,7 @@ const RenderFunctions: Record<string, RenderFunc<any>> = {
   Dot,
   Ellipse,
   Line,
+  Measure,
   Page,
   Path,
   Rest,

@@ -92,7 +92,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           },
         },
 
-        "+": {
+        "Shift + +": {
           name: "Decrease Note Value",
           when: "editorFocused && !isPlaying",
           action() {
