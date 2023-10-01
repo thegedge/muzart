@@ -1,4 +1,4 @@
-name: Lint/Test
+name: Test and Build
 
 on:
   push:
@@ -81,7 +81,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build muzart
-        run: NODE_ENV=production pnpm build:github
+        env:
+          NODE_ENV: production
+        run: |
+          VITE_BUILD_SHA="${GITHUB_SHA}" pnpm build:github
 
       - name: Deploy to demo branch
         env:
