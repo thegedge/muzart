@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { observer } from "mobx-react-lite";
 import { CSSProperties, useEffect, useRef } from "preact/compat";
 import layout, { toAncestorCoordinateSystem } from "../../../layout";
-import { changeTextElement } from "../../actions/changeTextElement";
+import { ChangeTextElement } from "../../actions/ChangeTextElement";
 import { Application } from "../../state/Application";
 
 export class StatefulTextInputState {
@@ -42,7 +42,7 @@ export class StatefulTextInputState {
       return;
     }
 
-    this.application.dispatch(changeTextElement(this.element, text));
+    this.application.dispatch(new ChangeTextElement(this.element, text));
     this.visible = false;
   }
 }

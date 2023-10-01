@@ -4,6 +4,7 @@ import { load } from "../../loaders";
 import * as notation from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
 import { UndoStack } from "../../utils/UndoStack";
+import { Action } from "../actions/Action";
 import { SyncStorage } from "../storage/Storage";
 import { TabStorage } from "../storage/TabStorage";
 import { VIEW_STATE_CANVAS_SUBKEY, VIEW_STATE_LAST_TAB_SUBKEY, VIEW_STATE_NAMESPACE } from "../storage/namespaces";
@@ -17,12 +18,6 @@ export interface Hit<T> {
 
   /** The hit point, relative to the element that was hit */
   point: Point;
-}
-
-export interface Action {
-  canApplyAction(application: Application): boolean;
-  apply(application: Application): void;
-  undo(application: Application): void;
 }
 
 export class Application {
@@ -53,7 +48,7 @@ export class Application {
   }
 
   dispatch(action: Action) {
-    if (action.canApplyAction(this)) {
+    if (action.canApply(this)) {
       this.undoStack.push(action);
       action.apply(this);
     }

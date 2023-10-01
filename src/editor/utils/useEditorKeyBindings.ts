@@ -1,11 +1,11 @@
 import { range } from "lodash";
 import { useEffect, useMemo } from "preact/hooks";
 import { IS_MAC } from "../../utils/platform";
-import { decreaseNoteValue } from "../actions/decreaseNoteValue";
-import { deleteNote } from "../actions/deleteNote";
-import { increaseNoteValue } from "../actions/increaseNoteValue";
-import { setNoteFret } from "../actions/setNoteFret";
-import { toggleNoteFeature } from "../actions/toggleNoteFeature";
+import { DecreaseNoteValue } from "../actions/DecreaseNoteValue";
+import { DeleteNote } from "../actions/DeleteNote";
+import { IncreaseNoteValue } from "../actions/IncreaseNoteValue";
+import { SetNoteFret } from "../actions/SetNoteFret";
+import { ToggleNoteFeature } from "../actions/ToggleNoteFeature";
 import { Application } from "../state/Application";
 import { useApplicationState } from "./ApplicationStateContext";
 
@@ -79,7 +79,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           name: "Delete Note",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(deleteNote());
+            application.dispatch(new DeleteNote());
           },
         },
 
@@ -89,7 +89,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           name: "Decrease Note Value",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(decreaseNoteValue());
+            application.dispatch(new DecreaseNoteValue());
           },
         },
 
@@ -97,7 +97,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           name: "Increase Note Value",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(increaseNoteValue());
+            application.dispatch(new IncreaseNoteValue());
           },
         },
 
@@ -107,7 +107,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
             {
               when: "editorFocused && !isPlaying",
               action() {
-                application.dispatch(setNoteFret(fret));
+                application.dispatch(new SetNoteFret(fret));
               },
             },
           ]),
@@ -117,7 +117,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           name: "Toggle Hammer-on / Pull-off",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(toggleNoteFeature("hammerOnPullOff"));
+            application.dispatch(new ToggleNoteFeature("hammerOnPullOff"));
           },
         },
 
@@ -125,7 +125,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           name: "Toggle Vibrato",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(toggleNoteFeature("vibrato"));
+            application.dispatch(new ToggleNoteFeature("vibrato"));
           },
         },
 
@@ -133,7 +133,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           name: "Toggle Let Ring",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(toggleNoteFeature("letRing"));
+            application.dispatch(new ToggleNoteFeature("letRing"));
           },
         },
 
@@ -141,7 +141,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           name: "Toggle Palm Mute",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(toggleNoteFeature("palmMute"));
+            application.dispatch(new ToggleNoteFeature("palmMute"));
           },
         },
 
@@ -149,7 +149,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           name: "Toggle Dead Note",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(toggleNoteFeature("dead"));
+            application.dispatch(new ToggleNoteFeature("dead"));
           },
         },
 
@@ -157,7 +157,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           name: "Toggle Ghost Note",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(toggleNoteFeature("ghost"));
+            application.dispatch(new ToggleNoteFeature("ghost"));
           },
         },
 
@@ -165,7 +165,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           name: "Toggle Staccato",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(toggleNoteFeature("staccato"));
+            application.dispatch(new ToggleNoteFeature("staccato"));
           },
         },
       },
