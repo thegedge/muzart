@@ -5,7 +5,7 @@ import { decreaseNoteValue } from "../actions/decreaseNoteValue";
 import { deleteNote } from "../actions/deleteNote";
 import { increaseNoteValue } from "../actions/increaseNoteValue";
 import { setNoteFret } from "../actions/setNoteFret";
-import { toggleHammerOnPullOff } from "../actions/toggleHammerOnPullOff";
+import { toggleNoteFeature } from "../actions/toggleNoteFeature";
 import { Application } from "../state/Application";
 import { useApplicationState } from "./ApplicationStateContext";
 
@@ -117,7 +117,55 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           name: "Toggle hammer-on / pull-off",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(toggleHammerOnPullOff());
+            application.dispatch(toggleNoteFeature("hammerOnPullOff"));
+          },
+        },
+
+        "v": {
+          name: "Toggle vibrato",
+          when: "editorFocused && !isPlaying",
+          action() {
+            application.dispatch(toggleNoteFeature("vibrato"));
+          },
+        },
+
+        "l": {
+          name: "Toggle let ring",
+          when: "editorFocused && !isPlaying",
+          action() {
+            application.dispatch(toggleNoteFeature("letRing"));
+          },
+        },
+
+        "p": {
+          name: "Toggle palm mute",
+          when: "editorFocused && !isPlaying",
+          action() {
+            application.dispatch(toggleNoteFeature("palmMute"));
+          },
+        },
+
+        "x": {
+          name: "Toggle palm mute",
+          when: "editorFocused && !isPlaying",
+          action() {
+            application.dispatch(toggleNoteFeature("dead"));
+          },
+        },
+
+        "g": {
+          name: "Toggle ghost note",
+          when: "editorFocused && !isPlaying",
+          action() {
+            application.dispatch(toggleNoteFeature("ghost"));
+          },
+        },
+
+        "s": {
+          name: "Toggle staccato",
+          when: "editorFocused && !isPlaying",
+          action() {
+            application.dispatch(toggleNoteFeature("staccato"));
           },
         },
       },

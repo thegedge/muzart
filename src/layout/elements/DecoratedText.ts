@@ -10,6 +10,8 @@ export class DecoratedText
 {
   readonly type = "DecoratedText";
 
+  readonly textElement: Text;
+
   constructor(
     box: Box,
     readonly text: string,
@@ -32,17 +34,20 @@ export class DecoratedText
 
     this.style ??= {};
     this.style.textAlign = textAlign;
+    this.textElement = new Text({
+      box: new Box(0, 0, box.width, box.height),
+      size: size,
+      value: text,
+      style: {
+        textAlign,
+        verticalAlign: "middle",
+      },
+    });
+    this.addElement(this.textElement);
+  }
 
-    this.addElement(
-      new Text({
-        box: new Box(0, 0, box.width, box.height),
-        size: size,
-        value: text,
-        style: {
-          textAlign,
-          verticalAlign: "middle",
-        },
-      }),
-    );
+  layout(): void {
+    this.textElement.box.width = this.box.width;
+    this.textElement.box.height = this.box.height;
   }
 }

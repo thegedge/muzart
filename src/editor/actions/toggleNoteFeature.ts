@@ -2,7 +2,12 @@ import * as notation from "../../notation";
 import { Action } from "../state/Application";
 import { withSelectionTracking } from "./withSelectionTracking";
 
-export const toggleHammerOnPullOff = (): Action => {
+type BooleanFeatures<T> = {
+  [K in keyof T]: T[K] extends boolean | undefined ? K : never;
+}[keyof T] &
+  string;
+
+export const toggleNoteFeature = (feature: BooleanFeatures<notation.NoteOptions>): Action => {
   let state: [notation.Chord, notation.Note];
 
   return withSelectionTracking({
@@ -20,7 +25,7 @@ export const toggleHammerOnPullOff = (): Action => {
       }
 
       state = [chord, note];
-      chord.changeNote(note.withChanges({ hammerOnPullOff: !note.hammerOnPullOff }));
+      chord.changeNote(note.withChanges({ [feature]: !note[feature] }));
     },
 
     undo(_application) {

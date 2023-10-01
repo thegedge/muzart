@@ -86,6 +86,8 @@ const drawDecoration = (
     context.setLineDash([]);
   }
 
+  context.beginPath();
+
   const tickX = tickOnLeft ? box.x : box.right;
   if (decoration.upTick && decoration.downTick) {
     context.moveTo(tickX, box.y);
