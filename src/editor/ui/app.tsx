@@ -1,11 +1,11 @@
 import { useEffect, useState } from "preact/hooks";
 import { BaseLocationHook, Router } from "wouter";
+import { ApplicationState } from "../utils/ApplicationStateContext";
+import { useEditorKeyBindings } from "../utils/useEditorKeyBindings";
+import ErrorBoundary from "./ErrorBoundary";
 import "./app.css";
-import ErrorBoundary from "./ui/ErrorBoundary";
-import { KeyBindingsOverlay } from "./ui/editor/KeyBindingsOverlay";
-import { ScoreDropZone } from "./ui/editor/ScoreDropZone";
-import { ApplicationState } from "./utils/ApplicationStateContext";
-import { useEditorKeyBindings } from "./utils/useEditorKeyBindings";
+import { KeyBindingsOverlay } from "./editor/KeyBindingsOverlay";
+import { ScoreDropZone } from "./editor/ScoreDropZone";
 
 export const App = () => {
   return (
@@ -55,7 +55,7 @@ const navigate = (to: string) => {
   window.location.hash = to;
 };
 
-export const useHashLocation: BaseLocationHook = () => {
+const useHashLocation: BaseLocationHook = () => {
   const [location, setLocation] = useState(currentLocation());
 
   useEffect(() => {
