@@ -68,10 +68,12 @@ export class Selection implements StorableObject {
   }
 
   reset() {
-    this.partIndex = 0;
-    this.measureIndex = 0;
-    this.chordIndex = 0;
-    this.noteIndex = 0;
+    this.update({
+      partIndex: 0,
+      measureIndex: 0,
+      chordIndex: 0,
+      noteIndex: 0,
+    });
   }
 
   update(selection: Partial<Selection>) {
@@ -173,11 +175,13 @@ export class Selection implements StorableObject {
   previousChord() {
     if (this.chordIndex == 0) {
       if (this.measureIndex > 0) {
-        this.measureIndex -= 1;
-        this.chordIndex = (this.measure?.chords.length ?? 1) - 1;
+        this.update({
+          measureIndex: this.measureIndex - 1,
+          chordIndex: (this.measure?.chords.length ?? 1) - 1,
+        });
       }
     } else {
-      this.chordIndex -= 1;
+      this.update({ chordIndex: this.chordIndex - 1 });
     }
   }
 
@@ -193,17 +197,19 @@ export class Selection implements StorableObject {
       }
 
       if (this.measureIndex < lastMeasureNumber) {
-        this.measureIndex += 1;
-        this.chordIndex = 0;
+        this.update({
+          measureIndex: this.measureIndex + 1,
+          chordIndex: 0,
+        });
       }
     } else {
-      this.chordIndex += 1;
+      this.update({ chordIndex: this.chordIndex + 1 });
     }
   }
 
   previousNote() {
     if (this.noteIndex > 0) {
-      this.noteIndex -= 1;
+      this.update({ noteIndex: this.noteIndex - 1 });
     }
   }
 
@@ -213,7 +219,7 @@ export class Selection implements StorableObject {
     }
 
     if (this.noteIndex < this.part.part.lineCount - 1) {
-      this.noteIndex += 1;
+      this.update({ noteIndex: this.noteIndex + 1 });
     }
   }
 
