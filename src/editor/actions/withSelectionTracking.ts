@@ -16,7 +16,7 @@ export function withSelectionTracking(action: Action): Action {
         application.selection.fromJSON(selection);
       }
       action.apply(application);
-      selection = application.selection.toJSON();
+      selection ??= application.selection.toJSON();
     },
 
     undo(application) {
@@ -24,7 +24,6 @@ export function withSelectionTracking(action: Action): Action {
         application.selection.fromJSON(selection);
       }
       action.undo(application);
-      selection = application.selection.toJSON();
     },
   };
 }
