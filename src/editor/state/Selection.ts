@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { inRange, last } from "lodash";
-import { makeAutoObservable, reaction } from "mobx";
+import { autorun, makeAutoObservable } from "mobx";
 import layout, { getAncestorOfType, layOutScore } from "../../layout";
 import * as notation from "../../notation";
 import { StorableObject, SyncStorage, numberOrDefault } from "../storage/Storage";
@@ -9,6 +9,7 @@ import { VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY } from "../storage/na
 export class Selection implements StorableObject {
   public score: layout.Score | null = null;
   private score_: notation.Score | null = null;
+  private autorunDispose: (() => void) | null = null;
 
   public partIndex = 0;
   public measureIndex = 0;
@@ -18,18 +19,6 @@ export class Selection implements StorableObject {
   constructor(readonly storage: SyncStorage) {
     this.storage.loadObject(VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY, this);
     makeAutoObservable(this, undefined, { deep: false });
-
-    reaction(
-      () => [this.score_, this.partIndex] as const,
-      ([score, partIndex]) => {
-        if (score && partIndex >= 0) {
-          this.score = layOutScore(score, [partIndex]);
-        }
-      },
-      {
-        fireImmediately: true,
-      },
-    );
   }
 
   get part(): layout.Part | undefined {
@@ -94,6 +83,7 @@ export class Selection implements StorableObject {
     const partChanged = selection.partIndex != undefined && selection.partIndex != this.partIndex;
     if (partChanged) {
       this.partIndex = selection.partIndex!;
+      this.reflow();
     }
 
     const measureChanged = selection.measureIndex != undefined && selection.measureIndex != this.measureIndex;
@@ -274,5 +264,17 @@ export class Selection implements StorableObject {
     this.measureIndex = numberOrDefault(value.measureIndex, 0);
     this.chordIndex = numberOrDefault(value.chordIndex, 0);
     this.noteIndex = numberOrDefault(value.noteIndex, 0);
+  }
+
+  private reflow() {
+    this.autorunDispose?.();
+
+    const score = this.score_;
+    const partIndex = this.partIndex;
+    if (score && partIndex >= 0) {
+      this.autorunDispose = autorun(() => {
+        this.score = layOutScore(score, [partIndex]);
+      });
+    }
   }
 }
