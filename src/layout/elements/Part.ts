@@ -7,6 +7,7 @@ export const PAGE_MARGIN = 12;
 
 export class Part extends SimpleGroup<types.Page, "Part", types.Score> implements types.Part {
   readonly type = "Part";
+  readonly measures: types.Measure[] = [];
 
   constructor(
     box: Box,

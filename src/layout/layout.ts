@@ -47,6 +47,7 @@ function layOutPart(score: notation.Score, part: notation.Part): Part {
   let line = new PageLine(new Box(0, 0, contentWidth, 0), part.lineCount);
   for (const measureToLayOut of measures) {
     const measure = new Measure(part, measureToLayOut);
+    layoutPart.measures.push(measure);
 
     // Determine if we need to be on a new line.
     //

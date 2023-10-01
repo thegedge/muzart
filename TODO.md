@@ -38,7 +38,10 @@
 
 ## Rendering
 
+- Needs layout / render
+  - Staccato
+  -
 - Inherited CSS properties
-- Text clipped at the first line on a page; see Guitar 1 (slash) track of sweet child of mine, measure 130
+- Text slightly clipped at the first line on a page; see Guitar 1 (slash) track of sweet child of mine, measure 130
 
 ## Bugs

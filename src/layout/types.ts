@@ -47,6 +47,7 @@ export interface Part extends LayoutElement<Score> {
   type: "Part";
   part: notation.Part;
   children: Page[];
+  measures: Measure[];
 }
 
 export type PageElement = Group<PageElement> | ChordDiagram | Space | Text | Group<LineElement> | PageLine;

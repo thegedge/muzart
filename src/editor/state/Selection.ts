@@ -41,12 +41,7 @@ export class Selection implements StorableObject {
   }
 
   get measure(): layout.Measure | undefined {
-    if (!this.page) {
-      return;
-    }
-
-    const measureIndex = this.measureIndex - (this.page.measures[0]?.measure.number ?? -1) + 1;
-    return this.page.measures[measureIndex];
+    return this.part?.measures[this.measureIndex];
   }
 
   get chord(): layout.Chord | layout.Rest | undefined {
@@ -175,9 +170,10 @@ export class Selection implements StorableObject {
   previousChord() {
     if (this.chordIndex == 0) {
       if (this.measureIndex > 0) {
+        const previousMeasure = this.part?.measures[this.measureIndex - 1];
         this.update({
           measureIndex: this.measureIndex - 1,
-          chordIndex: (this.measure?.chords.length ?? 1) - 1,
+          chordIndex: (previousMeasure?.chords.length ?? 1) - 1,
         });
       }
     } else {
