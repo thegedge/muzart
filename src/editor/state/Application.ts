@@ -93,7 +93,7 @@ export class Application {
       }
 
       const source = new File([blob], this.currentUrl.pathname);
-      this.selection.setScore((yield load(source)) as notation.Score);
+      this.setScore((yield load(source)) as notation.Score);
 
       const lastTab = this.settingsStorage.get(VIEW_STATE_NAMESPACE, VIEW_STATE_LAST_TAB_SUBKEY);
       if (lastTab != url) {
@@ -113,8 +113,8 @@ export class Application {
   });
 
   setScore(score: notation.Score | null) {
-    this.playback.stop();
     this.selection.setScore(score);
+    this.playback.reset();
   }
 
   // Various states of the editor (primarily used to drive key bindings)

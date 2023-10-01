@@ -64,6 +64,7 @@ export class PlaybackController {
   reset() {
     this.mutedParts = new Array(this.selection.score?.score.parts.length).fill(false);
     this.soloedParts = new Array(this.selection.score?.score.parts.length).fill(false);
+    this.stop();
   }
 
   get instrument() {

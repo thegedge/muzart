@@ -210,7 +210,13 @@ export class CanvasState {
   }
 
   updateViewport() {
-    if (!this.canvas || this.canvas.width == 0 || this.canvas.height == 0) {
+    if (
+      !this.canvas ||
+      this.canvas.width == 0 ||
+      this.canvas.height == 0 ||
+      this.canvasSpaceSize.width == 0 ||
+      this.canvasSpaceSize.height == 0
+    ) {
       return;
     }
 

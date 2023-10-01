@@ -8,16 +8,16 @@ import { VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY } from "../storage/na
 
 export class Selection implements StorableObject {
   public score: layout.Score | null = null;
-  private score_: notation.Score | null = null;
-  private autorunDispose: (() => void) | null = null;
-
   public partIndex = 0;
   public measureIndex = 0;
   public chordIndex = 0;
   public noteIndex = 0;
 
+  private score_: notation.Score | null = null;
+  private autorunDispose: (() => void) | null = null;
+
   constructor(readonly storage: SyncStorage) {
-    this.storage.loadObject(VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY, this);
+    storage.loadObject(VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY, this);
     makeAutoObservable(this, undefined, { deep: false });
   }
 
@@ -114,7 +114,7 @@ export class Selection implements StorableObject {
     }
 
     if (partChanged || measureChanged || chordChanged || noteChanged) {
-      void this.storage.store(VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY, this);
+      this.storage.store(VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY, this).catch(console.error);
     }
   }
 
@@ -234,20 +234,27 @@ export class Selection implements StorableObject {
   }
 
   setScore(score: notation.Score | null) {
+    // On our first set, we don't want to override any state we loaded from storage
+    const shouldUpdate = this.score_ != null;
+
     this.score_ = score;
 
-    // This forces an update in `this.update` below
-    this.partIndex = -1;
-    this.measureIndex = -1;
-    this.chordIndex = -1;
-    this.noteIndex = -1;
+    if (shouldUpdate) {
+      // This forces an update in `this.update` below
+      this.partIndex = -1;
+      this.measureIndex = -1;
+      this.chordIndex = -1;
+      this.noteIndex = -1;
 
-    this.update({
-      partIndex: 0,
-      measureIndex: 0,
-      chordIndex: 0,
-      noteIndex: 0,
-    });
+      this.update({
+        partIndex: 0,
+        measureIndex: 0,
+        chordIndex: 0,
+        noteIndex: 0,
+      });
+    } else {
+      this.reflow();
+    }
   }
 
   toJSON() {
