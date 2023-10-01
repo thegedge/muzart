@@ -21,7 +21,6 @@ import { StyleComputer } from "../../../utils/StyleComputer";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "./Canvas";
 import { StatefulInput, StatefulTextInputState } from "./StatefulInput";
-import "./score.css";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
@@ -94,7 +93,7 @@ export const Score = observer((_props: Record<string, never>) => {
     const render: RenderFunction = (context, viewport) => {
       const stylesheet = Array.from(document.styleSheets).find((ss) => {
         for (let ruleIndex = 0; ruleIndex < ss.cssRules.length; ++ruleIndex) {
-          if (ss.cssRules.item(ruleIndex)?.cssText.includes(".score")) {
+          if (ss.title == "muzart") {
             return true;
           }
         }

@@ -46,7 +46,7 @@ export class StyleComputer<ElementType extends LayoutElement = LayoutElement> {
           const attributeSelector = rest.join("").slice(0, -1);
           const [name, value] = attributeSelector.split("=");
           clazz = first.substring(1);
-          attribute = [name as keyof ElementType, value.slice(1, -1)];
+          attribute = [name as keyof ElementType, value?.slice(1, -1)];
         } else {
           clazz = selector.substring(1);
         }
