@@ -14,6 +14,9 @@ module.exports = {
       gridTemplateColumns: {
         // Track name/solo/mute :: Measure box list
         "part-list": "max-content 1fr",
+
+        // binding :: description
+        "key-bindings": "7em auto",
       },
       keyframes: {
         bounce: {
