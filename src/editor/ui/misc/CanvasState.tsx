@@ -289,7 +289,9 @@ export class CanvasState {
     cancelAnimationFrame(this.frameHandle);
 
     this.frameHandle = requestAnimationFrame((_time) => {
-      if (!this.canvas) {
+      // The second part of this check, `this.centerOnFirstResize`, essentially waits for the viewport to settle before rendering.
+      // This avoids weird issues where the tab/score appears to jump around while being loaded (maybe find a better way to defer?).
+      if (!this.canvas || this.centerOnFirstResize) {
         return;
       }
 
