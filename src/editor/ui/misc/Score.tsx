@@ -77,10 +77,15 @@ export const Score = observer((_props: Record<string, never>) => {
   const renderState = useLocalObservable(() => ({ epoch: 0 }));
   useEffect(() => {
     import.meta.hot?.on("muzart:render", () => {
+      const link = document.querySelector(`link[href^="score.css"]`);
+      if (link) {
+        (link as HTMLLinkElement).href = `score.css?v=${renderState.epoch}`;
+      }
+
       // Set a timeout to allow the CSS to reload
       setTimeout(() => {
         renderState.epoch += 1;
-      }, 100);
+      }, 200);
     });
   }, [renderState]);
 
