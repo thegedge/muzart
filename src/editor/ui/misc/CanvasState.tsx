@@ -143,6 +143,11 @@ export class CanvasState {
       if (canvasSpaceWidth < pageW) {
         this.scrollX = -0.5 * (pageW - canvasSpaceWidth);
       }
+
+      const canvasSpaceHeight = this.canvasSpaceSize.height;
+      if (canvasSpaceHeight < pageH) {
+        this.scrollY = 0;
+      }
     } else {
       this.scrollX = x - 0.5 * pageW;
       this.scrollY = y - 0.5 * pageH;
@@ -235,7 +240,7 @@ export class CanvasState {
       this.canvas.height / this.userspaceToDeviceFactor,
     );
 
-    void this.storage.store(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY, this);
+    this.storage.store(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY, this).catch(console.error);
 
     this.redraw();
   }
