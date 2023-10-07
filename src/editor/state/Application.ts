@@ -25,7 +25,11 @@ export class Application {
   public error: Error | null = null;
   private currentUrl: URL | null = null;
 
-  public showHelp = false;
+  /** Whether or not the key bindings overlay should be visible */
+  public showKeyBindingsOverlay = false;
+
+  /** Whether or not to show the key bindings overlay */
+  public editingDynamic = false;
 
   /**
    * The undo stack for the editor.
@@ -68,8 +72,12 @@ export class Application {
     }
   }
 
+  toggleEditingDynamic() {
+    this.editingDynamic = !this.editingDynamic;
+  }
+
   toggleHelp() {
-    this.showHelp = !this.showHelp;
+    this.showKeyBindingsOverlay = !this.showKeyBindingsOverlay;
   }
 
   loadScore = flow(function* (this: Application, url: string) {
@@ -119,7 +127,7 @@ export class Application {
   }
 
   get helpVisible() {
-    return this.showHelp;
+    return this.showKeyBindingsOverlay;
   }
 
   get editorFocused() {

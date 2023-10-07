@@ -33,4 +33,12 @@
   .github-fork a {
     @apply flex justify-center items-end py-4 w-48 h-48;
   }
+
+  .palette {
+    @apply bg-gray-800 w-full h-auto rounded-md flex justify-around italic font-serif;
+  }
+
+  .palette > * {
+    @apply cursor-pointer hover:bg-gray-600 py-1 rounded-md px-3 text-center;
+  }
 }

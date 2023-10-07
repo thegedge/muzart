@@ -21,12 +21,12 @@ export class StatefulTextInputState {
       return {};
     }
 
-    const absoluteBox = toAncestorCoordinateSystem(this.element);
+    const box = canvas.userSpaceToCanvasViewport(toAncestorCoordinateSystem(this.element));
     return {
-      top: `${absoluteBox.y * canvas.userspaceToCanvasFactor - canvas.scrollY}px`,
-      left: `${absoluteBox.x * canvas.userspaceToCanvasFactor - canvas.scrollX}px`,
-      width: `${absoluteBox.width * canvas.userspaceToCanvasFactor}px`,
-      height: `${absoluteBox.height * canvas.userspaceToCanvasFactor}px`,
+      top: `${box.y}px`,
+      left: `${box.x}px`,
+      width: `${box.width}px`,
+      height: `${box.height}px`,
       fontSize: `${this.element.size * canvas.userspaceToCanvasFactor}px`,
       outline: "none",
       ...this.element.style,

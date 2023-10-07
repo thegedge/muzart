@@ -37,6 +37,9 @@ module.exports = {
       fontSize: {
         "2xs": "0.6rem",
       },
+      zIndex: {
+        top: "1000000",
+      },
     },
   },
   variants: {},

@@ -113,6 +113,14 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           ]),
         ),
 
+        "d": {
+          name: "Set note dynamic",
+          when: "editorFocused && !isPlaying",
+          action() {
+            application.toggleEditingDynamic();
+          },
+        },
+
         "h": {
           name: "Toggle Hammer-on / Pull-off",
           when: "editorFocused && !isPlaying",

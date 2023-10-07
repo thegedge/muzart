@@ -245,6 +245,15 @@ export class CanvasState {
     this.redraw();
   }
 
+  userSpaceToCanvasViewport(box: Box) {
+    return new Box(
+      box.x * this.userspaceToCanvasFactor - this.scrollX,
+      box.y * this.userspaceToCanvasFactor - this.scrollY,
+      box.width * this.userspaceToCanvasFactor,
+      box.height * this.userspaceToCanvasFactor,
+    );
+  }
+
   canvasViewportToUserSpace(pt: Point): Point {
     if (!this.canvas) {
       return pt;

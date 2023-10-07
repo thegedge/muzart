@@ -31,7 +31,6 @@
   - Bends
   - Tuplets
   - Ties
-  - Dynamic
   - Grace notes
   - Harmonics
   - Slides
@@ -47,3 +46,7 @@
 ## Bugs
 
 - Vibrato doesn't work on mid/end sections of ties
+
+## Features
+
+- Swap out body with SVG when printing (see beforeprint / afterprint listeners)

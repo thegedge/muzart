@@ -15,12 +15,15 @@ import layout, {
   isChord,
   toAncestorCoordinateSystem,
 } from "../../../layout";
+import { NoteDynamic } from "../../../notation";
 import { noteValueToSeconds } from "../../../playback/util/durations";
 import { renderScoreElement } from "../../../render/renderScoreElement";
 import { StyleComputer } from "../../../utils/StyleComputer";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
+import { ElementBoundPalette } from "../editor/ElementBoundPalette";
 import { Canvas, Point, RenderFunction } from "./Canvas";
 import { StatefulInput, StatefulTextInputState } from "./StatefulInput";
+import { ChangeNote } from "../../actions/ChangeNote";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
@@ -264,6 +267,26 @@ export const Score = observer((_props: Record<string, never>) => {
   return (
     <div className="flex-1 overflow-hidden">
       {textInputState?.visible && <StatefulInput state={textInputState} />}
+      {application.editingDynamic && application.selection.element?.type == "Note" && (
+        <ElementBoundPalette
+          element={application.selection.element}
+          options={{
+            [NoteDynamic.Pianississimo]: NoteDynamic.Pianississimo,
+            [NoteDynamic.Pianissimo]: NoteDynamic.Pianissimo,
+            [NoteDynamic.Piano]: NoteDynamic.Piano,
+            [NoteDynamic.MezzoPiano]: NoteDynamic.MezzoPiano,
+            [NoteDynamic.MezzoForte]: NoteDynamic.MezzoForte,
+            [NoteDynamic.Forte]: NoteDynamic.Forte,
+            [NoteDynamic.Fortissimo]: NoteDynamic.Fortissimo,
+            [NoteDynamic.Fortississimo]: NoteDynamic.Fortississimo,
+          }}
+          currentValue={application.selection.element.note.dynamic}
+          onSelect={(dynamic) => {
+            application.dispatch(new ChangeNote({ dynamic }));
+            application.toggleEditingDynamic();
+          }}
+        />
+      )}
       <Canvas
         onMouseDown={onMouseDown}
         onDoubleClick={onDoubleClick}

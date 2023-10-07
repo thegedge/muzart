@@ -1,0 +1,47 @@
+import * as CSS from "csstype";
+import { observer } from "mobx-react-lite";
+import { LayoutElement, PX_PER_MM, toAncestorCoordinateSystem } from "../../../layout";
+import { useApplicationState } from "../../utils/ApplicationStateContext";
+
+export const ElementBoundPalette = observer(
+  <ElementT extends LayoutElement, T>(props: {
+    element: ElementT;
+    currentValue?: T;
+    options: Record<string, T>;
+    onSelect: (value: T, element: ElementT) => void;
+  }) => {
+    const application = useApplicationState();
+
+    const box = application.canvas.userSpaceToCanvasViewport(toAncestorCoordinateSystem(props.element));
+    const style = {
+      top: `${box.y}px`,
+      left: `${box.centerX}px`,
+      fontSize: `${Math.log(-application.canvas.userspaceToCanvasFactor / PX_PER_MM)}px`,
+      transform: `translate(-50%, -100%)`,
+      color: "#ffffff",
+      position: "absolute",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    } satisfies CSS.Properties;
+
+    return (
+      <div style={style}>
+        <div className="palette">
+          {Object.entries(props.options).map(([label, value]) => (
+            <span
+              key={label}
+              onClick={() => props.onSelect(value, props.element)}
+              className={`${value == props.currentValue ? " bg-gray-500" : ""}`}
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+        <svg className="fill-gray-800 h-auto max-h-4" viewBox="0 0 24 10">
+          <path d="M 0 0 c 12 1 10 10 12 10 C 14 10 12 1 24 0" />
+        </svg>
+      </div>
+    );
+  },
+);
