@@ -14,7 +14,7 @@ export class Selection implements StorableObject {
   public noteIndex = 0;
 
   private score_: notation.Score | null = null;
-  private autorunDispose: (() => void) | null = null;
+  private reflowDisposer: (() => void) | null = null;
 
   constructor(readonly storage: SyncStorage) {
     storage.loadObject(VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY, this);
@@ -99,13 +99,13 @@ export class Selection implements StorableObject {
     }
 
     if (partChanged || measureChanged) {
-      const measure = this.measure;
+      // So normally we'd use `this.measure`, but when we change parts and have to reflow, the reflow is in an autorun, and mobx
+      // reaction-y things are _scheduled_, so `this.score` hasn't properly been set up yet, and `this.part` will be undefined.
+      const measure = this.score_?.parts[this.partIndex]?.measures[this.measureIndex];
       if (measure) {
-        let chord = measure.chords[this.chordIndex];
-        if (!chord) {
+        if (this.chordIndex >= measure.chords.length) {
           this.chordIndex = 0;
           this.noteIndex = 0;
-          chord = measure.chords[0];
         }
       }
     }
@@ -276,12 +276,12 @@ export class Selection implements StorableObject {
   }
 
   private reflow() {
-    this.autorunDispose?.();
+    this.reflowDisposer?.();
 
     const score = this.score_;
     const partIndex = this.partIndex;
     if (score && partIndex >= 0) {
-      this.autorunDispose = autorun(() => {
+      this.reflowDisposer = autorun(() => {
         this.score = layOutScore(score, [partIndex]);
       });
     }
