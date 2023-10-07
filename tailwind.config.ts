@@ -1,8 +1,6 @@
-/** @typedef { import('tailwindcss/defaultConfig') } DefaultConfig */
-/** @typedef { import('tailwindcss/defaultTheme') } DefaultTheme */
+import type { Config } from "tailwindcss";
 
-/** @type { DefaultConfig & { theme: { extend: DefaultTheme } } } */
-module.exports = {
+export default {
   mode: "jit",
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   safelist: ["grid-cols-1", "grid-cols-2", "grid-cols-3", "grid-cols-4"],
@@ -44,4 +42,4 @@ module.exports = {
   },
   variants: {},
   plugins: [],
-};
+} satisfies Config;
