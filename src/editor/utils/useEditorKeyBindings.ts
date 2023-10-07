@@ -6,7 +6,7 @@ import { DeleteNote } from "../actions/DeleteNote";
 import { IncreaseNoteValue } from "../actions/IncreaseNoteValue";
 import { SetNoteFret } from "../actions/SetNoteFret";
 import { ToggleNoteFeature } from "../actions/ToggleNoteFeature";
-import { Application } from "../state/Application";
+import { UIState } from "../state/UIState";
 import { useApplicationState } from "./ApplicationStateContext";
 
 export interface KeyBinding {
@@ -21,6 +21,7 @@ export type KeyBindingGroups = Record<string, Record<string, KeyBinding>>;
 
 export const useEditorKeyBindings = (): KeyBindingGroups => {
   const application = useApplicationState();
+  const state = application.state;
 
   const keybindingGroups = useMemo<KeyBindingGroups>(
     () => ({
@@ -117,7 +118,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           name: "Set note dynamic",
           when: "editorFocused && !isPlaying",
           action() {
-            application.toggleEditingDynamic();
+            state.toggleEditingDynamic();
           },
         },
 
@@ -281,7 +282,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
         "Shift + ?": {
           when: "editorFocused",
           action() {
-            application.toggleHelp();
+            state.toggleHelp();
           },
         },
 
@@ -289,7 +290,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
         "Escape": {
           when: "helpVisible",
           action() {
-            application.toggleHelp();
+            state.toggleHelp();
           },
         },
 
@@ -302,7 +303,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
         },
       },
     }),
-    [application],
+    [application, state],
   );
 
   useEffect(() => {
@@ -334,9 +335,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
         if (binding.when) {
           const pieces = binding.when.split(" && ");
           const validState = pieces.every((piece) => {
-            return piece[0] == "!"
-              ? !application[piece.substring(1) as keyof Application]
-              : application[piece as keyof Application];
+            return piece[0] == "!" ? !state[piece.substring(1) as keyof UIState] : state[piece as keyof UIState];
           });
 
           if (!validState) {
@@ -354,7 +353,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
     return () => {
       document.body.removeEventListener("keydown", listener);
     };
-  }, [keybindingGroups, application]);
+  }, [keybindingGroups, state]);
 
   return keybindingGroups;
 };

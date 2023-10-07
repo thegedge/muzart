@@ -267,7 +267,7 @@ export const Score = observer((_props: Record<string, never>) => {
   return (
     <div className="flex-1 overflow-hidden">
       {textInputState?.visible && <StatefulInput state={textInputState} />}
-      {application.editingDynamic && application.selection.element?.type == "Note" && (
+      {application.state.editingDynamic && application.selection.element?.type == "Note" && (
         <ElementBoundPalette
           element={application.selection.element}
           options={{
@@ -283,7 +283,7 @@ export const Score = observer((_props: Record<string, never>) => {
           currentValue={application.selection.element.note.dynamic}
           onSelect={(dynamic) => {
             application.dispatch(new ChangeNote({ dynamic }));
-            application.toggleEditingDynamic();
+            application.state.toggleEditingDynamic();
           }}
         />
       )}

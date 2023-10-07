@@ -10,7 +10,7 @@ export const KeyBindingsOverlay = observer((props: { bindings: KeyBindingGroups 
   return (
     <div
       className={`flex flex-col gap-4 absolute z-top bg-black/80 backdrop-blur-md text-gray-300 top-0 bottom-0 left-0 right-0 overflow-clip p-4 ${
-        application.showKeyBindingsOverlay ? "block" : "hidden"
+        application.state.helpVisible ? "block" : "hidden"
       }`}
     >
       <h1 className="flex-none text-2xl font-bold text-center">Keyboard shortcuts</h1>

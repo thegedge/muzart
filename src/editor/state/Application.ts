@@ -11,6 +11,7 @@ import { VIEW_STATE_CANVAS_SUBKEY, VIEW_STATE_LAST_TAB_SUBKEY, VIEW_STATE_NAMESP
 import { CanvasState } from "../ui/misc/CanvasState";
 import { DebugContext } from "./DebugContext";
 import { Selection } from "./Selection";
+import { UIState } from "./UIState";
 
 export interface Hit<T> {
   /** The thing that was hit with a hit test */
@@ -25,11 +26,8 @@ export class Application {
   public error: Error | null = null;
   private currentUrl: URL | null = null;
 
-  /** Whether or not the key bindings overlay should be visible */
-  public showKeyBindingsOverlay = false;
-
-  /** Whether or not to show the key bindings overlay */
-  public editingDynamic = false;
+  /** Various states the UI is in (e.g., key bindings overlay visible) */
+  readonly state: UIState;
 
   /**
    * The undo stack for the editor.
@@ -48,6 +46,7 @@ export class Application {
     public playback: PlaybackController,
   ) {
     this.canvas = new CanvasState(this.settingsStorage);
+    this.state = new UIState(this.playback);
     makeAutoObservable(this, undefined, { deep: false });
   }
 
@@ -70,14 +69,6 @@ export class Application {
     if (action) {
       action.apply(this);
     }
-  }
-
-  toggleEditingDynamic() {
-    this.editingDynamic = !this.editingDynamic;
-  }
-
-  toggleHelp() {
-    this.showKeyBindingsOverlay = !this.showKeyBindingsOverlay;
   }
 
   loadScore = flow(function* (this: Application, url: string) {
@@ -118,20 +109,5 @@ export class Application {
   setScore(score: notation.Score | null) {
     this.selection.setScore(score);
     this.playback.reset();
-  }
-
-  // Various states of the editor (primarily used to drive key bindings)
-
-  get isPlaying() {
-    return this.playback.playing;
-  }
-
-  get helpVisible() {
-    return this.showKeyBindingsOverlay;
-  }
-
-  get editorFocused() {
-    // TODO this works...for now
-    return document.activeElement == document.body;
   }
 }
