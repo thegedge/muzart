@@ -78,6 +78,8 @@ const presentKey = (key: string): string => {
     case "Space":
     case " ":
       return "␣";
+    case "Escape":
+      return "Esc";
     default:
       return key;
   }

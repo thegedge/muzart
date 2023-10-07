@@ -177,6 +177,14 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
             application.dispatch(new ToggleNoteFeature("staccato"));
           },
         },
+
+        "Escape": {
+          name: "Close note dynamic palette",
+          when: "editingDynamic",
+          action() {
+            state.toggleEditingDynamic();
+          },
+        },
       },
 
       Navigation: {
@@ -307,11 +315,16 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
   );
 
   useEffect(() => {
-    const bindings = Object.fromEntries(
-      Object.values(keybindingGroups)
-        .flatMap((group) => Object.entries(group))
-        .map(([key, binding]) => [key, binding]),
-    );
+    const bindingGroups = Object.values(keybindingGroups)
+      .flatMap((group) => Object.entries(group))
+      .reduce(
+        (bindings, [key, binding]) => {
+          bindings[key] ??= [];
+          bindings[key].push(binding);
+          return bindings;
+        },
+        {} as Record<string, KeyBinding[]>,
+      );
 
     const listener = (event: KeyboardEvent) => {
       const pieces = [];
@@ -330,22 +343,32 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
       pieces.push(event.key);
 
       const sequence = pieces.join(KEY_BINDING_SEPARATOR);
-      const binding = bindings[sequence];
-      if (binding) {
-        if (binding.when) {
+      console.log("Key sequence", sequence);
+      const bindings = bindingGroups[sequence];
+      if (bindings) {
+        // TODO we should write a test to guarantee no overlaps here, but need to encode all possible states the UI can be in.
+        //   Once we do that, we can change this from `filter` to `find`.
+        const applicableBindings = bindings.filter((binding) => {
+          if (!binding.when) {
+            return true;
+          }
+
           const pieces = binding.when.split(" && ");
-          const validState = pieces.every((piece) => {
+          return pieces.every((piece) => {
             return piece[0] == "!" ? !state[piece.substring(1) as keyof UIState] : state[piece as keyof UIState];
           });
+        });
 
-          if (!validState) {
-            return;
-          }
+        if (applicableBindings.length > 1) {
+          console.warn("Multiple bindings found for sequence", sequence, ":", applicableBindings);
+          return;
         }
 
-        event.stopPropagation();
-        event.preventDefault();
-        binding.action();
+        if (applicableBindings.length == 1) {
+          event.stopPropagation();
+          event.preventDefault();
+          applicableBindings[0].action();
+        }
       }
     };
 
