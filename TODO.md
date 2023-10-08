@@ -49,6 +49,7 @@
 ### Other
 
 - Swap out body with SVG when printing (see beforeprint / afterprint listeners)
+- Remember play/mute settings for tracks
 
 ## Bugs
 

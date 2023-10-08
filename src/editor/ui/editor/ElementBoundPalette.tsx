@@ -32,6 +32,7 @@ export const ElementBoundPalette = observer(
       flexDirection: "column",
       alignItems: "center",
       outline: "none",
+      filter: "drop-shadow(3px 3px 2px rgba(0, 0, 0, 0.3))",
     } satisfies CSS.Properties;
 
     return (
