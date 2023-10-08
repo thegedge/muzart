@@ -36,7 +36,6 @@
   - Tuplets
   - Ties
   - Grace notes
-  - Harmonics
   - Slides
 
 ### Rendering
@@ -52,6 +51,10 @@
 - Remember play/mute settings for tracks
 
 ## Bugs
+
+### Layout
+
+- Need to measure text to have an appropriately sized box
 
 ### Rendering
 

@@ -125,7 +125,7 @@ export class AboveStaff extends GridGroup<LineElement> {
         }
       } else if (typeof startIndex == "number") {
         if (predicateValue) {
-          this.addElement(elementGenerator(predicateValue, amount), {
+          this.addElement(elementGenerator(predicateValue, amount + 1), {
             startColumn: startIndex,
             endColumn: endIndex,
           });

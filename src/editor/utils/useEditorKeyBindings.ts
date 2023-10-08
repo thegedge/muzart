@@ -111,6 +111,14 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           },
         },
 
+        "n": {
+          name: "Set note harmonic",
+          when: "editorFocused && !isPlaying && !helpVisible",
+          action() {
+            state.toggleEditingHarmonic();
+          },
+        },
+
         "h": {
           name: "Toggle Hammer-on / Pull-off",
           when: "editorFocused && !isPlaying",
@@ -168,10 +176,19 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
         },
 
         "Escape": {
-          name: "Close note dynamic palette",
           when: "editingDynamic && !helpVisible",
           action() {
             state.toggleEditingDynamic();
+          },
+        },
+      },
+
+      // TODO support an easier way of having the same key binding in the same group
+      Other: {
+        Escape: {
+          when: "editingHarmonic && !helpVisible",
+          action() {
+            state.toggleEditingHarmonic();
           },
         },
       },

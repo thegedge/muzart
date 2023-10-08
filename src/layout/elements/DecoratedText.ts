@@ -36,7 +36,7 @@ export class DecoratedText
     this.style.textAlign = textAlign;
     this.textElement = new Text({
       box: new Box(0, 0, box.width, box.height),
-      size: size,
+      size,
       value: text,
       style: {
         textAlign,

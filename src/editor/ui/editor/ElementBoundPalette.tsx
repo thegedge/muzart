@@ -9,6 +9,7 @@ export const ElementBoundPalette = observer(
     element: ElementT;
     currentValue?: T;
     options: Record<string, T>;
+    close: () => void;
     onSelect: (value: T, element: ElementT) => void;
   }) => {
     const application = useApplicationState();
@@ -36,12 +37,15 @@ export const ElementBoundPalette = observer(
     } satisfies CSS.Properties;
 
     return (
-      <div ref={ref} style={style} tabIndex={1} onBlur={() => application.state.toggleEditingDynamic()}>
+      <div ref={ref} style={style} tabIndex={1} onBlur={() => props.close()}>
         <div className="palette">
           {Object.entries(props.options).map(([label, value]) => (
             <span
               key={label}
-              onClick={() => props.onSelect(value, props.element)}
+              onClick={() => {
+                props.onSelect(value, props.element);
+                props.close();
+              }}
               className={`${value == props.currentValue ? " bg-gray-500" : ""}`}
             >
               {label}
