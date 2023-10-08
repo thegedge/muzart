@@ -1,6 +1,10 @@
+<!-- markdownlint-disable-file MD024 -->
+
 # Muzart TODO
 
-## Editor actions
+## Features
+
+### Editor actions
 
 - Score
   - Edit all of the bits of the score header
@@ -35,18 +39,24 @@
   - Harmonics
   - Slides
 
-## Rendering
+### Rendering
 
-- Needs layout / render
+- Needs layout / lacking render
   - Staccato
   -
 - Inherited CSS properties
-- Text slightly clipped at the first line on a page; see Guitar 1 (slash) track of sweet child of mine, measure 130
+
+### Other
+
+- Swap out body with SVG when printing (see beforeprint / afterprint listeners)
 
 ## Bugs
 
+### Rendering
+
+- Text slightly clipped at the first line on a page; see Guitar 1 (slash) track of sweet child of mine, measure 130
+
+### Other
+
 - Vibrato doesn't work on mid/end sections of ties
-
-## Features
-
-- Swap out body with SVG when printing (see beforeprint / afterprint listeners)
+- Not hearing dead notes

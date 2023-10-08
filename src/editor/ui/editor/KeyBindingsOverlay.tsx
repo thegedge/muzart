@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { Fragment } from "preact";
 import { IS_MAC } from "../../../utils/platform";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { KEY_BINDING_SEPARATOR, KeyBindingGroups } from "../../utils/useEditorKeyBindings";
+import { KeyBindingGroups, KEY_BINDING_SEPARATOR } from "../../utils/useKeyBindings";
 
 export const KeyBindingsOverlay = observer((props: { bindings: KeyBindingGroups }) => {
   const application = useApplicationState();

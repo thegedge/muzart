@@ -1,23 +1,12 @@
 import { range } from "lodash";
-import { useEffect, useMemo } from "preact/hooks";
-import { IS_MAC } from "../../utils/platform";
+import { useMemo } from "preact/hooks";
 import { DecreaseNoteValue } from "../actions/DecreaseNoteValue";
 import { DeleteNote } from "../actions/DeleteNote";
 import { IncreaseNoteValue } from "../actions/IncreaseNoteValue";
 import { SetNoteFret } from "../actions/SetNoteFret";
 import { ToggleNoteFeature } from "../actions/ToggleNoteFeature";
-import { UIState } from "../state/UIState";
 import { useApplicationState } from "./ApplicationStateContext";
-
-export interface KeyBinding {
-  name?: string;
-  when?: string;
-  action: () => void;
-}
-
-export const KEY_BINDING_SEPARATOR = " + ";
-
-export type KeyBindingGroups = Record<string, Record<string, KeyBinding>>;
+import { KeyBindingGroups, useKeyBindings } from "./useKeyBindings";
 
 export const useEditorKeyBindings = (): KeyBindingGroups => {
   const application = useApplicationState();
@@ -314,69 +303,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
     [application, state],
   );
 
-  useEffect(() => {
-    const bindingGroups = Object.values(keybindingGroups)
-      .flatMap((group) => Object.entries(group))
-      .reduce(
-        (bindings, [key, binding]) => {
-          bindings[key] ??= [];
-          bindings[key].push(binding);
-          return bindings;
-        },
-        {} as Record<string, KeyBinding[]>,
-      );
-
-    const listener = (event: KeyboardEvent) => {
-      const pieces = [];
-      if (event.shiftKey) {
-        pieces.push("Shift");
-      }
-
-      if (event.altKey) {
-        pieces.push("Alt");
-      }
-
-      if ((IS_MAC && event.metaKey) || (!IS_MAC && event.ctrlKey)) {
-        pieces.push("$mod");
-      }
-
-      pieces.push(event.key);
-
-      const sequence = pieces.join(KEY_BINDING_SEPARATOR);
-      console.log("Key sequence", sequence);
-      const bindings = bindingGroups[sequence];
-      if (bindings) {
-        // TODO we should write a test to guarantee no overlaps here, but need to encode all possible states the UI can be in.
-        //   Once we do that, we can change this from `filter` to `find`.
-        const applicableBindings = bindings.filter((binding) => {
-          if (!binding.when) {
-            return true;
-          }
-
-          const pieces = binding.when.split(" && ");
-          return pieces.every((piece) => {
-            return piece[0] == "!" ? !state[piece.substring(1) as keyof UIState] : state[piece as keyof UIState];
-          });
-        });
-
-        if (applicableBindings.length > 1) {
-          console.warn("Multiple bindings found for sequence", sequence, ":", applicableBindings);
-          return;
-        }
-
-        if (applicableBindings.length == 1) {
-          event.stopPropagation();
-          event.preventDefault();
-          applicableBindings[0].action();
-        }
-      }
-    };
-
-    document.body.addEventListener("keydown", listener);
-    return () => {
-      document.body.removeEventListener("keydown", listener);
-    };
-  }, [keybindingGroups, state]);
+  useKeyBindings(keybindingGroups, state);
 
   return keybindingGroups;
 };
