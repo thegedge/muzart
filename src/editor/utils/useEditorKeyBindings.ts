@@ -105,7 +105,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
         "d": {
           name: "Set note dynamic",
-          when: "editorFocused && !isPlaying",
+          when: "editorFocused && !isPlaying && !helpVisible",
           action() {
             state.toggleEditingDynamic();
           },
@@ -169,7 +169,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
 
         "Escape": {
           name: "Close note dynamic palette",
-          when: "editingDynamic",
+          when: "editingDynamic && !helpVisible",
           action() {
             state.toggleEditingDynamic();
           },
@@ -283,7 +283,6 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
           },
         },
 
-        // TODO there are gonna be other uses for escape, so an object keyed by keys isn't ideal
         "Escape": {
           when: "helpVisible",
           action() {

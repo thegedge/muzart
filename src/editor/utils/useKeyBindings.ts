@@ -47,6 +47,7 @@ export const useKeyBindings = <StateT>(keybindingGroups: KeyBindingGroups, state
       pieces.push(event.key);
       const sequence = pieces.join(KEY_BINDING_SEPARATOR);
       const bindings = bindingGroups[sequence];
+      console.debug(sequence, bindings);
       if (bindings) {
         const applicableBindings = bindings.filter((binding) => {
           if (!binding.when) {
