@@ -2,7 +2,13 @@ import { Note } from "../../notation";
 import * as notation from "../../notation";
 import { noteDurationInSeconds } from "../util/durations";
 
-/** @see https://en.wikipedia.org/wiki/Envelope_(music)#ADSR */
+/**
+ * An attack, decary, sustain, release envelope.
+ *
+ * All params are in seconds.
+ *
+ * @see https://en.wikipedia.org/wiki/Envelope_(music)#ADSR
+ */
 export interface Envelope {
   attack: number;
   decay: number;

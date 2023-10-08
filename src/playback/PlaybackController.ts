@@ -3,9 +3,11 @@ import { action, autorun, computed, flow, makeObservable, observable } from "mob
 import { Selection } from "../editor/state/Selection";
 import layout, { maxMap } from "../layout";
 import { NoteValue, NoteValueName } from "../notation";
+import { InstrumentFactory } from "./InstrumentFactory";
 import { SoundFont } from "./SoundFont";
 import { Instrument } from "./instruments/Instrument";
 import { noteValueToSeconds } from "./util/durations";
+import { DefaultInstrumentFactory } from "./DefaultInstrumentFactory";
 
 export class PlaybackController {
   /** If true, playing back the entire score */
@@ -23,13 +25,13 @@ export class PlaybackController {
   public soloedParts: boolean[] = [];
 
   /** @private */
-  public soundFont: SoundFont | undefined;
+  public soundFont: InstrumentFactory = new DefaultInstrumentFactory();
 
   private audioContext: AudioContext;
   private playbackHandle: number | undefined;
   private setCurrentMeasureHandle: number | undefined;
 
-  private instruments_: Record<string, Instrument | undefined> = {};
+  private instruments_: Record<string, Instrument | null> = {};
 
   constructor(private selection: Selection) {
     this.audioContext = new AudioContext();

@@ -27,7 +27,7 @@ export class Pitch {
    * 0 corresponds to C0. Every value thereafter occurs in half-step increments. In other words, 13 would be C#1. Will
    * always favour sharps over flats.
    */
-  static fromScientificNotation(value: string) {
+  static fromScientificNotation(value: string): Pitch {
     const semitoneOffset = SEMITONE_OFFSETS[value[0] as Step];
     if (semitoneOffset == undefined) {
       throw new Error(`first character must be one of ${Object.values(Step).join(", ")}`);
@@ -60,7 +60,7 @@ export class Pitch {
    *
    * 60 corresponds to middle C (C4). Every value thereafter occurs in half-step increments. In other words, 13 would be C#5.
    */
-  static fromMidi(value: number) {
+  static fromMidi(value: number): Pitch {
     const stepIndex = value % PITCHES.length;
     const octave = Math.floor(value / PITCHES.length) - 1;
     const pitch = PITCHES[stepIndex];
@@ -81,14 +81,26 @@ export class Pitch {
   }
 
   /**
+   * Convert this pitch to a frequency value (in Hz).
+   */
+  toFrequency(): number {
+    return 440 * Math.pow(2, (this.toMidi() - 69) / 12.0); // A4 = 69 = 440 Hz
+  }
+
+  /**
    * Convert this pitch to a midi note (60 = middle C, or C4).
    */
-  toMidi() {
+  toMidi(): number {
     // The 12 at the beginning is because C0 corresponds to midi note 12
     return 12 + this.octave * 12 + SEMITONE_OFFSETS[this.step] + this.alterations;
   }
 
-  toString(fancy?: boolean) {
+  /**
+   * Stringify this pitch into a string.
+   *
+   * @param fancy Whether to use fancy unicode characters for sharps and flats.
+   */
+  toString(fancy = false) {
     let alterations = "";
     if (this.alterations > 0) {
       alterations = (fancy ? "♯" : "#").repeat(this.alterations);

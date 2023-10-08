@@ -4,6 +4,7 @@ import * as notation from "../notation";
 import { Instrument } from "./instruments/Instrument";
 import { Percussion } from "./instruments/Percussion";
 import { PitchAdjustableInstrument } from "./instruments/PitchAdjustableInstrument";
+import { InstrumentFactory } from "./InstrumentFactory";
 
 interface SoundFontPreset {
   name: string;
@@ -93,7 +94,7 @@ export enum SoundFontGeneratorType {
   SampleId = 53,
 }
 
-export class SoundFont {
+export class SoundFont implements InstrumentFactory {
   static async fromSource(source: string | URL | File | Response | ArrayBuffer) {
     let buffer: ArrayBuffer;
     if (typeof source == "string" || source instanceof URL) {
