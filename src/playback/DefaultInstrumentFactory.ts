@@ -18,24 +18,39 @@ export class DefaultInstrumentFactory implements InstrumentFactory {
       type: OscillatorType;
     }
   > = {
+    25: {
+      name: "Acoustic Guitar (nylon)",
+      midiPreset: 25,
+      type: "triangle",
+    },
+    26: {
+      name: "Acoustic Guitar (steel)",
+      midiPreset: 26,
+      type: "triangle",
+    },
     29: {
-      name: "Distortion Guitar",
+      name: "Electric Guitar (muted)",
       midiPreset: 29,
       type: "square",
     },
     30: {
-      name: "Acoustic Guitar",
+      name: "Electric Guitar (overdrive)",
       midiPreset: 30,
-      type: "triangle",
+      type: "sawtooth",
     },
     34: {
-      name: "Bass Guitar",
+      name: "Electric Bass",
       midiPreset: 34,
       type: "sine",
     },
     81: {
-      name: "Sawtooth Wave",
+      name: "Lead 1 (square)",
       midiPreset: 81,
+      type: "square",
+    },
+    82: {
+      name: "Lead 1 (sawtooth)",
+      midiPreset: 82,
       type: "sawtooth",
     },
   };
