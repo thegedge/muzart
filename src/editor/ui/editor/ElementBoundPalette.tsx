@@ -2,6 +2,7 @@ import * as CSS from "csstype";
 import { observer } from "mobx-react-lite";
 import { LayoutElement, PX_PER_MM, toAncestorCoordinateSystem } from "../../../layout";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
+import { useEffect, useRef } from "preact/hooks";
 
 export const ElementBoundPalette = observer(
   <ElementT extends LayoutElement, T>(props: {
@@ -11,6 +12,13 @@ export const ElementBoundPalette = observer(
     onSelect: (value: T, element: ElementT) => void;
   }) => {
     const application = useApplicationState();
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      if (ref.current) {
+        ref.current.focus();
+      }
+    }, [ref]);
 
     const box = application.canvas.userSpaceToCanvasViewport(toAncestorCoordinateSystem(props.element));
     const style = {
@@ -23,10 +31,11 @@ export const ElementBoundPalette = observer(
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
+      outline: "none",
     } satisfies CSS.Properties;
 
     return (
-      <div style={style}>
+      <div ref={ref} style={style} tabIndex={1} onBlur={() => application.state.toggleEditingDynamic()}>
         <div className="palette">
           {Object.entries(props.options).map(([label, value]) => (
             <span
