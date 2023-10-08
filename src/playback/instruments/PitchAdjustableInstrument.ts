@@ -1,7 +1,7 @@
-import { compact, memoize } from "lodash";
+import { compact } from "lodash";
 import * as notation from "../../notation";
-import { SampleZone, SoundFontGeneratorType } from "../SoundFont";
-import { noteDurationInSeconds, noteValueToSeconds } from "../util/durations";
+import { SoundFontGeneratorType } from "../SoundFont";
+import { noteValueToSeconds } from "../util/durations";
 import { SamplerInstrument, SamplerOptions } from "./SamplerInstrument";
 
 /**
@@ -33,11 +33,10 @@ export class PitchAdjustableInstrument extends SamplerInstrument {
 
         const volume = this.createGainNode(note);
         const attack = sample.generators[SoundFontGeneratorType.EnvelopeVolumeAttack];
-        const hold = sample.generators[SoundFontGeneratorType.EnvelopeVolumeHold];
         const decay = sample.generators[SoundFontGeneratorType.EnvelopeVolumeDecay];
         const release = sample.generators[SoundFontGeneratorType.EnvelopeVolumeRelease];
-        // const sustain = sample.generators[SoundFontGeneratorType.EnvelopeVolumeSustain];
-        this.createEnvelope(volume.gain, { attack, hold, decay, release }, when);
+        const sustain = sample.generators[SoundFontGeneratorType.EnvelopeVolumeSustain];
+        this.createEnvelope(volume.gain, { attack, sustain, decay, release }, when);
 
         source.connect(volume);
         volume.connect(this.context.destination);
@@ -72,7 +71,7 @@ export class PitchAdjustableInstrument extends SamplerInstrument {
             // TODO we may want to target one specific source, not all, so perhaps tie these things to notes
             for (const source of sources) {
               source.volume.gain.setTargetAtTime(0, when + duration - 0.02, 0.025);
-              source.audio.stop(when + duration + 0.05);
+              source.node.stop(when + duration + 0.05);
             }
           }
         }
@@ -82,68 +81,5 @@ export class PitchAdjustableInstrument extends SamplerInstrument {
     }
 
     return duration;
-  }
-
-  /** Returns the difference in steps between the given midi note at the closets sample.  */
-  private findClosest = memoize((midi: number): [SampleZone, number] => {
-    for (let offset = 0; offset < 96; ++offset) {
-      const hiBuffer = this.buffers.get(midi + offset);
-      if (hiBuffer) {
-        return [hiBuffer, offset];
-      }
-
-      const loBuffer = this.buffers.get(midi - offset);
-      if (loBuffer) {
-        return [loBuffer, -offset];
-      }
-    }
-
-    throw new Error(`No available buffers for note: ${midi}`);
-  });
-
-  private maybeVibrato(note: notation.Note, when: number) {
-    if (!note.vibrato) {
-      return null;
-    }
-
-    const oscillator = this.context.createOscillator();
-    oscillator.type = "sine";
-    oscillator.frequency.value = 4; // TODO make customizable
-
-    const amplitude = this.context.createGain();
-    amplitude.gain.value = Math.pow(2, -6); // TODO understand this value better
-
-    oscillator.connect(amplitude);
-    oscillator.start(when);
-
-    return amplitude;
-  }
-
-  private maybeBend(note: notation.Note, playbackRate: AudioParam, when: number) {
-    if (!note.bend) {
-      return null;
-    }
-
-    // TODO why doesn't a constant source node with offset events feeding into the playbackRate param work?
-
-    const duration = noteDurationInSeconds(note);
-    const gain = this.context.createGain();
-    const initialRate = playbackRate.value;
-
-    playbackRate.setValueAtTime(initialRate, when);
-
-    let previousEventEnd = when;
-    let previousPoint = 0;
-    for (const { time, amplitude } of note.bend.points) {
-      const value = initialRate * Math.pow(2, (amplitude * 2) / 12);
-      const bendPointDuration = duration * (time - previousPoint);
-      playbackRate.linearRampToValueAtTime(value, previousEventEnd + bendPointDuration);
-      previousPoint = time;
-      previousEventEnd += bendPointDuration;
-    }
-
-    playbackRate.setValueAtTime(initialRate, previousEventEnd);
-
-    return gain;
   }
 }

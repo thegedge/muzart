@@ -33,11 +33,10 @@ export class Percussion extends SamplerInstrument {
 
       const volume = this.createGainNode(note);
       const attack = sample.generators[SoundFontGeneratorType.EnvelopeVolumeAttack];
-      const hold = sample.generators[SoundFontGeneratorType.EnvelopeVolumeHold];
       const decay = sample.generators[SoundFontGeneratorType.EnvelopeVolumeDecay];
       const release = sample.generators[SoundFontGeneratorType.EnvelopeVolumeRelease];
-      // const sustain = sample.generators[SoundFontGeneratorType.EnvelopeVolumeSustain];
-      this.createEnvelope(volume.gain, { attack, hold, decay, release }, when);
+      const sustain = sample.generators[SoundFontGeneratorType.EnvelopeVolumeSustain];
+      this.createEnvelope(volume.gain, { attack, sustain, decay, release }, when);
 
       source.connect(volume);
       volume.connect(this.context.destination);
