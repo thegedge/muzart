@@ -217,7 +217,7 @@ export const Score = observer((_props: Record<string, never>) => {
           application.selection.update({
             noteIndex: Math.floor(hit.point.y / hit.element.staffHeight),
           });
-        } else if (hit.element.type == "Note") {
+        } else if (hit.element.type == "Note" || hit.element.parent?.type == "Note") {
           application.playback.playSelectedNote();
         }
       }

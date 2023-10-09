@@ -31,7 +31,10 @@ export class Instrument {
   stop() {
     this.activeSources.forEach((sources) => {
       sources.forEach((source) => {
-        source.source.stop();
+        if (source.source instanceof AudioWorkletNode) {
+          source.source.port.postMessage({ type: "stop" });
+        }
+
         source.source.disconnect();
         source.output.disconnect();
       });
@@ -60,39 +63,39 @@ export class Instrument {
     try {
       if (tieType == "start") {
         const source = this.sourceGenerator.generate(note, when);
-
-        //---------------------------------------------------------------------------------------------
-        // Connect all the things
-
         source.output.connect(this.context.destination);
 
-        let pitchParam: AudioParam;
+        // TODO ensure audio worklet nodes always have a frequency param we can adjust
+        let pitchParam: AudioParam | undefined = undefined;
         if ("playbackRate" in source.source) {
           pitchParam = source.source.playbackRate;
-        } else {
+        } else if ("frequency" in source.source) {
           pitchParam = source.source.frequency;
         }
 
-        this.maybeBend(note, pitchParam, when);
+        if (pitchParam) {
+          this.maybeBend(note, pitchParam, when);
 
-        const vibrato = this.maybeVibrato(note, when);
-        const effects: AudioNode[] = compact([vibrato]);
-        if (effects.length > 0) {
-          effects.reduce((node, previousNode) => {
-            node.connect(previousNode);
-            return node;
-          });
-          effects[0].connect(pitchParam);
+          const vibrato = this.maybeVibrato(note, when);
+          const effects: AudioNode[] = compact([vibrato]);
+          if (effects.length > 0) {
+            effects.reduce((node, previousNode) => {
+              node.connect(previousNode);
+              return node;
+            });
+            effects[0].connect(pitchParam);
+          }
         }
 
-        //---------------------------------------------------------------------------------------------
-
-        if (!ignoreTies && note.tie) {
-          source.source.start(when, 0);
-        } else {
-          source.output.gain.setTargetAtTime(0, when + duration - 0.02, 0.025);
-          source.source.start(when, 0, duration + 0.05);
+        if ("start" in source.source) {
+          if (!ignoreTies && note.tie) {
+            source.source.start(when, 0);
+          } else {
+            source.output.gain.setTargetAtTime(0, when + duration - 0.02, 0.025);
+            source.source.start(when, 0, duration + 0.05);
+          }
         }
+
         this.addActiveSource(source, note.pitch.toMidi());
       } else if (tieType == "stop") {
         const pitch = note.get("pitch", true);
@@ -103,7 +106,11 @@ export class Instrument {
             // TODO we may want to target one specific source, not all, so perhaps tie these things to notes
             for (const source of sources) {
               source.output.gain.setTargetAtTime(0, when + duration - 0.02, 0.025);
-              source.source.stop(when + duration + 0.05);
+              if ("stop" in source.source) {
+                source.source.stop(when + duration + 0.05);
+              } else {
+                // TODO we could post a stop message, but that stops everything (at least for KarplusStrong)
+              }
             }
           }
         }

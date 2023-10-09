@@ -4,8 +4,6 @@ import * as notation from "../../notation";
  * Create a gain for a given note on an instrument.
  */
 export const createGainNode = (context: AudioContext, instrument: notation.Instrument, note: notation.Note) => {
-  const volume = context.createGain();
-
   let value = instrument.volume * 0.2;
   switch (note.dynamic) {
     case notation.NoteDynamic.Pianississimo:
@@ -34,7 +32,5 @@ export const createGainNode = (context: AudioContext, instrument: notation.Instr
       break;
   }
 
-  volume.gain.value = value;
-
-  return volume;
+  return new GainNode(context, { gain: value });
 };

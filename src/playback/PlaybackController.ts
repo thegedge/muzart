@@ -25,7 +25,10 @@ export class PlaybackController {
   public soloedParts: boolean[] = [];
 
   /** @private */
-  public sourceGeneratorFactory: SourceGeneratorFactory = new DefaultSourceGenerator();
+  private sourceGeneratorFactory: SourceGeneratorFactory = new DefaultSourceGenerator();
+
+  /** @private */
+  #isReady = false;
 
   private audioContext: AudioContext;
   private playbackHandle: number | undefined;
@@ -35,6 +38,9 @@ export class PlaybackController {
 
   constructor(private selection: Selection) {
     this.audioContext = new AudioContext();
+    this.init().catch((err) => {
+      console.error("could not load audio worklets", err);
+    });
 
     // Adjust size of muted/soloed track arrays when score changes
     let score = selection.score;
@@ -50,7 +56,6 @@ export class PlaybackController {
     makeObservable(this, {
       playing: observable,
       currentMeasure: observable.ref,
-      sourceGeneratorFactory: observable.ref,
       mutedParts: observable,
       soloedParts: observable,
 
@@ -59,6 +64,13 @@ export class PlaybackController {
       stop: action,
       loadSoundFont: flow,
     });
+  }
+
+  async init() {
+    await Promise.all([this.audioContext.audioWorklet.addModule("./worklets/KarplusStrong.js")]);
+
+    this.reset();
+    this.#isReady = true;
   }
 
   reset() {
@@ -91,6 +103,10 @@ export class PlaybackController {
   }
 
   togglePlay() {
+    if (!this.isReady) {
+      console.warn("playback controller asked to start playback before audio context ready");
+      return;
+    }
     const currentlyPlaying = this.playing; // capture before this.stop(), which will set to false
     this.stop();
     if (currentlyPlaying) {
@@ -210,8 +226,12 @@ export class PlaybackController {
         instrument?.stop();
       }
 
-      void this.audioContext.suspend();
+      this.audioContext.suspend().catch(console.error);
     }
+  }
+
+  get isReady() {
+    return this.#isReady;
   }
 
   playSelectedNote(): void {

@@ -16,7 +16,7 @@ export interface Envelope {
  * Create an "attack, decay, sustain, release" envelope for a given parameter.
  */
 export const createEnvelope = (param: AudioParam, envelope: Partial<Envelope>, when: number) => {
-  const { attack, sustain: hold, decay, release } = envelope;
+  const { attack, decay, sustain, release } = envelope;
   const value = param.value;
 
   let currentEnvelopeTime = when;
@@ -28,18 +28,19 @@ export const createEnvelope = (param: AudioParam, envelope: Partial<Envelope>, w
     param.setValueAtTime(value, currentEnvelopeTime);
   }
 
-  if (hold) {
-    currentEnvelopeTime += hold;
-  }
-
   if (decay) {
     // TODO use sustain value, if we can somehow set decibel output
-    param.linearRampToValueAtTime(0.5 * value, currentEnvelopeTime + decay);
+    param.linearRampToValueAtTime(0.5 * value, decay);
     currentEnvelopeTime += decay;
   }
 
+  if (sustain) {
+    param.setValueAtTime(0.8 * value, sustain);
+    currentEnvelopeTime += sustain;
+  }
+
   if (release) {
-    param.linearRampToValueAtTime(0, currentEnvelopeTime + release);
+    param.linearRampToValueAtTime(0, release);
     currentEnvelopeTime += release;
   }
 };

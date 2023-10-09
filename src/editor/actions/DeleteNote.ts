@@ -25,6 +25,8 @@ export class DeleteNote extends SelectionTrackingAction {
     const string = application.selection.noteIndex + 1;
     const note = chord.noteByString(string);
     if (note) {
+      // TODO deal with tied notes
+
       chord.removeNote(note);
     }
 

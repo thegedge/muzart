@@ -1,7 +1,34 @@
 import * as notation from "../../notation";
 import { SourceGenerator } from "../types";
 import { MidiInstrument, SourceGeneratorFactory } from "../types";
-import { SimpleOscillator } from "../generators/SimpleOscillator";
+import { OscillatorOptions, SimpleOscillator } from "../generators/SimpleOscillator";
+import { PluckedString, PluckedStringOptions } from "../generators/PluckedString";
+
+type OscillatorGenerator = {
+  type: "oscillator";
+  options: Omit<OscillatorOptions, "context" | "instrument">;
+};
+
+type PluckedStringGenerator = {
+  type: "plucked-string";
+  options: Omit<PluckedStringOptions, "context" | "instrument">;
+};
+
+type CustomGenerator = {
+  type: "custom";
+  construct: (
+    factory: DefaultSourceGenerator,
+    context: AudioContext,
+    instrument: notation.Instrument,
+  ) => SourceGenerator | null;
+};
+
+type GeneratorType = OscillatorGenerator | PluckedStringGenerator | CustomGenerator;
+
+type InstrumentData = {
+  name: string;
+  generator: GeneratorType;
+};
 
 /**
  * Default implementation of the InstrumentFactory interface.
@@ -10,48 +37,102 @@ import { SimpleOscillator } from "../generators/SimpleOscillator";
  * midi-like instruments can be produced with this factory.
  */
 export class DefaultSourceGenerator implements SourceGeneratorFactory {
-  #supportedInstruments: Record<
-    number,
-    {
-      name: string;
-      midiPreset: number;
-      type: OscillatorType;
-    }
-  > = {
+  // Maps midi preset -> instrument data
+  #supportedInstruments: Record<number, InstrumentData> = {
     25: {
       name: "Acoustic Guitar (nylon)",
-      midiPreset: 25,
-      type: "triangle",
+      generator: {
+        type: "custom",
+        construct(factory, context, instrument) {
+          const generator = factory.generatorForData(context, instrument, {
+            type: "plucked-string",
+            options: {
+              brightness: 0.8,
+            },
+          });
+
+          if (!generator) {
+            return null;
+          }
+
+          return {
+            generate(note, when) {
+              const { source, output } = generator.generate(note, when);
+
+              // D4 and below will be boosted
+              const loBoost = new BiquadFilterNode(context, { type: "lowshelf", frequency: 300, gain: 20 });
+
+              // C7 and higher will be attenuated (takes away some of the harshness)
+              const hiAttenuate = new BiquadFilterNode(context, { type: "highshelf", frequency: 2000, gain: -30 });
+
+              output.connect(loBoost);
+              loBoost.connect(hiAttenuate);
+
+              return { source, output: hiAttenuate };
+            },
+          } as SourceGenerator;
+        },
+      },
     },
+
     26: {
       name: "Acoustic Guitar (steel)",
-      midiPreset: 26,
-      type: "triangle",
+      generator: {
+        type: "plucked-string",
+        options: {
+          brightness: 0.7,
+        },
+      },
     },
+
     29: {
       name: "Electric Guitar (muted)",
-      midiPreset: 29,
-      type: "square",
+      generator: {
+        type: "plucked-string",
+        options: {
+          brightness: 0.4,
+        },
+      },
     },
+
     30: {
       name: "Electric Guitar (overdrive)",
-      midiPreset: 30,
-      type: "sawtooth",
+      generator: {
+        type: "oscillator",
+        options: {
+          oscillator: "sawtooth",
+        },
+      },
     },
+
     34: {
       name: "Electric Bass",
-      midiPreset: 34,
-      type: "sine",
+      generator: {
+        type: "plucked-string",
+        options: {
+          brightness: 0.6,
+        },
+      },
     },
+
     81: {
       name: "Lead 1 (square)",
-      midiPreset: 81,
-      type: "square",
+      generator: {
+        type: "oscillator",
+        options: {
+          oscillator: "square",
+        },
+      },
     },
+
     82: {
       name: "Lead 1 (sawtooth)",
-      midiPreset: 82,
-      type: "sawtooth",
+      generator: {
+        type: "oscillator",
+        options: {
+          oscillator: "sawtooth",
+        },
+      },
     },
   };
 
@@ -65,6 +146,21 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
       return null;
     }
 
-    return new SimpleOscillator({ context, instrument, type: instrumentData.type });
+    return this.generatorForData(context, instrument, instrumentData.generator);
+  }
+
+  generatorForData(
+    context: AudioContext,
+    instrument: notation.Instrument,
+    generator: GeneratorType,
+  ): SourceGenerator | null {
+    switch (generator.type) {
+      case "plucked-string":
+        return new PluckedString({ context, instrument, ...generator.options });
+      case "oscillator":
+        return new SimpleOscillator({ context, instrument, ...generator.options });
+      case "custom":
+        return generator.construct(this, context, instrument);
+    }
   }
 }

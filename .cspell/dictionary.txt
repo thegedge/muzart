@@ -10,6 +10,7 @@ ibag
 igen
 imod
 jianpu
+Karplus
 locrian
 mixolydian
 muzart

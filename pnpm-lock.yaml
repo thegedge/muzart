@@ -31,6 +31,9 @@ devDependencies:
   '@preact/preset-vite':
     specifier: ^2.5.0
     version: 2.5.0(@babel/core@7.23.0)(preact@10.18.0)(vite@4.4.9)
+  '@types/audioworklet':
+    specifier: ^0.0.50
+    version: 0.0.50
   '@types/lodash':
     specifier: ^4.14.199
     version: 4.14.199
@@ -1246,6 +1249,10 @@ packages:
 
   /@sinclair/typebox@0.27.8:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
+    dev: true
+
+  /@types/audioworklet@0.0.50:
+    resolution: {integrity: sha512-Wic6k+tczhJZz4yq2ianEowIF/xH10wI9ac8sBDh27Jvs+WIvXIeM+nWPPRITFwSKuLZKlvVjfLiNmUjfy4koA==}
     dev: true
 
   /@types/chai-subset@1.3.3:
