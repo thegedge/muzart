@@ -1,10 +1,9 @@
 import { compact, uniqBy } from "lodash";
-import { BufferCursor, NumberType } from "../loaders/util/BufferCursor";
-import * as notation from "../notation";
-import { Instrument } from "./instruments/Instrument";
-import { Percussion } from "./instruments/Percussion";
-import { PitchAdjustableInstrument } from "./instruments/PitchAdjustableInstrument";
-import { InstrumentFactory } from "./InstrumentFactory";
+import { BufferCursor, NumberType } from "../../loaders/util/BufferCursor";
+import * as notation from "../../notation";
+import { SourceGenerator } from "../types";
+import { SourceGeneratorFactory } from "../types";
+import { Sampler } from "../generators/Sampler";
 
 interface SoundFontPreset {
   name: string;
@@ -94,7 +93,7 @@ export enum SoundFontGeneratorType {
   SampleId = 53,
 }
 
-export class SoundFont implements InstrumentFactory {
+export class SoundFont implements SourceGeneratorFactory {
   static async fromSource(source: string | URL | File | Response | ArrayBuffer) {
     let buffer: ArrayBuffer;
     if (typeof source == "string" || source instanceof URL) {
@@ -123,7 +122,7 @@ export class SoundFont implements InstrumentFactory {
     this.readRiffChunk(cursor);
   }
 
-  instrument(audioContext: AudioContext, instrument: notation.Instrument): Instrument {
+  generator(context: AudioContext, instrument: notation.Instrument): SourceGenerator | null {
     // TODO Handle global zones and many other things
     // TODO these are hardcoded values for percussion instruments right now (tied to the "GeneralUser GS v1.471" soundfont)
 
@@ -136,7 +135,8 @@ export class SoundFont implements InstrumentFactory {
 
     const preset = this.presets.find((preset) => preset.bank == bank && preset.midiPreset == midiPreset);
     if (!preset) {
-      throw new Error(`soundfont doesn't contain midi preset ${midiPreset}`);
+      // throw new Error(`soundfont doesn't contain midi preset ${midiPreset}`);
+      return null;
     }
 
     let zonesWithInstrument: SoundFontZone[] = [];
@@ -150,7 +150,8 @@ export class SoundFont implements InstrumentFactory {
     }
 
     if (zonesWithInstrument.length == 0) {
-      throw new Error(`preset ${midiPreset} doesn't have an instrument generator`);
+      // throw new Error(`preset ${midiPreset} doesn't have an instrument generator`);
+      return null;
     }
 
     const sfInstruments = compact(
@@ -161,7 +162,8 @@ export class SoundFont implements InstrumentFactory {
     );
 
     if (sfInstruments.length == 0) {
-      throw new Error(`preset ${midiPreset} has invalid instrument generator`);
+      // throw new Error(`preset ${midiPreset} has invalid instrument generator`);
+      return null;
     }
 
     const sampleKeyPairs = sfInstruments.flatMap((sfInstrument) => {
@@ -184,7 +186,7 @@ export class SoundFont implements InstrumentFactory {
 
         try {
           // TODO this is potentially wasteful, if multiply of the same key, given the uniqBy below
-          const buffer = audioContext.createBuffer(1, length, sampleRate);
+          const buffer = context.createBuffer(1, length, sampleRate);
           buffer.copyToChannel(this.sampleData.subarray(sampleInfo.start, sampleInfo.end), 0);
 
           const generators = { ...globalZone?.generators, ...zone.generators };
@@ -213,14 +215,10 @@ export class SoundFont implements InstrumentFactory {
       throw new Error(`instrument for preset ${midiPreset} has no samples`);
     }
 
-    if (instrument.type == "regular") {
-      return new PitchAdjustableInstrument({ buffers, instrument, context: audioContext });
-    } else {
-      return new Percussion({ buffers, instrument, context: audioContext });
-    }
+    return new Sampler({ buffers, instrument, context });
   }
 
-  get instruments() {
+  get supportedInstruments() {
     return this.presets
       .filter((preset) => preset.bank == 0)
       .map((preset) => ({

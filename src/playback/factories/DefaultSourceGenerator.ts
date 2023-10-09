@@ -1,7 +1,7 @@
-import { InstrumentFactory } from "./InstrumentFactory";
-import * as notation from "../notation";
-import { Instrument } from "./instruments/Instrument";
-import { OscillatorInstrument } from "./instruments/OscillatorInstrument";
+import * as notation from "../../notation";
+import { SourceGenerator } from "../types";
+import { MidiInstrument, SourceGeneratorFactory } from "../types";
+import { SimpleOscillator } from "../generators/SimpleOscillator";
 
 /**
  * Default implementation of the InstrumentFactory interface.
@@ -9,8 +9,8 @@ import { OscillatorInstrument } from "./instruments/OscillatorInstrument";
  * This factory uses simple web audio nodes, such as oscillators, to produce sound. Only a limited subset of
  * midi-like instruments can be produced with this factory.
  */
-export class DefaultInstrumentFactory implements InstrumentFactory {
-  private supportedInstruments: Record<
+export class DefaultSourceGenerator implements SourceGeneratorFactory {
+  #supportedInstruments: Record<
     number,
     {
       name: string;
@@ -55,16 +55,16 @@ export class DefaultInstrumentFactory implements InstrumentFactory {
     },
   };
 
-  get instruments() {
-    return Object.values(this.supportedInstruments);
+  get supportedInstruments(): MidiInstrument[] {
+    return Object.values(this.#supportedInstruments);
   }
 
-  instrument(context: AudioContext, instrument: notation.Instrument): Instrument | null {
-    const instrumentData = this.supportedInstruments[instrument.midiPreset];
+  generator(context: AudioContext, instrument: notation.Instrument): SourceGenerator | null {
+    const instrumentData = this.#supportedInstruments[instrument.midiPreset];
     if (!instrumentData) {
       return null;
     }
 
-    return new OscillatorInstrument({ context, instrument, type: instrumentData.type });
+    return new SimpleOscillator({ context, instrument, type: instrumentData.type });
   }
 }

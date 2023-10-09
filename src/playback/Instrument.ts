@@ -1,35 +1,12 @@
-import { Note } from "../../notation";
-import * as notation from "../../notation";
-import { noteDurationInSeconds } from "../util/durations";
-
-/**
- * An attack, decary, sustain, release envelope.
- *
- * All params are in seconds.
- *
- * @see https://en.wikipedia.org/wiki/Envelope_(music)#ADSR
- */
-export interface Envelope {
-  attack: number;
-  decay: number;
-  sustain: number;
-  release: number;
-}
-
-export interface InstrumentOptions {
-  context: AudioContext;
-  instrument: notation.Instrument;
-}
-
-interface ActiveSourceNodes {
-  volume: GainNode;
-  node: AudioScheduledSourceNode;
-}
+import { compact } from "lodash";
+import * as notation from "../notation";
+import { noteDurationInSeconds, noteValueToSeconds } from "./util/durations";
+import { SourceNode, SourceGenerator, InstrumentOptions } from "./types";
 
 /**
  * Base class for any playback instrument.
  */
-export abstract class Instrument {
+export class Instrument {
   /** The audio context in which this sampler instrument will be used */
   protected context: AudioContext;
 
@@ -37,11 +14,15 @@ export abstract class Instrument {
   protected instrument: notation.Instrument;
 
   /** The object of all currently playing BufferSources */
-  protected activeSources: Map<number, ActiveSourceNodes[]> = new Map();
+  protected activeSources: Map<number, SourceNode[]> = new Map();
+
+  /** A generator that can produce a source node for a given note */
+  protected sourceGenerator: SourceGenerator;
 
   constructor(options: InstrumentOptions) {
     this.context = options.context;
     this.instrument = options.instrument;
+    this.sourceGenerator = options.sourceGenerator;
   }
 
   /**
@@ -50,8 +31,9 @@ export abstract class Instrument {
   stop() {
     this.activeSources.forEach((sources) => {
       sources.forEach((source) => {
-        source.node.disconnect();
-        source.volume.disconnect();
+        source.source.stop();
+        source.source.disconnect();
+        source.output.disconnect();
       });
     });
     this.activeSources.clear();
@@ -65,7 +47,73 @@ export abstract class Instrument {
    * @param [startTimeFromNow] optional starting time, seconds from the current time
    * @param [ignoreTies] if true, only play the note for its own duration
    */
-  abstract playNote(note: Note, tempo: number, startTimeFromNow?: number, ignoreTies?: boolean): void;
+  playNote(note: notation.Note, tempo: number, startTimeFromNow?: number, ignoreTies?: boolean) {
+    if (note.dead) {
+      // TODO produce some percussive-y sound
+      return;
+    }
+
+    const duration = noteValueToSeconds(note.value, tempo);
+    const tieType = note.tie ? note.tie.type : "start";
+    const when = this.currentTime + (startTimeFromNow ?? 0);
+
+    try {
+      if (tieType == "start") {
+        const source = this.sourceGenerator.generate(note, when);
+
+        //---------------------------------------------------------------------------------------------
+        // Connect all the things
+
+        source.output.connect(this.context.destination);
+
+        let pitchParam: AudioParam;
+        if ("playbackRate" in source.source) {
+          pitchParam = source.source.playbackRate;
+        } else {
+          pitchParam = source.source.frequency;
+        }
+
+        this.maybeBend(note, pitchParam, when);
+
+        const vibrato = this.maybeVibrato(note, when);
+        const effects: AudioNode[] = compact([vibrato]);
+        if (effects.length > 0) {
+          effects.reduce((node, previousNode) => {
+            node.connect(previousNode);
+            return node;
+          });
+          effects[0].connect(pitchParam);
+        }
+
+        //---------------------------------------------------------------------------------------------
+
+        if (!ignoreTies && note.tie) {
+          source.source.start(when, 0);
+        } else {
+          source.output.gain.setTargetAtTime(0, when + duration - 0.02, 0.025);
+          source.source.start(when, 0, duration + 0.05);
+        }
+        this.addActiveSource(source, note.pitch.toMidi());
+      } else if (tieType == "stop") {
+        const pitch = note.get("pitch", true);
+        if (pitch) {
+          const midi = pitch.toMidi();
+          const sources = this.activeSources.get(midi);
+          if (sources) {
+            // TODO we may want to target one specific source, not all, so perhaps tie these things to notes
+            for (const source of sources) {
+              source.output.gain.setTargetAtTime(0, when + duration - 0.02, 0.025);
+              source.source.stop(when + duration + 0.05);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+
+    return duration;
+  }
 
   /**
    * Get the current time of the audio context.
@@ -78,98 +126,25 @@ export abstract class Instrument {
   }
 
   /**
-   * Create an "attack, decay, sustain, release" envelope for a given parameter.
-   */
-  protected createEnvelope(param: AudioParam, envelope: Partial<Envelope>, when: number) {
-    const { attack, sustain: hold, decay, release } = envelope;
-    const value = param.value;
-
-    let currentEnvelopeTime = when;
-    if (attack) {
-      param.setValueAtTime(0, currentEnvelopeTime);
-      param.linearRampToValueAtTime(value, currentEnvelopeTime + attack);
-      currentEnvelopeTime += attack;
-    } else {
-      param.setValueAtTime(value, currentEnvelopeTime);
-    }
-
-    if (hold) {
-      currentEnvelopeTime += hold;
-    }
-
-    if (decay) {
-      // TODO use sustain value, if we can somehow set decibel output
-      param.linearRampToValueAtTime(0.5 * value, currentEnvelopeTime + decay);
-      currentEnvelopeTime += decay;
-    }
-
-    if (release) {
-      param.linearRampToValueAtTime(0, currentEnvelopeTime + release);
-      currentEnvelopeTime += release;
-    }
-  }
-
-  /**
    * Track an actively playing source.
    */
-  protected addActiveSource(audio: AudioScheduledSourceNode, volume: GainNode, midiNote: number) {
+  protected addActiveSource(source: SourceNode, midiNote: number) {
     let sources = this.activeSources.get(midiNote);
     if (!sources) {
       sources = [];
       this.activeSources.set(midiNote, sources);
     }
-    sources.push({ node: audio, volume });
+    sources.push(source);
 
     const closureSources = sources;
-    audio.addEventListener("ended", () => {
-      const index = closureSources.findIndex((value) => value.node == audio);
+    source.source.addEventListener("ended", () => {
+      const index = closureSources.findIndex((value) => value.source == source.source);
       if (index !== -1) {
         closureSources.splice(index, 1);
-        audio.disconnect();
-        volume.disconnect();
+        source.source.disconnect();
+        source.output.disconnect();
       }
     });
-
-    return audio;
-  }
-
-  /**
-   * Create a gain for a given note.
-   */
-  protected createGainNode(note: Note) {
-    const volume = this.context.createGain();
-
-    let value = this.instrument.volume * 0.2;
-    switch (note.dynamic) {
-      case notation.NoteDynamic.Pianississimo:
-        value *= 0.1;
-        break;
-      case notation.NoteDynamic.Pianissimo:
-        value *= 0.25;
-        break;
-      case notation.NoteDynamic.Piano:
-        value *= 0.5;
-        break;
-      case notation.NoteDynamic.MezzoPiano:
-        value *= 0.9;
-        break;
-      case notation.NoteDynamic.MezzoForte:
-        value *= 1.1;
-        break;
-      case notation.NoteDynamic.Forte:
-        value *= 1.5;
-        break;
-      case notation.NoteDynamic.Fortissimo:
-        value *= 1.75;
-        break;
-      case notation.NoteDynamic.Fortississimo:
-        value *= 2;
-        break;
-    }
-
-    volume.gain.value = value;
-
-    return volume;
   }
 
   /**

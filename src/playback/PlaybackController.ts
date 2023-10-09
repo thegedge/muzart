@@ -1,13 +1,13 @@
 import { range } from "lodash";
-import { action, autorun, computed, flow, makeObservable, observable } from "mobx";
+import { action, autorun, flow, makeObservable, observable } from "mobx";
 import { Selection } from "../editor/state/Selection";
 import layout, { maxMap } from "../layout";
 import { NoteValue, NoteValueName } from "../notation";
-import { InstrumentFactory } from "./InstrumentFactory";
-import { SoundFont } from "./SoundFont";
-import { Instrument } from "./instruments/Instrument";
+import { DefaultSourceGenerator } from "./factories/DefaultSourceGenerator";
+import { Instrument } from "./Instrument";
+import { SourceGeneratorFactory } from "./types";
+import { SoundFont } from "./factories/SoundFont";
 import { noteValueToSeconds } from "./util/durations";
-import { DefaultInstrumentFactory } from "./DefaultInstrumentFactory";
 
 export class PlaybackController {
   /** If true, playing back the entire score */
@@ -25,7 +25,7 @@ export class PlaybackController {
   public soloedParts: boolean[] = [];
 
   /** @private */
-  public soundFont: InstrumentFactory = new DefaultInstrumentFactory();
+  public sourceGeneratorFactory: SourceGeneratorFactory = new DefaultSourceGenerator();
 
   private audioContext: AudioContext;
   private playbackHandle: number | undefined;
@@ -50,11 +50,9 @@ export class PlaybackController {
     makeObservable(this, {
       playing: observable,
       currentMeasure: observable.ref,
-      soundFont: observable.ref,
+      sourceGeneratorFactory: observable.ref,
       mutedParts: observable,
       soloedParts: observable,
-
-      instruments: computed,
 
       setCurrentMeasure: action,
       togglePlay: action,
@@ -73,10 +71,6 @@ export class PlaybackController {
     return this.instrumentForPart(this.selection.partIndex);
   }
 
-  get instruments(): { name: string; midiPreset: number }[] {
-    return this.soundFont?.instruments ?? [];
-  }
-
   toggleMute(index: number) {
     this.mutedParts[index] = !this.mutedParts[index];
   }
@@ -88,7 +82,7 @@ export class PlaybackController {
   *loadSoundFont(source: string | URL | File | Response | ArrayBuffer): Generator<Promise<SoundFont>> {
     try {
       console.time("loading soundfont");
-      this.soundFont = (yield SoundFont.fromSource(source)) as SoundFont;
+      this.sourceGeneratorFactory = (yield SoundFont.fromSource(source)) as SoundFont;
       this.instruments_ = {};
       console.timeEnd("loading soundfont");
     } catch (error) {
@@ -260,7 +254,7 @@ export class PlaybackController {
 
   private instrumentForPart(partIndex: number): Instrument | null {
     const part = this.selection.score?.score.parts[partIndex];
-    if (!this.soundFont || !part?.instrument) {
+    if (!this.sourceGeneratorFactory || !part?.instrument) {
       return null;
     }
 
@@ -270,7 +264,16 @@ export class PlaybackController {
     let instrument = this.instruments_[midiPreset];
     if (!instrument) {
       try {
-        instrument = this.soundFont?.instrument(this.audioContext, part.instrument);
+        const sourceGenerator = this.sourceGeneratorFactory?.generator(this.audioContext, part.instrument);
+        if (!sourceGenerator) {
+          return null;
+        }
+
+        instrument = new Instrument({
+          context: this.audioContext,
+          instrument: part.instrument,
+          sourceGenerator,
+        });
         this.instruments_[midiPreset] = instrument;
       } catch (err) {
         return null;
