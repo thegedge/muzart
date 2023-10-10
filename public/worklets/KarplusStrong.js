@@ -53,13 +53,13 @@ class KarplusStrong extends AudioWorkletProcessor {
     this.frequency = options.processorOptions.frequency;
     this.when = options.processorOptions.when;
     this.impulseType = options.processorOptions.impulseType ?? "white-noise";
-    this.stretchFactor = options.processorOptions.stretchFactor;
-    this.blendFactor = options.processorOptions.blendFactor;
+    this.stretchFactor = clamp(options.processorOptions.stretchFactor, 0, 1);
+    this.blendFactor = clamp(options.processorOptions.blendFactor, 0, 1);
 
     this.buffer = this.bufferForFrequency(this.frequency);
     this.bufferIndex = 0;
 
-    // One-pole low-pass filter constants. The value of `a` is calculated with the cutoff frequency based on
+    // One-pole low-pass filter constants. This coefficient is calculated with the cutoff frequency based on
     // the given frequency (see https://www.dspguide.com/ch19/2.htm)
     this.coefficient = Math.exp((-2 * Math.PI * this.frequency) / sampleRate);
 
@@ -107,9 +107,7 @@ class KarplusStrong extends AudioWorkletProcessor {
       } else {
         const delayed = this.buffer[(this.bufferIndex + this.buffer.length - 1) % this.buffer.length];
         const excitation = this.buffer[this.bufferIndex % this.buffer.length];
-        const a = parameters.brightness[0];
-
-        // Simple low-pass filter. We ensure value is slight less than 1 to ensure dampening.
+        const a = this.coefficient * clamp(1.0 - parameters.brightness[0], 0, 1);
 
         if (this.stretchFactor && this.blendFactor) {
           const invS = 1.0 / this.stretchFactor;
@@ -119,6 +117,7 @@ class KarplusStrong extends AudioWorkletProcessor {
           const p2 = (1 - b) * (1 - invS);
           const p3 = b * invS;
 
+          // See https://www.music.mcgill.ca/~gary/courses/papers/Karplus-Strong-CMJ-1983.pdf
           let value = Math.random();
           if (value < p1) {
             value = excitation;
@@ -130,6 +129,7 @@ class KarplusStrong extends AudioWorkletProcessor {
             value = -1 * ((0.999 - a) * excitation + a * delayed);
           }
         } else {
+          // Simple low-pass filter. We ensure value is slight less than 1 to ensure dampening.
           value = (0.999 - a) * excitation + a * delayed;
         }
       }
@@ -150,5 +150,14 @@ class KarplusStrong extends AudioWorkletProcessor {
     return new Float32Array(samplesPerPeriod);
   }
 }
+
+/**
+ * @param {number | undefined} value
+ * @param {number} min
+ * @param {number} max
+ */
+const clamp = (value, min, max) => {
+  return value && Math.min(Math.max(value, min), max);
+};
 
 registerProcessor("karplus-strong", KarplusStrong);

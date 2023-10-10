@@ -67,7 +67,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
 
               // D4 and below + mids will be boosted, C7 and higher attenuated
               const loBoost = new BiquadFilterNode(context, { type: "lowshelf", frequency: 600, gain: 15 });
-              const midBoost = new BiquadFilterNode(context, { type: "peaking", frequency: 200, Q: 1, gain: 5 });
+              const midBoost = new BiquadFilterNode(context, { type: "peaking", frequency: 200, Q: 100, gain: 15 });
               const hiAttenuate = new BiquadFilterNode(context, { type: "highshelf", frequency: 2000, gain: -20 });
 
               output.connect(loBoost);
@@ -96,7 +96,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
       generator: {
         type: "plucked-string",
         options: {
-          brightness: 0.6,
+          brightness: 0.5,
         },
       },
     },
