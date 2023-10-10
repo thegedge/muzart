@@ -4,8 +4,9 @@
  * @typedef {{ type: "stop"; }} StopEvent
  * @typedef {{ data: StopEvent }} KarplusStrongEvent
  *
- * @typedef {{ bufferIndex: number; buffer: Float32Array; frequency: number; coefficient: number; when: number }} Voice
- * @typedef {Omit<AudioWorkletNodeOptions, "processorOptions"> & { processorOptions?: { frequency: number; when: number }}} KarplusStrongWorkletOptions
+ * @typedef {"white-noise" | "sine" | "noisy-sine"} ImpulseType
+ * @typedef {{ frequency: number; when: number; impulseType?: ImpulseType; stretchFactor?: number; blendFactor?: number }} KarplusOptions
+ * @typedef {Omit<AudioWorkletNodeOptions, "processorOptions"> & { processorOptions?: KarplusOptions }} KarplusStrongWorkletOptions
  */
 
 /**
@@ -41,13 +42,6 @@ class KarplusStrong extends AudioWorkletProcessor {
     ];
   }
 
-  /**
-   * The active voices (i.e., strings that were plucked).
-   *
-   * @type {Voice | undefined}
-   */
-  voice = undefined;
-
   /** @param {KarplusStrongWorkletOptions} options */
   constructor(options) {
     super();
@@ -56,19 +50,18 @@ class KarplusStrong extends AudioWorkletProcessor {
       throw new Error("Missing processorOptions for KarplusStrong filter");
     }
 
-    const { frequency, when } = options.processorOptions;
+    this.frequency = options.processorOptions.frequency;
+    this.when = options.processorOptions.when;
+    this.impulseType = options.processorOptions.impulseType ?? "white-noise";
+    this.stretchFactor = options.processorOptions.stretchFactor;
+    this.blendFactor = options.processorOptions.blendFactor;
 
-    this.voice = {
-      frequency,
-      when,
+    this.buffer = this.bufferForFrequency(this.frequency);
+    this.bufferIndex = 0;
 
-      buffer: this.bufferForFrequency(frequency),
-      bufferIndex: 0,
-
-      // One-pole low-pass filter constants. The value of `a` is calculated with the cutoff frequency based on
-      // the given frequency (see https://www.dspguide.com/ch19/2.htm)
-      coefficient: Math.exp((-2 * Math.PI * frequency) / sampleRate),
-    };
+    // One-pole low-pass filter constants. The value of `a` is calculated with the cutoff frequency based on
+    // the given frequency (see https://www.dspguide.com/ch19/2.htm)
+    this.coefficient = Math.exp((-2 * Math.PI * this.frequency) / sampleRate);
 
     /** @param {KarplusStrongEvent} event */
     this.port.onmessage = (event) => {
@@ -92,26 +85,57 @@ class KarplusStrong extends AudioWorkletProcessor {
     const output = outputs[0][0];
     output.fill(0.0);
 
-    if (!this.voice || this.voice.when > currentTime) {
+    if (this.when > currentTime) {
       return true;
     }
 
-    for (let i = 0; i < output.length; ++i, ++this.voice.bufferIndex) {
+    for (let i = 0; i < output.length; ++i, ++this.bufferIndex) {
       let value = 0;
-      if (this.voice.bufferIndex < this.voice.buffer.length) {
-        // Initial impulse, white noise
-        value = 2 * Math.random() - 1;
+      if (this.bufferIndex < this.buffer.length) {
+        switch (this.impulseType) {
+          case "white-noise":
+            value = 2 * Math.random() - 1;
+            break;
+          case "sine":
+            value = Math.sin((2 * Math.PI * this.bufferIndex) / this.buffer.length);
+            break;
+          case "noisy-sine":
+            // Sounds harp-like
+            value = Math.random() * Math.sin((2 * Math.PI * this.bufferIndex) / this.buffer.length);
+            break;
+        }
       } else {
-        const excitation = this.voice.buffer[(this.voice.bufferIndex - 1) % this.voice.buffer.length];
-        const delayed = this.voice.buffer[this.voice.bufferIndex % this.voice.buffer.length];
-        const a = this.voice.coefficient * parameters.brightness[0];
+        const delayed = this.buffer[(this.bufferIndex + this.buffer.length - 1) % this.buffer.length];
+        const excitation = this.buffer[this.bufferIndex % this.buffer.length];
+        const a = parameters.brightness[0];
 
         // Simple low-pass filter. We ensure value is slight less than 1 to ensure dampening.
-        value = (0.999 - a) * excitation + a * delayed;
+
+        if (this.stretchFactor && this.blendFactor) {
+          const invS = 1.0 / this.stretchFactor;
+          const b = this.blendFactor;
+
+          const p1 = b * (1 - invS);
+          const p2 = (1 - b) * (1 - invS);
+          const p3 = b * invS;
+
+          let value = Math.random();
+          if (value < p1) {
+            value = excitation;
+          } else if (value < p1 + p2) {
+            value = -excitation;
+          } else if (value < p1 + p2 + p3) {
+            value = (0.999 - a) * excitation + a * delayed;
+          } else {
+            value = -1 * ((0.999 - a) * excitation + a * delayed);
+          }
+        } else {
+          value = (0.999 - a) * excitation + a * delayed;
+        }
       }
 
       output[i] += value;
-      this.voice.buffer[this.voice.bufferIndex % this.voice.buffer.length] = value;
+      this.buffer[this.bufferIndex % this.buffer.length] = value;
     }
 
     return true;

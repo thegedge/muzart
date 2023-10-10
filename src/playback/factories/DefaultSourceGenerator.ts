@@ -3,6 +3,7 @@ import { SourceGenerator } from "../types";
 import { MidiInstrument, SourceGeneratorFactory } from "../types";
 import { OscillatorOptions, SimpleOscillator } from "../generators/SimpleOscillator";
 import { PluckedString, PluckedStringOptions } from "../generators/PluckedString";
+import { Drum, DrumOptions } from "../generators/Drum";
 
 type OscillatorGenerator = {
   type: "oscillator";
@@ -14,6 +15,11 @@ type PluckedStringGenerator = {
   options: Omit<PluckedStringOptions, "context" | "instrument">;
 };
 
+type DrumGenerator = {
+  type: "drum";
+  options: Omit<DrumOptions, "context" | "instrument">;
+};
+
 type CustomGenerator = {
   type: "custom";
   construct: (
@@ -23,7 +29,7 @@ type CustomGenerator = {
   ) => SourceGenerator | null;
 };
 
-type GeneratorType = OscillatorGenerator | PluckedStringGenerator | CustomGenerator;
+type GeneratorType = OscillatorGenerator | PluckedStringGenerator | DrumGenerator | CustomGenerator;
 
 type InstrumentData = {
   name: string;
@@ -59,14 +65,14 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
             generate(note, when) {
               const { source, output } = generator.generate(note, when);
 
-              // D4 and below will be boosted
-              const loBoost = new BiquadFilterNode(context, { type: "lowshelf", frequency: 300, gain: 20 });
-
-              // C7 and higher will be attenuated (takes away some of the harshness)
-              const hiAttenuate = new BiquadFilterNode(context, { type: "highshelf", frequency: 2000, gain: -30 });
+              // D4 and below + mids will be boosted, C7 and higher attenuated
+              const loBoost = new BiquadFilterNode(context, { type: "lowshelf", frequency: 600, gain: 15 });
+              const midBoost = new BiquadFilterNode(context, { type: "peaking", frequency: 200, Q: 1, gain: 5 });
+              const hiAttenuate = new BiquadFilterNode(context, { type: "highshelf", frequency: 2000, gain: -20 });
 
               output.connect(loBoost);
-              loBoost.connect(hiAttenuate);
+              loBoost.connect(midBoost);
+              midBoost.connect(hiAttenuate);
 
               return { source, output: hiAttenuate };
             },
@@ -90,7 +96,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
       generator: {
         type: "plucked-string",
         options: {
-          brightness: 0.4,
+          brightness: 0.6,
         },
       },
     },
@@ -100,7 +106,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
       generator: {
         type: "oscillator",
         options: {
-          oscillator: "sawtooth",
+          oscillator: "square",
         },
       },
     },
@@ -111,6 +117,17 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
         type: "plucked-string",
         options: {
           brightness: 0.6,
+        },
+      },
+    },
+
+    47: {
+      name: "Orchestral Harp",
+      generator: {
+        type: "plucked-string",
+        options: {
+          brightness: 0.8,
+          impulseType: "noisy-sine",
         },
       },
     },
@@ -134,14 +151,25 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
         },
       },
     },
+
+    119: {
+      name: "Synth Drum",
+      generator: {
+        type: "drum",
+        options: {},
+      },
+    },
   };
 
   get supportedInstruments(): MidiInstrument[] {
-    return Object.values(this.#supportedInstruments);
+    return Object.entries(this.#supportedInstruments).map(([midiPreset, data]) => ({
+      name: data.name,
+      midiPreset: Number(midiPreset),
+    }));
   }
 
   generator(context: AudioContext, instrument: notation.Instrument): SourceGenerator | null {
-    const instrumentData = this.#supportedInstruments[instrument.midiPreset];
+    const instrumentData = this.#supportedInstruments[instrument.type == "regular" ? instrument.midiPreset : 119];
     if (!instrumentData) {
       return null;
     }
@@ -157,6 +185,8 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
     switch (generator.type) {
       case "plucked-string":
         return new PluckedString({ context, instrument, ...generator.options });
+      case "drum":
+        return new Drum({ context, instrument, ...generator.options });
       case "oscillator":
         return new SimpleOscillator({ context, instrument, ...generator.options });
       case "custom":

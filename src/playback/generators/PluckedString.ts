@@ -17,6 +17,13 @@ export interface PluckedStringOptions {
    * string near the bridge. 0 would be similar to a muted string pluck.
    */
   brightness: number;
+
+  /**
+   * The kind of impulse to generate for the Karplus-Strong algorithm
+   *
+   * @default "white-noise"
+   */
+  impulseType?: "white-noise" | "sine" | "noisy-sine";
 }
 
 declare global {
@@ -29,31 +36,21 @@ declare global {
  * A generator that simulates a plucked string.
  */
 export class PluckedString implements SourceGenerator {
-  private brightness: number;
-
-  constructor(private options: PluckedStringOptions) {
-    this.brightness = options.brightness;
-  }
+  constructor(private options: PluckedStringOptions) {}
 
   generate(note: notation.Note, when: number): SourceNode {
     const karplusStrongNode = new AudioWorkletNode(this.options.context, "karplus-strong", {
       processorOptions: {
         frequency: note.pitch.toFrequency(),
+        impulseType: this.options.impulseType,
         when,
       },
     });
 
     const param = karplusStrongNode.parameters.get("brightness");
     if (param) {
-      param.setValueAtTime(this.brightness, 0);
+      param.setValueAtTime(this.options.brightness, 0);
     }
-
-    karplusStrongNode.port.postMessage({
-      type: "pluck",
-      voice: note.placement?.string ?? 0,
-      frequency: note.pitch.toFrequency(),
-      when,
-    });
 
     const output = createGainNode(this.options.context, this.options.instrument, note);
     createEnvelope(
