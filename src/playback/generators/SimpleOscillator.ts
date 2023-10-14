@@ -30,7 +30,6 @@ export class SimpleOscillator implements SourceGenerator {
       output.gain,
       {
         attack: 0.01,
-        release: 10,
       },
       when,
     );

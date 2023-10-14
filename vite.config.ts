@@ -1,7 +1,7 @@
 import preact from "@preact/preset-vite";
 import fs from "node:fs/promises";
 import { TlsOptions } from "node:tls";
-import { defineConfig, ModuleNode } from "vite";
+import { defineConfig, ModuleNode, UserConfig } from "vite";
 
 const includeAllImporters = (modules: ModuleNode[]) => {
   const modulesToUpdate: ModuleNode[] = [];
@@ -28,7 +28,7 @@ const includeAllImporters = (modules: ModuleNode[]) => {
 };
 
 // https://vitejs.dev/config/
-export default defineConfig(async ({ mode }) => {
+export default defineConfig(async ({ mode }): Promise<UserConfig> => {
   let port = 80;
   let https: TlsOptions | false = false;
   if (mode !== "production") {

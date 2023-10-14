@@ -1,6 +1,5 @@
 import * as notation from "../../notation";
 import { SourceGenerator, SourceNode } from "../types";
-import { createEnvelope } from "../util/envelope";
 import { createGainNode } from "../util/gain";
 
 export interface DrumOptions {
@@ -71,22 +70,13 @@ export class Drum implements SourceGenerator {
     const karplusStrongNode = new AudioWorkletNode(this.options.context, "karplus-strong", {
       processorOptions: {
         frequency: 150,
-        impulseType: "sine",
-        stretchFactor: 2,
-        blendFactor: 0.5,
+        impulseType: "white-noise",
+        updateType: "random-negation",
         when,
       },
     });
 
     const output = createGainNode(this.options.context, this.options.instrument, note);
-    createEnvelope(
-      output.gain,
-      {
-        attack: 0.01,
-        release: 5,
-      },
-      when,
-    );
 
     karplusStrongNode.connect(output);
 

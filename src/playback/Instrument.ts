@@ -1,7 +1,7 @@
 import { compact } from "lodash";
 import * as notation from "../notation";
+import { InstrumentOptions, SourceGenerator, SourceNode } from "./types";
 import { noteDurationInSeconds, noteValueToSeconds } from "./util/durations";
-import { SourceNode, SourceGenerator, InstrumentOptions } from "./types";
 
 /**
  * Base class for any playback instrument.
@@ -74,7 +74,7 @@ export class Instrument {
         }
 
         if (pitchParam) {
-          this.maybeBend(note, pitchParam, when);
+          this.maybeBend(note, pitchParam, tempo, when);
 
           const vibrato = this.maybeVibrato(note, when);
           const effects: AudioNode[] = compact([vibrato]);
@@ -87,30 +87,44 @@ export class Instrument {
           }
         }
 
-        if ("start" in source.source) {
+        let terminateByTimeout = true;
+        if (source.source instanceof AudioWorkletNode) {
+          // TODO nothing here
+        } else if (source.source instanceof OscillatorNode) {
+          source.source.start(when);
+        } else if (source.source instanceof AudioBufferSourceNode) {
           if (!ignoreTies && note.tie) {
             source.source.start(when, 0);
           } else {
-            source.output.gain.setTargetAtTime(0, when + duration - 0.02, 0.025);
             source.source.start(when, 0, duration + 0.05);
+            terminateByTimeout = false;
           }
+        }
+
+        if (terminateByTimeout) {
+          // TODO better to prodive a duration to generate so the worklet can properly emit an "end"
+          setTimeout(
+            () => {
+              source.source.disconnect();
+            },
+            1000 * ((startTimeFromNow ?? 0) + noteDurationInSeconds(note, tempo)),
+          );
         }
 
         this.addActiveSource(source, note.pitch.toMidi());
       } else if (tieType == "stop") {
-        const pitch = note.get("pitch", true);
-        if (pitch) {
-          const midi = pitch.toMidi();
-          const sources = this.activeSources.get(midi);
-          if (sources) {
-            // TODO we may want to target one specific source, not all, so perhaps tie these things to notes
-            for (const source of sources) {
-              source.output.gain.setTargetAtTime(0, when + duration - 0.02, 0.025);
-              if ("stop" in source.source) {
-                source.source.stop(when + duration + 0.05);
-              } else {
-                // TODO we could post a stop message, but that stops everything (at least for KarplusStrong)
-              }
+        const pitch = note.get("pitch", true) ?? note.pitch;
+        const midi = pitch.toMidi();
+        const sources = this.activeSources.get(midi);
+        if (sources) {
+          // TODO we may want to target one specific source, not all, so perhaps tie these things to notes
+          for (const source of sources) {
+            source.output.gain.setTargetAtTime(0, when + duration - 0.02, 0.025);
+            if ("stop" in source.source) {
+              source.source.stop(when + duration + 0.05);
+            } else {
+              // TODO audio worklet nodes are given a duration
+              setTimeout(() => source.source.disconnect(), noteDurationInSeconds(note, tempo) * 1000);
             }
           }
         }
@@ -178,14 +192,14 @@ export class Instrument {
   /**
    * Return an audio node that can adjust `playbackRate` of the source node for a bend, if the note has one.
    */
-  protected maybeBend(note: notation.Note, playbackRate: AudioParam, when: number) {
+  protected maybeBend(note: notation.Note, playbackRate: AudioParam, tempo: number, when: number) {
     if (!note.bend) {
       return null;
     }
 
     // TODO why doesn't a constant source node with offset events feeding into the playbackRate param work?
 
-    const duration = noteDurationInSeconds(note);
+    const duration = noteDurationInSeconds(note, tempo);
     const gain = this.context.createGain();
     const initialRate = playbackRate.value;
 

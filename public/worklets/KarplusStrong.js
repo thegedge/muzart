@@ -5,7 +5,8 @@
  * @typedef {{ data: StopEvent }} KarplusStrongEvent
  *
  * @typedef {"white-noise" | "sine" | "noisy-sine"} ImpulseType
- * @typedef {{ frequency: number; when: number; impulseType?: ImpulseType; stretchFactor?: number; blendFactor?: number }} KarplusOptions
+ * @typedef {"average" | "random-negation"} UpdateType
+ * @typedef {{ frequency: number; when: number; impulseType?: ImpulseType; updateType?: UpdateType }} KarplusOptions
  * @typedef {Omit<AudioWorkletNodeOptions, "processorOptions"> & { processorOptions?: KarplusOptions }} KarplusStrongWorkletOptions
  */
 
@@ -53,8 +54,7 @@ class KarplusStrong extends AudioWorkletProcessor {
     this.frequency = options.processorOptions.frequency;
     this.when = options.processorOptions.when;
     this.impulseType = options.processorOptions.impulseType ?? "white-noise";
-    this.stretchFactor = clamp(options.processorOptions.stretchFactor, 0, 1);
-    this.blendFactor = clamp(options.processorOptions.blendFactor, 0, 1);
+    this.updateType = options.processorOptions.updateType ?? "blend";
 
     this.buffer = this.bufferForFrequency(this.frequency);
     this.bufferIndex = 0;
@@ -83,12 +83,13 @@ class KarplusStrong extends AudioWorkletProcessor {
   process(_inputs, outputs, parameters) {
     // Assuming mono output for now
     const output = outputs[0][0];
-    output.fill(0.0);
 
     if (this.when > currentTime) {
+      output.fill(0.0);
       return true;
     }
 
+    let maxValue = 0;
     for (let i = 0; i < output.length; ++i, ++this.bufferIndex) {
       let value = 0;
       if (this.bufferIndex < this.buffer.length) {
@@ -105,40 +106,30 @@ class KarplusStrong extends AudioWorkletProcessor {
             break;
         }
       } else {
-        const delayed = this.buffer[(this.bufferIndex + this.buffer.length - 1) % this.buffer.length];
-        const excitation = this.buffer[this.bufferIndex % this.buffer.length];
-        const a = this.coefficient * clamp(1.0 - parameters.brightness[0], 0, 1);
+        const delayed1 = this.buffer[this.bufferIndex % this.buffer.length];
+        const delayed2 = this.buffer[(this.bufferIndex + 1) % this.buffer.length];
 
-        if (this.stretchFactor && this.blendFactor) {
-          const invS = 1.0 / this.stretchFactor;
-          const b = this.blendFactor;
-
-          const p1 = b * (1 - invS);
-          const p2 = (1 - b) * (1 - invS);
-          const p3 = b * invS;
-
-          // See https://www.music.mcgill.ca/~gary/courses/papers/Karplus-Strong-CMJ-1983.pdf
-          let value = Math.random();
-          if (value < p1) {
-            value = excitation;
-          } else if (value < p1 + p2) {
-            value = -excitation;
-          } else if (value < p1 + p2 + p3) {
-            value = (0.999 - a) * excitation + a * delayed;
-          } else {
-            value = -1 * ((0.999 - a) * excitation + a * delayed);
+        switch (this.updateType) {
+          case "blend": {
+            // Simple low-pass filter. We ensure value is slight less than 1 to ensure dampening.
+            const a = this.coefficient * clamp(1.0 - parameters.brightness[0], 0, 1);
+            value = (0.999 - a) * delayed2 + a * delayed1;
+            break;
           }
-        } else {
-          // Simple low-pass filter. We ensure value is slight less than 1 to ensure dampening.
-          value = (0.999 - a) * excitation + a * delayed;
+          case "random-negation": {
+            const sign = Math.random() < 0.5 ? -1 : 1;
+            value = 0.5 * sign * (delayed2 + delayed1);
+            break;
+          }
         }
       }
 
-      output[i] += value;
+      maxValue = Math.max(maxValue, Math.abs(value));
+      output[i] = value;
       this.buffer[this.bufferIndex % this.buffer.length] = value;
     }
 
-    return true;
+    return maxValue > 0.001;
   }
 
   /**

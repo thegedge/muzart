@@ -30,17 +30,16 @@ export const createEnvelope = (param: AudioParam, envelope: Partial<Envelope>, w
 
   if (decay) {
     // TODO use sustain value, if we can somehow set decibel output
-    param.linearRampToValueAtTime(0.5 * value, decay);
+    param.linearRampToValueAtTime(0.8 * value, currentEnvelopeTime + decay);
     currentEnvelopeTime += decay;
   }
 
   if (sustain) {
-    param.setValueAtTime(0.8 * value, sustain);
     currentEnvelopeTime += sustain;
   }
 
   if (release) {
-    param.linearRampToValueAtTime(0, release);
+    param.linearRampToValueAtTime(0, currentEnvelopeTime + release);
     currentEnvelopeTime += release;
   }
 };
