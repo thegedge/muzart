@@ -1,9 +1,10 @@
 import { memoize } from "lodash";
 import * as notation from "../../notation";
-import { SourceNode } from "../types";
 import { SampleZone, SoundFontGeneratorType } from "../factories/SoundFont";
-import { createEnvelope } from "../util/envelope";
-import { createGainNode } from "../util/gain";
+import { CompositeNode } from "../nodes/CompositeNode";
+import { EnvelopeNode } from "../nodes/EnvelopeNode";
+import { WrappedNode } from "../nodes/WrappedNode";
+import { SourceGenerator } from "../types";
 
 export interface SamplerOptions {
   /** The audio context in which this sampler will be used */
@@ -19,7 +20,7 @@ export interface SamplerOptions {
 /**
  * A generator using samples to produce sound.
  */
-export class Sampler {
+export class Sampler implements SourceGenerator {
   private buffers: Map<number, SampleZone>;
 
   constructor(private options: SamplerOptions) {
@@ -30,21 +31,21 @@ export class Sampler {
     this.buffers = new Map(options.buffers);
   }
 
-  generate(note: notation.Note, when: number): SourceNode {
+  generate(note: notation.Note) {
     const midi = note.pitch.toMidi();
     const [sample, offset] = this.findClosest(midi);
-    const source = this.createToneBufferSource(sample, offset);
+    const source = new WrappedNode(this.createToneBufferSource(sample, offset));
 
-    const output = createGainNode(this.options.context, this.options.instrument, note);
     const attack = sample.generators[SoundFontGeneratorType.EnvelopeVolumeAttack];
     const decay = sample.generators[SoundFontGeneratorType.EnvelopeVolumeDecay];
     const release = sample.generators[SoundFontGeneratorType.EnvelopeVolumeRelease];
     const sustain = sample.generators[SoundFontGeneratorType.EnvelopeVolumeSustain];
-    createEnvelope(output.gain, { attack, sustain, decay, release }, when);
+
+    const output = new EnvelopeNode(this.options.context, { attack, sustain, decay, release });
 
     source.connect(output);
 
-    return { source, output };
+    return new CompositeNode(source, output);
   }
 
   /**

@@ -1,3 +1,40 @@
+import { AudioNode } from "./AudioNode";
+
+/**
+ * An "attack, decay, sustain, release" node.
+ */
+export class EnvelopeNode extends AudioNode {
+  private gain: GainNode;
+
+  constructor(
+    context: AudioContext,
+    readonly envelope: Envelope,
+  ) {
+    super();
+    this.gain = context.createGain();
+  }
+
+  start(when?: number | undefined, _durationSecs?: number | undefined): void {
+    createEnvelope(this.gain.gain, this.envelope, when ?? 0);
+  }
+
+  stop(): void {
+    this.gain.disconnect();
+  }
+
+  dispose(): void {
+    this.gain.disconnect();
+  }
+
+  get pitch(): AudioParam | undefined {
+    return undefined;
+  }
+
+  get raw(): globalThis.AudioNode {
+    return this.gain;
+  }
+}
+
 /**
  * An attack, decary, sustain, release envelope.
  *
@@ -6,16 +43,16 @@
  * @see https://en.wikipedia.org/wiki/Envelope_(music)#ADSR
  */
 export interface Envelope {
-  attack: number;
-  decay: number;
-  sustain: number;
-  release: number;
+  attack?: number;
+  decay?: number;
+  sustain?: number;
+  release?: number;
 }
 
 /**
  * Create an "attack, decay, sustain, release" envelope for a given parameter.
  */
-export const createEnvelope = (param: AudioParam, envelope: Partial<Envelope>, when: number) => {
+export const createEnvelope = (param: AudioParam, envelope: Envelope, when: number) => {
   const { attack, decay, sustain, release } = envelope;
   const value = param.value;
 

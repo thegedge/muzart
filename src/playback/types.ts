@@ -1,4 +1,5 @@
 import * as notation from "../notation";
+import { AudioNode } from "./nodes/AudioNode";
 
 export type MidiInstrument = {
   name: string;
@@ -15,9 +16,8 @@ export interface SourceGenerator {
    * Generate a source node for a given note.
    *
    * @param note the note to generate a source for
-   * @param when the time to start the note
    */
-  generate(note: notation.Note, when: number): SourceNode;
+  generate(note: notation.Note): AudioNode;
 }
 
 export interface InstrumentOptions {
@@ -29,12 +29,4 @@ export interface InstrumentOptions {
 
   /** A generator that can produce a source node for a given note */
   sourceGenerator: SourceGenerator;
-}
-
-export interface SourceNode {
-  /** The node actually playing the sound */
-  source: AudioWorkletNode | OscillatorNode | AudioBufferSourceNode;
-
-  /** The gain node in the chain */
-  output: GainNode;
 }

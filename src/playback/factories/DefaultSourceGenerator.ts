@@ -1,9 +1,10 @@
 import * as notation from "../../notation";
-import { SourceGenerator } from "../types";
-import { MidiInstrument, SourceGeneratorFactory } from "../types";
-import { OscillatorOptions, SimpleOscillator } from "../generators/SimpleOscillator";
-import { PluckedString, PluckedStringOptions } from "../generators/PluckedString";
 import { Drum, DrumOptions } from "../generators/Drum";
+import { PluckedString, PluckedStringOptions } from "../generators/PluckedString";
+import { OscillatorOptions, SimpleOscillator } from "../generators/SimpleOscillator";
+import { CompositeNode } from "../nodes/CompositeNode";
+import { WrappedNode } from "../nodes/WrappedNode";
+import { MidiInstrument, SourceGenerator, SourceGeneratorFactory } from "../types";
 
 type OscillatorGenerator = {
   type: "oscillator";
@@ -62,19 +63,25 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
           }
 
           return {
-            generate(note, when) {
-              const { source, output } = generator.generate(note, when);
+            generate(note) {
+              const source = generator.generate(note);
 
               // D4 and below + mids will be boosted, C7 and higher attenuated
-              const loBoost = new BiquadFilterNode(context, { type: "lowshelf", frequency: 600, gain: 15 });
-              const midBoost = new BiquadFilterNode(context, { type: "peaking", frequency: 200, Q: 100, gain: 15 });
-              const hiAttenuate = new BiquadFilterNode(context, { type: "highshelf", frequency: 2000, gain: -20 });
+              const loBoost = new WrappedNode(
+                new BiquadFilterNode(context, { type: "lowshelf", frequency: 600, gain: 15 }),
+              );
+              const midBoost = new WrappedNode(
+                new BiquadFilterNode(context, { type: "peaking", frequency: 200, Q: 100, gain: 15 }),
+              );
+              const hiAttenuate = new WrappedNode(
+                new BiquadFilterNode(context, { type: "highshelf", frequency: 2000, gain: -20 }),
+              );
 
-              output.connect(loBoost);
+              source.connect(loBoost);
               loBoost.connect(midBoost);
               midBoost.connect(hiAttenuate);
 
-              return { source, output: hiAttenuate };
+              return new CompositeNode(source, hiAttenuate);
             },
           } as SourceGenerator;
         },

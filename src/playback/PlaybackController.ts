@@ -3,10 +3,10 @@ import { action, autorun, flow, makeObservable, observable } from "mobx";
 import { Selection } from "../editor/state/Selection";
 import layout, { maxMap } from "../layout";
 import { NoteValue, NoteValueName } from "../notation";
-import { DefaultSourceGenerator } from "./factories/DefaultSourceGenerator";
 import { Instrument } from "./Instrument";
-import { SourceGeneratorFactory } from "./types";
+import { DefaultSourceGenerator } from "./factories/DefaultSourceGenerator";
 import { SoundFont } from "./factories/SoundFont";
+import { SourceGeneratorFactory } from "./types";
 import { noteValueToSeconds } from "./util/durations";
 
 export class PlaybackController {
@@ -238,7 +238,7 @@ export class PlaybackController {
     const note = this.selection.note?.note;
     if (note) {
       this.withPlayback(() => {
-        this.instrument?.playNote(note, this.tempoOfSelection, undefined, true);
+        this.instrument?.playNote(note, this.tempoOfSelection, undefined, 1);
       });
     }
   }

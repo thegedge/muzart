@@ -1,7 +1,6 @@
 import * as notation from "../../notation";
-import { SourceGenerator, SourceNode } from "../types";
-import { createEnvelope } from "../util/envelope";
-import { createGainNode } from "../util/gain";
+import { WrappedNode } from "../nodes/WrappedNode";
+import { SourceGenerator } from "../types";
 
 export interface OscillatorOptions {
   /** The audio context in which this oscillator will be used */
@@ -20,22 +19,11 @@ export interface OscillatorOptions {
 export class SimpleOscillator implements SourceGenerator {
   constructor(private options: OscillatorOptions) {}
 
-  generate(note: notation.Note, when: number): SourceNode {
+  generate(note: notation.Note) {
     const source = this.options.context.createOscillator();
     source.type = this.options.oscillator;
     source.frequency.value = note.pitch.toFrequency();
 
-    const output = createGainNode(this.options.context, this.options.instrument, note);
-    createEnvelope(
-      output.gain,
-      {
-        attack: 0.01,
-      },
-      when,
-    );
-
-    source.connect(output);
-
-    return { source, output };
+    return new WrappedNode(source);
   }
 }

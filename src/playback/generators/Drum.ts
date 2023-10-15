@@ -1,6 +1,6 @@
 import * as notation from "../../notation";
-import { SourceGenerator, SourceNode } from "../types";
-import { createGainNode } from "../util/gain";
+import { AudioWorkletNode } from "../nodes/AudioWorkletNode";
+import { SourceGenerator } from "../types";
 
 export interface DrumOptions {
   /** The audio context this generator will use */
@@ -16,7 +16,9 @@ export interface DrumOptions {
 export class Drum implements SourceGenerator {
   constructor(private options: DrumOptions) {}
 
-  generate(note: notation.Note, when: number): SourceNode {
+  // TODO actually use the note
+
+  generate(_note: notation.Note) {
     // TODO this only produces something that sounds like a kick drum, need all the other drum-y things
     // note.placement?.fret == 35  ==> kick drum
     // 35 Acoustic Bass Drum
@@ -67,19 +69,14 @@ export class Drum implements SourceGenerator {
     // 80 Mute Triangle
     // 81 Open Triangle
 
-    const karplusStrongNode = new AudioWorkletNode(this.options.context, "karplus-strong", {
+    const karplusStrongNode = new globalThis.AudioWorkletNode(this.options.context, "karplus-strong", {
       processorOptions: {
         frequency: 150,
         impulseType: "white-noise",
         updateType: "random-negation",
-        when,
       },
     });
 
-    const output = createGainNode(this.options.context, this.options.instrument, note);
-
-    karplusStrongNode.connect(output);
-
-    return { source: karplusStrongNode, output };
+    return new AudioWorkletNode(karplusStrongNode);
   }
 }

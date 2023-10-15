@@ -1,6 +1,6 @@
 import * as notation from "../../notation";
-import { SourceGenerator, SourceNode } from "../types";
-import { createGainNode } from "../util/gain";
+import { AudioWorkletNode } from "../nodes/AudioWorkletNode";
+import { SourceGenerator } from "../types";
 
 export type PluckedStringOptions = {
   /** The audio context this generator will use */
@@ -37,13 +37,12 @@ declare global {
 export class PluckedString implements SourceGenerator {
   constructor(private options: PluckedStringOptions) {}
 
-  generate(note: notation.Note, when: number): SourceNode {
-    const karplusStrongNode = new AudioWorkletNode(this.options.context, "karplus-strong", {
+  generate(note: notation.Note) {
+    const karplusStrongNode = new globalThis.AudioWorkletNode(this.options.context, "karplus-strong", {
       processorOptions: {
         frequency: note.pitch.toFrequency(),
         updateType: "blend",
         impulseType: this.options.impulseType,
-        when,
       },
     });
 
@@ -52,10 +51,6 @@ export class PluckedString implements SourceGenerator {
       param.setValueAtTime(this.options.brightness, 0);
     }
 
-    const output = createGainNode(this.options.context, this.options.instrument, note);
-
-    karplusStrongNode.connect(output);
-
-    return { source: karplusStrongNode, output };
+    return new AudioWorkletNode(karplusStrongNode);
   }
 }

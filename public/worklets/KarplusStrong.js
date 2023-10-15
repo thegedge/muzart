@@ -1,12 +1,13 @@
 /* eslint-disable no-undef */
 
 /**
+ * @typedef {{ type: "start"; when?: number; durationSecs?: number }} StartEvent
  * @typedef {{ type: "stop"; }} StopEvent
- * @typedef {{ data: StopEvent }} KarplusStrongEvent
+ * @typedef {{ data: StopEvent | StartEvent }} KarplusStrongEvent
  *
  * @typedef {"white-noise" | "sine" | "noisy-sine"} ImpulseType
  * @typedef {"average" | "random-negation"} UpdateType
- * @typedef {{ frequency: number; when: number; impulseType?: ImpulseType; updateType?: UpdateType }} KarplusOptions
+ * @typedef {{ frequency: number; impulseType?: ImpulseType; updateType?: UpdateType }} KarplusOptions
  * @typedef {Omit<AudioWorkletNodeOptions, "processorOptions"> & { processorOptions?: KarplusOptions }} KarplusStrongWorkletOptions
  */
 
@@ -51,8 +52,9 @@ class KarplusStrong extends AudioWorkletProcessor {
       throw new Error("Missing processorOptions for KarplusStrong filter");
     }
 
+    this.start = Number.POSITIVE_INFINITY;
+    this.end = Number.POSITIVE_INFINITY;
     this.frequency = options.processorOptions.frequency;
-    this.when = options.processorOptions.when;
     this.impulseType = options.processorOptions.impulseType ?? "white-noise";
     this.updateType = options.processorOptions.updateType ?? "blend";
 
@@ -66,8 +68,13 @@ class KarplusStrong extends AudioWorkletProcessor {
     /** @param {KarplusStrongEvent} event */
     this.port.onmessage = (event) => {
       switch (event.data.type) {
+        case "start": {
+          this.start = event.data.when ?? currentTime - 0.001;
+          this.end = event.data.durationSecs ? this.start + event.data.durationSecs : Number.POSITIVE_INFINITY;
+          break;
+        }
         case "stop": {
-          this.voice = undefined;
+          this.end = currentTime;
           break;
         }
       }
@@ -84,12 +91,16 @@ class KarplusStrong extends AudioWorkletProcessor {
     // Assuming mono output for now
     const output = outputs[0][0];
 
-    if (this.when > currentTime) {
+    if (currentTime < this.start) {
       output.fill(0.0);
       return true;
     }
 
-    let maxValue = 0;
+    if (currentTime >= this.end) {
+      output.fill(0.0);
+      return false;
+    }
+
     for (let i = 0; i < output.length; ++i, ++this.bufferIndex) {
       let value = 0;
       if (this.bufferIndex < this.buffer.length) {
@@ -124,12 +135,11 @@ class KarplusStrong extends AudioWorkletProcessor {
         }
       }
 
-      maxValue = Math.max(maxValue, Math.abs(value));
       output[i] = value;
       this.buffer[this.bufferIndex % this.buffer.length] = value;
     }
 
-    return maxValue > 0.001;
+    return true;
   }
 
   /**
