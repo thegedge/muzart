@@ -6,8 +6,8 @@
  * @typedef {{ data: StopEvent | StartEvent }} KarplusStrongEvent
  *
  * @typedef {"white-noise" | "sine" | "noisy-sine"} ImpulseType
- * @typedef {"average" | "random-negation"} UpdateType
- * @typedef {{ impulseType?: ImpulseType; updateType?: UpdateType }} KarplusOptions
+ * @typedef {"average" | "gaussian" | "random-negation"} FilterType
+ * @typedef {{ impulseType?: ImpulseType; filterType?: FilterType }} KarplusOptions
  * @typedef {Omit<AudioWorkletNodeOptions, "processorOptions"> & { processorOptions?: KarplusOptions }} KarplusStrongWorkletOptions
  */
 
@@ -55,7 +55,7 @@ class KarplusStrong extends AudioWorkletProcessor {
     this.start = Number.POSITIVE_INFINITY;
     this.end = Number.POSITIVE_INFINITY;
     this.impulseType = options.processorOptions.impulseType ?? "white-noise";
-    this.updateType = options.processorOptions.updateType ?? "blend";
+    this.filterType = options.processorOptions.filterType ?? "average";
 
     this.buffer = new Float32Array(Math.ceil(sampleRate / 2));
     this.bufferIndex = 0;
@@ -115,15 +115,25 @@ class KarplusStrong extends AudioWorkletProcessor {
             break;
         }
       } else {
-        const delayed1 = this.buffer[(this.bufferIndex - offset) % this.buffer.length];
-        const delayed2 = this.buffer[(this.bufferIndex - offset + 1) % this.buffer.length];
-
-        switch (this.updateType) {
-          case "blend": {
+        switch (this.filterType) {
+          case "average": {
+            const delayed1 = this.buffer[(this.bufferIndex - offset) % this.buffer.length];
+            const delayed2 = this.buffer[(this.bufferIndex - offset + 1) % this.buffer.length];
             value = 0.5 * (delayed2 + delayed1);
             break;
           }
+          case "gaussian": {
+            const delayed1 = this.buffer[(this.bufferIndex - offset) % this.buffer.length];
+            const delayed2 = this.buffer[(this.bufferIndex - offset + 1) % this.buffer.length];
+            const delayed3 = this.buffer[(this.bufferIndex - offset + 2) % this.buffer.length];
+            const delayed4 = this.buffer[(this.bufferIndex - offset + 3) % this.buffer.length];
+            const delayed5 = this.buffer[(this.bufferIndex - offset + 4) % this.buffer.length];
+            value = (1 * (delayed1 + delayed5) + 4 * (delayed2 + delayed4) + 6 * delayed3) * 0.0625;
+            break;
+          }
           case "random-negation": {
+            const delayed1 = this.buffer[(this.bufferIndex - offset) % this.buffer.length];
+            const delayed2 = this.buffer[(this.bufferIndex - offset + 1) % this.buffer.length];
             const sign = Math.random() < 0.5 ? -1 : 1;
             value = 0.5 * sign * (delayed2 + delayed1);
             break;

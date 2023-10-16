@@ -32,8 +32,8 @@ export class Instrument {
     // Use a compressor node connected the context destination to avoid things being too loud
     this.destination = new WrappedNode(
       new DynamicsCompressorNode(this.context, {
-        attack: 0.005,
-        release: 1,
+        attack: 0.001,
+        release: 0.05,
         knee: 10,
         ratio: 12,
         threshold: -20,

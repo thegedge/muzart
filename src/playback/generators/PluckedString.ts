@@ -15,6 +15,13 @@ export type PluckedStringOptions = {
    * @default "white-noise"
    */
   impulseType?: "white-noise" | "sine" | "noisy-sine";
+
+  /**
+   * The kind of filter to use for each delay loop of the Karplus-Strong algorithm.
+   *
+   * @default "average"
+   */
+  filterType?: "average" | "gaussian";
 };
 
 declare global {
@@ -34,6 +41,7 @@ export class PluckedString implements SourceGenerator {
       processorOptions: {
         updateType: "blend",
         impulseType: this.options.impulseType,
+        filterType: this.options.filterType ?? "average",
       },
     });
 

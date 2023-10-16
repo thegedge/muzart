@@ -3,7 +3,7 @@ import { Drum, DrumOptions } from "../generators/Drum";
 import { PluckedString, PluckedStringOptions } from "../generators/PluckedString";
 import { OscillatorOptions, SimpleOscillator } from "../generators/SimpleOscillator";
 import { CompositeNode } from "../nodes/CompositeNode";
-import { WrappedNode } from "../nodes/WrappedNode";
+import { EqualizerNode } from "../nodes/EqualizerNode";
 import { MidiInstrument, SourceGenerator, SourceGeneratorFactory } from "../types";
 
 type OscillatorGenerator = {
@@ -53,33 +53,29 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
         construct(factory, context, instrument) {
           const generator = factory.generatorForData(context, instrument, {
             type: "plucked-string",
-            options: {},
+            options: {
+              filterType: "gaussian",
+            },
           });
 
           if (!generator) {
             return null;
           }
 
+          // Soften the mid and high frequencies to make the guitar sound more like nylon strings? I don't know what I'm done.
           return {
             generate(note) {
               const source = generator.generate(note);
+              const equalizer = new EqualizerNode({
+                context,
+                lowGain: 3,
+                midGain: 0.0001,
+                highGain: 0.0001,
+              });
 
-              // D4 and below + mids will be boosted, C7 and higher attenuated
-              const loBoost = new WrappedNode(
-                new BiquadFilterNode(context, { type: "lowshelf", frequency: 600, gain: 15 }),
-              );
-              const midBoost = new WrappedNode(
-                new BiquadFilterNode(context, { type: "peaking", frequency: 200, Q: 100, gain: 15 }),
-              );
-              const hiAttenuate = new WrappedNode(
-                new BiquadFilterNode(context, { type: "highshelf", frequency: 2000, gain: -20 }),
-              );
+              source.connect(equalizer);
 
-              source.connect(loBoost);
-              loBoost.connect(midBoost);
-              midBoost.connect(hiAttenuate);
-
-              return new CompositeNode(source, hiAttenuate);
+              return new CompositeNode(source, equalizer);
             },
           } as SourceGenerator;
         },
