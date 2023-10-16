@@ -17,7 +17,10 @@ export class IndexedDbStorage extends AsyncStorage {
 
     this.db = new Promise((resolve, reject) => {
       const request = indexedDB.open(name, version);
-      request.onsuccess = () => resolve(request.result);
+      request.onsuccess = () => {
+        resolve(request.result);
+        this.db = request.result;
+      };
       request.onerror = () => reject(request.error);
       request.onblocked = () => reject(new Error("upgrade blocked by another tab")); // TODO deal with blocked upgrade
       request.onupgradeneeded = (event) => {
@@ -31,7 +34,6 @@ export class IndexedDbStorage extends AsyncStorage {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
         const db: IDBDatabase = (target as any).result;
         upgrade(event.oldVersion, event.newVersion, db);
-        this.db = db;
       };
     });
   }
