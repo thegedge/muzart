@@ -29,8 +29,18 @@ export class Instrument {
     this.instrument = options.instrument;
     this.sourceGenerator = options.sourceGenerator;
 
-    // TODO maybe a compressor node connected the context destination to avoid things being too loud?
-    this.destination = new WrappedNode(this.context.destination);
+    // Use a compressor node connected the context destination to avoid things being too loud
+    this.destination = new WrappedNode(
+      new DynamicsCompressorNode(this.context, {
+        attack: 0.005,
+        release: 1,
+        knee: 10,
+        ratio: 12,
+        threshold: -20,
+      }),
+    );
+
+    this.destination.raw.connect(this.context.destination);
   }
 
   /**
