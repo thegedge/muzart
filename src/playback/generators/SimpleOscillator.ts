@@ -23,7 +23,6 @@ export class SimpleOscillator implements SourceGenerator {
     const source = this.options.context.createOscillator();
     source.type = this.options.oscillator;
     source.frequency.value = note.pitch.toFrequency();
-
     return new WrappedNode(source);
   }
 }

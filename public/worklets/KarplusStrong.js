@@ -7,7 +7,7 @@
  *
  * @typedef {"white-noise" | "sine" | "noisy-sine"} ImpulseType
  * @typedef {"average" | "random-negation"} UpdateType
- * @typedef {{ frequency: number; impulseType?: ImpulseType; updateType?: UpdateType }} KarplusOptions
+ * @typedef {{ impulseType?: ImpulseType; updateType?: UpdateType }} KarplusOptions
  * @typedef {Omit<AudioWorkletNodeOptions, "processorOptions"> & { processorOptions?: KarplusOptions }} KarplusStrongWorkletOptions
  */
 
@@ -35,6 +35,13 @@ class KarplusStrong extends AudioWorkletProcessor {
   static get parameterDescriptors() {
     return [
       {
+        name: "frequency",
+        minValue: 1,
+        maxValue: sampleRate / 2,
+        defaultValue: 261.6, // middle C
+        automationRate: "a-rate",
+      },
+      {
         name: "brightness",
         minValue: 0,
         maxValue: 1,
@@ -54,16 +61,11 @@ class KarplusStrong extends AudioWorkletProcessor {
 
     this.start = Number.POSITIVE_INFINITY;
     this.end = Number.POSITIVE_INFINITY;
-    this.frequency = options.processorOptions.frequency;
     this.impulseType = options.processorOptions.impulseType ?? "white-noise";
     this.updateType = options.processorOptions.updateType ?? "blend";
 
-    this.buffer = this.bufferForFrequency(this.frequency);
+    this.buffer = new Float32Array(Math.ceil(sampleRate / 2));
     this.bufferIndex = 0;
-
-    // One-pole low-pass filter constants. This coefficient is calculated with the cutoff frequency based on
-    // the given frequency (see https://www.dspguide.com/ch19/2.htm)
-    this.coefficient = Math.exp((-2 * Math.PI * this.frequency) / sampleRate);
 
     /** @param {KarplusStrongEvent} event */
     this.port.onmessage = (event) => {
@@ -84,7 +86,7 @@ class KarplusStrong extends AudioWorkletProcessor {
   /**
    * @param inputs {Float32Array[][]}
    * @param outputs {Float32Array[][]}
-   * @param parameters {{ brightness: [number] }}
+   * @param parameters {{ brightness: [number]; frequency: number[] }}
    * @returns {boolean}
    */
   process(_inputs, outputs, parameters) {
@@ -101,30 +103,34 @@ class KarplusStrong extends AudioWorkletProcessor {
       return false;
     }
 
+    const brightness = clamp(1.0 - parameters.brightness[0], 0, 1);
+
     for (let i = 0; i < output.length; ++i, ++this.bufferIndex) {
+      const frequency = parameters.frequency[i];
+      const offset = Math.floor(sampleRate / frequency);
+
       let value = 0;
-      if (this.bufferIndex < this.buffer.length) {
+      if (this.bufferIndex < offset) {
         switch (this.impulseType) {
           case "white-noise":
             value = 2 * Math.random() - 1;
             break;
           case "sine":
-            value = Math.sin((2 * Math.PI * this.bufferIndex) / this.buffer.length);
+            value = Math.sin((2 * Math.PI * this.bufferIndex) / offset);
             break;
           case "noisy-sine":
             // Sounds harp-like
-            value = Math.random() * Math.sin((2 * Math.PI * this.bufferIndex) / this.buffer.length);
+            value = Math.random() * Math.sin((2 * Math.PI * this.bufferIndex) / offset);
             break;
         }
       } else {
-        const delayed1 = this.buffer[this.bufferIndex % this.buffer.length];
-        const delayed2 = this.buffer[(this.bufferIndex + 1) % this.buffer.length];
+        const delayed1 = this.buffer[(this.bufferIndex - offset) % this.buffer.length];
+        const delayed2 = this.buffer[(this.bufferIndex - offset + 1) % this.buffer.length];
 
         switch (this.updateType) {
           case "blend": {
-            // Simple low-pass filter. We ensure value is slight less than 1 to ensure dampening.
-            const a = this.coefficient * clamp(1.0 - parameters.brightness[0], 0, 1);
-            value = (0.999 - a) * delayed2 + a * delayed1;
+            const a = 0.5 * brightness;
+            value = (1 - a) * delayed2 + a * delayed1;
             break;
           }
           case "random-negation": {
@@ -140,15 +146,6 @@ class KarplusStrong extends AudioWorkletProcessor {
     }
 
     return true;
-  }
-
-  /**
-   * @param {number} frequency
-   * @private
-   */
-  bufferForFrequency(frequency) {
-    const samplesPerPeriod = Math.ceil(sampleRate / frequency);
-    return new Float32Array(samplesPerPeriod);
   }
 }
 

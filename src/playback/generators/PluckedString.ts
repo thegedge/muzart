@@ -40,16 +40,16 @@ export class PluckedString implements SourceGenerator {
   generate(note: notation.Note) {
     const karplusStrongNode = new globalThis.AudioWorkletNode(this.options.context, "karplus-strong", {
       processorOptions: {
-        frequency: note.pitch.toFrequency(),
         updateType: "blend",
         impulseType: this.options.impulseType,
       },
     });
 
-    const param = karplusStrongNode.parameters.get("brightness");
-    if (param) {
-      param.setValueAtTime(this.options.brightness, 0);
-    }
+    const brightness = karplusStrongNode.parameters.get("brightness");
+    brightness!.setValueAtTime(this.options.brightness, 0);
+
+    const frequency = karplusStrongNode.parameters.get("frequency");
+    frequency!.setValueAtTime(note.pitch.toFrequency(), 0);
 
     return new AudioWorkletNode(karplusStrongNode);
   }

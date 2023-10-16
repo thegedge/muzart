@@ -90,7 +90,7 @@ export class Instrument {
             previousNode.connect(node);
             return node;
           });
-          effects[0].connect(pitchParam);
+          effects[effects.length - 1].connect(pitchParam);
         }
       }
 
@@ -129,15 +129,15 @@ export class Instrument {
       type: "sine",
       frequency: 4, // TODO make customizable
     });
-    //
-    //     const amplitude = new GainNode(this.context, {
-    //       gain: Math.pow(2, -6), // TODO understand this value better
-    //     });
 
-    // oscillator.connect(amplitude);
+    const amplitude = new GainNode(this.context, {
+      gain: note.pitch.toFrequency() / 36,
+    });
+
+    oscillator.connect(amplitude);
     oscillator.start(when);
 
-    return oscillator;
+    return amplitude;
   }
 
   /**

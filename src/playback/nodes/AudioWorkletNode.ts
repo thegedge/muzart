@@ -41,6 +41,6 @@ export class AudioWorkletNode extends AudioNode {
   }
 
   get pitch(): AudioParam | undefined {
-    return undefined;
+    return this.node.parameters.get("frequency");
   }
 }
