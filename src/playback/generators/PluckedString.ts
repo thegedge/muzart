@@ -15,14 +15,6 @@ export type PluckedStringOptions = {
    * @default "white-noise"
    */
   impulseType?: "white-noise" | "sine" | "noisy-sine";
-
-  /**
-   * The brightness value to use when `updateType` is "blend"
-   *
-   * The value ranges from 0 to 1, with 1 being the "brightest" sound. This would be similar to plucking a guitar
-   * string near the bridge. 0 would be similar to a muted string pluck.
-   */
-  brightness: number;
 };
 
 declare global {
@@ -44,9 +36,6 @@ export class PluckedString implements SourceGenerator {
         impulseType: this.options.impulseType,
       },
     });
-
-    const brightness = karplusStrongNode.parameters.get("brightness");
-    brightness!.setValueAtTime(this.options.brightness, 0);
 
     const frequency = karplusStrongNode.parameters.get("frequency");
     frequency!.setValueAtTime(note.pitch.toFrequency(), 0);

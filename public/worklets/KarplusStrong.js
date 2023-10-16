@@ -41,13 +41,6 @@ class KarplusStrong extends AudioWorkletProcessor {
         defaultValue: 261.6, // middle C
         automationRate: "a-rate",
       },
-      {
-        name: "brightness",
-        minValue: 0,
-        maxValue: 1,
-        defaultValue: 1,
-        automationRate: "k-rate",
-      },
     ];
   }
 
@@ -86,7 +79,7 @@ class KarplusStrong extends AudioWorkletProcessor {
   /**
    * @param inputs {Float32Array[][]}
    * @param outputs {Float32Array[][]}
-   * @param parameters {{ brightness: [number]; frequency: number[] }}
+   * @param parameters {{ frequency: number[] }}
    * @returns {boolean}
    */
   process(_inputs, outputs, parameters) {
@@ -102,8 +95,6 @@ class KarplusStrong extends AudioWorkletProcessor {
       output.fill(0.0);
       return false;
     }
-
-    const brightness = clamp(1.0 - parameters.brightness[0], 0, 1);
 
     for (let i = 0; i < output.length; ++i, ++this.bufferIndex) {
       const frequency = parameters.frequency[i];
@@ -129,8 +120,7 @@ class KarplusStrong extends AudioWorkletProcessor {
 
         switch (this.updateType) {
           case "blend": {
-            const a = 0.5 * brightness;
-            value = (1 - a) * delayed2 + a * delayed1;
+            value = 0.5 * (delayed2 + delayed1);
             break;
           }
           case "random-negation": {

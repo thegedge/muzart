@@ -53,9 +53,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
         construct(factory, context, instrument) {
           const generator = factory.generatorForData(context, instrument, {
             type: "plucked-string",
-            options: {
-              brightness: 0.8,
-            },
+            options: {},
           });
 
           if (!generator) {
@@ -92,9 +90,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
       name: "Acoustic Guitar (steel)",
       generator: {
         type: "plucked-string",
-        options: {
-          brightness: 0.7,
-        },
+        options: {},
       },
     },
 
@@ -102,9 +98,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
       name: "Electric Guitar (muted)",
       generator: {
         type: "plucked-string",
-        options: {
-          brightness: 0.5,
-        },
+        options: {},
       },
     },
 
@@ -122,9 +116,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
       name: "Electric Bass",
       generator: {
         type: "plucked-string",
-        options: {
-          brightness: 0.6,
-        },
+        options: {},
       },
     },
 
@@ -133,7 +125,6 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
       generator: {
         type: "plucked-string",
         options: {
-          brightness: 0.8,
           impulseType: "noisy-sine",
         },
       },
