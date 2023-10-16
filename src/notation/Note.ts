@@ -242,6 +242,14 @@ export class Note {
     return this.text;
   }
 
+  get rootTieNote(): Note {
+    if (this.tie?.previous) {
+      return this.tie.previous.rootTieNote;
+    }
+
+    return this;
+  }
+
   /**
    * Get an options attribute for this note.
    *

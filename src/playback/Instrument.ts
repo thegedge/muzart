@@ -61,24 +61,28 @@ export class Instrument {
    */
   playNote(note: notation.Note, tempo: number, when?: number, durationSecs?: number): void {
     if (note.dead) {
-      // TODO produce some percussive-y sound
+      // TODO produce some percussive-y sound, we have Karplus-Strong now!
       return;
     }
 
-    const tieType = note.tie ? note.tie.type : "start";
-    if (tieType != "start") {
-      return;
-    }
-
-    // TODO need to compute the sum of all the durations of the notes that are tied together,
-    //  plus all the durations of the notes that are between the ties. Perhaps the easiest way to
-    // do this is to actually just queue up a stop, and have the caller figure out the timings.
-
-    const duration = durationSecs ?? noteValueToSeconds(note.value, tempo);
     try {
-      const startTime = this.currentTime + (when ?? 0);
-      const source = this.sourceGenerator.generate(note);
+      const tieType = note.tie?.type;
+      if (tieType == "middle") {
+        return;
+      }
 
+      const startTime = this.currentTime + (when ?? 0);
+      const duration = durationSecs ?? noteValueToSeconds(note.value, tempo);
+
+      if (tieType == "stop") {
+        const source = this.activeSources.get(note.rootTieNote);
+        if (source) {
+          setTimeout(() => source.stop(), (startTime + duration - this.currentTime) * 1000);
+        }
+        return;
+      }
+
+      const source = this.sourceGenerator.generate(note);
       const pitchParam = source.pitch;
       if (pitchParam) {
         this.maybeBend(note, pitchParam, tempo, startTime);
@@ -95,7 +99,7 @@ export class Instrument {
       }
 
       source.connect(this.destination);
-      source.start(startTime, duration);
+      source.start(startTime, durationSecs !== undefined || tieType === undefined ? duration : undefined);
 
       this.activeSources.set(note, source);
       source.on("ended", () => {
