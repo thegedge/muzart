@@ -1,7 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { Box, LINE_STROKE_WIDTH, PX_PER_MM } from "../../../layout";
-import { SyncStorage, isRecord, numberOrDefault } from "../../storage/Storage";
-import { VIEW_STATE_CANVAS_SUBKEY, VIEW_STATE_NAMESPACE } from "../../storage/namespaces";
+import { isRecord, numberOrDefault } from "../../storage/Storage";
 import { Point, RenderFunction } from "./Canvas";
 
 /**
@@ -42,9 +41,7 @@ export class CanvasState {
   private canvasResizeObserver: ResizeObserver;
   private centerOnFirstResize = true;
 
-  constructor(readonly storage: SyncStorage) {
-    this.storage.loadObject(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY, this);
-
+  constructor() {
     // "debounce" events to avoid having the canvas flicker, at the cost of stretching what's currently painted
     let timeoutHandle = -1;
     this.canvasResizeObserver = new ResizeObserver(() => {
@@ -239,8 +236,6 @@ export class CanvasState {
       this.canvas.width / this.userspaceToDeviceFactor,
       this.canvas.height / this.userspaceToDeviceFactor,
     );
-
-    this.storage.store(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY, this).catch(console.error);
 
     this.redraw();
   }

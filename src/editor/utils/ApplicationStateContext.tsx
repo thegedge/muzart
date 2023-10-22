@@ -1,3 +1,4 @@
+import { comparer, reaction } from "mobx";
 import { ComponentChildren, createContext } from "preact";
 import { Suspense } from "preact/compat";
 import { useContext, useEffect, useMemo } from "preact/hooks";
@@ -8,7 +9,7 @@ import { DemoStorage } from "../storage/DemoStorage";
 import { IndexedDbStorage } from "../storage/IndexedDbStorage";
 import { LocalStorage } from "../storage/LocalStorage";
 import { TabStorage } from "../storage/TabStorage";
-import { TABS_NAMESPACE } from "../storage/namespaces";
+import { APPLICATION_NAMESPACE, APPLICATION_STATE_KEY, TABS_NAMESPACE } from "../storage/namespaces";
 import { Loading } from "../ui/misc/Loading";
 
 declare global {
@@ -38,12 +39,32 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
         }
       }),
     });
-    const selection = new Selection(settingsStorage);
+    const selection = new Selection();
     const playback = new PlaybackController(selection);
-    const application = new Application(settingsStorage, tabStorage, selection, playback);
-    window.Muzart = application;
-    return application;
+    return new Application(settingsStorage, tabStorage, selection, playback);
   }, []);
+
+  useEffect(() => {
+    window.Muzart = application;
+
+    application.settingsStorage.loadObject(APPLICATION_NAMESPACE, APPLICATION_STATE_KEY, application);
+
+    const disposer = reaction(
+      () => application.toJSON(),
+      (data) => {
+        application.settingsStorage.set(APPLICATION_NAMESPACE, APPLICATION_STATE_KEY, JSON.stringify(data));
+      },
+      {
+        equals: comparer.structural,
+        fireImmediately: true,
+      },
+    );
+
+    return () => {
+      disposer();
+      delete window.Muzart;
+    };
+  }, [application]);
 
   useEffect(() => {
     return () => {
@@ -68,24 +89,6 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
 
     void application.playback.loadSoundFont(defaultSoundfont);
   }, [application]);
-
-  if (import.meta.env.DEV) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks -- this condition is static
-    useEffect(() => {
-      if (application.selection.score != null) {
-        return;
-      }
-
-      const defaultURL = application.settingsStorage.get("view", "lastTab");
-      if (defaultURL) {
-        try {
-          void application.loadScore(defaultURL);
-        } catch (error) {
-          // Assume old data that is incorrect
-        }
-      }
-    }, [application]);
-  }
 
   return (
     <Suspense fallback={<Loading />}>

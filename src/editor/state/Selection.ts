@@ -3,8 +3,7 @@ import { inRange, last } from "lodash";
 import { autorun, makeAutoObservable } from "mobx";
 import layout, { getAncestorOfType, layOutScore } from "../../layout";
 import * as notation from "../../notation";
-import { StorableObject, SyncStorage, numberOrDefault } from "../storage/Storage";
-import { VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY } from "../storage/namespaces";
+import { StorableObject, numberOrDefault } from "../storage/Storage";
 
 export class Selection implements StorableObject {
   public score: layout.Score | null = null;
@@ -16,8 +15,7 @@ export class Selection implements StorableObject {
   private score_: notation.Score | null = null;
   private reflowDisposer: (() => void) | null = null;
 
-  constructor(readonly storage: SyncStorage) {
-    storage.loadObject(VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY, this);
+  constructor() {
     makeAutoObservable(this, undefined, { deep: false });
   }
 
@@ -72,11 +70,6 @@ export class Selection implements StorableObject {
   }
 
   update(selection: Partial<Selection>) {
-    const score = this.score_;
-    if (!score) {
-      return;
-    }
-
     const partChanged = selection.partIndex != undefined && selection.partIndex != this.partIndex;
     if (partChanged) {
       this.partIndex = selection.partIndex!;
@@ -108,10 +101,6 @@ export class Selection implements StorableObject {
           this.noteIndex = 0;
         }
       }
-    }
-
-    if (partChanged || measureChanged || chordChanged || noteChanged) {
-      this.storage.store(VIEW_STATE_NAMESPACE, VIEW_STATE_SELECTION_SUBKEY, this).catch(console.error);
     }
   }
 
@@ -235,13 +224,10 @@ export class Selection implements StorableObject {
     });
   }
 
-  setScore(score: notation.Score | null) {
-    // On our first set, we don't want to override any state we loaded from storage
-    const shouldUpdate = this.score_ != null;
-
+  setScore(score: notation.Score | null, resetSelection = true) {
     this.score_ = score;
 
-    if (shouldUpdate) {
+    if (resetSelection || score == null) {
       // This forces an update in `this.update` below
       this.partIndex = -1;
       this.measureIndex = -1;

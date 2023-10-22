@@ -1,13 +1,12 @@
 import { observer } from "mobx-react-lite";
 import { useReducer } from "preact/hooks";
 import { DEFAULT_MARGINS, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH } from "../../../layout";
-import { VIEW_STATE_NAMESPACE } from "../../storage/namespaces";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { useAsync } from "../../utils/useAsync";
 
 export const InitialPage = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
-  const { loading, settingsStorage, tabStorage } = application;
+  const { loading, tabStorage } = application;
   const [epoch, refresh] = useReducer<number, void>((v) => v + 1, 0);
 
   const { value: lines, error } = useAsync(async () => {
@@ -15,17 +14,16 @@ export const InitialPage = observer((_props: Record<string, never>) => {
       return [];
     }
 
-    const lastViewedTab = settingsStorage.get(VIEW_STATE_NAMESPACE, "lastTab");
     const tabs = await tabStorage.list();
     return tabs.map((tab) => {
       return {
         key: tab,
         href: `#/${encodeURIComponent(tab.toString())}`,
-        text: `${tab.pathname}${tab.toString() == lastViewedTab ? " (last viewed)" : ""}`,
+        text: tab.pathname,
         remove: tab.protocol == "demo:" ? null : () => tabStorage.delete(tab),
       };
     });
-  }, [loading, settingsStorage, tabStorage, epoch]);
+  }, [loading, tabStorage, epoch]);
 
   if (error) {
     throw error;

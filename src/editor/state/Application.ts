@@ -1,3 +1,4 @@
+import { isString } from "lodash";
 import { flow, makeAutoObservable } from "mobx";
 import { Point } from "../../layout";
 import { load } from "../../loaders";
@@ -5,9 +6,8 @@ import * as notation from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
 import { UndoStack } from "../../utils/UndoStack";
 import { Action } from "../actions/Action";
-import { SyncStorage } from "../storage/Storage";
+import { SyncStorage, isRecord } from "../storage/Storage";
 import { TabStorage } from "../storage/TabStorage";
-import { VIEW_STATE_CANVAS_SUBKEY, VIEW_STATE_LAST_TAB_SUBKEY, VIEW_STATE_NAMESPACE } from "../storage/namespaces";
 import { CanvasState } from "../ui/misc/CanvasState";
 import { DebugContext } from "./DebugContext";
 import { Selection } from "./Selection";
@@ -24,10 +24,12 @@ export interface Hit<T> {
 export class Application {
   public loading = false;
   public error: Error | null = null;
-  private currentUrl: URL | null = null;
 
   /** Various states the UI is in (e.g., key bindings overlay visible) */
   readonly state: UIState;
+
+  public debug: DebugContext = new DebugContext();
+  public canvas: CanvasState;
 
   /**
    * The undo stack for the editor.
@@ -36,8 +38,8 @@ export class Application {
    */
   private undoStack = new UndoStack<Action>();
 
-  public debug: DebugContext = new DebugContext();
-  public canvas: CanvasState;
+  /** The URL of the tab currently loaded into this app context */
+  private currentTabUrl_: URL | null = null;
 
   constructor(
     public settingsStorage: SyncStorage,
@@ -45,9 +47,13 @@ export class Application {
     public selection: Selection,
     public playback: PlaybackController,
   ) {
-    this.canvas = new CanvasState(this.settingsStorage);
+    this.canvas = new CanvasState();
     this.state = new UIState(this.playback);
     makeAutoObservable(this, undefined, { deep: false });
+  }
+
+  get currentTabUrl() {
+    return this.currentTabUrl_;
   }
 
   dispatch(action: Action) {
@@ -72,29 +78,22 @@ export class Application {
   }
 
   loadScore = flow(function* (this: Application, url: string) {
-    if (url.toString() == this.currentUrl?.toString()) {
+    if (this.selection.score != null && url.toString() == this.currentTabUrl_?.toString()) {
       return;
     }
 
     try {
-      this.currentUrl = new URL(url);
       this.error = null;
       this.loading = true;
+      this.currentTabUrl_ = new URL(url);
 
-      const blob: Blob = yield this.tabStorage.load(this.currentUrl);
+      const blob: Blob = yield this.tabStorage.load(this.currentTabUrl_);
       if (!blob) {
-        throw new Error(`couldn't load tab: ${this.currentUrl.pathname}`);
+        throw new Error(`couldn't load tab: ${this.currentTabUrl_.pathname}`);
       }
 
-      const source = new File([blob], this.currentUrl.pathname);
+      const source = new File([blob], this.currentTabUrl_.pathname);
       this.setScore((yield load(source)) as notation.Score);
-
-      const lastTab = this.settingsStorage.get(VIEW_STATE_NAMESPACE, VIEW_STATE_LAST_TAB_SUBKEY);
-      if (lastTab != url) {
-        this.settingsStorage.set(VIEW_STATE_NAMESPACE, VIEW_STATE_LAST_TAB_SUBKEY, url.toString());
-        this.settingsStorage.delete(VIEW_STATE_NAMESPACE, VIEW_STATE_CANVAS_SUBKEY);
-        this.selection.reset();
-      }
     } catch (error) {
       if (error instanceof Error) {
         this.error = error;
@@ -106,8 +105,26 @@ export class Application {
     }
   });
 
-  setScore(score: notation.Score | null) {
-    this.selection.setScore(score);
+  toJSON() {
+    return {
+      selection: this.selection.toJSON(),
+      lastTabUrl: this.currentTabUrl?.toString(),
+    };
+  }
+
+  fromJSON(value: Record<string, unknown>): void {
+    if (isRecord(value.selection)) {
+      this.selection.fromJSON(value.selection);
+    }
+
+    // TODO we're not properly restoring selection state when the tab is the same
+    if (!this.currentTabUrl_ && isString(value.lastTabUrl)) {
+      this.currentTabUrl_ = value.lastTabUrl ? new URL(value.lastTabUrl) : null;
+    }
+  }
+
+  setScore(score: notation.Score | null, resetSelection = true) {
+    this.selection.setScore(score, resetSelection);
     this.playback.reset();
   }
 }

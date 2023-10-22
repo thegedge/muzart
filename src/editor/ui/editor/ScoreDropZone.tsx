@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import { useEffect } from "preact/hooks";
 import { Route, useLocation } from "wouter";
 import { ScoreDataType, determineScoreType, getFilenameAndMimeType } from "../../../loaders";
@@ -5,7 +6,6 @@ import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { InitialPage } from "../misc/InitialPage";
 import { Score } from "../misc/Score";
 import { PartPanel } from "./PartPanel";
-import { observer } from "mobx-react-lite";
 
 export const ScoreDropZone = () => {
   const application = useApplicationState();
@@ -63,11 +63,7 @@ export const ScoreDropZone = () => {
         <Route path="/">
           {(_params: undefined) => {
             application.setScore(null);
-            return (
-              <div className="w-full overflow-auto">
-                <InitialPage />
-              </div>
-            );
+            return <InitialPage />;
           }}
         </Route>
       </div>
