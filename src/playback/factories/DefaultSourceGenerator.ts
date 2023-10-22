@@ -66,16 +66,18 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
           return {
             generate(note) {
               const source = generator.generate(note);
-              const equalizer = new EqualizerNode({
-                context,
-                lowGain: 3,
-                midGain: 0.0001,
-                highGain: 0.0001,
-              });
-
-              source.connect(equalizer);
-
-              return new CompositeNode(source, equalizer);
+              return (
+                source &&
+                CompositeNode.compose(
+                  source,
+                  new EqualizerNode({
+                    context,
+                    lowGain: 3,
+                    midGain: 0.0001,
+                    highGain: 0.0001,
+                  }),
+                )
+              );
             },
           } as SourceGenerator;
         },
