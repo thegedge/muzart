@@ -112,7 +112,10 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
       name: "Electric Bass",
       generator: {
         type: "plucked-string",
-        options: {},
+        options: {
+          impulseType: "noisy-sine",
+          filterType: "gaussian",
+        },
       },
     },
 
@@ -146,13 +149,14 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
       },
     },
 
-    119: {
-      name: "Synth Drum",
-      generator: {
-        type: "drum",
-        options: {},
-      },
-    },
+    // TODO need to properly deal with this
+    // 119: {
+    //   name: "Synth Drum",
+    //   generator: {
+    //     type: "drum",
+    //     options: {},
+    //   },
+    // },
   };
 
   get supportedInstruments(): MidiInstrument[] {

@@ -1,5 +1,7 @@
 /* eslint-disable no-undef */
 
+// TODO it's really cool to have this as an audio worklet, but I think it'd be way better to make this work with regular Web Audio nodes
+
 /**
  * @typedef {{ type: "start"; when?: number; durationSecs?: number }} StartEvent
  * @typedef {{ type: "stop"; }} StopEvent
