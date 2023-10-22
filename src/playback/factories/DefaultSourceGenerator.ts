@@ -103,9 +103,12 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
     30: {
       name: "Electric Guitar (overdrive)",
       generator: {
-        type: "oscillator",
+        type: "plucked-string",
         options: {
-          oscillator: "square",
+          impulseType: "white-noise",
+          filterType: "gaussian",
+          clipType: "cubic_nonlinear",
+          gain: 25,
         },
       },
     },

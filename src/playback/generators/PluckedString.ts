@@ -10,6 +10,16 @@ export type PluckedStringOptions = {
   instrument: notation.Instrument;
 
   /**
+   * The amount of gain to apply to each sample
+   *
+   * This gain doesn't apply to the original impulse, but is applied after the delay value has been computed
+   * and before the clipping has been applied (if any)
+   *
+   * @default 1
+   */
+  gain?: number;
+
+  /**
    * The kind of impulse to generate for the Karplus-Strong algorithm
    *
    * @default "white-noise"
@@ -22,6 +32,15 @@ export type PluckedStringOptions = {
    * @default "average"
    */
   filterType?: "average" | "gaussian";
+
+  /**
+   * The kind of clipping to use for each delay loop of the Karplus-Strong algorithm.
+   *
+   * This is useful to drive various distortion effects.
+   *
+   * @default undefined (no clipping)
+   */
+  clipType?: "cubic_nonlinear";
 };
 
 declare global {
@@ -41,7 +60,9 @@ export class PluckedString implements SourceGenerator {
       processorOptions: {
         updateType: "blend",
         impulseType: this.options.impulseType,
-        filterType: this.options.filterType ?? "average",
+        filterType: this.options.filterType,
+        clipType: this.options.clipType,
+        gain: this.options.gain,
       },
     });
 

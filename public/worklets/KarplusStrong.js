@@ -9,7 +9,9 @@
  *
  * @typedef {"white-noise" | "sine" | "noisy-sine"} ImpulseType
  * @typedef {"average" | "gaussian" | "random-negation"} FilterType
- * @typedef {{ impulseType?: ImpulseType; filterType?: FilterType }} KarplusOptions
+ * @typedef {"cubic_nonlinear"} ClipType
+ *
+ * @typedef {{ gain?: number; impulseType?: ImpulseType; filterType?: FilterType; clipType?: ClipType }} KarplusOptions
  * @typedef {Omit<AudioWorkletNodeOptions, "processorOptions"> & { processorOptions?: KarplusOptions }} KarplusStrongWorkletOptions
  */
 
@@ -19,19 +21,19 @@
  *  Initial Burst (e.g., white noise)
  *        |
  *        |
- *        •---[+]----------------------------------------------•------→ Output
- *             |                                               |
- *             ↑                Feedback loop                  ↓
- *             |                                               |
- *             •--------[ LP Filter ]---------[ Delay ]--------•
+ *        •---[+]--------------------------------------------------------•------→ Output
+ *             |                                                         |
+ *             ↑                        Feedback loop                    ↓
+ *             |                                                         |
+ *             •---[ Clipping ]---[ Gain ]---[ LP Filter ]---[ Delay ]---•
  *
  * An initial burst of white noise is passed through a delay, which is fed into a low-pass (LP)
- * filter and recombined with the original signal. The length of the delay line determines the
- * pitch of the output.
+ * filter and recombined with the original signal.
+ *
+ * The length of the delay line determines the pitch of the output.
  *
  * @see https://ccrma.stanford.edu/~jos/pasp/Karplus_Strong_Algorithm.html
  * @see https://ccrma.stanford.edu/realsimple/faust_strings/
- * @see https://ccrma.stanford.edu/~jos/fp/One_Pole.html
  */
 class KarplusStrong extends AudioWorkletProcessor {
   static get parameterDescriptors() {
@@ -58,6 +60,8 @@ class KarplusStrong extends AudioWorkletProcessor {
     this.end = Number.POSITIVE_INFINITY;
     this.impulseType = options.processorOptions.impulseType ?? "white-noise";
     this.filterType = options.processorOptions.filterType ?? "average";
+    this.clipType = options.processorOptions.clipType;
+    this.gain = options.processorOptions.gain ?? 1;
 
     this.buffer = new Float32Array(Math.ceil(sampleRate / 2));
     this.bufferIndex = 0;
@@ -143,6 +147,20 @@ class KarplusStrong extends AudioWorkletProcessor {
         }
       }
 
+      value *= this.gain;
+
+      switch (this.clipType) {
+        case "cubic_nonlinear":
+          if (value <= -1) {
+            value = -2 / 3.0;
+          } else if (value >= 1) {
+            value = 2 / 3.0;
+          } else {
+            value = value - Math.pow(value, 3) / 3.0;
+          }
+          break;
+      }
+
       output[i] = value;
       this.buffer[this.bufferIndex % this.buffer.length] = value;
     }
@@ -150,14 +168,5 @@ class KarplusStrong extends AudioWorkletProcessor {
     return true;
   }
 }
-
-/**
- * @param {number | undefined} value
- * @param {number} min
- * @param {number} max
- */
-const clamp = (value, min, max) => {
-  return value && Math.min(Math.max(value, min), max);
-};
 
 registerProcessor("karplus-strong", KarplusStrong);

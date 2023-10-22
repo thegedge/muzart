@@ -36,7 +36,7 @@ export class Instrument {
         release: 0.05,
         knee: 10,
         ratio: 12,
-        threshold: -20,
+        threshold: -10,
       }),
     );
 
