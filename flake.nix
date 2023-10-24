@@ -16,7 +16,7 @@
           packages = {
             direnv = pkgs.nix-direnv;
             nixpkgs-fmt = pkgs.nixpkgs-fmt;
-            nodejs = pkgs.nodejs_20;
+            nodejs = pkgs.nodejs_21;
             pnpm = pkgs.nodePackages.pnpm;
           };
 
