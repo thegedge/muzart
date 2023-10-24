@@ -9,9 +9,8 @@
  *
  * @typedef {"white-noise" | "sine" | "noisy-sine"} ImpulseType
  * @typedef {"average" | "gaussian" | "random-negation"} FilterType
- * @typedef {"cubic_nonlinear"} ClipType
  *
- * @typedef {{ gain?: number; impulseType?: ImpulseType; filterType?: FilterType; clipType?: ClipType }} KarplusOptions
+ * @typedef {{ impulseType?: ImpulseType; filterType?: FilterType }} KarplusOptions
  * @typedef {Omit<AudioWorkletNodeOptions, "processorOptions"> & { processorOptions?: KarplusOptions }} KarplusStrongWorkletOptions
  */
 
@@ -25,7 +24,7 @@
  *             |                                                         |
  *             ↑                        Feedback loop                    ↓
  *             |                                                         |
- *             •---[ Clipping ]---[ Gain ]---[ LP Filter ]---[ Delay ]---•
+ *             •--------[ LP Filter ]-------------------[ Delay ]--------•
  *
  * An initial burst of white noise is passed through a delay, which is fed into a low-pass (LP)
  * filter and recombined with the original signal.
@@ -60,8 +59,6 @@ class KarplusStrong extends AudioWorkletProcessor {
     this.end = Number.POSITIVE_INFINITY;
     this.impulseType = options.processorOptions.impulseType ?? "white-noise";
     this.filterType = options.processorOptions.filterType ?? "average";
-    this.clipType = options.processorOptions.clipType;
-    this.gain = options.processorOptions.gain ?? 1;
 
     this.buffer = new Float32Array(Math.ceil(sampleRate / 2));
     this.bufferIndex = 0;
@@ -145,20 +142,6 @@ class KarplusStrong extends AudioWorkletProcessor {
             break;
           }
         }
-      }
-
-      value *= this.gain;
-
-      switch (this.clipType) {
-        case "cubic_nonlinear":
-          if (value <= -1) {
-            value = -2 / 3.0;
-          } else if (value >= 1) {
-            value = 2 / 3.0;
-          } else {
-            value = value - Math.pow(value, 3) / 3.0;
-          }
-          break;
       }
 
       output[i] = value;

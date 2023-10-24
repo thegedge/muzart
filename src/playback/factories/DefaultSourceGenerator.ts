@@ -1,3 +1,4 @@
+import { range } from "lodash";
 import * as notation from "../../notation";
 import { Drum, DrumOptions } from "../generators/Drum";
 import { PluckedString, PluckedStringOptions } from "../generators/PluckedString";
@@ -27,7 +28,7 @@ type CustomGenerator = {
     factory: DefaultSourceGenerator,
     context: AudioContext,
     instrument: notation.Instrument,
-  ) => SourceGenerator | null;
+  ) => SourceGenerator;
 };
 
 type GeneratorType = OscillatorGenerator | PluckedStringGenerator | DrumGenerator | CustomGenerator;
@@ -58,25 +59,18 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
             },
           });
 
-          if (!generator) {
-            return null;
-          }
-
           // Soften the mid and high frequencies to make the guitar sound more like nylon strings? I don't know what I'm done.
           return {
             generate(note) {
               const source = generator.generate(note);
-              return (
-                source &&
-                CompositeNode.compose(
-                  source,
-                  new EqualizerNode({
-                    context,
-                    lowGain: 3,
-                    midGain: 0.0001,
-                    highGain: 0.0001,
-                  }),
-                )
+              return CompositeNode.compose(
+                source,
+                new EqualizerNode({
+                  context,
+                  lowGain: 3,
+                  midGain: 0.0001,
+                  highGain: 0.0001,
+                }),
               );
             },
           } as SourceGenerator;
@@ -103,12 +97,28 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
     30: {
       name: "Electric Guitar (overdrive)",
       generator: {
-        type: "plucked-string",
-        options: {
-          impulseType: "white-noise",
-          filterType: "gaussian",
-          clipType: "cubic_nonlinear",
-          gain: 25,
+        type: "custom",
+        construct(factory, context, instrument) {
+          const generator = factory.generatorForData(context, instrument, {
+            type: "plucked-string",
+            options: {
+              impulseType: "white-noise",
+              filterType: "gaussian",
+            },
+          });
+
+          return {
+            generate(note) {
+              const source = generator.generate(note);
+              return CompositeNode.compose(
+                source,
+                new GainNode(context, { gain: 5 }),
+                new WaveShaperNode(context, {
+                  curve: [-2 / 3.0, ...range(10).map((x) => x - (x * x * x) / 3.0), 2 / 3.0],
+                }),
+              );
+            },
+          } as SourceGenerator;
         },
       },
     },
@@ -180,11 +190,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
     return this.generatorForData(context, instrument, instrumentData.generator);
   }
 
-  generatorForData(
-    context: AudioContext,
-    instrument: notation.Instrument,
-    generator: GeneratorType,
-  ): SourceGenerator | null {
+  generatorForData(context: AudioContext, instrument: notation.Instrument, generator: GeneratorType): SourceGenerator {
     switch (generator.type) {
       case "plucked-string":
         return new PluckedString({ context, instrument, ...generator.options });
