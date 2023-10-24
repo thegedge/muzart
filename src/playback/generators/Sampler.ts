@@ -34,7 +34,9 @@ export class Sampler implements SourceGenerator {
   generate(note: notation.Note) {
     const midi = note.pitch.toMidi();
     const [sample, offset] = this.findClosest(midi);
-    const source = new WrappedNode(this.createToneBufferSource(sample, offset));
+    const source = new WrappedNode(
+      this.createToneBufferSource(sample, offset, this.options.instrument.type != "percussion"),
+    );
 
     const attack = sample.generators[SoundFontGeneratorType.EnvelopeVolumeAttack];
     const decay = sample.generators[SoundFontGeneratorType.EnvelopeVolumeDecay];
