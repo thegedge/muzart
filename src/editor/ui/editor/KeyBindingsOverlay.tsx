@@ -2,9 +2,9 @@ import { observer } from "mobx-react-lite";
 import { Fragment } from "preact";
 import { IS_MAC } from "../../../utils/platform";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { KeyBindingGroups, KEY_BINDING_SEPARATOR } from "../../utils/useKeyBindings";
+import { KEY_BINDING_SEPARATOR, KeyBindingGroups } from "../../utils/useKeyBindings";
 
-export const KeyBindingsOverlay = observer((props: { bindings: KeyBindingGroups }) => {
+export const KeyBindingsOverlay = observer(function KeyBindingsOverlay<T>(props: { bindings: KeyBindingGroups<T> }) {
   const application = useApplicationState();
 
   return (

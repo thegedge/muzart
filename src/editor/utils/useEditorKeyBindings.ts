@@ -6,13 +6,17 @@ import { IncreaseNoteValue } from "../actions/IncreaseNoteValue";
 import { SetNoteFret } from "../actions/SetNoteFret";
 import { ToggleNoteFeature } from "../actions/ToggleNoteFeature";
 import { useApplicationState } from "./ApplicationStateContext";
-import { KeyBindingGroups, useKeyBindings } from "./useKeyBindings";
+import { KeyBinding, KeyBindingGroups, useKeyBindings } from "./useKeyBindings";
 
-export const useEditorKeyBindings = (): KeyBindingGroups => {
+type OtherContext = {
+  fret?: number;
+} | void;
+
+export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
   const application = useApplicationState();
   const state = application.state;
 
-  const keybindingGroups = useMemo<KeyBindingGroups>(
+  const keybindingGroups = useMemo<KeyBindingGroups<OtherContext>>(
     () => ({
       Playback: {
         " ": {
@@ -96,10 +100,19 @@ export const useEditorKeyBindings = (): KeyBindingGroups => {
             String(fret),
             {
               when: "editorFocused && !isPlaying",
-              action() {
-                application.dispatch(new SetNoteFret(fret));
+              action(context) {
+                let actualFret: number;
+                const previousFret = context.previous?.other?.fret ?? NaN;
+                if (Number.isNaN(previousFret) || previousFret >= 10) {
+                  actualFret = fret;
+                } else {
+                  actualFret = 10 * previousFret + fret;
+                }
+
+                application.dispatch(new SetNoteFret(actualFret));
+                return { fret: actualFret };
               },
-            },
+            } satisfies KeyBinding<OtherContext>,
           ]),
         ),
 
