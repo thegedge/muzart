@@ -12,6 +12,10 @@ type OtherContext = {
   fret?: number;
 } | void;
 
+// The amount of time, in milliseconds, after which pressing a fret key will start a new note instead of combining
+// with the previous note.
+const COMBINE_PREVIOUS_FRET_TIME_THRESHOLD_MS = 500;
+
 export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
   const application = useApplicationState();
   const state = application.state;
@@ -101,12 +105,18 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
             {
               when: "editorFocused && !isPlaying",
               action(context) {
-                let actualFret: number;
-                const previousFret = context.previous?.other?.fret ?? NaN;
-                if (Number.isNaN(previousFret) || previousFret >= 10) {
-                  actualFret = fret;
-                } else {
-                  actualFret = 10 * previousFret + fret;
+                let actualFret = fret;
+                if (context.previous) {
+                  const previousFret = context.previous.other?.fret ?? NaN;
+                  if (
+                    Number.isInteger(previousFret) &&
+                    previousFret < 10 &&
+                    Date.now() - context.previous.when < COMBINE_PREVIOUS_FRET_TIME_THRESHOLD_MS
+                  ) {
+                    actualFret = 10 * previousFret + fret;
+                  } else {
+                    actualFret = fret;
+                  }
                 }
 
                 application.dispatch(new SetNoteFret(actualFret));
