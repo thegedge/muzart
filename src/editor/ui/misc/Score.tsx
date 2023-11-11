@@ -19,11 +19,11 @@ import { HarmonicStyle, NoteDynamic } from "../../../notation";
 import { noteValueToSeconds } from "../../../playback/util/durations";
 import { renderScoreElement } from "../../../render/renderScoreElement";
 import { StyleComputer } from "../../../utils/StyleComputer";
+import { ChangeNote } from "../../actions/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { ElementBoundPalette } from "../editor/ElementBoundPalette";
 import { Canvas, Point, RenderFunction } from "./Canvas";
 import { StatefulInput, StatefulTextInputState } from "./StatefulInput";
-import { ChangeNote } from "../../actions/ChangeNote";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
@@ -218,7 +218,7 @@ export const Score = observer((_props: Record<string, never>) => {
             noteIndex: Math.floor(hit.point.y / hit.element.staffHeight),
           });
         } else if (hit.element.type == "Note" || hit.element.parent?.type == "Note") {
-          application.playback.playSelectedNote();
+          application.playback.playNote();
         }
       }
     },

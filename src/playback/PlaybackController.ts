@@ -234,10 +234,10 @@ export class PlaybackController {
     return this.#isReady;
   }
 
-  playSelectedNote(): void {
-    const note = this.selection.note?.note;
+  playNote(note = this.selection.note?.note): void {
     if (note) {
       this.withPlayback(() => {
+        this.instrument?.stop();
         this.instrument?.playNote(note, this.tempoOfSelection, undefined, 1);
       });
     }

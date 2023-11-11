@@ -43,6 +43,8 @@ export class SetNoteFret extends SelectionTrackingAction {
     const newNote = note ? note.withChanges(options) : new notation.Note(options);
     const existing = chord.changeNote(newNote);
 
+    application.playback.playNote(newNote);
+
     this.state = [chord, existing, newNote];
   }
 
