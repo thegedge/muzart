@@ -1,3 +1,4 @@
+import { Bend } from "./Bend";
 import { Chord } from "./Chord";
 import { NoteValue } from "./NoteValue";
 import { Pitch } from "./pitch";
@@ -30,23 +31,6 @@ export enum NoteDynamic {
   Fortississimo = "fff",
 }
 
-export enum BendType {
-  // Regular
-  Bend = "Bend",
-  BendRelease = "Bend and Release",
-  BendReleaseBend = "Bend and Release and Bend",
-  Prebend = "Prebend",
-  PrebendRelease = "Prebend and Release",
-
-  // Tremolo bar
-  Dip = "Dip",
-  Dive = "Dive",
-  ReleaseUp = "Release (up)",
-  InvertedDip = "Inverted Dip",
-  Return = "Return",
-  ReleaseDown = "Release (down)",
-}
-
 export enum SlideType {
   SlideIntoFromAbove = "Slide into from above",
   SlideIntoFromBelow = "Slide into from below",
@@ -62,24 +46,6 @@ export interface Slide {
 
   /** If true, slide moves upwards. Downwards, otherwise. */
   upwards: boolean;
-}
-
-export interface BendPoint {
-  /** The timing of this point, relative to the duration of the associated note (0 = beginning, 1 = end) */
-  time: number;
-
-  /** The amplitude of the bend, measured in tones (i.e., 1 is a full bend, 0.5 is a half bend) */
-  amplitude: number;
-}
-
-export interface Bend {
-  type: BendType;
-
-  /** The overall amplitude of the bend, measured in tones (i.e., 1 is a full bend, 0.5 is a half bend) */
-  amplitude: number;
-
-  /** The various amplitudes of the bend, across the duration of the bend */
-  points: BendPoint[];
 }
 
 export interface Tie {

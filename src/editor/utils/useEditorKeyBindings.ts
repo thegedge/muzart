@@ -2,6 +2,7 @@ import { range } from "lodash";
 import { useMemo } from "preact/hooks";
 import { DecreaseNoteValue } from "../actions/DecreaseNoteValue";
 import { DeleteNote } from "../actions/DeleteNote";
+import { DotNote } from "../actions/DotNote";
 import { IncreaseNoteValue } from "../actions/IncreaseNoteValue";
 import { SetNoteFret } from "../actions/SetNoteFret";
 import { ToggleNoteFeature } from "../actions/ToggleNoteFeature";
@@ -10,11 +11,12 @@ import { KeyBinding, KeyBindingGroups, useKeyBindings } from "./useKeyBindings";
 
 type OtherContext = {
   fret?: number;
+  dots?: number;
 } | void;
 
 // The amount of time, in milliseconds, after which pressing a fret key will start a new note instead of combining
 // with the previous note.
-const COMBINE_PREVIOUS_FRET_TIME_THRESHOLD_MS = 500;
+const COMBINE_PREVIOUS_TIME_THRESHOLD_MS = 500;
 
 export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
   const application = useApplicationState();
@@ -106,16 +108,10 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
               when: "editorFocused && !isPlaying",
               action(context) {
                 let actualFret = fret;
-                if (context.previous) {
+                if (context.previous?.other?.fret !== undefined) {
                   const previousFret = context.previous.other?.fret ?? NaN;
-                  if (
-                    Number.isInteger(previousFret) &&
-                    previousFret < 10 &&
-                    Date.now() - context.previous.when < COMBINE_PREVIOUS_FRET_TIME_THRESHOLD_MS
-                  ) {
+                  if (previousFret < 10 && Date.now() - context.previous.when < COMBINE_PREVIOUS_TIME_THRESHOLD_MS) {
                     actualFret = 10 * previousFret + fret;
-                  } else {
-                    actualFret = fret;
                   }
                 }
 
@@ -126,9 +122,38 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           ]),
         ),
 
+        ".": {
+          name: "Dot note",
+          when: "editorFocused && !isPlaying",
+          action(context) {
+            const note = application.selection.note?.note;
+            if (!note) {
+              return;
+            }
+
+            let actualDots = note.value.dots == 0 ? 1 : 0;
+            if (context.previous?.other?.dots !== undefined) {
+              if (Date.now() - context.previous.when < COMBINE_PREVIOUS_TIME_THRESHOLD_MS) {
+                actualDots = context.previous.other?.dots == 3 ? 0 : context.previous.other?.dots + 1;
+              }
+            }
+
+            application.dispatch(new DotNote(actualDots));
+            return { dots: actualDots };
+          },
+        },
+
+        "b": {
+          name: "Edit note bend",
+          when: "editorFocused && !isPlaying",
+          action() {
+            state.toggleEditingBend();
+          },
+        },
+
         "d": {
           name: "Set note dynamic",
-          when: "editorFocused && !isPlaying && !helpVisible",
+          when: "editorFocused && !isPlaying",
           action() {
             state.toggleEditingDynamic();
           },
@@ -136,7 +161,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
 
         "n": {
           name: "Set note harmonic",
-          when: "editorFocused && !isPlaying && !helpVisible",
+          when: "editorFocused && !isPlaying",
           action() {
             state.toggleEditingHarmonic();
           },
@@ -207,11 +232,19 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
       },
 
       // TODO support an easier way of having the same key binding in the same group
-      Other: {
+      Other1: {
         Escape: {
           when: "editingHarmonic && !helpVisible",
           action() {
             state.toggleEditingHarmonic();
+          },
+        },
+      },
+      Other2: {
+        Escape: {
+          when: "editingBend",
+          action() {
+            state.toggleEditingBend();
           },
         },
       },
@@ -227,7 +260,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
 
         "ArrowRight": {
           name: "Next Chord",
-          when: "editorFocused",
+          when: "editorFocused && !isPlaying",
           action() {
             application.selection.nextChord();
           },
@@ -235,7 +268,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
 
         "ArrowUp": {
           name: "Higher Note",
-          when: "editorFocused",
+          when: "editorFocused && !isPlaying",
           action() {
             application.selection.previousNote();
           },
@@ -243,6 +276,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
 
         "ArrowDown": {
           name: "Lower Note",
+          when: "editorFocused && !isPlaying",
           action() {
             application.selection.nextNote();
           },
@@ -317,7 +351,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
 
       Miscellaneous: {
         "Shift + ?": {
-          when: "editorFocused",
+          when: "editorFocused && !editingBend",
           action() {
             state.toggleHelp();
           },

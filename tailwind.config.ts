@@ -35,6 +35,9 @@ export default {
       fontSize: {
         "2xs": "0.6rem",
       },
+      boxShadow: {
+        modal: "0 0 50px 0 rgba(0, 0, 0, 0.5)",
+      },
       zIndex: {
         top: "1000000",
       },

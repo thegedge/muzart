@@ -32,7 +32,6 @@
   - Strum direction
   - Tapping
 - Notes
-  - Bends
   - Tuplets
   - Ties
   - Grace notes

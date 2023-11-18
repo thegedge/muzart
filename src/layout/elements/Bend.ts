@@ -128,7 +128,7 @@ const bendPoints = (bend: types.Bend): [number, number][] => {
   }
 };
 
-const bendPath = (points: [number, number][]) => {
+export const bendPath = (points: readonly (readonly [number, number])[]) => {
   let [px, py] = points[0];
   const path = [`M ${px},${py}`];
   for (const point of points.slice(1)) {

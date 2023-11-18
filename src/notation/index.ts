@@ -1,3 +1,4 @@
+export * from "./Bend";
 export * from "./Chord";
 export * from "./Measure";
 export * from "./Note";

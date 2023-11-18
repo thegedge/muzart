@@ -82,6 +82,15 @@ export class NoteValue {
   }
 
   /**
+   * Construct a copy of this note with the specified number of dots.
+   *
+   * @returns a new `NoteValue` instance that has the given number of dots
+   */
+  withDots(dots: number) {
+    return new NoteValue(this.name, { dots: clamp(dots, 0, 3), tuplet: this.tuplet });
+  }
+
+  /**
    * Construct a copy of this note with the given tuplet value.
    *
    * @returns a new `NoteValue` instance that has one more dot than this one

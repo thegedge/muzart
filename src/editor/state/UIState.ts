@@ -14,6 +14,9 @@ export class UIState {
   /** Whether or not the note dynamic palette is visible */
   public editingDynamic = false;
 
+  /** Whether or not the bend modal is visible */
+  public editingBend = false;
+
   constructor(readonly playback: PlaybackController) {
     makeAutoObservable(this, undefined, { deep: false });
   }
@@ -27,21 +30,33 @@ export class UIState {
     return document.activeElement == document.body;
   }
 
+  toggleEditingDynamic() {
+    if (this.editingDynamic) {
+      this.editingDynamic = false;
+    } else {
+      this.editingDynamic = true;
+      this.editingHarmonic = false;
+      this.editingBend = false;
+    }
+  }
+
   toggleEditingHarmonic() {
     if (this.editingHarmonic) {
       this.editingHarmonic = false;
     } else {
       this.editingDynamic = false;
       this.editingHarmonic = true;
+      this.editingBend = false;
     }
   }
 
-  toggleEditingDynamic() {
-    if (this.editingDynamic) {
-      this.editingDynamic = false;
+  toggleEditingBend() {
+    if (this.editingBend) {
+      this.editingBend = false;
     } else {
+      this.editingDynamic = false;
       this.editingHarmonic = false;
-      this.editingDynamic = true;
+      this.editingBend = true;
     }
   }
 
