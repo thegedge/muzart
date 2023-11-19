@@ -15,8 +15,19 @@ export default class ErrorBoundary extends Component<{ children: ComponentChildr
     if (this.state.error) {
       return (
         <PageCallout>
-          <h1 className="text-red-600 text-3xl">Error: {this.state.error.message}</h1>
-          <pre className="text-xl">{this.state.error.stack?.replaceAll("webpack-internal:///./", "")}</pre>
+          <div>
+            <h1 className="text-red-600 text-3xl">Error: {this.state.error.message}</h1>
+            {this.state.error.stack && (
+              <pre className="w-full text-xl whitespace-pre-wrap">
+                {this.state.error.stack
+                  .split("\n")
+                  .filter((line) => !line.includes("/chunk-"))
+                  .map((line) => line.replace("@", " @ "))
+                  .map((line) => line.replaceAll(/https:\/\/muzart\.dev\/|.vite\/deps\/|\?.*/g, ""))
+                  .join("\n")}
+              </pre>
+            )}
+          </div>
         </PageCallout>
       );
     }

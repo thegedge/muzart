@@ -1,29 +1,65 @@
-import { range } from "lodash";
+import { clamp, range } from "lodash";
 import { observable } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useMemo } from "preact/hooks";
+import { JSX } from "preact";
+import { useMemo, useRef } from "preact/hooks";
 import { bendPath } from "../../../layout/elements/Bend";
-import { Bend, BendType, defaultBendPointsForType } from "../../../notation";
+import { Bend, BendPoint, BendType, defaultBendPointsForType } from "../../../notation";
 import { ChangeNote } from "../../actions/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
+import { useDrag } from "../../utils/useDrag";
 
 type ObservableBend = Bend & {
   setType(type: BendType): void;
   setAmplitude(value: number): void;
+  addBendPoint(time: number, amplitude: number): BendPoint | undefined;
+  removeBendPoint(point: BendPoint): void;
 };
 
 export const BendEditor = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
 
+  if (!application.state.editingBend) {
+    return null;
+  }
+
+  return <BendEditorInner />;
+});
+
+const BendEditorInner = observer((_props: Record<string, never>) => {
+  const application = useApplicationState();
+
   const bend = useMemo((): ObservableBend => {
-    const bend = application.selection.note?.note.bend ?? {
-      type: BendType.Bend,
-      amplitude: 1,
-      points: defaultBendPointsForType(BendType.Bend),
-    };
+    const maybeBend = application.selection.note?.note?.bend;
+    const copyBend = maybeBend
+      ? {
+          type: maybeBend.type,
+          amplitude: maybeBend.amplitude,
+          points: observable(maybeBend.points.map((v) => v)),
+        }
+      : {
+          type: BendType.Bend,
+          amplitude: 1,
+          points: defaultBendPointsForType(BendType.Bend),
+        };
 
     return observable({
-      ...bend,
+      ...copyBend,
+
+      addBendPoint(time: number, amplitude: number) {
+        const index = this.points.findIndex((point) => time < point.time);
+        if (index == -1) {
+          // TODO should never happen, but perhaps some weird event outside the 0-1 range so we could create something just inside
+        } else {
+          const point = observable({ time, amplitude });
+          this.points.splice(index, 0, point);
+          return point;
+        }
+      },
+
+      removeBendPoint(point: BendPoint) {
+        this.points.splice(this.points.indexOf(point), 1);
+      },
 
       setType(type: BendType) {
         this.type = type;
@@ -36,7 +72,19 @@ export const BendEditor = observer((_props: Record<string, never>) => {
     });
   }, [application.selection.note]);
 
-  // TODO create an action and dispatch these instead
+  return (
+    <div className="flex items-center justify-center absolute z-top backdrop-blur-sm backdrop-brightness-50 top-0 bottom-0 left-0 right-0 p-16">
+      <div className="flex-1 flex items-start justify-start p-4 shadow-modal bg-gray-200 rounded gap-4">
+        <BendPointGrid bend={bend} className="flex-1" />
+        <BendFormControls bend={bend} />
+      </div>
+    </div>
+  );
+});
+
+const BendFormControls = observer((props: { bend: ObservableBend }) => {
+  const application = useApplicationState();
+  const bend = props.bend;
 
   const clearBend = () => {
     if (application.selection.note?.note.bend) {
@@ -61,121 +109,194 @@ export const BendEditor = observer((_props: Record<string, never>) => {
   };
 
   return (
-    <div
-      className={`flex items-center justify-center absolute z-top backdrop-blur-sm backdrop-brightness-50 top-0 bottom-0 left-0 right-0 p-16 ${
-        application.state.editingBend ? "block" : "hidden"
-      }`}
-    >
-      <div className="flex-1 flex items-start justify-start p-4 shadow-modal bg-gray-200 rounded gap-4">
-        <BendPointGrid bend={bend} />
-
-        <div className="flex flex-col items-stretch justify-between gap-y-4 self-stretch">
-          <div className="flex flex-col gap-y-4">
-            <select
-              size={Object.values(BendType).length}
-              className="overflow-clip rounded p-2"
-              onChange={(event) => bend.setType(event.currentTarget.value as BendType)}
-            >
-              {Object.values(BendType).map((bendType) => (
-                <option key={bendType} selected={bendType == bend.type}>
-                  {bendType}
-                </option>
-              ))}
-            </select>
-
-            <div className="grid grid-cols-2 gap-x-2">
-              <label for="amplitude" className="font-bold">
-                Amplitude:
-              </label>
-              <div>{bend.amplitude}</div>
-              <input
-                type="range"
-                name="amplitude"
-                min="0.1"
-                max="5"
-                step="0.1"
-                value={bend.amplitude}
-                className="flex col-span-2"
-                onChange={(event) => bend.setAmplitude(Number(event.currentTarget.value))}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-x-2">
-            <button
-              className="bg-red-200 border border-red-300/50 text-red-900 px-4 py-1 rounded"
-              onClick={() => clearBend()}
-            >
-              Clear
-            </button>
-            <button
-              className="bg-gray-300 border border-gray-400/50 text-gray-900 px-4 py-1 rounded"
-              onClick={() => setBend()}
-            >
-              Set
-            </button>
-          </div>
+    <div className="flex flex-col items-stretch justify-between gap-y-4 self-stretch">
+      <div className="flex flex-col gap-y-4">
+        <div className="flex flex-col gap-2">
+          <label for="name" className="font-bold">
+            Type:
+          </label>
+          <select
+            name="type"
+            size={Object.values(BendType).length}
+            className="overflow-clip rounded p-2"
+            onChange={(event) => bend.setType(event.currentTarget.value as BendType)}
+          >
+            {Object.values(BendType).map((bendType) => (
+              <option key={bendType} selected={bendType == bend.type}>
+                {bendType}
+              </option>
+            ))}
+          </select>
         </div>
+
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-row gap-x-2">
+            <label for="amplitude" className="font-bold">
+              Amplitude:
+            </label>
+            <div className="flex-1">{bend.amplitude}</div>
+          </div>
+          <input
+            type="range"
+            name="amplitude"
+            step="0.1"
+            min="0.1"
+            max="5"
+            value={bend.amplitude}
+            className="flex col-span-2"
+            onChange={(event) => bend.setAmplitude(Number(event.currentTarget.value))}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-x-2">
+        <button
+          className="bg-red-200 border border-red-300/50 text-red-900 px-4 py-1 rounded"
+          onClick={() => clearBend()}
+        >
+          Clear
+        </button>
+        <button
+          className="bg-gray-300 border border-gray-400/50 text-gray-900 px-4 py-1 rounded"
+          onClick={() => setBend()}
+        >
+          Set
+        </button>
       </div>
     </div>
   );
 });
 
-const BendPointGrid = observer(({ bend }: { bend: ObservableBend }) => {
-  const minX = 0;
-  const minY = -400;
-  const width = 500;
-  const height = -minY;
+const MIN_X = 0;
+const MIN_Y = -400;
+const WIDTH = 500;
+const HEIGHT = -MIN_Y;
 
+const NUM_MAJOR_TICKS_X = 5;
+const NUM_MINOR_TICKS_PER_MAJOR_TICK_X = 5;
+const NUM_MINOR_TICKS_PER_MAJOR_TICK_Y = 3;
+
+const BendPointGrid = observer((props: { bend: ObservableBend; className?: string }) => {
+  const bend = props.bend;
   const points = bend.points.map(
-    (point) => [minX + point.time * width, minY + height - point.amplitude * height] as const,
+    (point) => [MIN_X + point.time * WIDTH, MIN_Y + HEIGHT - point.amplitude * HEIGHT] as const,
   );
 
+  const svg = useRef<SVGSVGElement>(null);
+  const startingValues = useRef<[number, number] | null>(null);
+
+  const { startDrag } = useDrag<BendPoint>({
+    boundedBy: svg,
+
+    onDrag: (dragging, px, py, event) => {
+      const pointIndex = bend.points.indexOf(dragging);
+
+      let minX = 0;
+      let maxX = 0;
+      if (pointIndex == 0) {
+        minX = 0;
+        maxX = 0;
+      } else if (pointIndex == bend.points.length - 1) {
+        minX = 1;
+        maxX = 1;
+      } else if (event.shiftKey && startingValues.current) {
+        minX = startingValues.current[0];
+        maxX = startingValues.current[0];
+      } else {
+        minX = bend.points[pointIndex - 1].time;
+        maxX = bend.points[pointIndex + 1].time;
+      }
+
+      dragging.time = clamp(px, minX, maxX);
+      dragging.amplitude = 1 - py;
+    },
+
+    onDragStart: (dragging) => {
+      startingValues.current = [dragging.time, dragging.amplitude];
+    },
+  });
+
+  const onPointerDown: JSX.PointerEventHandler<SVGSVGElement> = (event) => {
+    event.preventDefault();
+
+    // If we clicked on a bend point handle, remove it if we held the meta key, otherwise start dragging it
+    if (event.target instanceof Element) {
+      const bendPointHandle = event.target.closest("[data-bendpoint-index]");
+      if (bendPointHandle) {
+        const index = Number(bendPointHandle.getAttribute("data-bendpoint-index"));
+        if (event.metaKey && index > 0 && index < bend.points.length - 1) {
+          bend.removeBendPoint(bend.points[index]);
+        } else {
+          event.currentTarget.setPointerCapture(event.pointerId);
+          startDrag(bend.points[index]);
+        }
+        return;
+      }
+    }
+
+    // If we clicked on the grid, add a new bend point and start dragging it
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width;
+    const y = 1.0 - (event.clientY - rect.top) / rect.height;
+    const point = bend.addBendPoint(x, y);
+    if (point) {
+      event.currentTarget.setPointerCapture(event.pointerId);
+      startDrag(point);
+    }
+  };
+
   return (
-    <svg className="stroke-1" viewBox={`${minX - 6} ${minY - 6} ${width + 2 * 6} ${height + 2 * 6}`}>
-      <rect x={minX} y={minY} width={width} height={height} className="fill-gray-800" />
+    <svg
+      ref={svg}
+      className={`stroke-1 -m-1.5 ${props.className ?? ""}`}
+      viewBox={`${MIN_X - 6} ${MIN_Y - 6} ${WIDTH + 2 * 6} ${HEIGHT + 2 * 6}`}
+      onPointerDown={(event) => onPointerDown(event)}
+    >
+      <rect x={MIN_X} y={MIN_Y} width={WIDTH} height={HEIGHT} className="fill-gray-800" />
 
       <g>
-        {range(1, 5 * Math.ceil(bend.amplitude)).map((value) => (
-          <line
-            key={`minor-v-${value}`}
-            x1={minX + 0.5}
-            y1={minY + height - (height * value) / (5 * bend.amplitude)}
-            x2={minX + width}
-            y2={minY + height - (height * value) / (5 * bend.amplitude)}
-            className="stroke-gray-700"
-          />
-        ))}
-
-        {range(1, 30).map((value) => (
+        {range(0, HEIGHT + 1, HEIGHT / ((NUM_MINOR_TICKS_PER_MAJOR_TICK_Y + 1) * bend.amplitude)).map((value) => (
           <line
             key={`minor-h-${value}`}
-            x1={minX + (width * value) / 30}
-            y1={minY + 0.5}
-            x2={minX + (width * value) / 30}
-            y2={minY + height}
+            x1={MIN_X + 0.5}
+            y1={MIN_Y + HEIGHT - value}
+            x2={MIN_X + WIDTH - 0.5}
+            y2={MIN_Y + HEIGHT - value}
             className="stroke-gray-700"
           />
         ))}
 
-        {range(1, Math.ceil(bend.amplitude)).map((value) => (
+        {range(0, WIDTH + 1, WIDTH / ((NUM_MINOR_TICKS_PER_MAJOR_TICK_X + 1) * (NUM_MAJOR_TICKS_X + 1))).map(
+          (value) => (
+            <line
+              key={`minor-v-${value}`}
+              x1={MIN_X + value}
+              y1={MIN_Y + 0.5}
+              x2={MIN_X + value}
+              y2={MIN_Y + HEIGHT - 0.5}
+              className="stroke-gray-700"
+            />
+          ),
+        )}
+
+        {range(0, HEIGHT + 1, HEIGHT / bend.amplitude).map((value) => (
           <line
-            key={`major-v-${value}`}
-            x1={minX + 0.5}
-            y1={minY + height - (height * value) / bend.amplitude}
-            x2={minX + width}
-            y2={minY + height - (height * value) / bend.amplitude}
+            key={`major-h-${value}`}
+            x1={MIN_X + 0.5}
+            y1={MIN_Y + HEIGHT - value}
+            x2={MIN_X + WIDTH - 0.5}
+            y2={MIN_Y + HEIGHT - value}
             className="stroke-gray-500"
           />
         ))}
 
-        {range(1, 3).map((value) => (
+        {range(0, WIDTH + 1, WIDTH / (NUM_MAJOR_TICKS_X + 1)).map((value) => (
           <line
-            key={`major-h-${value}`}
-            x1={minX + (width * value) / 3}
-            y1={minY + 0.5}
-            x2={minX + (width * value) / 3}
-            y2={minY + height}
+            key={`major-v-${value}`}
+            x1={MIN_X + value}
+            y1={MIN_Y + 0.5}
+            x2={MIN_X + value}
+            y2={MIN_Y + HEIGHT - 0.5}
             className="stroke-gray-500"
           />
         ))}
@@ -184,14 +305,22 @@ const BendPointGrid = observer(({ bend }: { bend: ObservableBend }) => {
       <path d={bendPath(points)} className="stroke-2 stroke-lime-600 fill-none" />
 
       {bend.points.map((point, index) => (
-        <circle
-          key={index}
-          cx={point.time * 500}
-          cy={point.amplitude * -400}
-          r="5"
-          className="fill-gray-200 stroke-gray-700 cursor-grab"
-        />
+        <BendPointHandle key={index} bend={bend} point={point} />
       ))}
     </svg>
+  );
+});
+
+const BendPointHandle = observer((props: { bend: Bend; point: BendPoint }) => {
+  const pointIndex = props.bend.points.indexOf(props.point);
+
+  return (
+    <circle
+      r={WIDTH / 100}
+      cx={MIN_X + props.point.time * WIDTH}
+      cy={MIN_Y + HEIGHT - props.point.amplitude * HEIGHT}
+      data-bendpoint-index={pointIndex}
+      className="fill-gray-200 stroke-gray-700 cursor-grab"
+    />
   );
 });

@@ -41,8 +41,9 @@
 
 - Needs layout / lacking render
   - Staccato
-  -
 - Inherited CSS properties
+- Bends
+  - Actually use the bend points, instead of the bend type, to render on the score
 
 ### Other
 
