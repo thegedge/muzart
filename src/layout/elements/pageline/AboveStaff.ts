@@ -151,7 +151,7 @@ export class AboveStaff extends GridGroup<LineElement> {
   private addIntraMeasureAboveStaffDecorations() {
     const numberSize = 0.8 * STAFF_LINE_HEIGHT;
     const tempoSize = STAFF_LINE_HEIGHT;
-    const baseSize = 0.8 * STAFF_LINE_HEIGHT;
+    const baseSize = STAFF_LINE_HEIGHT;
 
     for (let index = 0; index < this.staffElements.length; ) {
       const measure = this.staffElements[index].measure.measure;

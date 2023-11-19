@@ -54,33 +54,40 @@ export class Bend extends SimpleGroup<types.Path | types.Text, "Bend", types.Lin
   }
 }
 
-const bendArrowHeads = (points: [number, number][]) => {
+const bendArrowHeads = (points: readonly (readonly [number, number])[]) => {
   let previous = points[0];
-  return points.slice(1).map((point) => {
+  return points.slice(1).map((point, index) => {
     const [x, y] = point;
     const [_, py] = previous;
     previous = point;
-    if (py > y) {
+    if (py > y + 1e-5) {
       return new Path2D(`
         M ${x - HEAD_HALFW},${y + 2 * HEAD_HALFW}
         L ${x + HEAD_HALFW},${y + 2 * HEAD_HALFW}
         L ${x},${y}
         M ${x - HEAD_HALFW},${y + 2 * HEAD_HALFW}
       `);
-    } else if (py < y) {
+    } else if (py + 1e-5 < y) {
       return new Path2D(`
         M ${x - HEAD_HALFW},${y - 2 * HEAD_HALFW}
         L ${x + HEAD_HALFW},${y - 2 * HEAD_HALFW}
         L ${x},${y}
         M ${x - HEAD_HALFW},${y - 2 * HEAD_HALFW}
       `);
+    } else if (index == points.length - 2) {
+      return new Path2D(`
+        M ${x - 2 * HEAD_HALFW},${y - HEAD_HALFW}
+        L ${x + LINE_STROKE_WIDTH},${y}
+        L ${x - 2 * HEAD_HALFW},${y + HEAD_HALFW}
+        M ${x - HEAD_HALFW},${y - 2 * HEAD_HALFW}
+      `);
     }
   });
 };
 
-const bendPoints = (bend: types.Bend): [number, number][] => {
-  // This is width of note text :(
-  const x = 0.8 * STAFF_LINE_HEIGHT;
+const bendPoints = (bend: types.Bend): (readonly [number, number])[] => {
+  // This is half the width of note text :(
+  const x = 0.5 * STAFF_LINE_HEIGHT;
 
   // Don't go all the way to the end of the box, because it'll be too close to the next chord
   const w = 0.8 * bend.box.width;
@@ -91,7 +98,12 @@ const bendPoints = (bend: types.Bend): [number, number][] => {
   // Offset some from the descent bottom,
   const b = bend.box.height + bend.descent - 0.25 * STAFF_LINE_HEIGHT;
 
-  return bend.bend.points.map((pt) => [x + pt.time * w, b - pt.amplitude * (b - y)]);
+  const points = bend.bend.points.map((pt) => [x + pt.time * w, b - pt.amplitude * (b - y)] as const);
+  if (bend.bend.points[0].amplitude > 0) {
+    points.unshift([x, b]);
+  }
+
+  return points;
 };
 
 export const bendPath = (points: readonly (readonly [number, number])[]) => {
