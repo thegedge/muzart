@@ -953,12 +953,12 @@ class GuitarProLoader {
     const numPoints = this.cursor.nextNumber(NumberType.Uint32);
     const points = range(numPoints).map((_) => {
       const time = this.cursor.nextNumber(NumberType.Uint32) / 60.0;
-      const amplitude = this.cursor.nextNumber(NumberType.Uint32) / 100.0;
+      const pointAmplitude = this.cursor.nextNumber(NumberType.Uint32) / (100.0 * amplitude);
 
       // 0 = none, 1 = fast, 2 = average, 3 = slow
       const vibrato = this.cursor.nextNumber(NumberType.Uint8);
 
-      return { time, amplitude, vibrato };
+      return { time, amplitude: pointAmplitude, vibrato };
     });
 
     return {
