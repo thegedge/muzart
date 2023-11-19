@@ -1,7 +1,7 @@
 import types, { DEFAULT_SANS_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "..";
 import * as notation from "../../notation";
 import { SimpleGroup } from "../layouts/SimpleGroup";
-import { Box } from "../utils";
+import { Box, minMap } from "../utils";
 import { Path } from "./Path";
 import { Text } from "./Text";
 
@@ -24,7 +24,11 @@ export class Bend extends SimpleGroup<types.Path | types.Text, "Bend", types.Lin
     this.children.length = 0;
 
     const points = bendPoints(this);
-    const bendTextX = points[points.length - 1][0];
+
+    // The last largest point in the point array is where we will center the text
+    const largestValue = minMap(points, (p) => p[1]);
+    const referencePoint = points.findLast((p) => p[1] == largestValue);
+    const bendTextX = referencePoint ? referencePoint[0] : points[0][0];
     const bendTextY = 0.1 * STAFF_LINE_HEIGHT;
     const path = new Path2D(bendPath(points));
     this.addElement(new Path(this.box.update({ x: 0, y: 0 }), path));
