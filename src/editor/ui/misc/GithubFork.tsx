@@ -3,13 +3,12 @@ export const GithubFork = () => {
     return null;
   }
 
+  const sha = import.meta.env.VITE_BUILD_SHA;
+  const href = sha ? `https://github.com/thegedge/muzart/tree/${sha}` : "https://github.com/thegedge/muzart";
+
   return (
     <div className="github-fork">
-      <a
-        href="https://github.com/thegedge/muzart"
-        className="underline"
-        title={import.meta.env.VITE_BUILD_SHA ? `SHA: ${import.meta.env.VITE_BUILD_SHA}` : undefined}
-      >
+      <a href={href} className="underline" title={href}>
         <svg viewBox="0 0 17 17" version="1.1" width="48" height="48">
           <path
             fillRule="evenodd"
