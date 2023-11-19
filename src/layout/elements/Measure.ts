@@ -1,4 +1,4 @@
-import types from "..";
+import types, { maxMap } from "..";
 import * as notation from "../../notation";
 import { NoteValue, NoteValueName } from "../../notation";
 import { STAFF_LINE_HEIGHT } from "../constants";
@@ -53,8 +53,8 @@ export class Measure extends FlexGroup<LineElement, "Measure", LineElement> {
       if (chord.rest) {
         this.addElement(new Rest(chord, part.lineCount));
       } else {
-        const hasBend = chord.notes.some((n) => !!n.bend);
-        width *= hasBend ? 2 : 1;
+        const bendFactor = maxMap(chord.notes, (n) => (n.bend ? 2 + Math.sqrt(n.bend.points.length - 2) : 1)) ?? 1;
+        width *= bendFactor;
         this.addElement(new Chord(chord, part.lineCount));
       }
 

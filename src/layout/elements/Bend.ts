@@ -16,7 +16,7 @@ export class Bend extends SimpleGroup<types.Path | types.Text, "Bend", types.Lin
     readonly bend: notation.Bend,
     note: notation.Note,
   ) {
-    super(new Box(0, 0, 0, 2.5 * STAFF_LINE_HEIGHT));
+    super(new Box(0, 0, bend.points.length * STAFF_LINE_HEIGHT, 3 * STAFF_LINE_HEIGHT));
     this.descent = ((note.placement?.string || 1) - 0.5) * STAFF_LINE_HEIGHT;
   }
 
@@ -24,7 +24,7 @@ export class Bend extends SimpleGroup<types.Path | types.Text, "Bend", types.Lin
     this.children.length = 0;
 
     const points = bendPoints(this);
-    const bendTextX = points[1][0];
+    const bendTextX = points[points.length - 1][0];
     const bendTextY = 0.1 * STAFF_LINE_HEIGHT;
     const path = new Path2D(bendPath(points));
     this.addElement(new Path(this.box.update({ x: 0, y: 0 }), path));
@@ -91,41 +91,7 @@ const bendPoints = (bend: types.Bend): [number, number][] => {
   // Offset some from the descent bottom,
   const b = bend.box.height + bend.descent - 0.25 * STAFF_LINE_HEIGHT;
 
-  switch (bend.bend.type) {
-    case notation.BendType.Bend:
-      return [
-        [0, b],
-        [w, y],
-      ];
-    case notation.BendType.BendRelease:
-      return [
-        [0, b],
-        [w / 2, y],
-        [w, b],
-      ];
-    case notation.BendType.BendReleaseBend:
-      return [
-        [0, b],
-        [w / 3, y],
-        [(2 * w) / 3, b],
-        [w, y],
-      ];
-    case notation.BendType.Prebend:
-      return [
-        [0.5 * x, b],
-        [0.5 * x, y],
-      ];
-    case notation.BendType.PrebendRelease:
-      return [
-        [0.5 * x, b],
-        [0.5 * x, y],
-        [w, b],
-      ];
-    default: {
-      // TODO tremolos
-      throw new Error(`Unsupported bend type: ${bend.bend.type}`);
-    }
-  }
+  return bend.bend.points.map((pt) => [x + pt.time * w, b - pt.amplitude * (b - y)]);
 };
 
 export const bendPath = (points: readonly (readonly [number, number])[]) => {

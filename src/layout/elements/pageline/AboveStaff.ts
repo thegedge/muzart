@@ -163,7 +163,6 @@ export class AboveStaff extends GridGroup<LineElement> {
           style: {
             userSelect: "none",
             color: "#888888",
-            backgroundColor: "#ffffff",
             textAlign: index == 0 ? "left" : "center",
             verticalAlign: "bottom",
           },
