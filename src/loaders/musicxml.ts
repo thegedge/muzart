@@ -15,7 +15,7 @@ import {
   Step,
   TimeSignature,
 } from "../notation";
-import { NoteValue, NoteValueName } from "../notation/NoteValue";
+import { NoteValue } from "../notation/NoteValue";
 import { Loader } from "./Loader";
 
 // TODO this is pretty slow, so perhaps a SAX-based parser
@@ -203,7 +203,7 @@ function note(document: Document, node: Node): Note {
 
   const options: NoteOptions = {
     pitch,
-    value: NoteValue.fromString(duration as NoteValueName),
+    value: NoteValue.fromString(duration),
   };
 
   const fret = textQueryMaybe(document, node, "notations/technical/fret");

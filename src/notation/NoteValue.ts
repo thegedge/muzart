@@ -38,7 +38,7 @@ export class NoteValue {
     return new NoteValue(nameFromNumber(num));
   }
 
-  static fromString(str: NoteValueName): NoteValue {
+  static fromString(str: string): NoteValue {
     switch (str) {
       case "whole":
         return new NoteValue(NoteValueName.Whole);

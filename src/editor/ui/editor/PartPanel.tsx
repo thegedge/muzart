@@ -48,8 +48,8 @@ export const PartPanel = observer((_props: Record<string, never>) => {
                   marker
                     ? "pl-1 text-2xs whitespace-nowrap justify-start text-gray-400 bg-inherit"
                     : showNumber
-                    ? "justify-center bg-inherit" // if a marker happens to flow into a number, the two won't "clash"
-                    : "justify-center"
+                      ? "justify-center bg-inherit" // if a marker happens to flow into a number, the two won't "clash"
+                      : "justify-center"
                 }`}
               >
                 {marker ? marker.text : showNumber ? measureIndex + 1 : null}

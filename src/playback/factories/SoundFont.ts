@@ -1,9 +1,8 @@
 import { compact, uniqBy } from "lodash";
 import { BufferCursor, NumberType } from "../../loaders/util/BufferCursor";
 import * as notation from "../../notation";
-import { SourceGenerator } from "../types";
-import { SourceGeneratorFactory } from "../types";
 import { Sampler } from "../generators/Sampler";
+import { SourceGenerator, SourceGeneratorFactory } from "../types";
 
 interface SoundFontPreset {
   name: string;
@@ -411,7 +410,7 @@ export class SoundFont implements SourceGeneratorFactory {
     const chunkSize = cursor.nextNumber(NumberType.Uint32);
     const end = cursor.position + chunkSize;
     for (let index = 0; cursor.position < end; index += 1) {
-      const type = cursor.nextNumber(NumberType.Uint16);
+      const type = cursor.nextNumber(NumberType.Uint16) as SoundFontGeneratorType;
 
       let amount;
       switch (type) {
