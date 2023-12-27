@@ -1,8 +1,9 @@
 import * as CSS from "csstype";
 import { observer } from "mobx-react-lite";
+import { ComponentChildren } from "preact";
+import { useEffect, useRef } from "preact/hooks";
 import { LayoutElement, PX_PER_MM, toAncestorCoordinateSystem } from "../../../layout";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { useEffect, useRef } from "preact/hooks";
 
 export const ElementBoundPalette = observer(
   <ElementT extends LayoutElement, T>(props: {
@@ -38,19 +39,19 @@ export const ElementBoundPalette = observer(
 
     return (
       <div ref={ref} style={style} tabIndex={1} onBlur={() => props.close()}>
-        <div className="palette">
-          {Object.entries(props.options).map(([label, value]) => (
-            <span
-              key={label}
-              onClick={() => {
-                props.onSelect(value, props.element);
-                props.close();
-              }}
-              className={`${value == props.currentValue ? " bg-gray-500" : ""}`}
-            >
-              {label}
-            </span>
-          ))}
+        <div className="bg-gray-800 w-full h-auto rounded-md flex justify-around italic font-serif">
+          {Object.entries(props.options).map(([label, value]) => {
+            const onSelect = () => {
+              props.onSelect(value, props.element);
+              props.close();
+            };
+
+            return (
+              <PaletteEntry key={label} onClick={onSelect} value={value} current={value === props.currentValue}>
+                {label}
+              </PaletteEntry>
+            );
+          })}
         </div>
         <svg className="fill-gray-800 h-auto max-h-4" viewBox="0 0 24 10">
           <path d="M 0 0 c 12 1 10 10 12 10 C 14 10 12 1 24 0" />
@@ -59,3 +60,16 @@ export const ElementBoundPalette = observer(
     );
   },
 );
+
+function PaletteEntry<T>(props: { onClick: () => void; children: ComponentChildren; value: T; current: boolean }) {
+  return (
+    <span
+      onClick={props.onClick}
+      className={`cursor-pointer hover:bg-gray-600 py-1 rounded-md px-3 text-center ${
+        props.current ? " bg-gray-500" : ""
+      }`}
+    >
+      {props.children}
+    </span>
+  );
+}
