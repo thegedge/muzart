@@ -20,6 +20,6 @@
     },
     "types": ["@types/audioworklet"]
   },
-  "include": ["src", "test", "types", "*.js", "*.ts", ".eslintrc.js", "public/worklets"],
+  "include": ["src", "test", "types", "*.js", "*.ts", ".eslintrc.cjs", "public/worklets"],
   "exclude": ["build", "**/node_modules", "tmp"]
 }

@@ -46,13 +46,6 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
   }
 
   return {
-    resolve: {
-      alias: {
-        "react": "preact/compat",
-        "react-dom": "preact/compat",
-      },
-    },
-
     build: {
       minify: mode == "production",
     },
