@@ -5,8 +5,8 @@ import { useEditorKeyBindings } from "../utils/useEditorKeyBindings";
 import ErrorBoundary from "./ErrorBoundary";
 import "./app.css";
 import { BendEditor } from "./editor/BendEditor";
+import { EditorRouter } from "./editor/EditorRouter";
 import { KeyBindingsOverlay } from "./editor/KeyBindingsOverlay";
-import { ScoreDropZone } from "./editor/ScoreDropZone";
 import { GithubFork } from "./misc/GithubFork";
 
 export const App = () => {
@@ -18,7 +18,7 @@ export const App = () => {
           <ApplicationState>
             <KeyBindings />
             <BendEditor />
-            <ScoreDropZone />
+            <EditorRouter />
           </ApplicationState>
         </ErrorBoundary>
       </Router>

@@ -1,13 +1,10 @@
-import { observer } from "mobx-react-lite";
-import { useEffect } from "preact/hooks";
 import { Route, useLocation } from "wouter";
 import { ScoreDataType, determineScoreType, getFilenameAndMimeType } from "../../../loaders";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { InitialPage } from "../misc/InitialPage";
-import { Score } from "../misc/Score";
-import { PartPanel } from "./PartPanel";
+import { EditorChrome } from "./EditorChrome";
 
-export const ScoreDropZone = () => {
+export const EditorRouter = () => {
   const application = useApplicationState();
   const [_location, navigate] = useLocation();
 
@@ -57,7 +54,7 @@ export const ScoreDropZone = () => {
         <Route path="/:url">
           {(params: { url: string }) => {
             const url = decodeURIComponent(params.url);
-            return <ScoreLoader loaderUrl={url} />;
+            return <EditorChrome loaderUrl={url} />;
           }}
         </Route>
         <Route path="/">
@@ -71,31 +68,7 @@ export const ScoreDropZone = () => {
   );
 };
 
-const ScoreLoader = observer((props: { loaderUrl: string }) => {
-  const { loaderUrl: url } = props;
-
-  const application = useApplicationState();
-  useEffect(() => {
-    application.loadScore(url).catch(console.error);
-  }, [application, url]);
-
-  if (application.error) {
-    throw application.error;
-  }
-
-  if (application.loading) {
-    return null;
-  }
-
-  return (
-    <div className="flex h-screen max-h-screen w-screen max-w-screen flex-col">
-      <Score />
-      <PartPanel />
-    </div>
-  );
-});
-
-export const filesFromDataTransfer = (dataTransfer: DataTransfer): File[] => {
+const filesFromDataTransfer = (dataTransfer: DataTransfer): File[] => {
   const sources: File[] = [];
 
   for (let i = 0; i < dataTransfer.items.length; i++) {
