@@ -36,7 +36,7 @@ export const InitialPage = observer((_props: Record<string, never>) => {
   return (
     <div className="mx-auto w-fit">
       <div
-        class="bg-white text-gray-400 w-fit relative text-xl leading-6"
+        class="relative w-fit bg-white text-xl leading-6 text-gray-400"
         style={{
           width: `${DEFAULT_PAGE_WIDTH}mm`,
           height: `${DEFAULT_PAGE_HEIGHT}mm`,
@@ -53,11 +53,11 @@ export const InitialPage = observer((_props: Record<string, never>) => {
       >
         <img
           src="Song13.svg"
-          className="absolute h-full object-cover opacity-20 blur-sm pointer-events-none"
+          className="pointer-events-none absolute h-full object-cover opacity-20 blur-sm"
           style={{ marginLeft: `-${0.5 * DEFAULT_MARGINS.left}mm` }}
         />
         <div
-          className="flex flex-col justify-center h-full border-dashed border-2 border-gray-400"
+          className="flex h-full flex-col justify-center border-2 border-dashed border-gray-400"
           style={{
             paddingTop: `${1.5 * DEFAULT_MARGINS.top}mm`,
             paddingLeft: `${1.5 * DEFAULT_MARGINS.left}mm`,
@@ -65,21 +65,21 @@ export const InitialPage = observer((_props: Record<string, never>) => {
             paddingBottom: `${1.5 * DEFAULT_MARGINS.bottom}mm`,
           }}
         >
-          <div className="flex-grow flex-shrink" />
-          <h1 className="font-bold text-center text-6xl">Drop a Guitar Pro 3/4 file here</h1>
+          <div className="flex-shrink flex-grow" />
+          <h1 className="text-center text-6xl font-bold">Drop a Guitar Pro 3/4 file here</h1>
           <p className="my-6 font-extralight">Or load one from storage:</p>
-          <ul className="font-light list-inside" style={{ color: "#88aaff" }}>
+          <ul className="list-inside font-light" style={{ color: "#88aaff" }}>
             {lines.map(({ key, href, text, remove }) => {
               return (
                 <li key={key} style={{ listStyleType: "none" }}>
-                  <div className="flex w-full p-1 items-center hover:bg-gray-50">
+                  <div className="flex w-full items-center p-1 hover:bg-gray-50">
                     <a className="flex-1" href={href}>
                       ▸ {text}
                     </a>
                     {remove && (
                       <a
                         href="#"
-                        className="inline-flex rounded-sm hover:bg-gray-200 justify-center items-center px-2 py-1"
+                        className="inline-flex items-center justify-center rounded-sm px-2 py-1 hover:bg-gray-200"
                         onClick={(e) => {
                           e.preventDefault();
                           refresh();
@@ -94,7 +94,7 @@ export const InitialPage = observer((_props: Record<string, never>) => {
               );
             })}
           </ul>
-          <div className="flex-grow-2 flex-shrink" />
+          <div className="flex-shrink flex-grow-2" />
         </div>
       </div>
     </div>

@@ -26,27 +26,27 @@ export const PartPanel = observer((_props: Record<string, never>) => {
   const numMeasures = score.score.parts[0]?.measures.length ?? 0;
 
   return (
-    <div className="w-full max-h-48 flex flex-col bg-gray-900 text-gray-200 overflow-y-auto z-50 print:hidden">
-      <div className="grid grid-cols-part-list gap-y-px bg-inherit overflow-auto items-center">
-        <div className="flex items-center gap-px bg-inherit sticky z-20 left-0 top-0 h-7">
+    <div className="z-50 flex max-h-48 w-full flex-col overflow-y-auto bg-gray-900 text-gray-200 print:hidden">
+      <div className="grid grid-cols-part-list items-center gap-y-px overflow-auto bg-inherit">
+        <div className="sticky left-0 top-0 z-20 flex h-7 items-center gap-px bg-inherit">
           <div className="flex-1 px-4">Track</div>
-          <div className="flex items-center justify-center w-6 text-gray-500">
+          <div className="flex w-6 items-center justify-center text-gray-500">
             <Ear title="Solo tracks" />
           </div>
-          <div className="flex items-center justify-center w-6 text-gray-500">
+          <div className="flex w-6 items-center justify-center text-gray-500">
             <MicMute title="Muted tracks" />
           </div>
         </div>
-        <div className="flex gap-px text-xs bg-inherit sticky z-10 left-0 top-0 h-7">
+        <div className="sticky left-0 top-0 z-10 flex h-7 gap-px bg-inherit text-xs">
           {range(numMeasures).map((measureIndex) => {
             const marker = score.score.parts[0]?.measures[measureIndex]?.marker;
             const showNumber = measureIndex == 0 || measureIndex % 10 == 9;
             return (
               <div
                 key={measureIndex}
-                className={`w-6 h-6 flex items-center font-light ${
+                className={`flex h-6 w-6 items-center font-light ${
                   marker
-                    ? "pl-1 text-2xs whitespace-nowrap justify-start text-gray-400 bg-inherit"
+                    ? "justify-start whitespace-nowrap bg-inherit pl-1 text-2xs text-gray-400"
                     : showNumber
                       ? "justify-center bg-inherit" // if a marker happens to flow into a number, the two won't "clash"
                       : "justify-center"
@@ -85,22 +85,22 @@ const PartRow = observer(
 
     return (
       <>
-        <div className={`flex gap-px h-full sticky left-0 pr-px ${rowBackgroundColor}`}>
+        <div className={`sticky left-0 flex h-full gap-px pr-px ${rowBackgroundColor}`}>
           <div
-            className={`flex flex-1 sticky h-full text-xs font-extralight items-center px-4 cursor-pointer`}
+            className={`sticky flex h-full flex-1 cursor-pointer items-center px-4 text-xs font-extralight`}
             onClick={onChange}
             data-part={partIndex}
           >
             {part.name}
           </div>
-          <button type="button" name="solo" onClick={toggleSolo} className="flex items-center justify-center w-6 h-6">
+          <button type="button" name="solo" onClick={toggleSolo} className="flex h-6 w-6 items-center justify-center">
             {playback.soloedParts[partIndex] ? (
               <EarFill className="text-white" title="Only play this track" />
             ) : (
               <Ear className="text-gray-500" title="Only play this track" />
             )}
           </button>
-          <button type="button" name="mute" onClick={toggleMute} className="flex items-center justify-center w-6 h-6">
+          <button type="button" name="mute" onClick={toggleMute} className="flex h-6 w-6 items-center justify-center">
             {playback.mutedParts[partIndex] ? (
               <MicMute className="text-white" title="Mute this track" />
             ) : (
@@ -108,7 +108,7 @@ const PartRow = observer(
             )}
           </button>
         </div>
-        <div className="flex gap-px items-center cursor-pointer bg-gray-900">
+        <div className="flex cursor-pointer items-center gap-px bg-gray-900">
           {part.measures.map((measure) => (
             <MeasureBox
               key={measure.number}
@@ -156,13 +156,13 @@ const MeasureBox = (props: {
 
   return (
     <div
-      className="w-6 h-6 p-0.8 rounded-sm flex justify-center items-center text-2xs"
+      className="flex h-6 w-6 items-center justify-center rounded-sm p-0.8 text-2xs"
       style={{ backgroundColor: replaceAlpha(color, opacity) }}
       onClick={onChange}
       data-measure={measure.number - 1}
       data-part={partIndex}
     >
-      {selected && <div className="flex justify-center items-center w-full h-full rounded-sm bg-white/50" />}
+      {selected && <div className="flex h-full w-full items-center justify-center rounded-sm bg-white/50" />}
     </div>
   );
 };

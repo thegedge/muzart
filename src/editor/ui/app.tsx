@@ -11,7 +11,7 @@ import { GithubFork } from "./misc/GithubFork";
 
 export const App = () => {
   return (
-    <div className="bg-gray-400 min-h-screen min-w-max">
+    <div className="min-h-screen min-w-max bg-gray-400">
       <GithubFork />
       <Router hook={useHashLocation}>
         <ErrorBoundary>

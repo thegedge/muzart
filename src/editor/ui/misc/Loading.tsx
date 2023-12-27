@@ -13,7 +13,7 @@ export const Loading = () => {
 
 const BouncingDot = (props: { delayMS: number }) => {
   return (
-    <div className="animate-bounce -translate-y-1/4 inline-block" style={{ animationDelay: `${props.delayMS}ms` }}>
+    <div className="inline-block -translate-y-1/4 animate-bounce" style={{ animationDelay: `${props.delayMS}ms` }}>
       .
     </div>
   );

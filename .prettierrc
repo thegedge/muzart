@@ -4,6 +4,7 @@
   "printWidth": 120,
   "useTabs": false,
   "quoteProps": "consistent",
+  "plugins": ["prettier-plugin-tailwindcss"],
   "overrides": [
     {
       "files": "LICENSE.md",

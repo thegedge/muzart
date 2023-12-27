@@ -73,8 +73,8 @@ const BendEditorInner = observer((_props: Record<string, never>) => {
   }, [application.selection.note]);
 
   return (
-    <div className="flex items-center justify-center absolute z-top backdrop-blur-sm backdrop-brightness-50 top-0 bottom-0 left-0 right-0 p-16">
-      <div className="flex-1 flex items-start justify-start p-4 shadow-modal bg-gray-200 rounded gap-4">
+    <div className="absolute bottom-0 left-0 right-0 top-0 z-top flex items-center justify-center p-16 backdrop-blur-sm backdrop-brightness-50">
+      <div className="flex flex-1 items-start justify-start gap-4 rounded bg-gray-200 p-4 shadow-modal">
         <BendPointGrid bend={bend} className="flex-1" />
         <BendFormControls bend={bend} />
       </div>
@@ -143,7 +143,7 @@ const BendFormControls = observer((props: { bend: ObservableBend }) => {
             min="0.1"
             max="5"
             value={bend.amplitude}
-            className="flex col-span-2"
+            className="col-span-2 flex"
             onChange={(event) => bend.setAmplitude(Number(event.currentTarget.value))}
           />
         </div>
@@ -151,13 +151,13 @@ const BendFormControls = observer((props: { bend: ObservableBend }) => {
 
       <div className="grid grid-cols-2 gap-x-2">
         <button
-          className="bg-red-200 border border-red-300/50 text-red-900 px-4 py-1 rounded"
+          className="rounded border border-red-300/50 bg-red-200 px-4 py-1 text-red-900"
           onClick={() => clearBend()}
         >
           Clear
         </button>
         <button
-          className="bg-gray-300 border border-gray-400/50 text-gray-900 px-4 py-1 rounded"
+          className="rounded border border-gray-400/50 bg-gray-300 px-4 py-1 text-gray-900"
           onClick={() => setBend()}
         >
           Set
@@ -248,7 +248,7 @@ const BendPointGrid = observer((props: { bend: ObservableBend; className?: strin
   return (
     <svg
       ref={svg}
-      className={`stroke-1 -m-1.5 ${props.className ?? ""}`}
+      className={`-m-1.5 stroke-1 ${props.className ?? ""}`}
       viewBox={`${MIN_X - 6} ${MIN_Y - 6} ${WIDTH + 2 * 6} ${HEIGHT + 2 * 6}`}
       onPointerDown={(event) => onPointerDown(event)}
     >
@@ -302,7 +302,7 @@ const BendPointGrid = observer((props: { bend: ObservableBend; className?: strin
         ))}
       </g>
 
-      <path d={bendPath(points)} className="stroke-2 stroke-lime-600 fill-none" />
+      <path d={bendPath(points)} className="fill-none stroke-lime-600 stroke-2" />
 
       {bend.points.map((point, index) => (
         <BendPointHandle key={index} bend={bend} point={point} />
@@ -320,7 +320,7 @@ const BendPointHandle = observer((props: { bend: Bend; point: BendPoint }) => {
       cx={MIN_X + props.point.time * WIDTH}
       cy={MIN_Y + HEIGHT - props.point.amplitude * HEIGHT}
       data-bendpoint-index={pointIndex}
-      className="fill-gray-200 stroke-gray-700 cursor-grab"
+      className="cursor-grab fill-gray-200 stroke-gray-700"
     />
   );
 });

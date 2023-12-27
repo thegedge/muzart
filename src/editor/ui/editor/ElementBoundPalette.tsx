@@ -39,7 +39,7 @@ export const ElementBoundPalette = observer(
 
     return (
       <div ref={ref} style={style} tabIndex={1} onBlur={() => props.close()}>
-        <div className="bg-gray-800 w-full h-auto rounded-md flex justify-around italic font-serif">
+        <div className="flex h-auto w-full justify-around rounded-md bg-gray-800 font-serif italic">
           {Object.entries(props.options).map(([label, value]) => {
             const onSelect = () => {
               props.onSelect(value, props.element);
@@ -53,7 +53,7 @@ export const ElementBoundPalette = observer(
             );
           })}
         </div>
-        <svg className="fill-gray-800 h-auto max-h-4" viewBox="0 0 24 10">
+        <svg className="h-auto max-h-4 fill-gray-800" viewBox="0 0 24 10">
           <path d="M 0 0 c 12 1 10 10 12 10 C 14 10 12 1 24 0" />
         </svg>
       </div>
@@ -65,7 +65,7 @@ function PaletteEntry<T>(props: { onClick: () => void; children: ComponentChildr
   return (
     <span
       onClick={props.onClick}
-      className={`cursor-pointer hover:bg-gray-600 py-1 rounded-md px-3 text-center ${
+      className={`cursor-pointer rounded-md px-3 py-1 text-center hover:bg-gray-600 ${
         props.current ? " bg-gray-500" : ""
       }`}
     >

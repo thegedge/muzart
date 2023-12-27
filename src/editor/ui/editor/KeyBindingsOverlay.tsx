@@ -9,13 +9,13 @@ export const KeyBindingsOverlay = observer(function KeyBindingsOverlay<T>(props:
 
   return (
     <div
-      className={`flex flex-col gap-4 absolute z-top bg-black/80 backdrop-blur-md text-gray-300 top-0 bottom-0 left-0 right-0 overflow-clip p-4 ${
+      className={`absolute bottom-0 left-0 right-0 top-0 z-top flex flex-col gap-4 overflow-clip bg-black/80 p-4 text-gray-300 backdrop-blur-md ${
         application.state.helpVisible ? "block" : "hidden"
       }`}
     >
-      <h1 className="flex-none text-2xl font-bold text-center">Keyboard shortcuts</h1>
-      <div className="flex-1 flex items-center justify-start overflow-auto">
-        <div className="flex flex-col flex-wrap gap-4 justify-start items-stretch h-full">
+      <h1 className="flex-none text-center text-2xl font-bold">Keyboard shortcuts</h1>
+      <div className="flex flex-1 items-center justify-start overflow-auto">
+        <div className="flex h-full flex-col flex-wrap items-stretch justify-start gap-4">
           {Object.entries(props.bindings).map(([groupName, group]) => {
             const bindingsWithName = Object.entries(group).filter(([_binding, { name }]) => !!name);
             if (bindingsWithName.length == 0) {
@@ -23,8 +23,8 @@ export const KeyBindingsOverlay = observer(function KeyBindingsOverlay<T>(props:
             }
 
             return (
-              <div key={groupName} className="rounded-lg py-2 px-4 bg-white/10 shadow-lg">
-                <h2 className="text-3 font-bold mb-2 border-b-2 border-b-white/25">{groupName}</h2>
+              <div key={groupName} className="rounded-lg bg-white/10 px-4 py-2 shadow-lg">
+                <h2 className="text-3 mb-2 border-b-2 border-b-white/25 font-bold">{groupName}</h2>
                 <div className="grid grid-cols-key-bindings gap-x-4 gap-y-1">
                   {bindingsWithName.map(([binding, { name }]) => (
                     <Fragment key={binding}>
@@ -45,7 +45,7 @@ export const KeyBindingsOverlay = observer(function KeyBindingsOverlay<T>(props:
 const KeyBinding = (props: { binding: string }) => {
   const pieces = props.binding.split(KEY_BINDING_SEPARATOR);
   return (
-    <div className={`grid grid-cols-${pieces.length} gap-x-0.5 w-fit`}>
+    <div className={`grid grid-cols-${pieces.length} w-fit gap-x-0.5`}>
       {pieces.map((piece) => (
         <kbd key={piece}>{presentKey(piece)}</kbd>
       ))}

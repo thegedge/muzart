@@ -45,7 +45,7 @@ export const ScoreDropZone = () => {
 
   return (
     <div
-      className="min-w-screen min-h-screen"
+      className="min-h-screen min-w-screen"
       onDrop={(e) => {
         onDrop(e).catch(console.error);
       }}
@@ -53,7 +53,7 @@ export const ScoreDropZone = () => {
         e.preventDefault();
       }}
     >
-      <div className="flex flex-col items-center w-screen h-screen max-w-screen max-h-screen overflow-clip">
+      <div className="flex h-screen max-h-screen w-screen max-w-screen flex-col items-center overflow-clip">
         <Route path="/:url">
           {(params: { url: string }) => {
             const url = decodeURIComponent(params.url);
@@ -88,7 +88,7 @@ const ScoreLoader = observer((props: { loaderUrl: string }) => {
   }
 
   return (
-    <div className="flex flex-col w-screen h-screen max-w-screen max-h-screen">
+    <div className="flex h-screen max-h-screen w-screen max-w-screen flex-col">
       <Score />
       <PartPanel />
     </div>
