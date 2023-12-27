@@ -21,7 +21,7 @@ export const EditorChrome = observer((props: { loaderUrl: string }) => {
   }
 
   return (
-    <div className="flex h-screen max-h-screen w-screen max-w-screen flex-col">
+    <div className="chrome grid h-screen max-h-screen w-screen max-w-screen">
       <Score />
       <PartPanel />
     </div>

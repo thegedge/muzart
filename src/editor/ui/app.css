@@ -4,7 +4,7 @@
 
 @layer base {
   kbd {
-    @apply inline-block border rounded border-b-2 px-1 text-center align-text-top min-w-ex;
+    @apply inline-block min-w-ex rounded border border-b-2 px-1 text-center align-text-top;
 
     font-family:
       system-ui,
@@ -18,5 +18,24 @@
       "Open Sans",
       "Helvetica Neue",
       sans-serif;
+  }
+}
+
+@layer components {
+  .chrome {
+    grid-template-areas:
+      "score"
+      "part-panel";
+
+    grid-template-rows: 1fr max-content;
+    grid-template-columns: 1fr;
+
+    .score {
+      grid-area: score;
+    }
+
+    .part-panel {
+      grid-area: part-panel;
+    }
   }
 }

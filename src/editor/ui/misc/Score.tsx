@@ -265,7 +265,7 @@ export const Score = observer((_props: Record<string, never>) => {
   );
 
   return (
-    <div className="flex-1 overflow-hidden">
+    <div className="score overflow-hidden">
       {textInputState?.visible && <StatefulInput state={textInputState} />}
       {application.state.editingDynamic && application.selection.element?.type == "Note" && (
         <ElementBoundPalette
