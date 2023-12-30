@@ -1,17 +1,24 @@
+import * as CSS from "csstype";
+import { merge } from "lodash";
 import { makeAutoObservable } from "mobx";
 import { observer } from "mobx-react-lite";
 import { CSSProperties, useEffect, useRef } from "preact/compat";
 import layout, { toAncestorCoordinateSystem } from "../../../layout";
+import { StyleComputer } from "../../../utils/StyleComputer";
 import { ChangeTextElement } from "../../actions/ChangeTextElement";
 import { Application } from "../../state/Application";
 
 export class StatefulTextInputState {
   public visible = true;
 
+  private styles: CSS.Properties;
+
   constructor(
     readonly application: Application,
     readonly element: layout.Text,
+    styler: StyleComputer,
   ) {
+    this.styles = merge(styler.stylesFor(this.element, []), this.element.style);
     makeAutoObservable(this, undefined, { deep: false });
   }
 
@@ -29,7 +36,7 @@ export class StatefulTextInputState {
       height: `${box.height}px`,
       fontSize: `${this.element.size * canvas.userspaceToCanvasFactor}px`,
       outline: "none",
-      ...this.element.style,
+      ...this.styles,
     } as const;
   }
 

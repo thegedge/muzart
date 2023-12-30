@@ -11,7 +11,7 @@ export enum HarmonicStyle {
   ArtificialPlus7 = "artificial+7",
   ArtificialPlus12 = "artificial+12",
   Tapped = "tapped",
-  Pitch = "pitch",
+  Pinch = "pinch",
   Semi = "semi",
 }
 
@@ -190,7 +190,7 @@ export class Note {
         return "A.H.";
       case HarmonicStyle.Tapped:
         return "T.H.";
-      case HarmonicStyle.Pitch:
+      case HarmonicStyle.Pinch:
         return "P.H.";
       case HarmonicStyle.Semi:
         return "S.H.";

@@ -157,8 +157,8 @@ export class CanvasState {
     if (this.canvas) {
       // TODO maybe consider setting a flag and only doing this on render to avoid flicker?
       const canvasRect = this.canvas.getBoundingClientRect();
-      this.canvas.width = canvasRect.width * this.pixelRatio;
-      this.canvas.height = canvasRect.height * this.pixelRatio;
+      this.canvas.width = Math.ceil(canvasRect.width * this.pixelRatio);
+      this.canvas.height = Math.ceil(canvasRect.height * this.pixelRatio);
     }
     this.updateViewport();
   }

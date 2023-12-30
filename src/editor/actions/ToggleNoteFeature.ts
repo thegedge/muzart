@@ -2,7 +2,7 @@ import * as notation from "../../notation";
 import { Application } from "../state/Application";
 import { SelectionTrackingAction } from "./SelectionTrackingAction";
 
-type BooleanFeatures<T> = {
+export type BooleanFeatures<T> = {
   [K in keyof T]: T[K] extends boolean | undefined ? K : never;
 }[keyof T] &
   string;

@@ -51,7 +51,7 @@ export const Canvas = observer((props: CanvasProps) => {
         event.stopPropagation();
 
         if (zooming) {
-          state.zoomCenteredOn(state.zoom * Math.exp(-event.deltaY / PX_PER_MM / 100), event.x, event.y);
+          state.zoomCenteredOn(state.zoom * Math.exp(-event.deltaY / PX_PER_MM / 100), event.offsetX, event.offsetY);
         }
       }
 
@@ -99,8 +99,8 @@ const wrapMouseEvent = (
   state: CanvasState,
   handler: (p: Point) => void,
 ): JSXInternal.MouseEventHandler<HTMLElement> => {
-  return (evt) => {
-    const pt = state.canvasViewportToUserSpace(evt);
+  return (event) => {
+    const pt = state.canvasViewportToUserSpace({ x: event.offsetX, y: event.offsetY });
     handler(pt);
   };
 };

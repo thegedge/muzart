@@ -734,7 +734,7 @@ class GuitarProLoader {
       case 3:
         return HarmonicStyle.Tapped;
       case 4:
-        return HarmonicStyle.Pitch;
+        return HarmonicStyle.Pinch;
       case 5:
         return HarmonicStyle.Semi;
       case 15:

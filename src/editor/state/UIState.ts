@@ -27,7 +27,7 @@ export class UIState {
 
   get editorFocused() {
     // TODO this works...for now
-    return document.activeElement == document.body;
+    return document.activeElement?.tagName.toLowerCase() !== "input";
   }
 
   toggleEditingDynamic() {

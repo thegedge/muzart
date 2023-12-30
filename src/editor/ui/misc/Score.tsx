@@ -2,7 +2,7 @@ import type * as CSS from "csstype";
 import { sumBy } from "lodash";
 import { reaction } from "mobx";
 import { observer, useLocalObservable } from "mobx-react-lite";
-import { useCallback, useEffect, useRef, useState } from "preact/hooks";
+import { useCallback, useEffect, useMemo, useRef, useState } from "preact/hooks";
 import layout, {
   AllElements,
   Box,
@@ -27,6 +27,22 @@ import { StatefulInput, StatefulTextInputState } from "./StatefulInput";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
+  const currentPlayingRefreshInterval = useRef(0);
+  const renderState = useLocalObservable(() => ({ epoch: 0 }));
+  const [textInputState, showTextInput] = useState<StatefulTextInputState | null>(null);
+
+  const styler = useMemo(() => {
+    const stylesheet = Array.from(document.styleSheets).find((ss) => {
+      for (let ruleIndex = 0; ruleIndex < ss.cssRules.length; ++ruleIndex) {
+        if (ss.title == "muzart") {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    return new StyleComputer(stylesheet);
+  }, []);
 
   useEffect(() => {
     return reaction(
@@ -40,19 +56,6 @@ export const Score = observer((_props: Record<string, never>) => {
     );
   }, [application]);
 
-  const selectionBoxFor = (chord: layout.Chord | layout.Rest, selectedNoteIndex: number) => {
-    const PADDING = 3 * LINE_STROKE_WIDTH;
-    const chordBox = toAncestorCoordinateSystem(chord);
-    return chordBox
-      .update({
-        y: chordBox.y + selectedNoteIndex * STAFF_LINE_HEIGHT,
-        width: chord.type == "Chord" ? chordBox.width : STAFF_LINE_HEIGHT,
-        height: STAFF_LINE_HEIGHT,
-      })
-      .expand(PADDING);
-  };
-
-  const currentPlayingRefreshInterval = useRef(0);
   useEffect(() => {
     const disposer = reaction(
       () => application.playback.playing,
@@ -77,7 +80,6 @@ export const Score = observer((_props: Record<string, never>) => {
     };
   });
 
-  const renderState = useLocalObservable(() => ({ epoch: 0 }));
   useEffect(() => {
     import.meta.hot?.on("muzart:render", () => {
       const link = document.querySelector(`link[href^="score.css"]`);
@@ -99,17 +101,6 @@ export const Score = observer((_props: Record<string, never>) => {
     }
 
     const render: RenderFunction = (context, viewport) => {
-      const stylesheet = Array.from(document.styleSheets).find((ss) => {
-        for (let ruleIndex = 0; ruleIndex < ss.cssRules.length; ++ruleIndex) {
-          if (ss.title == "muzart") {
-            return true;
-          }
-        }
-        return false;
-      });
-
-      const styler = new StyleComputer(stylesheet);
-
       context.fillStyle = "";
       context.strokeStyle = "#000000";
 
@@ -171,7 +162,7 @@ export const Score = observer((_props: Record<string, never>) => {
         application.canvas.redraw();
       },
     );
-  }, [application.canvas, application, application.selection.part, renderState]);
+  }, [application.canvas, application, application.selection.part, renderState, styler]);
 
   useEffect(() => {
     return reaction(
@@ -206,8 +197,6 @@ export const Score = observer((_props: Record<string, never>) => {
     );
   }, [application]);
 
-  const [textInputState, showTextInput] = useState<StatefulTextInputState | null>(null);
-
   const onMouseDown = useCallback(
     (pt: Point) => {
       const hit = hitTest(pt, application.selection.part);
@@ -230,11 +219,11 @@ export const Score = observer((_props: Record<string, never>) => {
       const hit = hitTest(pt, application.selection.part);
       if (hit) {
         if (hit?.element.type == "Text" && !hit.element.isReadOnly) {
-          showTextInput(new StatefulTextInputState(application, hit.element));
+          showTextInput(new StatefulTextInputState(application, hit.element, styler));
         }
       }
     },
-    [application],
+    [application, styler],
   );
 
   const onMouseMove = useCallback(
@@ -264,8 +253,9 @@ export const Score = observer((_props: Record<string, never>) => {
     [application],
   );
 
+  // Relative positioning to so element-bound palettes can be positioned relative to the score
   return (
-    <div className="score overflow-hidden">
+    <div className="score relative overflow-hidden bg-gray-500">
       {textInputState?.visible && <StatefulInput state={textInputState} />}
       {application.state.editingDynamic && application.selection.element?.type == "Note" && (
         <ElementBoundPalette
@@ -296,7 +286,7 @@ export const Score = observer((_props: Record<string, never>) => {
           element={application.selection.element}
           options={{
             "N.H.": HarmonicStyle.Natural,
-            "P.H.": HarmonicStyle.Pitch,
+            "P.H.": HarmonicStyle.Pinch,
             "S.H": HarmonicStyle.Semi,
             "T.H.": HarmonicStyle.Tapped,
             "A.H. +5": HarmonicStyle.ArtificialPlus5,
@@ -323,3 +313,15 @@ export const Score = observer((_props: Record<string, never>) => {
     </div>
   );
 });
+
+const selectionBoxFor = (chord: layout.Chord | layout.Rest, selectedNoteIndex: number) => {
+  const PADDING = 3 * LINE_STROKE_WIDTH;
+  const chordBox = toAncestorCoordinateSystem(chord);
+  return chordBox
+    .update({
+      y: chordBox.y + selectedNoteIndex * STAFF_LINE_HEIGHT,
+      width: chord.type == "Chord" ? chordBox.width : STAFF_LINE_HEIGHT,
+      height: STAFF_LINE_HEIGHT,
+    })
+    .expand(PADDING);
+};

@@ -48,7 +48,7 @@ export const Text: RenderFunc<layout.Text> = (element, render, context) => {
       throw new Error(`unsupported vertical-align value: ${context.style.textAlign}`);
   }
 
-  render.fillStyle = context.style.color || "#000000";
+  render.fillStyle = context.style.color || "currentColor";
   render.textAlign = align;
   render.textBaseline = baseline;
   render.font = `

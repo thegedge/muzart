@@ -3,6 +3,7 @@ import { useEffect } from "preact/hooks";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Score } from "../misc/Score";
 import { PartPanel } from "./PartPanel";
+import { SelectionPalette } from "./SelectionPalette";
 
 export const EditorChrome = observer((props: { loaderUrl: string }) => {
   const { loaderUrl: url } = props;
@@ -21,8 +22,9 @@ export const EditorChrome = observer((props: { loaderUrl: string }) => {
   }
 
   return (
-    <div className="chrome grid h-screen max-h-screen w-screen max-w-screen">
+    <div className="chrome grid h-screen max-h-screen w-screen max-w-screen gap-px bg-gray-950 fill-gray-200 text-gray-200">
       <Score />
+      <SelectionPalette />
       <PartPanel />
     </div>
   );

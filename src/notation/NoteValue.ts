@@ -5,10 +5,10 @@ export enum NoteValueName {
   Half = "half",
   Quarter = "quarter",
   Eighth = "eighth",
-  Sixteenth = "16th",
-  ThirtySecond = "32nd",
-  SixtyFourth = "64th",
-  OneTwentyEighth = "128th",
+  Sixteenth = "sixteenth",
+  ThirtySecond = "thirty second",
+  SixtyFourth = "sixty fourth",
+  OneTwentyEighth = "one hundred and twenty eighth",
 }
 
 export interface NoteValueOptions {
@@ -46,15 +46,20 @@ export class NoteValue {
         return new NoteValue(NoteValueName.Half);
       case "quarter":
         return new NoteValue(NoteValueName.Quarter);
+      case "8th":
       case "eighth":
         return new NoteValue(NoteValueName.Eighth);
       case "16th":
+      case "sixteenth":
         return new NoteValue(NoteValueName.Sixteenth);
       case "32nd":
+      case "thirty second":
         return new NoteValue(NoteValueName.ThirtySecond);
       case "64th":
+      case "sixty fourth":
         return new NoteValue(NoteValueName.SixtyFourth);
       case "128th":
+      case "one hundred and twenty eighth":
         return new NoteValue(NoteValueName.OneTwentyEighth);
       default:
         throw new Error(`unexpected input: ${str}`);
@@ -82,24 +87,6 @@ export class NoteValue {
   }
 
   /**
-   * Construct a copy of this note with the specified number of dots.
-   *
-   * @returns a new `NoteValue` instance that has the given number of dots
-   */
-  withDots(dots: number) {
-    return new NoteValue(this.name, { dots: clamp(dots, 0, 3), tuplet: this.tuplet });
-  }
-
-  /**
-   * Construct a copy of this note with the given tuplet value.
-   *
-   * @returns a new `NoteValue` instance that has one more dot than this one
-   */
-  withTuplet(tuplet?: Tuplet) {
-    return new NoteValue(this.name, { dots: this.dots, tuplet });
-  }
-
-  /**
    * Increase this note value (i.e., make it longer).
    *
    * @returns a new `NoteValue` instance with a longer duration than the current
@@ -121,6 +108,33 @@ export class NoteValue {
       dots: this.dots,
       tuplet: this.tuplet,
     });
+  }
+
+  /**
+   * Construct a copy of this note with the specified number of dots.
+   *
+   * @returns a new `NoteValue` instance that has the given number of dots
+   */
+  withName(name: NoteValueName) {
+    return new NoteValue(name, { dots: this.dots, tuplet: this.tuplet });
+  }
+
+  /**
+   * Construct a copy of this note with the specified number of dots.
+   *
+   * @returns a new `NoteValue` instance that has the given number of dots
+   */
+  withDots(dots: number) {
+    return new NoteValue(this.name, { dots: clamp(dots, 0, 3), tuplet: this.tuplet });
+  }
+
+  /**
+   * Construct a copy of this note with the given tuplet value.
+   *
+   * @returns a new `NoteValue` instance that has one more dot than this one
+   */
+  withTuplet(tuplet?: Tuplet) {
+    return new NoteValue(this.name, { dots: this.dots, tuplet });
   }
 
   /**
