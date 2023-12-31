@@ -8,7 +8,7 @@ import { UndoStack } from "../../utils/UndoStack";
 import { Action } from "../actions/Action";
 import { SyncStorage, isRecord } from "../storage/Storage";
 import { TabStorage } from "../storage/TabStorage";
-import { CanvasState } from "../ui/misc/CanvasState";
+import { CanvasState } from "../ui/canvas/CanvasState";
 import { DebugContext } from "./DebugContext";
 import { Selection } from "./Selection";
 import { UIState } from "./UIState";

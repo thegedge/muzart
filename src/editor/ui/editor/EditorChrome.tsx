@@ -1,8 +1,8 @@
 import { observer } from "mobx-react-lite";
 import { useEffect } from "preact/hooks";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { Score } from "../misc/Score";
 import { PartPanel } from "./PartPanel";
+import { Score } from "./Score";
 import { SelectionPalette } from "./SelectionPalette";
 
 export const EditorChrome = observer((props: { loaderUrl: string }) => {

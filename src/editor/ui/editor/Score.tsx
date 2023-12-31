@@ -21,9 +21,9 @@ import { renderScoreElement } from "../../../render/renderScoreElement";
 import { StyleComputer } from "../../../utils/StyleComputer";
 import { ChangeNote } from "../../actions/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { ElementBoundPalette } from "../editor/ElementBoundPalette";
-import { Canvas, Point, RenderFunction } from "./Canvas";
-import { StatefulInput, StatefulTextInputState } from "./StatefulInput";
+import { Canvas, Point, RenderFunction } from "../canvas/Canvas";
+import { StatefulInput, StatefulTextInputState } from "../misc/StatefulInput";
+import { ElementBoundPalette } from "./ElementBoundPalette";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
