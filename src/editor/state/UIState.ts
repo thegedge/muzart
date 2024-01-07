@@ -5,6 +5,11 @@ import { PlaybackController } from "../../playback/PlaybackController";
  * Captures all of the state that is related to the UI of the editor.
  */
 export class UIState {
+  /** The subject for a context menu, or `null` if the context menu isn't visible */
+  public contextMenuSubject: unknown = null;
+  public contextMenuX = 0;
+  public contextMenuY = 0;
+
   /** Whether or not the key bindings overlay should be visible */
   public helpVisible = false;
 
@@ -28,6 +33,18 @@ export class UIState {
   get editorFocused() {
     // TODO this works...for now
     return document.activeElement?.tagName.toLowerCase() !== "input";
+  }
+
+  showContextMenuFor(subject: unknown, offsetX = 0, offsetY = 0) {
+    this.contextMenuSubject = subject;
+    this.contextMenuX = offsetX;
+    this.contextMenuY = offsetY;
+  }
+
+  hideContextMenu() {
+    this.contextMenuSubject = null;
+    this.contextMenuX = 0;
+    this.contextMenuY = 0;
   }
 
   toggleEditingDynamic() {

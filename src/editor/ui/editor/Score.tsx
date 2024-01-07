@@ -24,6 +24,7 @@ import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../canvas/Canvas";
 import { StatefulInput, StatefulTextInputState } from "../misc/StatefulInput";
 import { ElementBoundPalette } from "./ElementBoundPalette";
+import { useMuzartContextMenu } from "./useMuzartContextMenu";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
@@ -253,9 +254,11 @@ export const Score = observer((_props: Record<string, never>) => {
     [application],
   );
 
+  const contextMenuHandlers = useMuzartContextMenu(application.selection.score?.score);
+
   // Relative positioning to so element-bound palettes can be positioned relative to the score
   return (
-    <div className="score relative overflow-hidden bg-gray-500">
+    <div className="score relative overflow-hidden bg-gray-500" {...contextMenuHandlers}>
       {textInputState?.visible && <StatefulInput state={textInputState} />}
       {application.state.editingDynamic && application.selection.element?.type == "Note" && (
         <ElementBoundPalette

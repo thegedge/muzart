@@ -261,6 +261,10 @@ export class Selection implements StorableObject {
     this.noteIndex = numberOrDefault(value.noteIndex, 0);
   }
 
+  private setScoreWithoutReset(score: layout.Score | null) {
+    this.score = score;
+  }
+
   private reflow() {
     this.reflowDisposer?.();
 
@@ -268,7 +272,8 @@ export class Selection implements StorableObject {
     const partIndex = this.partIndex;
     if (score && partIndex >= 0) {
       this.reflowDisposer = autorun(() => {
-        this.score = layOutScore(score, [partIndex]);
+        // TODO figure out why I can't do this immediately (mobx complains about setting things outside of an action)
+        setTimeout(() => this.setScoreWithoutReset(layOutScore(score, [partIndex])), 0);
       });
     }
   }

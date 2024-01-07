@@ -16,7 +16,7 @@ export interface ScoreOptions {
 }
 
 export class Score {
-  readonly parts: ReadonlyArray<Part>;
+  private parts_: Part[];
 
   public comments: string[] | undefined;
   public title: string | undefined;
@@ -29,7 +29,7 @@ export class Score {
   public instructions: string | undefined;
 
   constructor(options: ScoreOptions) {
-    this.parts = options.parts;
+    this.parts_ = options.parts;
     this.comments = options.comments;
     this.title = options.title;
     this.subTitle = options.subTitle;
@@ -41,5 +41,20 @@ export class Score {
     this.instructions = options.instructions;
 
     makeAutoObservable(this, undefined, { deep: true });
+  }
+
+  get parts(): ReadonlyArray<Part> {
+    return this.parts_;
+  }
+
+  addPart(part: Part, index = 0) {
+    this.parts_.splice(index, 0, part);
+  }
+
+  removePart(part: Part) {
+    const index = this.parts.indexOf(part);
+    if (index >= 0) {
+      this.parts_.splice(index, 1);
+    }
   }
 }

@@ -62,6 +62,7 @@ export class PlaybackController {
       setCurrentMeasure: action,
       togglePlay: action,
       stop: action,
+      reset: action,
       loadSoundFont: flow,
     });
   }

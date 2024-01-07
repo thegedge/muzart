@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
 
 export default {
   mode: "jit",
@@ -6,8 +7,14 @@ export default {
   safelist: ["grid-cols-1", "grid-cols-2", "grid-cols-3", "grid-cols-4"],
   theme: {
     extend: {
+      boxShadow: {
+        modal: "0 0 50px 0 rgba(0, 0, 0, 0.5)",
+      },
       flexGrow: {
         2: "2",
+      },
+      fontSize: {
+        "2xs": "0.6rem",
       },
       gridTemplateColumns: {
         // Track name/solo/mute :: Measure box list
@@ -32,11 +39,11 @@ export default {
       padding: {
         0.8: "3px",
       },
-      fontSize: {
-        "2xs": "0.6rem",
-      },
-      boxShadow: {
-        modal: "0 0 50px 0 rgba(0, 0, 0, 0.5)",
+      textShadow: {
+        DEFAULT: "0.5px 0.5px 0 var(--tw-shadow-color)",
+        sm: "1px 1px 1px var(--tw-shadow-color)",
+        md: "1px 1px 2px var(--tw-shadow-color)",
+        lg: "1px 1px 16px var(--tw-shadow-color)",
       },
       zIndex: {
         top: "1000000",
@@ -44,5 +51,16 @@ export default {
     },
   },
   variants: {},
-  plugins: [],
+  plugins: [
+    plugin(({ matchUtilities, theme }) => {
+      matchUtilities(
+        {
+          "text-shadow": (value) => ({
+            textShadow: value,
+          }),
+        },
+        { values: theme("textShadow") },
+      );
+    }),
+  ],
 } satisfies Config;

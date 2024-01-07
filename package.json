@@ -20,13 +20,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@heroicons/react": "^2.1.1",
+    "clsx": "^2.1.0",
     "emittery": "^1.0.1",
     "inflected": "^2.1.0",
     "lodash": "^4.17.21",
     "mobx": "^6.12.0",
     "mobx-react-lite": "^4.0.5",
     "preact": "^10.19.3",
-    "react-bootstrap-icons": "^1.10.3",
     "tinykeys": "^2.1.0",
     "wouter": "^2.12.1"
   },
@@ -54,6 +55,7 @@
     "postcss-nesting": "^12.0.2",
     "postcss-preset-env": "^9.3.0",
     "prettier": "^3.1.1",
+    "prettier-plugin-packagejson": "^2.4.9",
     "prettier-plugin-tailwindcss": "^0.5.9",
     "style-loader": "^3.3.3",
     "tailwindcss": "^3.4.0",
@@ -61,5 +63,15 @@
     "vite": "^5.0.10",
     "vitest": "^1.1.0"
   },
-  "packageManager": "pnpm@8.13.1+sha256.9e5f62ce5f2b7d4ceb3c2848f41cf0b33032c24d683c7088b53f62b1885fb246"
+  "packageManager": "pnpm@8.13.1+sha256.9e5f62ce5f2b7d4ceb3c2848f41cf0b33032c24d683c7088b53f62b1885fb246",
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "@babel/core",
+        "react",
+        "react-dom",
+        "webpack"
+      ]
+    }
+  }
 }
