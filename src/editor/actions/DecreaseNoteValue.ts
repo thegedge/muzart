@@ -1,32 +1,23 @@
+import * as notation from "../../notation";
 import { Application } from "../state/Application";
-import { SelectionTrackingAction } from "./SelectionTrackingAction";
+import { Action } from "./Action";
 
-export class DecreaseNoteValue extends SelectionTrackingAction {
-  canApply(application: Application) {
-    // TODO can't apply if duration at minimum
-    const chord = application.selection.chord;
-    return !!chord;
+export class DecreaseNoteValue extends Action {
+  static actionForState(application: Application) {
+    // TODO can't apply if duration at maximum
+    const chord = application.selection.chord?.chord;
+    return chord ? new DecreaseNoteValue(chord) : null;
   }
 
-  apply(application: Application) {
-    super.apply(application);
-
-    const chord = application.selection.chord?.chord;
-    if (!chord) {
-      return;
-    }
-
-    chord.setValue(chord.value.decrease());
+  private constructor(readonly chord: notation.Chord) {
+    super();
   }
 
-  undo(application: Application) {
-    super.undo(application);
+  apply(_application: Application) {
+    this.chord.setValue(this.chord.value.decrease());
+  }
 
-    const chord = application.selection.chord?.chord;
-    if (!chord) {
-      return;
-    }
-
-    chord.setValue(chord.value.increase());
+  undo(_application: Application) {
+    this.chord.setValue(this.chord.value.increase());
   }
 }

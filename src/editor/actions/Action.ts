@@ -5,11 +5,6 @@ import { Application } from "../state/Application";
  */
 export abstract class Action {
   /**
-   * Whether or not this action can be applied to the current application state.
-   */
-  abstract canApply(application: Application): boolean;
-
-  /**
    * Apply the action to the given application.
    */
   abstract apply(application: Application): void;

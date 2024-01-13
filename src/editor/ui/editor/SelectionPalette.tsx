@@ -4,10 +4,10 @@ import { ComponentChildren } from "preact";
 import { HTMLAttributes } from "preact/compat";
 import * as notation from "../../../notation";
 import { HarmonicStyle, NoteDynamic, NoteValue, NoteValueName } from "../../../notation";
-import { ChangeNote } from "../../actions/ChangeNote";
-import { ChangeNoteValue } from "../../actions/ChangeNoteValue";
-import { DotNote } from "../../actions/DotNote";
-import { BooleanFeatures, ToggleNoteFeature } from "../../actions/ToggleNoteFeature";
+import { changeNoteAction } from "../../actions/ChangeNote";
+import { changeNoteValueAction } from "../../actions/ChangeNoteValue";
+import { dotNoteAction } from "../../actions/DotNote";
+import { BooleanFeatures, toggleNoteFeatureAction } from "../../actions/ToggleNoteFeature";
 import { NoteValueIcon } from "../../resources/note_values";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 
@@ -41,7 +41,7 @@ const NoteSettings = observer(() => {
               className="max-h-8 max-w-8"
               tooltip={value}
               active={chord.value.name == value}
-              onClick={() => application.dispatch(new ChangeNoteValue(value))}
+              onClick={() => application.dispatch(changeNoteValueAction(value))}
             >
               <NoteValueIcon noteValue={value} className="aspect-square w-full" />
             </PaletteButton>
@@ -52,7 +52,7 @@ const NoteSettings = observer(() => {
           className="max-h-8 max-w-8"
           tooltip="Dot note"
           active={note.value.dots == 1}
-          onClick={() => application.dispatch(new DotNote(note.value.dots == 1 ? 0 : 1))}
+          onClick={() => application.dispatch(dotNoteAction(note.value.dots == 1 ? 0 : 1))}
         >
           <NoteValueIcon noteValue={NoteValue.fromNumber(4).dot()} className="aspect-square w-full" />
         </PaletteButton>
@@ -61,7 +61,7 @@ const NoteSettings = observer(() => {
           className="max-h-8 max-w-8"
           tooltip="Double dot note"
           active={note.value.dots == 2}
-          onClick={() => application.dispatch(new DotNote(note.value.dots == 2 ? 0 : 2))}
+          onClick={() => application.dispatch(dotNoteAction(note.value.dots == 2 ? 0 : 2))}
         >
           <NoteValueIcon noteValue={NoteValue.fromNumber(4).withDots(2)} className="aspect-square w-full" />
         </PaletteButton>
@@ -146,7 +146,7 @@ function ChangeNotePaletteButton<PropertyT extends keyof notation.NoteOptions>(
   const note = application.selection.note?.note;
   const isCurrentValue = note ? note.options[property] == value : false;
   const onClick = () => {
-    application.dispatch(new ChangeNote({ [property]: isCurrentValue ? undefined : value }));
+    application.dispatch(changeNoteAction({ [property]: isCurrentValue ? undefined : value }));
   };
 
   return <PaletteButton {...buttonProps} onClick={onClick} active={isCurrentValue} />;
@@ -160,7 +160,8 @@ const TogglePaletteButton = (
   const { property, ...buttonProps } = props;
   const isToggled = application.selection.note?.note.options[property] ?? false;
   const onClick = () => {
-    application.dispatch(new ToggleNoteFeature(property));
+    const action = toggleNoteFeatureAction(property).actionForState(application);
+    application.dispatch(action);
   };
 
   return <PaletteButton {...buttonProps} onClick={onClick} active={isToggled} />;

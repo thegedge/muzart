@@ -19,7 +19,7 @@ import { HarmonicStyle, NoteDynamic } from "../../../notation";
 import { noteValueToSeconds } from "../../../playback/util/durations";
 import { renderScoreElement } from "../../../render/renderScoreElement";
 import { StyleComputer } from "../../../utils/StyleComputer";
-import { ChangeNote } from "../../actions/ChangeNote";
+import { changeNoteAction } from "../../actions/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../canvas/Canvas";
 import { StatefulInput, StatefulTextInputState } from "../misc/StatefulInput";
@@ -277,9 +277,9 @@ export const Score = observer((_props: Record<string, never>) => {
           close={() => application.state.toggleEditingDynamic()}
           onSelect={(dynamic, element) => {
             if (dynamic == element.note.dynamic) {
-              application.dispatch(new ChangeNote({ dynamic: undefined }));
+              application.dispatch(changeNoteAction({ dynamic: undefined }));
             } else {
-              application.dispatch(new ChangeNote({ dynamic }));
+              application.dispatch(changeNoteAction({ dynamic }));
             }
           }}
         />
@@ -300,9 +300,9 @@ export const Score = observer((_props: Record<string, never>) => {
           close={() => application.state.toggleEditingHarmonic()}
           onSelect={(harmonic, element) => {
             if (harmonic == element.note.harmonic) {
-              application.dispatch(new ChangeNote({ harmonic: undefined }));
+              application.dispatch(changeNoteAction({ harmonic: undefined }));
             } else {
-              application.dispatch(new ChangeNote({ harmonic }));
+              application.dispatch(changeNoteAction({ harmonic }));
             }
           }}
         />

@@ -21,6 +21,9 @@ export interface Hit<T> {
   point: Point;
 }
 
+/** A type that can (potentially) construct an action for the current application state */
+export type ActionFactory = { actionForState(application: Application): Action | null };
+
 export class Application {
   public loading = false;
   public error: Error | null = null;
@@ -56,11 +59,18 @@ export class Application {
     return this.currentTabUrl_;
   }
 
-  dispatch(action: Action) {
-    if (action.canApply(this)) {
-      this.undoStack.push(action);
-      action.apply(this);
+  dispatch(actionOrFactory: Action | ActionFactory | null) {
+    if (!actionOrFactory) {
+      return;
     }
+
+    if (!(actionOrFactory instanceof Action)) {
+      this.dispatch(actionOrFactory.actionForState(this));
+      return;
+    }
+
+    this.undoStack.push(actionOrFactory);
+    actionOrFactory.apply(this);
   }
 
   undo() {

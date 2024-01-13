@@ -5,7 +5,7 @@ import { JSX } from "preact";
 import { useMemo, useRef } from "preact/hooks";
 import { bendPath } from "../../../layout/elements/Bend";
 import { Bend, BendPoint, BendType, defaultBendPointsForType } from "../../../notation";
-import { ChangeNote } from "../../actions/ChangeNote";
+import { changeNoteAction } from "../../actions/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { useDrag } from "../../utils/useDrag";
 
@@ -88,7 +88,7 @@ const BendFormControls = observer((props: { bend: ObservableBend }) => {
 
   const clearBend = () => {
     if (application.selection.note?.note.bend) {
-      application.dispatch(new ChangeNote({ bend: undefined }));
+      application.dispatch(changeNoteAction({ bend: undefined }));
     }
     application.state.toggleEditingBend();
   };
@@ -96,7 +96,7 @@ const BendFormControls = observer((props: { bend: ObservableBend }) => {
   const setBend = () => {
     if (application.selection.note) {
       application.dispatch(
-        new ChangeNote({
+        changeNoteAction({
           bend: {
             type: bend.type,
             amplitude: bend.amplitude,

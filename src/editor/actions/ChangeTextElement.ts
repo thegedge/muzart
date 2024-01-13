@@ -1,27 +1,30 @@
 import layout from "../../layout";
-import { SelectionTrackingAction } from "./SelectionTrackingAction";
+import { Application } from "../state/Application";
+import { Action } from "./Action";
 
-export class ChangeTextElement extends SelectionTrackingAction {
-  private prev: string;
+export const changeTextAction = (element: layout.Text, text: string) => {
+  return class ChangeTextElement extends Action {
+    static actionForState(_application: Application) {
+      return element.text != text ? new ChangeTextElement(element, text) : null;
+    }
 
-  constructor(
-    readonly element: layout.Text,
-    readonly text: string,
-  ) {
-    super();
-    this.prev = element.text;
-  }
+    private prev: string;
 
-  canApply() {
-    return this.element.text != this.text;
-  }
+    constructor(
+      readonly element: layout.Text,
+      readonly text: string,
+    ) {
+      super();
+      this.prev = element.text;
+    }
 
-  apply() {
-    this.prev = this.element.text;
-    this.element.text = this.text;
-  }
+    apply() {
+      this.prev = this.element.text;
+      this.element.text = this.text;
+    }
 
-  undo() {
-    this.element.text = this.prev;
-  }
-}
+    undo() {
+      this.element.text = this.prev;
+    }
+  };
+};

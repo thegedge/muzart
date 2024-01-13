@@ -1,44 +1,29 @@
 import * as notation from "../../notation";
 import { Application } from "../state/Application";
-import { SelectionTrackingAction } from "./SelectionTrackingAction";
+import { Action } from "./Action";
 
 // TODO assuming a stringed + fretted instrument below. Will need to fix eventually.
 
-export class DeleteNote extends SelectionTrackingAction {
-  private state!: [notation.Chord, notation.Note | undefined];
-
-  canApply(application: Application) {
+export class DeleteNote extends Action {
+  static actionForState(application: Application) {
     const instrument = application.selection.part?.part.instrument;
     const chord = application.selection.chord?.chord;
     const note = chord?.noteByString(application.selection.noteIndex + 1);
-    return !!(instrument && chord && note);
+    return instrument && chord && note ? new DeleteNote(chord, note) : null;
   }
 
-  apply(application: Application) {
-    super.apply(application);
-
-    const chord = application.selection.chord?.chord;
-    if (!chord) {
-      return;
-    }
-
-    const string = application.selection.noteIndex + 1;
-    const note = chord.noteByString(string);
-    if (note) {
-      // TODO deal with tied notes
-
-      chord.removeNote(note);
-    }
-
-    this.state = [chord, note];
+  private constructor(
+    private chord: notation.Chord,
+    private note: notation.Note,
+  ) {
+    super();
   }
 
-  undo(application: Application) {
-    super.undo(application);
+  apply(_application: Application) {
+    this.chord.removeNote(this.note);
+  }
 
-    const [chord, oldNote] = this.state;
-    if (oldNote) {
-      chord.changeNote(oldNote);
-    }
+  undo(_application: Application) {
+    this.chord.changeNote(this.note);
   }
 }

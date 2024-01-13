@@ -51,7 +51,11 @@ const MuzartContextMenu = observer((_props: Record<string, never>) => {
       <MenuItem
         key="1"
         onClick={() => {
-          application.dispatch(new RemovePart(part));
+          const score = application.selection.score?.score;
+          if (score) {
+            application.dispatch(new RemovePart(score, part));
+          }
+
           state.hideContextMenu();
         }}
       >

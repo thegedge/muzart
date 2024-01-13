@@ -273,7 +273,7 @@ export class Selection implements StorableObject {
     if (score && partIndex >= 0) {
       this.reflowDisposer = autorun(() => {
         // TODO figure out why I can't do this immediately (mobx complains about setting things outside of an action)
-        setTimeout(() => this.setScoreWithoutReset(layOutScore(score, [partIndex])), 0);
+        this.setScoreWithoutReset(layOutScore(score, [partIndex]));
       });
     }
   }

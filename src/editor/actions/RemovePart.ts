@@ -3,22 +3,27 @@ import { Application } from "../state/Application";
 import { Action } from "./Action";
 
 export class RemovePart extends Action {
+  static actionForState(application: Application) {
+    const score = application.selection.score?.score;
+    const part = application.selection.part?.part;
+    return score && part ? new RemovePart(score, part) : null;
+  }
+
   private index = -1;
 
-  constructor(readonly part: notation.Part) {
+  constructor(
+    private score: notation.Score,
+    private part: notation.Part,
+  ) {
     super();
+    this.index = score.parts.indexOf(part);
   }
 
-  canApply(application: Application) {
-    return application.selection.score !== null;
+  apply(_application: Application) {
+    this.score.removePart(this.part);
   }
 
-  apply(application: Application) {
-    this.index = application.selection.score!.score.parts.indexOf(this.part);
-    application.selection.score!.score.removePart(this.part);
-  }
-
-  undo(application: Application) {
-    application.selection.score!.score.addPart(this.part, this.index);
+  undo(_application: Application) {
+    this.score.addPart(this.part, this.index);
   }
 }

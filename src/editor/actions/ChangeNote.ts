@@ -1,49 +1,29 @@
 import * as notation from "../../notation";
 import { Application } from "../state/Application";
-import { SelectionTrackingAction } from "./SelectionTrackingAction";
+import { Action } from "./Action";
 
-export class ChangeNote extends SelectionTrackingAction {
-  private state!: [notation.Chord, notation.Note, notation.Note]; // chord, old, new
-
-  constructor(readonly changes: Partial<notation.Note>) {
-    super();
-  }
-
-  canApply(application: Application) {
-    const chord = application.selection.chord;
-    const note = application.selection.note;
-    return !!(chord && note);
-  }
-
-  apply(application: Application) {
-    super.apply(application);
-
-    const chord = application.selection.chord?.chord;
-    if (!chord) {
-      return;
+export const changeNoteAction = (changes: Partial<notation.Note>) => {
+  return class ChangeNote extends Action {
+    static actionForState(application: Application) {
+      const chord = application.selection.chord?.chord;
+      const note = application.selection.note?.note;
+      return chord && note ? new ChangeNote(chord, note, changes) : null;
     }
 
-    const note = application.selection.note?.note;
-    if (!note) {
-      return;
+    constructor(
+      private chord: notation.Chord,
+      private note: notation.Note,
+      private changes: Partial<notation.Note>,
+    ) {
+      super();
     }
 
-    const newNote = note.withChanges(this.changes);
-    const existing = chord.changeNote(newNote);
-
-    // existing == note, maybe assert?
-
-    this.state = [chord, existing!, newNote];
-  }
-
-  undo(application: Application) {
-    super.undo(application);
-
-    const [chord, oldNote, newNote] = this.state;
-    if (oldNote) {
-      chord.changeNote(oldNote);
-    } else {
-      chord.removeNote(newNote);
+    apply(_application: Application) {
+      this.chord.changeNote(this.note.withChanges(this.changes));
     }
-  }
-}
+
+    undo(_application: Application) {
+      this.chord.changeNote(this.note);
+    }
+  };
+};

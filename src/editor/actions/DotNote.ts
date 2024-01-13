@@ -1,46 +1,29 @@
 import * as notation from "../../notation";
 import { Application } from "../state/Application";
-import { SelectionTrackingAction } from "./SelectionTrackingAction";
+import { Action } from "./Action";
 
-export class DotNote extends SelectionTrackingAction {
-  private state!: [notation.Chord, notation.Note | undefined, notation.Note]; // chord, existing, new
-
-  constructor(readonly dots: number) {
-    super();
-  }
-
-  canApply(application: Application) {
-    const chord = application.selection.chord?.chord;
-    const note = application.selection.note?.note;
-    return !!(chord && note);
-  }
-
-  apply(application: Application) {
-    super.apply(application);
-
-    const instrument = application.selection.part?.part.instrument;
-    const chord = application.selection.chord?.chord;
-    const note = application.selection.note?.note;
-    if (!instrument || !chord || !note) {
-      return;
+export const dotNoteAction = (dots: number) => {
+  return class DotNote extends Action {
+    static actionForState(application: Application) {
+      const chord = application.selection.chord?.chord;
+      const note = application.selection.note?.note;
+      return chord && note ? new DotNote(chord, note, dots) : null;
     }
 
-    const newNote = note.withChanges({ value: note.value.withDots(this.dots) });
-    const existing = chord.changeNote(newNote);
-
-    application.playback.playNote(newNote);
-
-    this.state = [chord, existing, newNote];
-  }
-
-  undo(application: Application) {
-    super.undo(application);
-
-    const [chord, oldNote, newNote] = this.state;
-    if (oldNote) {
-      chord.changeNote(oldNote);
-    } else {
-      chord.removeNote(newNote);
+    private constructor(
+      private chord: notation.Chord,
+      private note: notation.Note,
+      private dots: number,
+    ) {
+      super();
     }
-  }
-}
+
+    apply(_application: Application) {
+      this.chord.changeNote(this.note.withChanges({ value: this.note.value.withDots(this.dots) }));
+    }
+
+    undo(_application: Application) {
+      this.chord.changeNote(this.note);
+    }
+  };
+};

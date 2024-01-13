@@ -5,7 +5,7 @@ import { observer } from "mobx-react-lite";
 import { CSSProperties, useEffect, useRef } from "preact/compat";
 import layout, { toAncestorCoordinateSystem } from "../../../layout";
 import { StyleComputer } from "../../../utils/StyleComputer";
-import { ChangeTextElement } from "../../actions/ChangeTextElement";
+import { changeTextAction } from "../../actions/ChangeTextElement";
 import { Application } from "../../state/Application";
 
 export class StatefulTextInputState {
@@ -49,7 +49,7 @@ export class StatefulTextInputState {
       return;
     }
 
-    this.application.dispatch(new ChangeTextElement(this.element, text));
+    this.application.dispatch(changeTextAction(this.element, text).actionForState(this.application));
     this.visible = false;
   }
 }
