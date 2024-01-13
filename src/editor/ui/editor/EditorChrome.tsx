@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { VNode } from "preact";
 import { useEffect } from "preact/hooks";
 import * as notation from "../../../notation";
-import { RemovePart } from "../../actions/RemovePart";
+import { RemovePart } from "../../actions/editing/RemovePart";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Menu, MenuItem } from "../misc/Menu";
 import { PopoverMenu } from "../misc/PopoverMenu";

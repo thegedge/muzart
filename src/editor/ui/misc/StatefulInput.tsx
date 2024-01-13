@@ -5,7 +5,7 @@ import { observer } from "mobx-react-lite";
 import { CSSProperties, useEffect, useRef } from "preact/compat";
 import layout, { toAncestorCoordinateSystem } from "../../../layout";
 import { StyleComputer } from "../../../utils/StyleComputer";
-import { changeTextAction } from "../../actions/ChangeTextElement";
+import { changeTextAction } from "../../actions/editing/ChangeTextElement";
 import { Application } from "../../state/Application";
 
 export class StatefulTextInputState {

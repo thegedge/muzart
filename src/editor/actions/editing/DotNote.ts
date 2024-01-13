@@ -1,6 +1,6 @@
-import * as notation from "../../notation";
-import { Application } from "../state/Application";
-import { Action } from "./Action";
+import * as notation from "../../../notation";
+import { Application } from "../../state/Application";
+import { Action } from "../Action";
 
 export const dotNoteAction = (dots: number) => {
   return class DotNote extends Action {

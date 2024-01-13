@@ -5,7 +5,7 @@ import { JSX } from "preact";
 import { useMemo, useRef } from "preact/hooks";
 import { bendPath } from "../../../layout/elements/Bend";
 import { Bend, BendPoint, BendType, defaultBendPointsForType } from "../../../notation";
-import { changeNoteAction } from "../../actions/ChangeNote";
+import { changeNoteAction } from "../../actions/editing/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { useDrag } from "../../utils/useDrag";
 

@@ -19,7 +19,7 @@ import { HarmonicStyle, NoteDynamic } from "../../../notation";
 import { noteValueToSeconds } from "../../../playback/util/durations";
 import { renderScoreElement } from "../../../render/renderScoreElement";
 import { StyleComputer } from "../../../utils/StyleComputer";
-import { changeNoteAction } from "../../actions/ChangeNote";
+import { changeNoteAction } from "../../actions/editing/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../canvas/Canvas";
 import { StatefulInput, StatefulTextInputState } from "../misc/StatefulInput";

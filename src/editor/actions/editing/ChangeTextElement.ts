@@ -1,6 +1,6 @@
-import layout from "../../layout";
-import { Application } from "../state/Application";
-import { Action } from "./Action";
+import layout from "../../../layout";
+import { Application } from "../../state/Application";
+import { Action } from "../Action";
 
 export const changeTextAction = (element: layout.Text, text: string) => {
   return class ChangeTextElement extends Action {

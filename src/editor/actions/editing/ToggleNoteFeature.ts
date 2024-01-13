@@ -1,6 +1,6 @@
-import * as notation from "../../notation";
-import { Application } from "../state/Application";
-import { Action } from "./Action";
+import * as notation from "../../../notation";
+import { Application } from "../../state/Application";
+import { Action } from "../Action";
 
 export type BooleanFeatures<T> = {
   [K in keyof T]: T[K] extends boolean | undefined ? K : never;

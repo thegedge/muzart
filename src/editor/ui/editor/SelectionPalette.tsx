@@ -4,10 +4,10 @@ import { ComponentChildren } from "preact";
 import { HTMLAttributes } from "preact/compat";
 import * as notation from "../../../notation";
 import { HarmonicStyle, NoteDynamic, NoteValue, NoteValueName } from "../../../notation";
-import { changeNoteAction } from "../../actions/ChangeNote";
-import { changeNoteValueAction } from "../../actions/ChangeNoteValue";
-import { dotNoteAction } from "../../actions/DotNote";
-import { BooleanFeatures, toggleNoteFeatureAction } from "../../actions/ToggleNoteFeature";
+import { changeNoteAction } from "../../actions/editing/ChangeNote";
+import { changeNoteValueAction } from "../../actions/editing/ChangeNoteValue";
+import { dotNoteAction } from "../../actions/editing/DotNote";
+import { BooleanFeatures, toggleNoteFeatureAction } from "../../actions/editing/ToggleNoteFeature";
 import { NoteValueIcon } from "../../resources/note_values";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 

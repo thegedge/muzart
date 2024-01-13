@@ -1,11 +1,34 @@
 import { range } from "lodash";
 import { useMemo } from "preact/hooks";
-import { DecreaseNoteValue } from "../actions/DecreaseNoteValue";
-import { DeleteNote } from "../actions/DeleteNote";
-import { dotNoteAction } from "../actions/DotNote";
-import { IncreaseNoteValue } from "../actions/IncreaseNoteValue";
-import { setNoteFretAction } from "../actions/SetNoteFret";
-import { toggleNoteFeatureAction } from "../actions/ToggleNoteFeature";
+import { DecreaseNoteValue } from "../actions/editing/DecreaseNoteValue";
+import { DeleteNote } from "../actions/editing/DeleteNote";
+import { dotNoteAction } from "../actions/editing/DotNote";
+import { IncreaseNoteValue } from "../actions/editing/IncreaseNoteValue";
+import { Redo } from "../actions/editing/Redo";
+import { setNoteFretAction } from "../actions/editing/SetNoteFret";
+import { ToggleEditBend } from "../actions/editing/ToggleEditBend";
+import { ToggleEditDynamic } from "../actions/editing/ToggleEditDynamic";
+import { ToggleEditHarmonic } from "../actions/editing/ToggleEditHarmonic";
+import { toggleNoteFeatureAction } from "../actions/editing/ToggleNoteFeature";
+import { Undo } from "../actions/editing/Undo";
+import { FirstPage } from "../actions/navigation/FirstPage";
+import { LastPage } from "../actions/navigation/LastPage";
+import { NextChord } from "../actions/navigation/NextChord";
+import { NextMeasure } from "../actions/navigation/NextMeasure";
+import { NextNote } from "../actions/navigation/NextNote";
+import { NextPage } from "../actions/navigation/NextPage";
+import { NextPart } from "../actions/navigation/NextPart";
+import { PreviousChord } from "../actions/navigation/PreviousChord";
+import { PreviousMeasure } from "../actions/navigation/PreviousMeasure";
+import { PreviousNote } from "../actions/navigation/PreviousNote";
+import { PreviousPage } from "../actions/navigation/PreviousPage";
+import { PreviousPart } from "../actions/navigation/PreviousPart";
+import { ToggleDebug } from "../actions/other/ToggleDebug";
+import { ToggleHelp } from "../actions/other/ToggleHelp";
+import { TogglePlayback } from "../actions/playback/TogglePlayback";
+import { ResetZoom } from "../actions/zoom/ResetZoom";
+import { ZoomIn } from "../actions/zoom/ZoomIn";
+import { ZoomOut } from "../actions/zoom/ZoomOut";
 import { useApplicationState } from "./ApplicationStateContext";
 import { KeyBinding, KeyBindingGroups, useKeyBindings } from "./useKeyBindings";
 
@@ -29,7 +52,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Toggle Playback",
           when: "editorFocused",
           action() {
-            application.playback.togglePlay();
+            application.dispatch(TogglePlayback);
           },
         },
       },
@@ -38,22 +61,21 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
         "$mod + =": {
           name: "Zoom In",
           action() {
-            application.canvas.setZoom(application.canvas.zoom * 1.2);
+            application.dispatch(ZoomIn);
           },
         },
 
         "$mod + -": {
           name: "Zoom Out",
           action() {
-            application.canvas.setZoom(application.canvas.zoom / 1.2);
+            application.dispatch(ZoomOut);
           },
         },
 
         "$mod + 0": {
           name: "Reset Zoom",
           action() {
-            application.canvas.setZoom(1);
-            application.canvas.centerViewportOn();
+            application.dispatch(ResetZoom);
           },
         },
       },
@@ -63,7 +85,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Undo",
           when: "editorFocused && !isPlaying",
           action() {
-            application.undo();
+            application.dispatch(Undo);
           },
         },
 
@@ -71,7 +93,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Redo",
           when: "editorFocused && !isPlaying",
           action() {
-            application.redo();
+            application.dispatch(Redo);
           },
         },
 
@@ -147,7 +169,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Edit note bend",
           when: "editorFocused && !isPlaying",
           action() {
-            state.toggleEditingBend();
+            application.dispatch(ToggleEditBend);
           },
         },
 
@@ -155,7 +177,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Set note dynamic",
           when: "editorFocused && !isPlaying",
           action() {
-            state.toggleEditingDynamic();
+            application.dispatch(ToggleEditDynamic);
           },
         },
 
@@ -163,7 +185,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Set note harmonic",
           when: "editorFocused && !isPlaying",
           action() {
-            state.toggleEditingHarmonic();
+            application.dispatch(ToggleEditHarmonic);
           },
         },
 
@@ -171,7 +193,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Toggle Hammer-on / Pull-off",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(toggleNoteFeatureAction("hammerOnPullOff").actionForState(application));
+            application.dispatch(toggleNoteFeatureAction("hammerOnPullOff"));
           },
         },
 
@@ -179,7 +201,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Toggle Vibrato",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(toggleNoteFeatureAction("vibrato").actionForState(application));
+            application.dispatch(toggleNoteFeatureAction("vibrato"));
           },
         },
 
@@ -187,7 +209,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Toggle Let Ring",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(toggleNoteFeatureAction("letRing").actionForState(application));
+            application.dispatch(toggleNoteFeatureAction("letRing"));
           },
         },
 
@@ -195,7 +217,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Toggle Palm Mute",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(toggleNoteFeatureAction("palmMute").actionForState(application));
+            application.dispatch(toggleNoteFeatureAction("palmMute"));
           },
         },
 
@@ -203,7 +225,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Toggle Dead Note",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(toggleNoteFeatureAction("dead").actionForState(application));
+            application.dispatch(toggleNoteFeatureAction("dead"));
           },
         },
 
@@ -211,7 +233,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Toggle Ghost Note",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(toggleNoteFeatureAction("ghost").actionForState(application));
+            application.dispatch(toggleNoteFeatureAction("ghost"));
           },
         },
 
@@ -219,14 +241,14 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Toggle Staccato",
           when: "editorFocused && !isPlaying",
           action() {
-            application.dispatch(toggleNoteFeatureAction("staccato").actionForState(application));
+            application.dispatch(toggleNoteFeatureAction("staccato"));
           },
         },
 
         "Escape": {
           when: "editingDynamic && !helpVisible",
           action() {
-            state.toggleEditingDynamic();
+            application.dispatch(ToggleEditDynamic);
           },
         },
       },
@@ -236,7 +258,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
         Escape: {
           when: "editingHarmonic && !helpVisible",
           action() {
-            state.toggleEditingHarmonic();
+            application.dispatch(ToggleEditHarmonic);
           },
         },
       },
@@ -244,7 +266,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
         Escape: {
           when: "editingBend",
           action() {
-            state.toggleEditingBend();
+            application.dispatch(ToggleEditBend);
           },
         },
       },
@@ -254,7 +276,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Previous Chord",
           when: "editorFocused && !isPlaying",
           action() {
-            application.selection.previousChord();
+            application.dispatch(PreviousChord);
           },
         },
 
@@ -262,7 +284,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Next Chord",
           when: "editorFocused && !isPlaying",
           action() {
-            application.selection.nextChord();
+            application.dispatch(NextChord);
           },
         },
 
@@ -270,7 +292,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Higher Note",
           when: "editorFocused && !isPlaying",
           action() {
-            application.selection.previousNote();
+            application.dispatch(PreviousNote);
           },
         },
 
@@ -278,7 +300,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Lower Note",
           when: "editorFocused && !isPlaying",
           action() {
-            application.selection.nextNote();
+            application.dispatch(NextNote);
           },
         },
 
@@ -287,7 +309,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Next Page",
           when: "editorFocused",
           action() {
-            application.selection.nextPage();
+            application.dispatch(NextPage);
           },
         },
 
@@ -295,7 +317,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Previous Page",
           when: "editorFocused",
           action() {
-            application.selection.previousPage();
+            application.dispatch(PreviousPage);
           },
         },
 
@@ -303,7 +325,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "First Page",
           when: "editorFocused",
           action() {
-            application.selection.update({ measureIndex: 0 });
+            application.dispatch(FirstPage);
           },
         },
 
@@ -311,8 +333,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Last Page",
           when: "editorFocused",
           action() {
-            const part = application.selection.part;
-            application.selection.update({ measureIndex: part && part.part.measures.length - 1 });
+            application.dispatch(LastPage);
           },
         },
 
@@ -320,7 +341,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Previous Measure",
           when: "editorFocused",
           action() {
-            application.selection.previousMeasure();
+            application.dispatch(PreviousMeasure);
           },
         },
 
@@ -328,7 +349,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Next Measure",
           when: "editorFocused",
           action() {
-            application.selection.nextMeasure();
+            application.dispatch(NextMeasure);
           },
         },
 
@@ -336,7 +357,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Previous Part",
           when: "editorFocused",
           action() {
-            application.selection.previousPart();
+            application.dispatch(PreviousPart);
           },
         },
 
@@ -344,7 +365,7 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Next Part",
           when: "editorFocused",
           action() {
-            application.selection.nextPart();
+            application.dispatch(NextPart);
           },
         },
       },
@@ -353,14 +374,14 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
         "Shift + ?": {
           when: "editorFocused && !editingBend",
           action() {
-            state.toggleHelp();
+            application.dispatch(ToggleHelp);
           },
         },
 
         "Escape": {
           when: "helpVisible",
           action() {
-            state.toggleHelp();
+            application.dispatch(ToggleHelp);
           },
         },
 
@@ -368,12 +389,12 @@ export const useEditorKeyBindings = (): KeyBindingGroups<OtherContext> => {
           name: "Toggle Debug View",
           when: "editorFocused",
           action() {
-            application.debug.setEnabled(!application.debug.enabled);
+            application.dispatch(ToggleDebug);
           },
         },
       },
     }),
-    [application, state],
+    [application],
   );
 
   useKeyBindings(keybindingGroups, state);
