@@ -1,6 +1,13 @@
 import layout from ".";
-import { Hit } from "../editor/state/Application";
 import { Point } from "./utils";
+
+export interface Hit<T> {
+  /** The thing that was hit with a hit test */
+  element: T;
+
+  /** The hit point, relative to the element that was hit */
+  point: Point;
+}
 
 export const hitTest = (point: Point, element: layout.AllElements | undefined): Hit<layout.AllElements> | null => {
   if (!element?.box.contains(point)) {

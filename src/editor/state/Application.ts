@@ -1,6 +1,5 @@
 import { isString } from "lodash";
 import { flow, makeAutoObservable } from "mobx";
-import { Point } from "../../layout";
 import { load } from "../../loaders";
 import * as notation from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
@@ -12,14 +11,6 @@ import { CanvasState } from "../ui/canvas/CanvasState";
 import { DebugContext } from "./DebugContext";
 import { Selection } from "./Selection";
 import { UIState } from "./UIState";
-
-export interface Hit<T> {
-  /** The thing that was hit with a hit test */
-  element: T;
-
-  /** The hit point, relative to the element that was hit */
-  point: Point;
-}
 
 /** A type that can (potentially) construct an action for the current application state */
 export type ActionFactory = { actionForState(application: Application): Action | null };
