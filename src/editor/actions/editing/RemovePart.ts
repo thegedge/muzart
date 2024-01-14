@@ -3,6 +3,10 @@ import { Application } from "../../state/Application";
 import { Action } from "../Action";
 
 export class RemovePart extends Action {
+  static readonly name = "Remove part";
+  static readonly when = "editorFocused";
+  static readonly defaultKeyBinding = null;
+
   static actionForState(application: Application) {
     const score = application.selection.score?.score;
     const part = application.selection.part?.part;
@@ -23,7 +27,7 @@ export class RemovePart extends Action {
     this.score.removePart(this.part);
   }
 
-  undo(_application: Application) {
+  undo() {
     this.score.addPart(this.part, this.index);
   }
 }

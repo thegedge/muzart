@@ -5,7 +5,7 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "preserve",
-    "lib": ["ESNext", "DOM"],
+    "lib": ["ESNext"],
     "module": "ESNext",
     "moduleResolution": "Node",
     "noImplicitAny": true,
@@ -17,8 +17,7 @@
     "paths": {
       "react": ["./node_modules/preact/compat/"],
       "react-dom": ["./node_modules/preact/compat/"]
-    },
-    "types": ["@types/audioworklet"]
+    }
   },
   "include": ["src", "test", "types", "*.js", "*.ts", ".eslintrc.cjs", "public/worklets"],
   "exclude": ["build", "**/node_modules", "tmp"]

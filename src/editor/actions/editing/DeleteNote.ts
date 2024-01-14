@@ -5,6 +5,10 @@ import { Action } from "../Action";
 // TODO assuming a stringed + fretted instrument below. Will need to fix eventually.
 
 export class DeleteNote extends Action {
+  static readonly name = "Delete note";
+  static readonly when = "editorFocused && !isPlaying";
+  static readonly defaultKeyBinding = "Delete";
+
   static actionForState(application: Application) {
     const instrument = application.selection.part?.part.instrument;
     const chord = application.selection.chord?.chord;
@@ -23,7 +27,7 @@ export class DeleteNote extends Action {
     this.chord.removeNote(this.note);
   }
 
-  undo(_application: Application) {
+  undo() {
     this.chord.changeNote(this.note);
   }
 }

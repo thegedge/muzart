@@ -4,6 +4,10 @@ import { Action } from "../Action";
 
 export const changeNoteAction = (changes: Partial<notation.Note>) => {
   return class ChangeNote extends Action {
+    static readonly name = "Change note";
+    static readonly when = "editorFocused";
+    static readonly defaultKeyBinding = null;
+
     static actionForState(application: Application) {
       const chord = application.selection.chord?.chord;
       const note = application.selection.note?.note;
@@ -22,7 +26,7 @@ export const changeNoteAction = (changes: Partial<notation.Note>) => {
       this.chord.changeNote(this.note.withChanges(this.changes));
     }
 
-    undo(_application: Application) {
+    undo() {
       this.chord.changeNote(this.note);
     }
   };

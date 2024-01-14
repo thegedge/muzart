@@ -10,14 +10,16 @@ export interface KeyBindingContext<T = never> {
 }
 
 export type KeyBinding<T = never> = {
-  name?: string;
+  name: string;
+  group?: string;
   when?: string;
+  key: string;
   action: (context: KeyBindingContext<T>) => T;
 };
 
 export const KEY_BINDING_SEPARATOR = " + ";
 
-export type KeyBindingGroups<T = never> = Record<string, Record<string, KeyBinding<T>>>;
+export type KeyBindings<T = never> = KeyBinding<T>[];
 
 /**
  * Install a keydown listener to handle the supplied key bindings.
@@ -26,20 +28,18 @@ export type KeyBindingGroups<T = never> = Record<string, Record<string, KeyBindi
  * @param state The state to use for evaluating `when` clauses.
  */
 export const useKeyBindings = <StateT, ContextOtherT = never>(
-  keybindingGroups: KeyBindingGroups<ContextOtherT>,
+  keyBindings: KeyBindings<ContextOtherT>,
   state: StateT,
 ): void => {
   useEffect(() => {
-    const bindingGroups = Object.values(keybindingGroups)
-      .flatMap((group) => Object.entries(group))
-      .reduce(
-        (bindings, [key, binding]) => {
-          bindings[key] ??= [];
-          bindings[key].push(binding);
-          return bindings;
-        },
-        {} as Record<string, KeyBinding<ContextOtherT>[]>,
-      );
+    const bindingGroups = keyBindings.reduce(
+      (bindings, binding) => {
+        bindings[binding.key] ??= [];
+        bindings[binding.key].push(binding);
+        return bindings;
+      },
+      {} as Record<string, KeyBinding<ContextOtherT>[]>,
+    );
 
     let context: KeyBindingContext<ContextOtherT> = {};
 
@@ -102,5 +102,5 @@ export const useKeyBindings = <StateT, ContextOtherT = never>(
     return () => {
       document.body.removeEventListener("keydown", listener);
     };
-  }, [keybindingGroups, state]);
+  }, [keyBindings, state]);
 };

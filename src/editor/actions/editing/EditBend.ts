@@ -1,9 +1,13 @@
 import { Application } from "../../state/Application";
 import { Action } from "../Action";
 
-export class ToggleEditBend extends Action {
+export class EditBend extends Action {
+  static readonly name = "Toggle edit bend";
+  static readonly when = "editorFocused && !isPlaying";
+  static readonly defaultKeyBinding = "b";
+
   static actionForState(_application: Application) {
-    return new ToggleEditBend();
+    return new EditBend();
   }
 
   apply(application: Application) {

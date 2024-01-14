@@ -4,6 +4,11 @@ import { Action } from "../Action";
 
 export const changeTextAction = (element: layout.Text, text: string) => {
   return class ChangeTextElement extends Action {
+    // TODO - if there were some name on the element, it would make a better name here
+    static readonly name = `Change text to ${text}`;
+    static readonly when = "editorFocused";
+    static readonly defaultKeyBinding = null;
+
     static actionForState(_application: Application) {
       return element.text != text ? new ChangeTextElement(element, text) : null;
     }

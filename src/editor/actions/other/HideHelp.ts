@@ -1,13 +1,13 @@
 import { Application } from "../../state/Application";
 import { Action } from "../Action";
 
-export class ToggleHelp extends Action {
-  static readonly name = "Toggle help";
-  static readonly when = "editorFocused && !editingBend";
-  static readonly defaultKeyBinding = "Shift + ?";
+export class HideHelp extends Action {
+  static readonly name = "Hide help";
+  static readonly when = "helpVisible";
+  static readonly defaultKeyBinding = "Escape";
 
   static actionForState(_application: Application) {
-    return new ToggleHelp();
+    return new HideHelp();
   }
 
   apply(application: Application) {

@@ -3,6 +3,10 @@ import { Application } from "../../state/Application";
 import { Action } from "../Action";
 
 export class IncreaseNoteValue extends Action {
+  static readonly name = "Increase note value";
+  static readonly defaultKeyBinding = "-";
+  static readonly when = "editorFocused && !isPlaying";
+
   static actionForState(application: Application) {
     // TODO can't apply if duration at maximum
     const chord = application.selection.chord?.chord;
@@ -17,7 +21,7 @@ export class IncreaseNoteValue extends Action {
     this.chord.setValue(this.chord.value.increase());
   }
 
-  undo(_application: Application) {
+  undo() {
     this.chord.setValue(this.chord.value.decrease());
   }
 }

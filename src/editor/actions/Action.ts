@@ -12,5 +12,5 @@ export abstract class Action {
   /**
    * Undo the action.
    */
-  undo?(application: Application): void;
+  undo?(): void;
 }

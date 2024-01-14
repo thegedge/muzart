@@ -13,18 +13,20 @@ import { UIState } from "./UIState";
 
 /** An action that can be applied to the current application state */
 export type Action = {
+  /** Apply this action to the given application state */
   apply(application: Application): void;
-  undo?(application: Application): void;
 };
 
 /** An action that can be applied to the current application state and then undone */
-export type UndoableAction = {
-  apply(application: Application): void;
-  undo(application: Application): void;
+export type UndoableAction = Action & {
+  /** Undo this action */
+  undo(): void;
 };
 
 /** A type that can (potentially) construct an action for the current application state */
-export type ActionFactory = { actionForState(application: Application): Action | null };
+export type ActionFactory = {
+  actionForState(application: Application): Action | null;
+};
 
 /** The root state of the Muzart editor */
 export class Application {
@@ -73,14 +75,6 @@ export class Application {
       return;
     }
 
-    console.log(
-      "dispatch",
-      actionOrFactory,
-      isActionFactory(actionOrFactory),
-      isAction(actionOrFactory),
-      isUndoableAction(actionOrFactory),
-    );
-
     if (isActionFactory(actionOrFactory)) {
       this.dispatch(actionOrFactory.actionForState(this));
       return;
@@ -96,7 +90,7 @@ export class Application {
   undo() {
     const action = this.undoStack.undo();
     if (action) {
-      action.undo(this);
+      action.undo();
     }
   }
 
@@ -163,7 +157,7 @@ const isActionFactory = (value: unknown): value is ActionFactory => {
   return isRecord(value) && typeof value.actionForState == "function";
 };
 
-const isAction = (value: unknown): value is Action => {
+const isAction = (value: unknown): value is Action & Record<string, unknown> => {
   return isRecord(value) && typeof value.apply == "function";
 };
 

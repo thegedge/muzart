@@ -1,10 +1,11 @@
+import { groupBy } from "lodash";
 import { observer } from "mobx-react-lite";
 import { Fragment } from "preact";
 import { IS_MAC } from "../../../utils/platform";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { KEY_BINDING_SEPARATOR, KeyBindingGroups } from "../../utils/useKeyBindings";
+import { KEY_BINDING_SEPARATOR, KeyBindings } from "../../utils/useKeyBindings";
 
-export const KeyBindingsOverlay = observer(function KeyBindingsOverlay<T>(props: { bindings: KeyBindingGroups<T> }) {
+export const KeyBindingsOverlay = observer(function KeyBindingsOverlay<T>(props: { bindings: KeyBindings<T> }) {
   const application = useApplicationState();
 
   return (
@@ -16,8 +17,8 @@ export const KeyBindingsOverlay = observer(function KeyBindingsOverlay<T>(props:
       <h1 className="flex-none text-center text-2xl font-bold">Keyboard shortcuts</h1>
       <div className="flex flex-1 items-center justify-start overflow-auto">
         <div className="flex h-full flex-col flex-wrap items-stretch justify-start gap-4">
-          {Object.entries(props.bindings).map(([groupName, group]) => {
-            const bindingsWithName = Object.entries(group).filter(([_binding, { name }]) => !!name);
+          {Object.entries(groupBy(props.bindings, "group")).map(([groupName, group]) => {
+            const bindingsWithName = group.filter((binding) => !!binding.name);
             if (bindingsWithName.length == 0) {
               return null;
             }
@@ -26,10 +27,10 @@ export const KeyBindingsOverlay = observer(function KeyBindingsOverlay<T>(props:
               <div key={groupName} className="rounded-lg bg-white/10 px-4 py-2 shadow-lg">
                 <h2 className="text-3 mb-2 border-b-2 border-b-white/25 font-bold">{groupName}</h2>
                 <div className="grid grid-cols-key-bindings gap-x-4 gap-y-1">
-                  {bindingsWithName.map(([binding, { name }]) => (
-                    <Fragment key={binding}>
-                      <KeyBinding binding={binding} />
-                      <span>{name}</span>
+                  {bindingsWithName.map((binding) => (
+                    <Fragment key={binding.name}>
+                      <KeyBinding binding={binding.key} />
+                      <span>{binding.name}</span>
                     </Fragment>
                   ))}
                 </div>

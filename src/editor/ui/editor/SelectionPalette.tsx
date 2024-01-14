@@ -13,7 +13,7 @@ import { useApplicationState } from "../../utils/ApplicationStateContext";
 
 export const SelectionPalette = (_props: Record<string, never>) => {
   return (
-    <div className="flex h-full min-w-96 max-w-72 flex-col gap-4 p-4 text-sm">
+    <div className="flex h-full min-w-72 max-w-72 flex-col gap-4 p-4 text-sm">
       <NoteSettings />
     </div>
   );

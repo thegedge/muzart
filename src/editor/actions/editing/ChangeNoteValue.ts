@@ -4,6 +4,10 @@ import { Action } from "../Action";
 
 export const changeNoteValueAction = (value: notation.NoteValueName) => {
   return class ChangeNoteValue extends Action {
+    static readonly name = `Change note value to ${value}`;
+    static readonly when = "editorFocused && !isPlaying";
+    static readonly defaultKeyBinding = null;
+
     static actionForState(application: Application) {
       const chord = application.selection.chord?.chord;
       return chord ? new ChangeNoteValue(chord, value) : null;
@@ -23,7 +27,7 @@ export const changeNoteValueAction = (value: notation.NoteValueName) => {
       this.chord.setValue(this.chord.value.withName(this.value));
     }
 
-    undo(_application: Application) {
+    undo() {
       this.chord.setValue(this.chord.value.withName(this.previousValue));
     }
   };
