@@ -17,6 +17,7 @@ describe("UndoStack", () => {
     test("is 2 after pushing two items", () => {
       stack.push(1);
       stack.push(2);
+
       assert.equal(stack.length, 2);
     });
 
@@ -25,7 +26,124 @@ describe("UndoStack", () => {
       stack.push(2);
       stack.undo();
       stack.undo();
+
       assert.equal(stack.length, 2);
+    });
+  });
+
+  describe("push", () => {
+    test("has expected items after only pushing some items", () => {
+      stack.push(1);
+      stack.push(2);
+
+      assert.equal(stack.toJSON(), [1, 2]);
+    });
+
+    test("has expected items after a combination of pushing, undoing, and redoing", () => {
+      stack.push(1);
+      stack.push(2);
+      stack.undo();
+      stack.push(3);
+      stack.undo();
+      stack.undo();
+      stack.redo();
+      stack.push(4);
+
+      assert.equal(stack.toJSON(), [1, 4]);
+    });
+  });
+
+  describe("toJSON", () => {
+    test("is empty array before pushing anything", () => {
+      assert.equal(stack.toJSON(), []);
+    });
+
+    test("is expected array after pushing some items", () => {
+      stack.push(1);
+      stack.push(2);
+
+      assert.equal(stack.toJSON(), [1, 2]);
+    });
+
+    test("is expected array after many ops ending in a push", () => {
+      stack.push(1);
+      stack.push(2);
+      stack.undo();
+      stack.push(3);
+      stack.undo();
+      stack.undo();
+      stack.redo();
+      stack.push(4);
+
+      assert.equal(stack.toJSON(), [1, 4]);
+    });
+
+    test("is expected array after many ops ending in a redo", () => {
+      stack.push(1);
+      stack.push(2);
+      stack.push(3);
+      stack.undo();
+      stack.undo();
+      stack.redo();
+
+      assert.equal(stack.toJSON(), [1, 2]);
+    });
+
+    test("is expected array after many ops ending in an undo", () => {
+      stack.push(1);
+      stack.push(2);
+      stack.push(3);
+      stack.undo();
+      stack.undo();
+
+      assert.equal(stack.toJSON(), [1]);
+    });
+  });
+
+  describe("head", () => {
+    test("is undefined before pushing anything", () => {
+      assert.equal(stack.head, undefined);
+    });
+
+    test("is expected array after pushing some items", () => {
+      stack.push(1);
+      stack.push(2);
+
+      assert.equal(stack.head, 2);
+    });
+
+    test("is expected array after many ops ending in a push", () => {
+      stack.push(1);
+      stack.push(2);
+      stack.undo();
+      stack.push(3);
+      stack.undo();
+      stack.undo();
+      stack.redo();
+      stack.push(4);
+
+      assert.equal(stack.head, 4);
+    });
+
+    test("is expected array after many ops ending in a redo", () => {
+      stack.push(1);
+      stack.push(2);
+      stack.push(3);
+      stack.undo();
+      stack.undo();
+      stack.redo();
+
+      assert.equal(stack.head, 2);
+    });
+
+    test("is expected array after many ops ending in an undo", () => {
+      stack.push(1);
+      stack.push(2);
+      stack.push(3);
+      stack.undo();
+      stack.undo();
+
+      assert.equal(stack.head, 1);
     });
   });
 
@@ -51,6 +169,7 @@ describe("UndoStack", () => {
     test("can undo actions", () => {
       stack.push(1);
       stack.push(2);
+
       assert.equal(stack.length, 2);
       assert.equal(stack.undo(), 2);
       assert.equal(stack.undo(), 1);

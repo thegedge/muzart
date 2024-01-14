@@ -5,40 +5,52 @@
  * • Undoing an action will move the stack head down and redoing an action will move it up.
  * • Pushing an action will delete all actions above the stack head.
  */
-export class UndoStack<T> {
-  private head = -1;
+export class UndoStack<T> implements Iterable<T> {
+  private head_ = -1;
   private stack: Array<T> = [];
 
-  get length() {
+  get length(): number {
     return this.stack.length;
   }
 
-  clear() {
-    this.stack = [];
-    this.head = -1;
+  get head(): T | undefined {
+    return this.stack[this.head_];
   }
 
-  push(value: T) {
-    this.stack.length = this.head + 1;
+  clear(): void {
+    this.head_ = -1;
+    this.stack = [];
+  }
+
+  push(value: T): void {
+    this.head_ += 1;
+    this.stack.length = this.head_;
     this.stack.push(value);
-    this.head += 1;
   }
 
   undo(): T | undefined {
-    if (this.head == -1) {
+    if (this.head_ == -1) {
       return;
     }
 
-    --this.head;
-    return this.stack[this.head + 1];
+    --this.head_;
+    return this.stack[this.head_ + 1];
   }
 
   redo(): T | undefined {
-    if (this.head == this.stack.length - 1) {
+    if (this.head_ == this.stack.length - 1) {
       return;
     }
 
-    ++this.head;
-    return this.stack[this.head];
+    ++this.head_;
+    return this.stack[this.head_];
+  }
+
+  toJSON(): Array<T> {
+    return [...this.stack.slice(0, this.head_ + 1)];
+  }
+
+  [Symbol.iterator](): Iterator<T> {
+    return this.stack.values();
   }
 }
