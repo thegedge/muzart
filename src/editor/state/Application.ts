@@ -24,7 +24,10 @@ export type UndoableAction = Action & {
 };
 
 /** A type that can (potentially) construct an action for the current application state */
-export type ActionFactory = {
+export type Command = {
+  name: string;
+  when: string;
+  defaultKeyBinding: string | null;
   actionForState(application: Application): Action | null;
 };
 
@@ -70,21 +73,21 @@ export class Application {
     return this.currentTabUrl_;
   }
 
-  dispatch(actionOrFactory: Action | ActionFactory | null) {
-    if (!actionOrFactory) {
+  dispatch(actionOrCommand: Action | Command | null) {
+    if (!actionOrCommand) {
       return;
     }
 
-    if (isActionFactory(actionOrFactory)) {
-      this.dispatch(actionOrFactory.actionForState(this));
+    if (isCommand(actionOrCommand)) {
+      this.dispatch(actionOrCommand.actionForState(this));
       return;
     }
 
-    if (isUndoableAction(actionOrFactory)) {
-      this.undoStack.push(actionOrFactory);
+    if (isUndoableAction(actionOrCommand)) {
+      this.undoStack.push(actionOrCommand);
     }
 
-    actionOrFactory.apply(this);
+    actionOrCommand.apply(this);
   }
 
   undo() {
@@ -153,7 +156,7 @@ export class Application {
   }
 }
 
-const isActionFactory = (value: unknown): value is ActionFactory => {
+const isCommand = (value: unknown): value is Command => {
   return isRecord(value) && typeof value.actionForState == "function";
 };
 

@@ -34,17 +34,11 @@ import { TogglePlayback } from "../actions/playback/TogglePlayback";
 import { ResetZoom } from "../actions/zoom/ResetZoom";
 import { ZoomIn } from "../actions/zoom/ZoomIn";
 import { ZoomOut } from "../actions/zoom/ZoomOut";
-import { ActionFactory, Application } from "../state/Application";
+import { Application, Command } from "../state/Application";
 import { useApplicationState } from "./ApplicationStateContext";
 import { KeyBinding, KeyBindings, useKeyBindings } from "./useKeyBindings";
 
 type OtherContext = Action;
-
-type BindingAction = ActionFactory & {
-  name: string;
-  when: string;
-  defaultKeyBinding: string | null;
-};
 
 // The amount of time, in milliseconds, after which pressing a fret key will start a new note instead of combining
 // with the previous note.
@@ -63,7 +57,7 @@ export const useEditorKeyBindings = (): KeyBindings<OtherContext> => {
         return actions
           .filter((action) => action.defaultKeyBinding)
           .map(
-            (actionFactory: BindingAction) =>
+            (actionFactory) =>
               ({
                 name: actionFactory.name,
                 group,
@@ -88,7 +82,7 @@ export const useEditorKeyBindings = (): KeyBindings<OtherContext> => {
   return keyBindings;
 };
 
-const ACTION_GROUPS: Record<string, BindingAction[]> = {
+const ACTION_GROUPS: Record<string, Command[]> = {
   Playback: [TogglePlayback],
   Zoom: [ZoomIn, ZoomOut, ResetZoom],
   Editing: [
@@ -100,7 +94,7 @@ const ACTION_GROUPS: Record<string, BindingAction[]> = {
     EditBend,
     EditDynamic,
     EditHarmonic,
-    ...range(10).map((fret): BindingAction => {
+    ...range(10).map((fret) => {
       return class {
         static readonly name = "Set note fret";
         static readonly when = "editorFocused && !isPlaying";

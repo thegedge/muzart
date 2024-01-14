@@ -1,4 +1,3 @@
-import { titleize } from "inflected";
 import { observer } from "mobx-react-lite";
 import { ComponentChildren } from "preact";
 import { HTMLAttributes } from "preact/compat";
@@ -7,8 +6,10 @@ import { HarmonicStyle, NoteDynamic, NoteValue, NoteValueName } from "../../../n
 import { changeNoteAction } from "../../actions/editing/ChangeNote";
 import { changeNoteValueAction } from "../../actions/editing/ChangeNoteValue";
 import { dotNoteAction } from "../../actions/editing/DotNote";
+import { EditBend } from "../../actions/editing/EditBend";
 import { BooleanFeatures, toggleNoteFeatureAction } from "../../actions/editing/ToggleNoteFeature";
 import { NoteValueIcon } from "../../resources/note_values";
+import { Command } from "../../state/Application";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 
 export const SelectionPalette = (_props: Record<string, never>) => {
@@ -31,6 +32,8 @@ const NoteSettings = observer(() => {
     );
   }
 
+  // TODO remove classnames from in here after bend, vibrato, etc; have icons
+
   return (
     <>
       <PaletteGroup name="Duration" className="flex flex-col border border-gray-600 px-2 pb-1">
@@ -39,9 +42,8 @@ const NoteSettings = observer(() => {
             <PaletteButton
               key={key}
               className="max-h-8 max-w-8"
-              tooltip={value}
               active={chord.value.name == value}
-              onClick={() => application.dispatch(changeNoteValueAction(value))}
+              command={changeNoteValueAction(value)}
             >
               <NoteValueIcon noteValue={value} className="aspect-square w-full" />
             </PaletteButton>
@@ -50,53 +52,35 @@ const NoteSettings = observer(() => {
 
         <PaletteButton
           className="max-h-8 max-w-8"
-          tooltip="Dot note"
           active={note.value.dots == 1}
-          onClick={() => application.dispatch(dotNoteAction(note.value.dots == 1 ? 0 : 1))}
+          command={dotNoteAction(note.value.dots == 1 ? 0 : 1)}
         >
           <NoteValueIcon noteValue={NoteValue.fromNumber(4).dot()} className="aspect-square w-full" />
         </PaletteButton>
 
         <PaletteButton
           className="max-h-8 max-w-8"
-          tooltip="Double dot note"
           active={note.value.dots == 2}
-          onClick={() => application.dispatch(dotNoteAction(note.value.dots == 2 ? 0 : 2))}
+          command={dotNoteAction(note.value.dots == 2 ? 0 : 2)}
         >
           <NoteValueIcon noteValue={NoteValue.fromNumber(4).withDots(2)} className="aspect-square w-full" />
         </PaletteButton>
       </PaletteGroup>
 
       <PaletteGroup name="Effects" className="flex border border-gray-600 px-2 pb-1">
-        <PaletteButton tooltip="Bend" onClick={() => application.state.toggleEditingBend()}>
-          Bend
-        </PaletteButton>
-        <TogglePaletteButton tooltip="Vibrato" property="vibrato">
-          Vibrato
-        </TogglePaletteButton>
-        <TogglePaletteButton tooltip="Let ring" property="letRing">
-          Let Ring
-        </TogglePaletteButton>
-        <TogglePaletteButton tooltip="Dead note" property="dead">
-          x
-        </TogglePaletteButton>
-        <TogglePaletteButton tooltip="Ghost note" property="ghost">
-          ( )
-        </TogglePaletteButton>
-        <TogglePaletteButton tooltip="Staccato" property="staccato">
-          Staccato
-        </TogglePaletteButton>
-        <TogglePaletteButton tooltip="Palm mute" property="palmMute">
-          P.M.
-        </TogglePaletteButton>
-        <TogglePaletteButton tooltip="Hammer-on / pull-off" property="hammerOnPullOff">
-          Hammer-on / Pull-off
-        </TogglePaletteButton>
+        <PaletteButton command={EditBend}>Bend</PaletteButton>
+        <TogglePaletteButton property="vibrato">Vibrato</TogglePaletteButton>
+        <TogglePaletteButton property="letRing">Let Ring</TogglePaletteButton>
+        <TogglePaletteButton property="dead">x</TogglePaletteButton>
+        <TogglePaletteButton property="ghost">( )</TogglePaletteButton>
+        <TogglePaletteButton property="staccato">Staccato</TogglePaletteButton>
+        <TogglePaletteButton property="palmMute">P.M.</TogglePaletteButton>
+        <TogglePaletteButton property="hammerOnPullOff">Hammer-on / Pull-off</TogglePaletteButton>
       </PaletteGroup>
 
       <PaletteGroup name="Harmonics" className="flex border border-gray-600 px-2 pb-1">
         {Object.entries(HarmonicStyle).map(([key, value]) => (
-          <ChangeNotePaletteButton key={key} tooltip={value} property="harmonic" value={value}>
+          <ChangeNotePaletteButton key={key} property="harmonic" value={value}>
             {childElementForHarmonicButton(value)}
           </ChangeNotePaletteButton>
         ))}
@@ -104,13 +88,7 @@ const NoteSettings = observer(() => {
 
       <PaletteGroup name="Dynamics" className="flex border border-gray-600 px-2 pb-1">
         {Object.entries(NoteDynamic).map(([key, value]) => (
-          <ChangeNotePaletteButton
-            key={key}
-            className="italic"
-            tooltip={titleize(key)}
-            property="dynamic"
-            value={value}
-          >
+          <ChangeNotePaletteButton key={key} className="italic" property="dynamic" value={value}>
             {value}
           </ChangeNotePaletteButton>
         ))}
@@ -129,13 +107,13 @@ const PaletteGroup = (props: HTMLAttributes<HTMLFieldSetElement>) => {
   );
 };
 
-type PaletteButtonProps = HTMLAttributes<HTMLButtonElement> & {
-  tooltip: string;
+type PaletteButtonProps = Omit<HTMLAttributes<HTMLButtonElement>, "command" | "onClick"> & {
   active?: boolean;
+  command: Command;
 };
 
 function ChangeNotePaletteButton<PropertyT extends keyof notation.NoteOptions>(
-  props: Omit<PaletteButtonProps, "property"> & {
+  props: Omit<PaletteButtonProps, "property" | "command"> & {
     property: PropertyT;
     value: notation.NoteOptions[PropertyT];
   },
@@ -145,42 +123,38 @@ function ChangeNotePaletteButton<PropertyT extends keyof notation.NoteOptions>(
   const { property, value, ...buttonProps } = props;
   const note = application.selection.note?.note;
   const isCurrentValue = note ? note.options[property] == value : false;
-  const onClick = () => {
-    application.dispatch(changeNoteAction({ [property]: isCurrentValue ? undefined : value }));
-  };
+  const command = changeNoteAction({ [property]: isCurrentValue ? undefined : value });
 
-  return <PaletteButton {...buttonProps} onClick={onClick} active={isCurrentValue} />;
+  return <PaletteButton {...buttonProps} command={command} active={isCurrentValue} />;
 }
 
 const TogglePaletteButton = (
-  props: Omit<PaletteButtonProps, "property"> & { property: BooleanFeatures<notation.NoteOptions> },
+  props: Omit<PaletteButtonProps, "property" | "command"> & { property: BooleanFeatures<notation.NoteOptions> },
 ) => {
   const application = useApplicationState();
-
   const { property, ...buttonProps } = props;
+  const command = toggleNoteFeatureAction(property);
   const isToggled = application.selection.note?.note.options[property] ?? false;
-  const onClick = () => {
-    const action = toggleNoteFeatureAction(property).actionForState(application);
-    application.dispatch(action);
-  };
 
-  return <PaletteButton {...buttonProps} onClick={onClick} active={isToggled} />;
+  return <PaletteButton {...buttonProps} command={command} active={isToggled} />;
 };
 
 const PaletteButton = (props: PaletteButtonProps) => {
-  const { active, className, tooltip, ...buttonProps } = props;
+  const { active, className, command, ...buttonProps } = props;
+  const application = useApplicationState();
   return (
     <>
       <button
         {...buttonProps}
-        title={tooltip}
+        title={command.name}
+        onClick={() => application.dispatch(command)}
         className={`
           inline-flex min-h-8 min-w-8 cursor-pointer items-center justify-center rounded border border-gray-600 p-1 text-xs font-thin hover:bg-gray-700
           ${className?.toString() ?? ""}
           ${active ? "bg-gray-600" : "bg-gray-800"}
         `}
       />
-      <span class="hide-for-accessibility">{props.tooltip}</span>
+      <span class="hide-for-accessibility">{command.name}</span>
     </>
   );
 };
