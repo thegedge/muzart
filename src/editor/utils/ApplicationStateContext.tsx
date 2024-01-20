@@ -67,12 +67,6 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
   }, [application]);
 
   useEffect(() => {
-    return () => {
-      application.canvas.dispose();
-    };
-  }, [application.canvas]);
-
-  useEffect(() => {
     if (application.selection.score != null) {
       return;
     }

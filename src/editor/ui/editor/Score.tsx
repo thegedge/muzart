@@ -51,6 +51,7 @@ export const Score = observer((_props: Record<string, never>) => {
       (box) => {
         if (box) {
           application.canvas.setUserSpaceSize(box);
+          application.canvas.centerViewportOn();
         }
       },
       { fireImmediately: true },

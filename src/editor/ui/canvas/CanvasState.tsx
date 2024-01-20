@@ -38,33 +38,8 @@ export class CanvasState {
   /** The function to call when a redraw needs to occur */
   render: RenderFunction = () => void 0;
 
-  private canvasResizeObserver: ResizeObserver;
-  private centerOnFirstResize = true;
-
   constructor() {
-    // "debounce" events to avoid having the canvas flicker, at the cost of stretching what's currently painted
-    let timeoutHandle = -1;
-    this.canvasResizeObserver = new ResizeObserver(() => {
-      clearTimeout(timeoutHandle);
-      timeoutHandle = window.setTimeout(() => {
-        // Compute these values before `updateCanvas`, because it will adjust the viewport
-        const x = this.viewport.centerX * this.userspaceToCanvasFactor;
-        const y = this.viewport.centerY * this.userspaceToCanvasFactor;
-
-        this.setPixelRatio(devicePixelRatio);
-        if (this.centerOnFirstResize) {
-          this.centerViewportOn();
-        } else {
-          this.centerViewportOn(x, y);
-        }
-      }, 100);
-    });
-
     makeAutoObservable(this, {});
-  }
-
-  dispose() {
-    this.canvasResizeObserver.disconnect();
   }
 
   setCanvas(canvas: HTMLCanvasElement | null) {
@@ -72,19 +47,8 @@ export class CanvasState {
       return;
     }
 
-    if (this.canvas) {
-      this.canvasResizeObserver.unobserve(this.canvas);
-    }
-
-    if (canvas) {
-      this.centerOnFirstResize = true;
-      this.canvasResizeObserver.observe(canvas, {
-        box: "device-pixel-content-box",
-      });
-    }
-
     this.canvas = canvas;
-    this.updateCanvas();
+    this.updateViewport();
   }
 
   setCursor(cursor: this["cursor"]) {
@@ -94,6 +58,7 @@ export class CanvasState {
   setUserSpaceSize(size: Box) {
     this.userSpaceSize = size;
     this.updateViewport();
+    this.centerViewportOn();
   }
 
   setRenderFunction(f: RenderFunction) {
@@ -121,7 +86,7 @@ export class CanvasState {
 
   setPixelRatio(pixelRatio: number) {
     this.pixelRatio = pixelRatio;
-    this.updateCanvas();
+    this.updateViewport();
   }
 
   centerViewportOn(): void;
@@ -131,35 +96,19 @@ export class CanvasState {
       return;
     }
 
-    this.centerOnFirstResize = false;
-
-    const pageW = this.canvas.width / this.pixelRatio;
-    const pageH = this.canvas.height / this.pixelRatio;
     if (typeof x == "undefined" || typeof y == "undefined") {
-      const canvasSpaceWidth = this.canvasSpaceSize.width;
-      if (canvasSpaceWidth < pageW) {
-        this.scrollX = -0.5 * (pageW - canvasSpaceWidth);
+      if (this.canvasSpaceSize.width < this.canvasWidth) {
+        this.scrollX = -0.5 * (this.canvasWidth - this.canvasSpaceSize.width);
       }
 
-      const canvasSpaceHeight = this.canvasSpaceSize.height;
-      if (canvasSpaceHeight < pageH) {
+      if (this.canvasSpaceSize.height < this.canvasHeight) {
         this.scrollY = 0;
       }
     } else {
-      this.scrollX = x - 0.5 * pageW;
-      this.scrollY = y - 0.5 * pageH;
+      this.scrollX = x - 0.5 * this.canvasWidth;
+      this.scrollY = y - 0.5 * this.canvasHeight;
     }
 
-    this.updateViewport();
-  }
-
-  updateCanvas() {
-    if (this.canvas) {
-      // TODO maybe consider setting a flag and only doing this on render to avoid flicker?
-      const canvasRect = this.canvas.getBoundingClientRect();
-      this.canvas.width = Math.ceil(canvasRect.width * this.pixelRatio);
-      this.canvas.height = Math.ceil(canvasRect.height * this.pixelRatio);
-    }
     this.updateViewport();
   }
 
@@ -176,20 +125,17 @@ export class CanvasState {
       return;
     }
 
-    const pageW = this.canvas.width / this.pixelRatio;
-    const pageH = this.canvas.height / this.pixelRatio;
-
     let lowerX = 0;
-    let upperX = this.canvasSpaceSize.width - pageW;
+    let upperX = this.canvasSpaceSize.width - this.canvasWidth;
     const canvasSpaceWidth = this.canvasSpaceSize.width;
-    const canvasSpaceViewportWidth = this.canvas.width / this.pixelRatio;
+    const canvasSpaceViewportWidth = this.canvasWidth;
     if (canvasSpaceWidth < canvasSpaceViewportWidth) {
       lowerX = -0.5 * (canvasSpaceViewportWidth - canvasSpaceWidth);
-      upperX = lowerX + canvasSpaceWidth - pageW;
+      upperX = lowerX + canvasSpaceWidth - this.canvasWidth;
     }
 
     this.scrollX = scrollWithClamping(this.scrollX, x, lowerX, upperX);
-    this.scrollY = scrollWithClamping(this.scrollY, y, 0, this.canvasSpaceSize.height - pageH);
+    this.scrollY = scrollWithClamping(this.scrollY, y, 0, this.canvasSpaceSize.height - this.canvasHeight);
 
     this.updateViewport();
   }
@@ -214,8 +160,8 @@ export class CanvasState {
   updateViewport() {
     if (
       !this.canvas ||
-      this.canvas.width == 0 ||
-      this.canvas.height == 0 ||
+      this.canvasWidth == 0 ||
+      this.canvasHeight == 0 ||
       this.canvasSpaceSize.width == 0 ||
       this.canvasSpaceSize.height == 0
     ) {
@@ -223,18 +169,15 @@ export class CanvasState {
     }
 
     // Ensure the scroll values are clamped
-    const pageW = this.canvas.width / this.pixelRatio;
-    const pageH = this.canvas.height / this.pixelRatio;
-    this.scrollX = Math.max(-pageW, Math.min(this.scrollX, this.canvasSpaceSize.width));
-    this.scrollY = Math.max(-pageH, Math.min(this.scrollY, this.canvasSpaceSize.height));
+    this.scrollX = Math.max(-this.canvasWidth, Math.min(this.scrollX, this.canvasSpaceSize.width));
+    this.scrollY = Math.max(-this.canvasHeight, Math.min(this.scrollY, this.canvasSpaceSize.height));
 
     const { x, y } = this.canvasViewportToUserSpace({ x: 0, y: 0 });
-
     this.viewport = new Box(
       x,
       y,
-      this.canvas.width / this.userspaceToDeviceFactor,
-      this.canvas.height / this.userspaceToDeviceFactor,
+      this.canvasWidth / this.userspaceToCanvasFactor,
+      this.canvasHeight / this.userspaceToCanvasFactor,
     );
 
     this.redraw();
@@ -269,6 +212,22 @@ export class CanvasState {
     );
   }
 
+  // TODO these are assuming overflow, with no padding, margin, etc
+
+  get canvasWidth() {
+    if (!this.canvas?.parentElement) {
+      return 0;
+    }
+    return this.canvas.parentElement.clientWidth;
+  }
+
+  get canvasHeight() {
+    if (!this.canvas?.parentElement) {
+      return 0;
+    }
+    return this.canvas.parentElement.clientHeight;
+  }
+
   get userspaceToCanvasFactor() {
     return this.zoom * PX_PER_MM;
   }
@@ -293,15 +252,13 @@ export class CanvasState {
     cancelAnimationFrame(this.frameHandle);
 
     this.frameHandle = requestAnimationFrame((_time) => {
-      // The second part of this check, `this.centerOnFirstResize`, essentially waits for the viewport to settle before rendering.
-      // This avoids weird issues where the tab/score appears to jump around while being loaded (maybe find a better way to defer?).
-      if (!this.canvas || this.centerOnFirstResize) {
+      if (!this.canvas) {
         return;
       }
 
-      const factor = this.zoom * this.pixelRatio * PX_PER_MM;
+      const factor = this.userspaceToDeviceFactor;
+      context.clearRect(0, 0, this.canvas.width, this.canvas.height);
       context.setTransform(factor, 0, 0, factor, -this.viewport.x * factor, -this.viewport.y * factor);
-      context.clearRect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height);
       context.lineWidth = LINE_STROKE_WIDTH;
       this.render(context, this.viewport);
     });
