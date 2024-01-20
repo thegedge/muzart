@@ -29,6 +29,7 @@ export type Command = {
   when: string;
   defaultKeyBinding: string | null;
   actionForState(application: Application): Action | null;
+  actionForContextMenu?(application: Application): Action | null;
 };
 
 /** The root state of the Muzart editor */

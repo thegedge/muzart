@@ -1,4 +1,5 @@
 import * as notation from "../../../notation";
+import { narrowInstance } from "../../../utils/narrow";
 import { Application } from "../../state/Application";
 import { Action } from "../Action";
 
@@ -10,6 +11,12 @@ export class RemovePart extends Action {
   static actionForState(application: Application) {
     const score = application.selection.score?.score;
     const part = application.selection.part?.part;
+    return score && part ? new RemovePart(score, part) : null;
+  }
+
+  static actionForContextMenu(application: Application) {
+    const score = application.selection.score?.score;
+    const part = narrowInstance(application.state.contextMenuSubject, notation.Part);
     return score && part ? new RemovePart(score, part) : null;
   }
 

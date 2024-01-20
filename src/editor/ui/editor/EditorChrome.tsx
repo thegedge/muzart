@@ -1,10 +1,10 @@
 import { observer } from "mobx-react-lite";
-import { VNode } from "preact";
 import { useEffect } from "preact/hooks";
 import * as notation from "../../../notation";
 import { RemovePart } from "../../actions/editing/RemovePart";
+import { Command } from "../../state/Application";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { Menu, MenuItem } from "../misc/Menu";
+import { Menu } from "../misc/Menu";
 import { PopoverMenu } from "../misc/PopoverMenu";
 import { PartPanel } from "./PartPanel";
 import { Score } from "./Score";
@@ -44,27 +44,10 @@ const MuzartContextMenu = observer((_props: Record<string, never>) => {
     return null;
   }
 
-  let items: VNode<typeof MenuItem>[] | undefined;
+  let items: Command[] = [];
   if (state.contextMenuSubject instanceof notation.Part) {
-    const part = state.contextMenuSubject;
-    items = [
-      <MenuItem
-        key="1"
-        onClick={() => {
-          const score = application.selection.score?.score;
-          if (score) {
-            application.dispatch(new RemovePart(score, part));
-          }
-
-          state.hideContextMenu();
-        }}
-      >
-        Delete
-      </MenuItem>,
-    ];
-  }
-
-  if (!items) {
+    items = [RemovePart];
+  } else {
     return null;
   }
 
