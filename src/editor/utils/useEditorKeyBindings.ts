@@ -37,6 +37,7 @@ import { ZoomOut } from "../actions/zoom/ZoomOut";
 import { Application, Command } from "../state/Application";
 import { useApplicationState } from "./ApplicationStateContext";
 import { KeyBinding, KeyBindings, useKeyBindings } from "./useKeyBindings";
+import { HideContextMenu } from "../actions/other/HideContextMenu";
 
 type OtherContext = Action;
 
@@ -169,5 +170,5 @@ const ACTION_GROUPS: Record<string, Command[]> = {
     NextPart,
   ],
 
-  Miscellaneous: [ToggleHelp, ToggleDebug, HideHelp],
+  Miscellaneous: [ToggleHelp, ToggleDebug, HideHelp, HideContextMenu],
 };
