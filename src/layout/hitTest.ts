@@ -1,4 +1,3 @@
-import { reverse } from "lodash";
 import layout from ".";
 import { Point } from "./utils";
 
@@ -20,7 +19,8 @@ export const hitTest = (
 
   if ("children" in element && element.children.length > 0) {
     const adjustedPoint = { x: point.x - element.box.x, y: point.y - element.box.y };
-    for (const child of reverse(element.children)) {
+    for (let index = element.children.length - 1; index >= 0; --index) {
+      const child = element.children[index];
       const hit = hitTest(adjustedPoint, child);
       if (hit) {
         return hit;
