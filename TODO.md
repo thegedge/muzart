@@ -14,7 +14,6 @@
   - Change name
   - Change color
 - Measure
-  - Time signature
   - Tempo
   - Measure repeats
   - Once score rendering works

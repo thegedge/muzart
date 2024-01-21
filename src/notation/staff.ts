@@ -1,4 +1,4 @@
-import { TimeSignature } from "./time_signature";
+import { TimeSignature } from "./TimeSignature";
 
 export type Changeable<T> = {
   value: T;

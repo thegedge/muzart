@@ -13,6 +13,7 @@ import { SetNoteFret } from "../actions/editing/SetNoteFret";
 import { StopEditingBend } from "../actions/editing/StopEditingBend";
 import { StopEditingDynamic } from "../actions/editing/StopEditingDynamic";
 import { StopEditingHarmonic } from "../actions/editing/StopEditingHarmonic";
+import { StopEditingTimeSignature } from "../actions/editing/StopEditingTimeSignature";
 import { toggleNoteFeatureAction } from "../actions/editing/ToggleNoteFeature";
 import { Undo } from "../actions/editing/Undo";
 import { FirstPage } from "../actions/navigation/FirstPage";
@@ -27,6 +28,7 @@ import { PreviousMeasure } from "../actions/navigation/PreviousMeasure";
 import { PreviousNote } from "../actions/navigation/PreviousNote";
 import { PreviousPage } from "../actions/navigation/PreviousPage";
 import { PreviousPart } from "../actions/navigation/PreviousPart";
+import { HideContextMenu } from "../actions/other/HideContextMenu";
 import { HideHelp } from "../actions/other/HideHelp";
 import { ToggleDebug } from "../actions/other/ToggleDebug";
 import { ToggleHelp } from "../actions/other/ToggleHelp";
@@ -37,7 +39,6 @@ import { ZoomOut } from "../actions/zoom/ZoomOut";
 import { Application, Command } from "../state/Application";
 import { useApplicationState } from "./ApplicationStateContext";
 import { KeyBinding, KeyBindings, useKeyBindings } from "./useKeyBindings";
-import { HideContextMenu } from "../actions/other/HideContextMenu";
 
 type OtherContext = Action;
 
@@ -153,6 +154,7 @@ const ACTION_GROUPS: Record<string, Command[]> = {
     StopEditingBend,
     StopEditingDynamic,
     StopEditingHarmonic,
+    StopEditingTimeSignature,
   ],
 
   Navigation: [

@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { Chord } from "./Chord";
-import { StaffDetails } from "./staff";
+import { TimeSignature } from "./TimeSignature";
+import { Changeable, StaffDetails } from "./staff";
 
 export interface Marker {
   text: string;
@@ -41,5 +42,9 @@ export class Measure {
     const measureDuration = this.chords.reduce((sum, chord) => sum + chord.value.toDecimal(), 0);
     const expectedDuration = this.staffDetails.time!.value.toDecimal();
     return Math.abs(measureDuration - expectedDuration) < 1e-10;
+  }
+
+  setTimeSignature(timeSignature: Changeable<TimeSignature> | undefined) {
+    this.staffDetails.time = timeSignature;
   }
 }

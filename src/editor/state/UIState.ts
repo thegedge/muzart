@@ -22,6 +22,9 @@ export class UIState {
   /** Whether or not the bend modal is visible */
   public editingBend = false;
 
+  /** Whether or not the time signature modal is visible */
+  public editingTimeSignature = false;
+
   constructor(readonly playback: PlaybackController) {
     makeAutoObservable(this, undefined, { deep: false });
   }
@@ -54,6 +57,7 @@ export class UIState {
       this.editingDynamic = true;
       this.editingHarmonic = false;
       this.editingBend = false;
+      this.editingTimeSignature = false;
     }
   }
 
@@ -64,6 +68,7 @@ export class UIState {
       this.editingDynamic = false;
       this.editingHarmonic = true;
       this.editingBend = false;
+      this.editingTimeSignature = false;
     }
   }
 
@@ -74,6 +79,18 @@ export class UIState {
       this.editingDynamic = false;
       this.editingHarmonic = false;
       this.editingBend = true;
+      this.editingTimeSignature = false;
+    }
+  }
+
+  toggleEditingTimeSignature() {
+    if (this.editingTimeSignature) {
+      this.editingTimeSignature = false;
+    } else {
+      this.editingDynamic = false;
+      this.editingHarmonic = false;
+      this.editingBend = false;
+      this.editingTimeSignature = true;
     }
   }
 

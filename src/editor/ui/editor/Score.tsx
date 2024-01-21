@@ -24,7 +24,6 @@ import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../canvas/Canvas";
 import { StatefulInput, StatefulTextInputState } from "../misc/StatefulInput";
 import { ElementBoundPalette } from "./ElementBoundPalette";
-import { useMuzartContextMenu } from "./useMuzartContextMenu";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
@@ -255,11 +254,31 @@ export const Score = observer((_props: Record<string, never>) => {
     [application],
   );
 
-  const contextMenuHandlers = useMuzartContextMenu(application.selection.score?.score);
+  const onContextMenu = useCallback(
+    (pt: Point, event: MouseEvent) => {
+      let subject: unknown = null;
+      let element: layout.AllElements | undefined | null = hitTest(pt, application.selection.score)?.element;
+      while (element) {
+        if (element.type == "Measure") {
+          subject = element.measure;
+          break;
+        }
+
+        element = element.parent as layout.AllElements | undefined | null;
+      }
+
+      if (subject) {
+        event.stopPropagation();
+        event.preventDefault();
+        application.state.showContextMenuFor(subject, event.pageX, event.pageY);
+      }
+    },
+    [application.selection.score, application.state],
+  );
 
   // Relative positioning to so element-bound palettes can be positioned relative to the score
   return (
-    <div className="score relative overflow-hidden bg-gray-500" {...contextMenuHandlers}>
+    <div className="score relative overflow-hidden bg-gray-500">
       {textInputState?.visible && <StatefulInput state={textInputState} />}
       {application.state.editingDynamic && application.selection.element?.type == "Note" && (
         <ElementBoundPalette
@@ -309,8 +328,9 @@ export const Score = observer((_props: Record<string, never>) => {
         />
       )}
       <Canvas
-        onMouseDown={onMouseDown}
+        onContextMenu={onContextMenu}
         onDoubleClick={onDoubleClick}
+        onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         state={application.canvas}
       />

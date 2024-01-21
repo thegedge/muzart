@@ -78,6 +78,13 @@ export class NoteValue {
   }
 
   /**
+   * Check if this note value is equal to another.
+   */
+  isEqual(other: NoteValue) {
+    return this.name === other.name && this.dots === other.dots && this.tuplet === other.tuplet;
+  }
+
+  /**
    * Construct a copy of this note with an extra dot.
    *
    * @returns a new `NoteValue` instance that has one more dot than this one

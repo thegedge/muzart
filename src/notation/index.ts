@@ -5,7 +5,7 @@ export * from "./Note";
 export * from "./NoteValue";
 export * from "./Part";
 export * from "./Score";
+export * from "./TimeSignature";
 export * from "./instrument";
 export * from "./pitch";
 export * from "./staff";
-export * from "./time_signature";

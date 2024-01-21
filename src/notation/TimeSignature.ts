@@ -49,4 +49,11 @@ export class TimeSignature {
         return { value: this.value, count: 1 };
     }
   }
+
+  /**
+   * Check if this time signature is equal to another.
+   */
+  isEqual(other: TimeSignature) {
+    return this.count === other.count && this.value.isEqual(other.value);
+  }
 }

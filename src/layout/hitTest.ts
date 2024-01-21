@@ -1,3 +1,4 @@
+import { reverse } from "lodash";
 import layout from ".";
 import { Point } from "./utils";
 
@@ -9,14 +10,17 @@ export interface Hit<T> {
   point: Point;
 }
 
-export const hitTest = (point: Point, element: layout.AllElements | undefined): Hit<layout.AllElements> | null => {
+export const hitTest = (
+  point: Point,
+  element: layout.AllElements | null | undefined,
+): Hit<layout.AllElements> | null => {
   if (!element?.box.contains(point)) {
     return null;
   }
 
   if ("children" in element && element.children.length > 0) {
     const adjustedPoint = { x: point.x - element.box.x, y: point.y - element.box.y };
-    for (const child of element.children) {
+    for (const child of reverse(element.children)) {
       const hit = hitTest(adjustedPoint, child);
       if (hit) {
         return hit;

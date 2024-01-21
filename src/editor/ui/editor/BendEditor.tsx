@@ -8,6 +8,7 @@ import { Bend, BendPoint, BendType, defaultBendPointsForType } from "../../../no
 import { changeNoteAction } from "../../actions/editing/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { useDrag } from "../../utils/useDrag";
+import { Modal } from "../misc/Modal";
 
 type ObservableBend = Bend & {
   setType(type: BendType): void;
@@ -18,7 +19,6 @@ type ObservableBend = Bend & {
 
 export const BendEditor = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
-
   if (!application.state.editingBend) {
     return null;
   }
@@ -73,12 +73,12 @@ const BendEditorInner = observer((_props: Record<string, never>) => {
   }, [application.selection.note]);
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 top-0 z-top flex items-center justify-center p-16 backdrop-blur-sm backdrop-brightness-50">
-      <div className="flex flex-1 items-start justify-start gap-4 rounded bg-gray-200 p-4 shadow-modal">
-        <BendPointGrid bend={bend} className="flex-1" />
+    <Modal title="Bend">
+      <div className="flex flex-row items-center justify-between gap-4">
+        <BendPointGrid bend={bend} className="min-w-[50vw] flex-1" />
         <BendFormControls bend={bend} />
       </div>
-    </div>
+    </Modal>
   );
 });
 

@@ -4,7 +4,6 @@ import { ApplicationState } from "../utils/ApplicationStateContext";
 import { useEditorKeyBindings } from "../utils/useEditorKeyBindings";
 import ErrorBoundary from "./ErrorBoundary";
 import "./app.css";
-import { BendEditor } from "./editor/BendEditor";
 import { EditorRouter } from "./editor/EditorRouter";
 import { KeyBindingsOverlay } from "./editor/KeyBindingsOverlay";
 import { GithubFork } from "./misc/GithubFork";
@@ -17,7 +16,6 @@ export const App = () => {
         <ErrorBoundary>
           <ApplicationState>
             <KeyBindings />
-            <BendEditor />
             <EditorRouter />
           </ApplicationState>
         </ErrorBoundary>

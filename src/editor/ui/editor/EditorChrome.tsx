@@ -1,14 +1,17 @@
 import { observer } from "mobx-react-lite";
 import { useEffect } from "preact/hooks";
 import * as notation from "../../../notation";
+import { EditTimeSignature } from "../../actions/editing/EditTimeSignature";
 import { RemovePart } from "../../actions/editing/RemovePart";
 import { Command } from "../../state/Application";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Menu } from "../misc/Menu";
 import { PopoverMenu } from "../misc/PopoverMenu";
+import { BendEditor } from "./BendEditor";
 import { PartPanel } from "./PartPanel";
 import { Score } from "./Score";
 import { SelectionPalette } from "./SelectionPalette";
+import { TimeSignatureEditor } from "./TimeSignatureEditor";
 
 export const EditorChrome = observer((props: { loaderUrl: string }) => {
   const { loaderUrl: url } = props;
@@ -32,6 +35,8 @@ export const EditorChrome = observer((props: { loaderUrl: string }) => {
       <SelectionPalette />
       <PartPanel />
       <MuzartContextMenu />
+      <BendEditor />
+      <TimeSignatureEditor />
     </div>
   );
 });
@@ -44,9 +49,11 @@ const MuzartContextMenu = observer((_props: Record<string, never>) => {
     return null;
   }
 
-  let items: Command[] = [];
+  let items: Command[];
   if (state.contextMenuSubject instanceof notation.Part) {
     items = [RemovePart];
+  } else if (state.contextMenuSubject instanceof notation.Measure) {
+    items = [EditTimeSignature];
   } else {
     return null;
   }

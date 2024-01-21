@@ -14,12 +14,15 @@ export interface Point {
   y: number;
 }
 
+type MouseEventHandler = (p: Point, event: MouseEvent) => void;
+
 interface CanvasProps {
   state: CanvasState;
 
-  onMouseDown?: (p: Point) => void;
-  onDoubleClick?: (p: Point) => void;
-  onMouseMove?: (p: Point) => void;
+  onContextMenu?: MouseEventHandler;
+  onDoubleClick?: MouseEventHandler;
+  onMouseDown?: MouseEventHandler;
+  onMouseMove?: MouseEventHandler;
 }
 
 // eslint-disable-next-line react/display-name
@@ -96,17 +99,15 @@ export const Canvas = observer((props: CanvasProps) => {
         onMouseDown={props.onMouseDown && wrapMouseEvent(state, props.onMouseDown)}
         onDblClick={props.onDoubleClick && wrapMouseEvent(state, props.onDoubleClick)}
         onMouseMove={props.onMouseMove && wrapMouseEvent(state, props.onMouseMove)}
+        onContextMenu={props.onContextMenu && wrapMouseEvent(state, props.onContextMenu)}
       />
     </div>
   );
 });
 
-const wrapMouseEvent = (
-  state: CanvasState,
-  handler: (p: Point) => void,
-): JSXInternal.MouseEventHandler<HTMLElement> => {
+const wrapMouseEvent = (state: CanvasState, handler: MouseEventHandler): JSXInternal.MouseEventHandler<HTMLElement> => {
   return (event) => {
     const pt = state.canvasViewportToUserSpace({ x: event.offsetX, y: event.offsetY });
-    handler(pt);
+    handler(pt, event);
   };
 };
