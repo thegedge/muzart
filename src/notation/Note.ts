@@ -57,6 +57,9 @@ export interface Tie {
 }
 
 export interface NoteOptions {
+  // Ensure `Note` cannot be used for `NoteOptions`
+  text?: never;
+
   pitch: Pitch;
   value: NoteValue;
   placement?: Placement;
@@ -81,7 +84,10 @@ export interface NoteOptions {
 export class Note {
   private text: string;
 
-  constructor(readonly options: NoteOptions) {
+  constructor(
+    readonly chord: Chord,
+    readonly options: NoteOptions,
+  ) {
     this.text = (() => {
       let text;
       if (this.dead) {
@@ -197,11 +203,11 @@ export class Note {
     }
   }
 
-  withChanges(changes: Partial<NoteOptions>) {
-    return new Note({
+  withChanges(changes: Partial<NoteOptions>): NoteOptions {
+    return {
       ...this.options,
       ...changes,
-    });
+    };
   }
 
   toString() {

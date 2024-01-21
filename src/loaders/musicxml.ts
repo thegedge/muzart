@@ -6,7 +6,6 @@ import {
   Instrument,
   Key,
   Measure,
-  Note,
   NoteOptions,
   Part,
   Pitch,
@@ -172,7 +171,7 @@ function chords(document: Document, node: Node): Chord[] {
   const result = document.evaluate("note", node, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
   let item = result.iterateNext();
   while (item) {
-    const notes: Note[] = [];
+    const notes: NoteOptions[] = [];
     while (item) {
       if (contains(document, item, "pitch") && contains(document, item, "duration")) {
         notes.push(note(document, item));
@@ -192,7 +191,7 @@ function chords(document: Document, node: Node): Chord[] {
   return chords;
 }
 
-function note(document: Document, node: Node): Note {
+function note(document: Document, node: Node): NoteOptions {
   const step = textQuery(document, node, "pitch/step") as unknown as Step;
   const octave = parseInt(textQuery(document, node, "pitch/octave"));
   const alter = parseInt(textQueryMaybe(document, node, "pitch/alter") || "0");
@@ -215,7 +214,7 @@ function note(document: Document, node: Node): Note {
   const tie = textQueryMaybe(document, node, "tie/@type");
   options.tie = tie as NoteOptions["tie"];
 
-  return new Note(options);
+  return options;
 }
 
 function single(document: Document, node: Node, query: string): Node | null {

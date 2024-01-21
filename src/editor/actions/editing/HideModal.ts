@@ -1,16 +1,16 @@
 import { Application } from "../../state/Application";
 import { Action } from "../Action";
 
-export class StopEditingHarmonic extends Action {
-  static readonly name = "Stop editing harmonic";
-  static readonly when = "editingHarmonic";
+export class HideModal extends Action {
+  static readonly name = "Hide modal";
+  static readonly when = "modalSubject";
   static readonly defaultKeyBinding = "Escape";
 
   static actionForState(_application: Application) {
-    return new StopEditingHarmonic();
+    return new HideModal();
   }
 
   apply(application: Application) {
-    application.state.toggleEditingHarmonic();
+    application.state.hideModal();
   }
 }

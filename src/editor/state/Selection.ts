@@ -29,13 +29,13 @@ export class Selection implements StorableObject {
   }
 
   get page(): layout.Page | undefined {
-    return this.part?.children.find((p) =>
-      inRange(
-        this.measureIndex + 1,
-        p.measures[0]?.measure?.number ?? -1,
-        (last(p.measures)?.measure?.number ?? -1) + 1,
-      ),
+    const page = this.part?.children.find((p) =>
+      inRange(this.measureIndex + 1, p.measures[0].measure.number, last(p.measures)!.measure.number + 1),
     );
+    if (!page) {
+      throw new Error("current measure not found in any page");
+    }
+    return page;
   }
 
   get measure(): layout.Measure | undefined {
@@ -121,23 +121,26 @@ export class Selection implements StorableObject {
   }
 
   previousPage() {
-    if (this.part) {
-      const pageIndex = this.part.children.findIndex((p) => this.page == p);
-      const measureIndex = pageIndex == 0 ? 0 : this.part.children[pageIndex - 1].measures[0].measure.number - 1;
-      this.update({ measureIndex });
+    if (!this.part) {
+      return;
     }
+
+    const pageIndex = this.part.children.findIndex((p) => this.page == p);
+    const measureIndex = pageIndex <= 0 ? 0 : this.part.children[pageIndex - 1].measures[0].measure.number - 1;
+    this.update({ measureIndex });
   }
 
   nextPage() {
-    if (this.part) {
-      const pageIndex = this.part.children.findIndex((p) => this.page == p);
-      const measureIndex =
-        pageIndex == this.part.children.length - 1
-          ? this.part.children[pageIndex].measures[0].measure.number - 1
-          : this.part.children[pageIndex + 1].measures[0].measure.number - 1;
-
-      this.update({ measureIndex });
+    if (!this.part) {
+      return;
     }
+
+    const pageIndex = this.part.children.findIndex((p) => this.page == p);
+    const measureIndex =
+      pageIndex == this.part.children.length - 1
+        ? this.part.measures.length - 1
+        : this.part.children[pageIndex + 1].measures[0].measure.number - 1;
+    this.update({ measureIndex });
   }
 
   previousMeasure() {

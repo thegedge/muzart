@@ -4,13 +4,17 @@ import { observer } from "mobx-react-lite";
 import { JSX } from "preact";
 import { useMemo, useRef } from "preact/hooks";
 import { bendPath } from "../../../layout/elements/Bend";
+import * as notation from "../../../notation";
 import { Bend, BendPoint, BendType, defaultBendPointsForType } from "../../../notation";
+import { narrowInstance } from "../../../utils/narrow";
 import { changeNoteAction } from "../../actions/editing/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { useDrag } from "../../utils/useDrag";
 import { Modal } from "../misc/Modal";
 
 type ObservableBend = Bend & {
+  note: notation.Note;
+
   setType(type: BendType): void;
   setAmplitude(value: number): void;
   addBendPoint(time: number, amplitude: number): BendPoint | undefined;
@@ -19,18 +23,17 @@ type ObservableBend = Bend & {
 
 export const BendEditor = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
-  if (!application.state.editingBend) {
+  const note = narrowInstance(application.state.modalSubject, notation.Note);
+  if (!note || application.state.modalProperty != "bend") {
     return null;
   }
 
-  return <BendEditorInner />;
+  return <BendEditorInner note={note} />;
 });
 
-const BendEditorInner = observer((_props: Record<string, never>) => {
-  const application = useApplicationState();
-
+const BendEditorInner = observer((props: { note: notation.Note }) => {
   const bend = useMemo((): ObservableBend => {
-    const maybeBend = application.selection.note?.note?.bend;
+    const maybeBend = props.note.bend;
     const copyBend = maybeBend
       ? {
           type: maybeBend.type,
@@ -45,6 +48,7 @@ const BendEditorInner = observer((_props: Record<string, never>) => {
 
     return observable({
       ...copyBend,
+      note: props.note,
 
       addBendPoint(time: number, amplitude: number) {
         const index = this.points.findIndex((point) => time < point.time);
@@ -70,7 +74,7 @@ const BendEditorInner = observer((_props: Record<string, never>) => {
         this.amplitude = value;
       },
     });
-  }, [application.selection.note]);
+  }, [props.note]);
 
   return (
     <Modal title="Bend">
@@ -87,14 +91,14 @@ const BendFormControls = observer((props: { bend: ObservableBend }) => {
   const bend = props.bend;
 
   const clearBend = () => {
-    if (application.selection.note?.note.bend) {
+    if (bend.note) {
       application.dispatch(changeNoteAction({ bend: undefined }));
     }
-    application.state.toggleEditingBend();
+    application.state.hideModal();
   };
 
   const setBend = () => {
-    if (application.selection.note) {
+    if (props.bend.note) {
       application.dispatch(
         changeNoteAction({
           bend: {
@@ -105,7 +109,7 @@ const BendFormControls = observer((props: { bend: ObservableBend }) => {
         }),
       );
     }
-    application.state.toggleEditingBend();
+    application.state.hideModal();
   };
 
   return (

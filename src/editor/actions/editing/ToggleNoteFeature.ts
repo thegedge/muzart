@@ -3,12 +3,14 @@ import * as notation from "../../../notation";
 import { Application } from "../../state/Application";
 import { Action } from "../Action";
 
-export type BooleanFeatures<T> = {
+type BooleanFeatures<T> = {
   [K in keyof T]: T[K] extends boolean | undefined ? K : never;
 }[keyof T] &
   string;
 
-const METADATA: Record<BooleanFeatures<notation.NoteOptions>, { name: string; defaultKeyBinding: string }> = {
+export type BooleanNoteFeatures = BooleanFeatures<Omit<notation.NoteOptions, "text">>;
+
+const METADATA: Record<BooleanNoteFeatures, { name: string; defaultKeyBinding: string }> = {
   dead: {
     name: "Toggle dead note",
     defaultKeyBinding: "x",
@@ -39,7 +41,7 @@ const METADATA: Record<BooleanFeatures<notation.NoteOptions>, { name: string; de
   },
 };
 
-export const toggleNoteFeatureAction = (feature: BooleanFeatures<notation.NoteOptions>) => {
+export const toggleNoteFeatureAction = (feature: BooleanNoteFeatures) => {
   return class ToggleNoteFeature extends Action {
     static readonly name = METADATA[feature]?.name ?? `Toggle ${humanize(underscore(feature))}`;
     static readonly when = "editorFocused";
@@ -54,7 +56,7 @@ export const toggleNoteFeatureAction = (feature: BooleanFeatures<notation.NoteOp
     private constructor(
       private chord: notation.Chord,
       private note: notation.Note,
-      private feature: BooleanFeatures<notation.NoteOptions>,
+      private feature: BooleanNoteFeatures,
     ) {
       super();
     }

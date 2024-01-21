@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { PlaybackController } from "../../playback/PlaybackController";
+import { PropertyPaths } from "../../utils/types";
 
 /**
  * Captures all of the state that is related to the UI of the editor.
@@ -13,17 +14,9 @@ export class UIState {
   /** Whether or not the key bindings overlay should be visible */
   public helpVisible = false;
 
-  /** Whether or not the note harmonic palette is visible */
-  public editingHarmonic = false;
-
-  /** Whether or not the note dynamic palette is visible */
-  public editingDynamic = false;
-
-  /** Whether or not the bend modal is visible */
-  public editingBend = false;
-
-  /** Whether or not the time signature modal is visible */
-  public editingTimeSignature = false;
+  /** Whether or not a modal is available for a given subject */
+  public modalSubject: unknown = null;
+  public modalProperty = "";
 
   constructor(readonly playback: PlaybackController) {
     makeAutoObservable(this, undefined, { deep: false });
@@ -50,48 +43,14 @@ export class UIState {
     this.contextMenuY = 0;
   }
 
-  toggleEditingDynamic() {
-    if (this.editingDynamic) {
-      this.editingDynamic = false;
-    } else {
-      this.editingDynamic = true;
-      this.editingHarmonic = false;
-      this.editingBend = false;
-      this.editingTimeSignature = false;
-    }
+  showModalFor<T>(subject: T, property: PropertyPaths<T, 3>) {
+    this.modalSubject = subject;
+    this.modalProperty = property;
   }
 
-  toggleEditingHarmonic() {
-    if (this.editingHarmonic) {
-      this.editingHarmonic = false;
-    } else {
-      this.editingDynamic = false;
-      this.editingHarmonic = true;
-      this.editingBend = false;
-      this.editingTimeSignature = false;
-    }
-  }
-
-  toggleEditingBend() {
-    if (this.editingBend) {
-      this.editingBend = false;
-    } else {
-      this.editingDynamic = false;
-      this.editingHarmonic = false;
-      this.editingBend = true;
-      this.editingTimeSignature = false;
-    }
-  }
-
-  toggleEditingTimeSignature() {
-    if (this.editingTimeSignature) {
-      this.editingTimeSignature = false;
-    } else {
-      this.editingDynamic = false;
-      this.editingHarmonic = false;
-      this.editingBend = false;
-      this.editingTimeSignature = true;
-    }
+  hideModal() {
+    this.modalSubject = null;
+    this.modalProperty = "";
   }
 
   toggleHelp() {

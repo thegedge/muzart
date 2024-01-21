@@ -7,7 +7,7 @@ import { changeNoteAction } from "../../actions/editing/ChangeNote";
 import { changeNoteValueAction } from "../../actions/editing/ChangeNoteValue";
 import { dotNoteAction } from "../../actions/editing/DotNote";
 import { EditBend } from "../../actions/editing/EditBend";
-import { BooleanFeatures, toggleNoteFeatureAction } from "../../actions/editing/ToggleNoteFeature";
+import { BooleanNoteFeatures, toggleNoteFeatureAction } from "../../actions/editing/ToggleNoteFeature";
 import { NoteValueIcon } from "../../resources/note_values";
 import { Command } from "../../state/Application";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
@@ -129,7 +129,7 @@ function ChangeNotePaletteButton<PropertyT extends keyof notation.NoteOptions>(
 }
 
 const TogglePaletteButton = (
-  props: Omit<PaletteButtonProps, "property" | "command"> & { property: BooleanFeatures<notation.NoteOptions> },
+  props: Omit<PaletteButtonProps, "property" | "command"> & { property: BooleanNoteFeatures },
 ) => {
   const application = useApplicationState();
   const { property, ...buttonProps } = props;

@@ -8,16 +8,21 @@ export class EditTimeSignature extends Action {
   static readonly when = "editorFocused && !isPlaying";
   static readonly defaultKeyBinding = null;
 
-  static actionForState(_application: Application) {
-    return new EditTimeSignature();
+  static actionForState(application: Application) {
+    const measure = application.selection.measure?.measure;
+    return measure ? new EditTimeSignature(measure) : null;
   }
 
   static actionForContextMenu(application: Application) {
     const measure = narrowInstance(application.state.contextMenuSubject, notation.Measure);
-    return measure ? new EditTimeSignature() : null;
+    return measure ? new EditTimeSignature(measure) : null;
+  }
+
+  constructor(readonly measure: notation.Measure) {
+    super();
   }
 
   apply(application: Application) {
-    application.state.toggleEditingTimeSignature();
+    application.state.showModalFor(this.measure, "staffDetails.time");
   }
 }

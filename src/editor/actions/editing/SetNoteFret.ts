@@ -23,16 +23,19 @@ export class SetNoteFret extends Action {
 
     let newNote: notation.Note;
     if (this.note) {
-      newNote = this.note.withChanges({
-        pitch: tuning.adjust(this.fret),
-        placement: {
-          string: this.string,
-          fret: this.fret,
-        },
-        dead: undefined,
-      });
+      newNote = new notation.Note(
+        this.chord,
+        this.note.withChanges({
+          pitch: tuning.adjust(this.fret),
+          placement: {
+            string: this.string,
+            fret: this.fret,
+          },
+          dead: undefined,
+        }),
+      );
     } else {
-      newNote = new notation.Note({
+      newNote = new notation.Note(this.chord, {
         value: this.chord.value,
         pitch: tuning.adjust(this.fret),
         placement: {

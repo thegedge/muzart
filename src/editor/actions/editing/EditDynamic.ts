@@ -1,3 +1,4 @@
+import { Note } from "../../../layout/elements/Note";
 import { Application } from "../../state/Application";
 import { Action } from "../Action";
 
@@ -6,11 +7,16 @@ export class EditDynamic extends Action {
   static readonly when = "editorFocused && !isPlaying";
   static readonly defaultKeyBinding = "d";
 
-  static actionForState(_application: Application) {
-    return new EditDynamic();
+  static actionForState(application: Application) {
+    const note = application.selection.note;
+    return note instanceof Note ? new EditDynamic(note) : null;
+  }
+
+  constructor(readonly note: Note) {
+    super();
   }
 
   apply(application: Application) {
-    application.state.toggleEditingDynamic();
+    application.state.showModalFor(this.note, "note.dynamic");
   }
 }

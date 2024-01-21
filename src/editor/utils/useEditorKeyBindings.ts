@@ -7,13 +7,10 @@ import { DotNote } from "../actions/editing/DotNote";
 import { EditBend } from "../actions/editing/EditBend";
 import { EditDynamic } from "../actions/editing/EditDynamic";
 import { EditHarmonic } from "../actions/editing/EditHarmonic";
+import { HideModal } from "../actions/editing/HideModal";
 import { IncreaseNoteValue } from "../actions/editing/IncreaseNoteValue";
 import { Redo } from "../actions/editing/Redo";
 import { SetNoteFret } from "../actions/editing/SetNoteFret";
-import { StopEditingBend } from "../actions/editing/StopEditingBend";
-import { StopEditingDynamic } from "../actions/editing/StopEditingDynamic";
-import { StopEditingHarmonic } from "../actions/editing/StopEditingHarmonic";
-import { StopEditingTimeSignature } from "../actions/editing/StopEditingTimeSignature";
 import { toggleNoteFeatureAction } from "../actions/editing/ToggleNoteFeature";
 import { Undo } from "../actions/editing/Undo";
 import { FirstPage } from "../actions/navigation/FirstPage";
@@ -151,10 +148,7 @@ const ACTION_GROUPS: Record<string, Command[]> = {
     toggleNoteFeatureAction("dead"),
     toggleNoteFeatureAction("ghost"),
     toggleNoteFeatureAction("staccato"),
-    StopEditingBend,
-    StopEditingDynamic,
-    StopEditingHarmonic,
-    StopEditingTimeSignature,
+    HideModal,
   ],
 
   Navigation: [

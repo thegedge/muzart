@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { Note } from "./Note";
+import { Note, NoteOptions } from "./Note";
 import { NoteValue } from "./NoteValue";
 
 export interface Barre {
@@ -35,7 +35,7 @@ export interface Stroke {
 
 export interface ChordOptions {
   value: NoteValue;
-  notes: Note[];
+  notes: NoteOptions[];
 
   text?: string;
   tapped?: TapStyle;
@@ -44,7 +44,10 @@ export interface ChordOptions {
 }
 
 export class Chord {
+  private notes_: Note[];
+
   constructor(private options: ChordOptions) {
+    this.notes_ = options.notes.map((n) => new Note(this, n));
     makeAutoObservable(this, undefined, { deep: true });
   }
 
@@ -52,8 +55,8 @@ export class Chord {
     return this.options.value;
   }
 
-  get notes() {
-    return this.options.notes;
+  get notes(): ReadonlyArray<Note> {
+    return this.notes_;
   }
 
   get text() {
@@ -79,7 +82,7 @@ export class Chord {
   removeNote(note: Note) {
     const existingIndex = this.notes.findIndex((n) => n.placement?.string == note.placement?.string);
     if (existingIndex >= 0) {
-      this.notes.splice(existingIndex, 1);
+      this.notes_.splice(existingIndex, 1);
     }
   }
 
@@ -91,19 +94,20 @@ export class Chord {
     return this.notes.find((n) => n.placement?.string == string);
   }
 
-  changeNote(note: Note): Note | undefined {
-    const existingIndex = this.notes.findIndex((n) => n.placement?.string == note.placement?.string);
-    if (existingIndex >= 0) {
-      const existing = this.notes[existingIndex];
-      this.notes[existingIndex] = note;
-      return existing;
-    }
-
-    if (!note.pitch) {
+  changeNote(note: Note | NoteOptions): Note | undefined {
+    const chordNote = new Note(this, note instanceof Note ? note.options : note);
+    if (!chordNote.pitch) {
       throw new Error("must provide pitching when adding a new note");
     }
 
-    this.notes.push(note);
+    const existingIndex = this.notes.findIndex((n) => n.placement?.string == chordNote.placement?.string);
+    if (existingIndex >= 0) {
+      const existing = this.notes[existingIndex];
+      this.notes_[existingIndex] = chordNote;
+      return existing;
+    }
+
+    this.notes_.push(chordNote);
 
     return undefined;
   }

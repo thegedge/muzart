@@ -342,8 +342,8 @@ class GuitarProLoader {
     }
 
     // Max 7 strings, so git rid of the unused, most-significant bit
+    const notes: NoteOptions[] = [];
     const strings = bits(this.cursor.nextNumber(NumberType.Uint8)).slice(1);
-    const notes = [];
     for (let string = 0; string < trackData.strings.length; ++string) {
       if (!strings[string]) {
         continue;
@@ -353,7 +353,7 @@ class GuitarProLoader {
       noteOptions.placement ??= { fret: 0, string };
       noteOptions.placement.string = string + 1;
       if (!rest) {
-        notes.push(new Note(noteOptions));
+        notes.push(noteOptions);
       }
     }
 
@@ -573,7 +573,8 @@ class GuitarProLoader {
     if (hasNoteEffects) {
       const effects = this.readNoteEffects();
       if (effects.graceNote) {
-        noteOptions.graceNote = new Note({
+        // TODO let's not do this "as unknown as T" thingy
+        noteOptions.graceNote = new Note(null as unknown as Chord, {
           pitch: stringTuning.adjust(fret),
           value: effects.graceNote.value,
           dynamic: effects.graceNote.dynamic,

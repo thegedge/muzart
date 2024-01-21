@@ -9,13 +9,11 @@ export const changeNoteAction = (changes: Partial<notation.Note>) => {
     static readonly defaultKeyBinding = null;
 
     static actionForState(application: Application) {
-      const chord = application.selection.chord?.chord;
       const note = application.selection.note?.note;
-      return chord && note ? new ChangeNote(chord, note, changes) : null;
+      return note ? new ChangeNote(note, changes) : null;
     }
 
     constructor(
-      private chord: notation.Chord,
       private note: notation.Note,
       private changes: Partial<notation.Note>,
     ) {
@@ -23,11 +21,11 @@ export const changeNoteAction = (changes: Partial<notation.Note>) => {
     }
 
     apply(_application: Application) {
-      this.chord.changeNote(this.note.withChanges(this.changes));
+      this.note.chord.changeNote(this.note.withChanges(this.changes));
     }
 
     undo() {
-      this.chord.changeNote(this.note);
+      this.note.chord.changeNote(this.note);
     }
   };
 };
