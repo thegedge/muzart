@@ -1,4 +1,4 @@
-import { Box, HasBox, LayoutElement, MaybeLayout } from "../src/layout";
+import { AnyLayoutElement, Box, HasBox, MaybeLayout } from "../src/layout";
 
 import { Axis } from "../src/layout/layouts/FlexGroup";
 
@@ -9,7 +9,7 @@ export const elem = (
   y: number,
   w: number,
   h: number,
-  options?: { parent?: LayoutElement; type?: string; layout?: LayoutFn }
+  options?: { parent?: AnyLayoutElement; type?: string; layout?: LayoutFn },
 ) => {
   return {
     type: options?.type ?? "Child",

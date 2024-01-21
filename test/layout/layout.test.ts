@@ -2,7 +2,7 @@ import { range } from "lodash";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, test } from "vitest";
-import { LayoutElement, Note, PageLine, layOutScore } from "../../src/layout";
+import { AnyLayoutElement, Note, PageLine, layOutScore } from "../../src/layout";
 import load from "../../src/loaders/guitarpro";
 import { adjacent } from "../elementHelpers";
 import { assert } from "../testing";
@@ -61,5 +61,5 @@ describe("layout", () => {
   });
 });
 
-const isPageLine = (elem: LayoutElement): elem is PageLine => elem.type == "PageLine";
-const isNote = (elem: LayoutElement): elem is Note => elem.type == "Note";
+const isPageLine = (elem: AnyLayoutElement): elem is PageLine => elem.type == "PageLine";
+const isNote = (elem: AnyLayoutElement): elem is Note => elem.type == "Note";

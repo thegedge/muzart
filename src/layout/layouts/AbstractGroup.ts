@@ -2,9 +2,9 @@ import types from "..";
 import { LayoutElement } from "../elements/LayoutElement";
 
 export abstract class AbstractGroup<
-  T extends types.LayoutElement,
+  T extends types.AnyLayoutElement,
   Type extends string = "Group",
-  ParentT extends types.LayoutElement | null = types.LayoutElement,
+  ParentT extends types.AnyLayoutElement | null = types.AnyLayoutElement,
 > extends LayoutElement<Type, ParentT> {
   abstract readonly type: Type;
 

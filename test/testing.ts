@@ -1,14 +1,14 @@
 import { isMatch } from "lodash";
 import { inspect } from "util";
 import * as vitest from "vitest";
-import { LayoutElement } from "../src/layout";
+import { AnyLayoutElement } from "../src/layout";
 
 type Axis = "horizontal" | "vertical";
 
 // A small floating point value to use when comparing approximate equality
 const EPSILON = 128 * Number.EPSILON;
 
-const formatLayoutElement = (e: LayoutElement) => {
+const formatLayoutElement = (e: AnyLayoutElement) => {
   return `${e.type}(${e.box.x}, ${e.box.y}, ${e.box.width}, ${e.box.height})`;
 };
 
@@ -28,7 +28,7 @@ const doesNotContain = <T>(actual: unknown, expected: T): void => {
   }
 };
 
-const isAfter = (after: LayoutElement, before: LayoutElement, axis: Axis): void => {
+const isAfter = (after: AnyLayoutElement, before: AnyLayoutElement, axis: Axis): void => {
   if (axis == "horizontal") {
     if (after.box.x + EPSILON < before.box.x) {
       vitest.expect.fail(`${formatLayoutElement(after)}'s left edge is not after ${formatLayoutElement(before)}`);
@@ -40,7 +40,7 @@ const isAfter = (after: LayoutElement, before: LayoutElement, axis: Axis): void 
   }
 };
 
-const isBefore = (before: LayoutElement, after: LayoutElement, axis: Axis): void => {
+const isBefore = (before: AnyLayoutElement, after: AnyLayoutElement, axis: Axis): void => {
   if (axis == "horizontal") {
     if (before.box.x >= after.box.x + EPSILON) {
       vitest.expect.fail(`${formatLayoutElement(before)} is not to the left of ${formatLayoutElement(after)}`);
@@ -52,7 +52,7 @@ const isBefore = (before: LayoutElement, after: LayoutElement, axis: Axis): void
   }
 };
 
-const isNonOverlappingAfter = (after: LayoutElement, before: LayoutElement, axis: Axis): void => {
+const isNonOverlappingAfter = (after: AnyLayoutElement, before: AnyLayoutElement, axis: Axis): void => {
   if (axis == "horizontal") {
     if (after.box.x + EPSILON < before.box.right) {
       vitest.expect.fail(`${formatLayoutElement(after)}'s left edge is not after ${formatLayoutElement(before)}`);
@@ -64,7 +64,7 @@ const isNonOverlappingAfter = (after: LayoutElement, before: LayoutElement, axis
   }
 };
 
-const isNonOverlappingBefore = (before: LayoutElement, after: LayoutElement, axis: Axis): void => {
+const isNonOverlappingBefore = (before: AnyLayoutElement, after: AnyLayoutElement, axis: Axis): void => {
   if (axis == "horizontal") {
     if (before.box.right >= after.box.x + EPSILON) {
       vitest.expect.fail(`${formatLayoutElement(before)}'s right edge is not before ${formatLayoutElement(after)}`);

@@ -1,4 +1,4 @@
-import { LayoutElement } from "../types";
+import { AnyLayoutElement } from "../types";
 import { Box } from "./Box";
 
 export * from "./Box";
@@ -6,11 +6,11 @@ export * from "./Box";
 /**
  * Get an ancestor of a given type for an element.
  */
-export function ancestorOfType<SourceT extends LayoutElement, AncestorT extends LayoutElement = SourceT>(
+export function ancestorOfType<SourceT extends AnyLayoutElement, AncestorT extends AnyLayoutElement = SourceT>(
   source: SourceT,
   ancestorType: AncestorT["type"],
 ): AncestorT | null {
-  let e: LayoutElement | null | undefined = source.parent;
+  let e: AnyLayoutElement | null | undefined = source.parent;
   while (e && e.type != ancestorType) {
     e = e.parent;
   }
@@ -24,12 +24,12 @@ export function ancestorOfType<SourceT extends LayoutElement, AncestorT extends 
  *
  * @param ancestorType type of ancestor element whose coordinate system to map into
  */
-export function toAncestorCoordinateSystem<LayoutT extends LayoutElement>(
+export function toAncestorCoordinateSystem<LayoutT extends AnyLayoutElement>(
   source: LayoutT,
   ancestorType?: LayoutT["type"],
 ): Box {
   const box = source.box.clone();
-  let e: LayoutElement | null | undefined = source.parent;
+  let e: AnyLayoutElement | null | undefined = source.parent;
   while (e && e.type != ancestorType) {
     box.x += e.box.x;
     box.y += e.box.y;

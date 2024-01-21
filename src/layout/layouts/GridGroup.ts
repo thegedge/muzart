@@ -31,7 +31,7 @@ export interface Constraint {
   valign?: Alignment;
 }
 
-interface Row<T extends types.LayoutElement> {
+interface Row<T extends types.AnyLayoutElement> {
   columnAvailability: boolean[];
   elements: [T, Constraint][];
 }
@@ -39,7 +39,7 @@ interface Row<T extends types.LayoutElement> {
 /**
  * A group that lays its elements out in a grid pattern, dynamically creating rows such that elements don't overlap.
  */
-export class GridGroup<T extends types.LayoutElement> extends AbstractGroup<T> {
+export class GridGroup<T extends types.AnyLayoutElement> extends AbstractGroup<T> {
   readonly type = "Group";
 
   private constraints: Constraint[] = [];

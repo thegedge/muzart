@@ -41,9 +41,9 @@ export type FlexGroupConfig = {
  * children that can be stretched (flex props with a non-null factor).
  */
 export abstract class FlexGroup<
-  T extends types.LayoutElement,
+  T extends types.AnyLayoutElement,
   Type extends string = "Group",
-  Parent extends types.LayoutElement | null = types.LayoutElement,
+  Parent extends types.AnyLayoutElement | null = types.AnyLayoutElement,
 > {
   abstract readonly type: Type;
 
@@ -256,6 +256,6 @@ export abstract class FlexGroup<
   }
 }
 
-export class FlexGroupElement<T extends types.LayoutElement> extends FlexGroup<T> {
+export class FlexGroupElement<T extends types.AnyLayoutElement> extends FlexGroup<T> {
   readonly type = "Group";
 }

@@ -10,23 +10,22 @@ export interface HasBox {
   box: Box;
 }
 
-export interface HasParent<ParentT = unknown> {
-  parent: LayoutElement<ParentT> | null;
-}
-
 export interface MaybeLayout<Args extends unknown[] = []> {
   layout?: (...args: Args) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface LayoutElement<ParentT = unknown, LayoutArgs extends unknown[] = any[]>
+export interface LayoutElement<ParentT extends AnyLayoutElement | null, LayoutArgs extends never[] = never[]>
   extends HasBox,
-    HasParent<ParentT>,
     MaybeLayout<LayoutArgs> {
   type: string;
+  parent: LayoutElement<ParentT> | null;
   style?: CSS.Properties;
   className?: string;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyLayoutElement = LayoutElement<any>;
 
 export interface Margins {
   left: Millimetres;
@@ -37,7 +36,7 @@ export interface Margins {
 
 export type AllElements = Score | Part | Page | PageElement | LineElement;
 
-export interface Score extends LayoutElement<never> {
+export interface Score extends LayoutElement<null> {
   type: "Score";
   score: notation.Score;
   children: Part[];
@@ -105,7 +104,7 @@ export interface Bend extends LayoutElement<LineElement> {
   descent: number;
 }
 
-export interface Group<T> extends LayoutElement<unknown> {
+export interface Group<T> extends LayoutElement<AnyLayoutElement> {
   type: "Group";
   children: T[];
 }
@@ -228,11 +227,8 @@ export interface TimeSignature extends LayoutElement<LineElement> {
  *
  * @returns The element whose `type` matches the given `type`. If `e` itself is of the given type, `e` will be returned.
  */
-export const getAncestorOfType = <T extends LayoutElement<unknown>>(
-  e: LayoutElement<unknown>,
-  type: string,
-): T | null => {
-  let current: LayoutElement<unknown> | undefined | null = e;
+export const getAncestorOfType = <T extends AnyLayoutElement>(e: AnyLayoutElement, type: string): T | null => {
+  let current: AnyLayoutElement | undefined | null = e;
   while (current) {
     if (current.type == type) {
       return current as T;

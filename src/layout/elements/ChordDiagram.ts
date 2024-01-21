@@ -9,7 +9,7 @@ import { Line } from "./Line";
 import { Text } from "./Text";
 
 export class ChordDiagram
-  extends SimpleGroup<types.LayoutElement, "ChordDiagram", types.LineElement>
+  extends SimpleGroup<types.AnyLayoutElement, "ChordDiagram", types.LineElement>
   implements types.ChordDiagram
 {
   readonly type = "ChordDiagram";

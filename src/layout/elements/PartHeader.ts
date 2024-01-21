@@ -7,7 +7,7 @@ import { ChordDiagram } from "./ChordDiagram";
 import { Space } from "./Space";
 import { Text } from "./Text";
 
-export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part> implements types.LayoutElement {
+export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part> implements types.AnyLayoutElement {
   readonly type = "Group";
 
   /** If true, show chord diagrams for all chords used in the tab  */

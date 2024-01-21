@@ -1,6 +1,6 @@
 import * as CSS from "csstype";
 import { camelCase } from "lodash";
-import { LayoutElement } from "../layout";
+import { AnyLayoutElement } from "../layout";
 
 /**
  * Takes a Muzart-specific stylesheet to compute styles for rendered elements.
@@ -22,7 +22,7 @@ import { LayoutElement } from "../layout";
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/CSS/Reference
  */
-export class StyleComputer<ElementType extends LayoutElement = LayoutElement> {
+export class StyleComputer<ElementType extends AnyLayoutElement = AnyLayoutElement> {
   constructor(private readonly stylesheet?: CSSStyleSheet | undefined) {}
 
   stylesFor(element: ElementType, _ancestors: ElementType[]): CSS.Properties {

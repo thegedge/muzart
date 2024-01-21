@@ -7,9 +7,9 @@ import { AbstractGroup } from "./AbstractGroup";
  * Note that the x/y coordinate of the groups box is not changed.
  */
 export abstract class SimpleGroup<
-  ChildT extends types.LayoutElement,
+  ChildT extends types.AnyLayoutElement,
   Type extends string = "Group",
-  ParentT extends types.LayoutElement | null = types.LayoutElement,
+  ParentT extends types.AnyLayoutElement | null = types.AnyLayoutElement,
 > extends AbstractGroup<ChildT, Type, ParentT> {
   addElement(element: ChildT) {
     this.children.push(element);
@@ -31,6 +31,6 @@ export abstract class SimpleGroup<
 /**
  * An element that implements a {@link SimpleGroup} layout
  */
-export class SimpleGroupElement<T extends types.LayoutElement> extends SimpleGroup<T> {
+export class SimpleGroupElement<T extends types.AnyLayoutElement> extends SimpleGroup<T> {
   readonly type = "Group";
 }

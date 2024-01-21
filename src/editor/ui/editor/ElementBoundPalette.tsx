@@ -2,11 +2,11 @@ import * as CSS from "csstype";
 import { observer } from "mobx-react-lite";
 import { ComponentChildren } from "preact";
 import { useEffect, useRef } from "preact/hooks";
-import { LayoutElement, PX_PER_MM, toAncestorCoordinateSystem } from "../../../layout";
+import { AnyLayoutElement, PX_PER_MM, toAncestorCoordinateSystem } from "../../../layout";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 
 export const ElementBoundPalette = observer(
-  <ElementT extends LayoutElement, T>(props: {
+  <ElementT extends AnyLayoutElement, T>(props: {
     element: ElementT;
     currentValue?: T;
     options: Record<string, T>;

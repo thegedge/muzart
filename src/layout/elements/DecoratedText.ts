@@ -5,7 +5,7 @@ import { Box } from "../utils";
 import { Text } from "./Text";
 
 export class DecoratedText
-  extends SimpleGroup<types.Text, "DecoratedText", types.LayoutElement>
+  extends SimpleGroup<types.Text, "DecoratedText", types.AnyLayoutElement>
   implements types.DecoratedText
 {
   readonly type = "DecoratedText";

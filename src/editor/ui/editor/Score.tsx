@@ -264,6 +264,7 @@ export const Score = observer((_props: Record<string, never>) => {
           break;
         }
 
+        // TODO can we avoid having to do this cast?
         element = element.parent as layout.AllElements | undefined | null;
       }
 
