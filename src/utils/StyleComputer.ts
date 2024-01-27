@@ -23,47 +23,66 @@ import { AnyLayoutElement } from "../layout";
  * @see https://developer.mozilla.org/en-US/docs/Web/CSS/Reference
  */
 export class StyleComputer<ElementType extends AnyLayoutElement = AnyLayoutElement> {
-  constructor(private readonly stylesheet?: CSSStyleSheet | undefined) {}
+  private rules: {
+    rule: CSSStyleRule;
+    class: string;
+    attribute: [keyof ElementType, string] | undefined;
+    styles: CSS.Properties;
+  }[] = [];
+
+  constructor(stylesheet?: CSSStyleSheet | undefined) {
+    if (stylesheet) {
+      for (let ruleIndex = 0; ruleIndex < stylesheet.cssRules.length; ++ruleIndex) {
+        const rule = stylesheet.cssRules.item(ruleIndex);
+        if (!(rule instanceof CSSStyleRule)) {
+          continue;
+        }
+
+        const styles = Object.fromEntries(
+          Array.from(rule.style).map((property) => [camelCase(property), rule.style.getPropertyValue(property)]),
+        );
+
+        for (const selector of rule.selectorText.split(",")) {
+          let clazz: string;
+          let attribute: [keyof ElementType, string] | undefined; // [name, value]
+
+          if (selector.includes("[")) {
+            const [first, ...rest] = selector.split("[");
+            const attributeSelector = rest.join("").slice(0, -1);
+            const [name, value] = attributeSelector.split("=");
+            clazz = first.substring(1);
+            attribute = [name as keyof ElementType, value?.slice(1, -1)];
+          } else {
+            clazz = selector.substring(1);
+          }
+
+          this.rules.push({
+            rule,
+            class: clazz,
+            attribute,
+            styles,
+          });
+        }
+      }
+    }
+  }
 
   stylesFor(element: ElementType, _ancestors: ElementType[]): CSS.Properties {
-    if (!this.stylesheet) {
-      return {};
-    }
-
     const properties: CSS.Properties = {};
-    for (let ruleIndex = 0; ruleIndex < this.stylesheet.cssRules.length; ++ruleIndex) {
-      const rule = this.stylesheet.cssRules.item(ruleIndex);
-      if (!(rule instanceof CSSStyleRule)) {
+    const elementClass = this.classForElement(element);
+    for (const rule of this.rules) {
+      if (rule.class != elementClass) {
         continue;
       }
 
-      for (const selector of rule.selectorText.split(",")) {
-        let clazz: string;
-        let attribute: [keyof ElementType, string] | undefined; // [name, value]
-
-        if (selector.includes("[")) {
-          const [first, ...rest] = selector.split("[");
-          const attributeSelector = rest.join("").slice(0, -1);
-          const [name, value] = attributeSelector.split("=");
-          clazz = first.substring(1);
-          attribute = [name as keyof ElementType, value?.slice(1, -1)];
-        } else {
-          clazz = selector.substring(1);
-        }
-
-        if (clazz != this.classForElement(element)) {
-          continue;
-        }
-
-        if (attribute && !(attribute[0] in element && String(element[attribute[0]]) == attribute[1])) {
-          continue;
-        }
-
-        for (const property of Array.from(rule.style)) {
-          const camelCasedProperty = camelCase(property);
-          (properties as Record<string, unknown>)[camelCasedProperty] = rule.style.getPropertyValue(property);
-        }
+      if (
+        rule.attribute &&
+        !(rule.attribute[0] in element && String(element[rule.attribute[0]]) == rule.attribute[1])
+      ) {
+        continue;
       }
+
+      Object.assign(properties, rule.styles);
     }
     return properties;
   }
