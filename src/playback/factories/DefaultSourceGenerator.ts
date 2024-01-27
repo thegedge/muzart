@@ -1,4 +1,3 @@
-import { range } from "lodash";
 import * as notation from "../../notation";
 import { Drum, DrumOptions } from "../generators/Drum";
 import { PluckedString, PluckedStringOptions } from "../generators/PluckedString";
@@ -110,11 +109,48 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
           return {
             generate(note) {
               const source = generator.generate(note);
+
+              const preHi = 2000;
+              const preLo = 150;
+              const postFrequency = 10000;
+
+              const frequency = Math.sqrt(preHi - preLo);
+              const Q = frequency / (preHi - preLo);
+
+              const n = context.sampleRate;
+              const curve = new Float32Array(n);
+              const distortionAmount = 1;
+              const k = distortionAmount * 2000;
+              for (let i = 0, x; i < n; ++i) {
+                x = (i * 2) / n - 1;
+                curve[i] = ((1 + k / 101) * x) / (1 + (k / 101) * Math.abs(x));
+              }
+
               return CompositeNode.compose(
                 source,
-                new GainNode(context, { gain: 5 }),
+                new BiquadFilterNode(context, {
+                  type: "bandpass",
+                  Q,
+                  frequency,
+                }),
+
+                // Clip
                 new WaveShaperNode(context, {
-                  curve: [-2 / 3.0, ...range(10).map((x) => x - (x * x * x) / 3.0), 2 / 3.0],
+                  oversample: "4x",
+                  curve,
+                }),
+
+                new BiquadFilterNode(context, {
+                  type: "lowpass",
+                  frequency: postFrequency,
+                  Q: Math.SQRT1_2,
+                }),
+
+                // Tone
+                new BiquadFilterNode(context, {
+                  type: "lowpass",
+                  frequency: Math.pow(Math.abs(350), 2),
+                  Q: Math.SQRT1_2,
                 }),
               );
             },
