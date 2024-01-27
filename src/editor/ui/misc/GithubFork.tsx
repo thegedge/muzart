@@ -7,7 +7,7 @@ export const GithubFork = () => {
   const href = sha ? `https://github.com/thegedge/muzart/tree/${sha}` : "https://github.com/thegedge/muzart";
 
   return (
-    <div className="fixed z-50 -translate-x-24 -translate-y-24 rotate-45 bg-white text-center text-gray-700 opacity-50 shadow-lg transition-opacity duration-300 ease-in-out hover:opacity-100">
+    <div className="fixed z-50 -translate-x-1/2 -translate-y-1/2 -rotate-45 bg-white text-center text-gray-700 opacity-50 shadow-lg transition-opacity duration-300 ease-in-out hover:opacity-100">
       <a href={href} className="flex h-48 w-48 items-end justify-center py-4 underline" title={href}>
         <svg viewBox="0 0 17 17" version="1.1" width="48" height="48">
           <path
