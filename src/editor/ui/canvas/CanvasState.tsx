@@ -257,6 +257,7 @@ export class CanvasState {
       }
 
       const factor = this.userspaceToDeviceFactor;
+      context.resetTransform();
       context.clearRect(0, 0, this.canvas.width, this.canvas.height);
       context.setTransform(factor, 0, 0, factor, -this.viewport.x * factor, -this.viewport.y * factor);
       context.lineWidth = LINE_STROKE_WIDTH;
