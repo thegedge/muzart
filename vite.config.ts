@@ -54,6 +54,8 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
       logOverride: {
         "this-is-undefined-in-esm": "silent",
       },
+      minifyIdentifiers: mode == "production",
+      keepNames: mode != "production",
     },
 
     test: {
