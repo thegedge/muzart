@@ -8,7 +8,7 @@ import { PlayCircleIcon as SoloIcon } from "@heroicons/react/24/solid";
 import { range } from "lodash";
 import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import { JSXInternal } from "preact/src/jsx";
 import { Measure, Part } from "../../../notation";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
@@ -153,11 +153,7 @@ const MeasureBox = (props: {
   const { measure, partIndex, color, onChange } = props;
   const { playback, selection } = useApplicationState();
   const [selected, setSelected] = useState(false);
-
-  const baseOpacity = partIndex == selection.partIndex ? 0.3 : 0.2;
-  const scale = partIndex == selection.partIndex ? 1 : 0.4;
-  const nonRestDuration = measure.chords.reduce((sum, ch) => sum + (ch.rest ? 0 : ch.value.toDecimal()), 0);
-  const opacity = baseOpacity + (1 - baseOpacity) * scale * Math.sqrt(nonRestDuration);
+  const partIsSelected = partIndex == selection.partIndex;
 
   useEffect(() => {
     return reaction(
@@ -166,12 +162,20 @@ const MeasureBox = (props: {
           playback.playing && playback.currentMeasure
             ? playback.currentMeasure.measure.number
             : selection.measureIndex + 1;
-        return partIndex == selection.partIndex && currentMeasure == measure.number;
+        return partIsSelected && currentMeasure == measure.number;
       },
       (isSelected) => setSelected(isSelected),
       { fireImmediately: true },
     );
-  }, [measure.number, partIndex, playback, selection]);
+  }, [measure.number, partIsSelected, playback, selection]);
+
+  const nonRestDuration = useMemo(() => {
+    return measure.chords.reduce((sum, ch) => sum + (ch.rest ? 0 : ch.value.toDecimal()), 0);
+  }, [measure.chords]);
+
+  const baseOpacity = partIsSelected ? 0.3 : 0.2;
+  const scale = partIsSelected ? 1 : 0.4;
+  const opacity = baseOpacity + (1 - baseOpacity) * scale * Math.sqrt(nonRestDuration);
 
   return (
     <div
