@@ -959,7 +959,7 @@ class GuitarProLoader {
       // 0 = none, 1 = fast, 2 = average, 3 = slow
       const vibrato = this.cursor.nextNumber(NumberType.Uint8);
 
-      return { time, amplitude: pointAmplitude, vibrato };
+      return { time, amplitude: amplitude * pointAmplitude, vibrato };
     });
 
     return {
