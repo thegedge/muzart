@@ -1,12 +1,5 @@
-import {
-  Box,
-  getAncestorOfType,
-  maxMap,
-  minMap,
-  numCharsToRepresent,
-  runs,
-  toAncestorCoordinateSystem,
-} from "../../src/layout";
+import { Box, maxMap, minMap, numCharsToRepresent, runs, toAncestorCoordinateSystem } from "../../src/layout";
+import { getAncestorOfType } from "../../src/layout/utils";
 import { elem } from "../elementHelpers";
 import { assert, describe, test } from "../testing";
 

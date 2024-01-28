@@ -1,6 +1,6 @@
 import * as CSS from "csstype";
 import { merge } from "lodash";
-import layout from "../layout";
+import layout, { isAncestor } from "../layout";
 import { Arc } from "./Arc";
 import { BarLine } from "./BarLine";
 import { Beam } from "./Beam";
@@ -84,7 +84,7 @@ export const renderScoreElement = (
     }
 
     // We render after children so that the parent containers are clearly visible
-    if (context.application.debug.enabled) {
+    if (context.application.debug.hoveredElement && isAncestor(element, context.application.debug.hoveredElement)) {
       const params = context.application.debug.paramsForType(element.type);
       if (params) {
         renderContext.strokeStyle = params.strokeStyle;

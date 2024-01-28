@@ -1,5 +1,5 @@
 import { action, makeObservable, observable } from "mobx";
-import { LINE_STROKE_WIDTH } from "../../layout";
+import { AnyLayoutElement, LINE_STROKE_WIDTH } from "../../layout";
 
 interface DebugParams {
   strokeStyle: string | CanvasGradient | CanvasPattern;
@@ -10,6 +10,7 @@ interface DebugParams {
 
 export class DebugContext {
   public enabled = import.meta.env.VITE_DEBUG_APP == "1";
+  public hoveredElement: AnyLayoutElement | null = null;
 
   private index = 0;
   private colorMap = new Map<string, DebugParams>();
@@ -17,12 +18,18 @@ export class DebugContext {
   constructor() {
     makeObservable(this, {
       enabled: observable,
+      hoveredElement: observable,
       setEnabled: action,
+      setHoveredElement: action,
     });
   }
 
   setEnabled(enabled: boolean): void {
     this.enabled = enabled;
+  }
+
+  setHoveredElement(element: AnyLayoutElement | null): void {
+    this.hoveredElement = this.enabled ? element : null;
   }
 
   paramsForType(type: string): DebugParams | null {

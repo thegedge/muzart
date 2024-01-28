@@ -192,3 +192,35 @@ export function runs<T, V>(
 
   return runs;
 }
+
+/**
+ * Find the ancestor element of a given type.
+ *
+ * @returns The element whose `type` matches the given `type`. If `e` itself is of the given type, `e` will be returned.
+ */
+export const getAncestorOfType = <T extends AnyLayoutElement>(e: AnyLayoutElement, type: string): T | null => {
+  let current: AnyLayoutElement | undefined | null = e;
+  while (current) {
+    if (current.type == type) {
+      return current as T;
+    }
+    current = current.parent;
+  }
+  return current ?? null;
+};
+
+/**
+ * Whether or not a given element is an ancestor of another.
+ *
+ * @returns `true` if `element` is an ancestor of `maybeDescendantElement`, `false` otherwise.
+ */
+export const isAncestor = (element: AnyLayoutElement, maybeDescendantElement: AnyLayoutElement): boolean => {
+  let current: AnyLayoutElement | undefined | null = maybeDescendantElement;
+  while (current) {
+    if (current === element) {
+      return true;
+    }
+    current = current.parent;
+  }
+  return false;
+};

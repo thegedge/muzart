@@ -8,6 +8,7 @@ import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Menu } from "../misc/Menu";
 import { PopoverMenu } from "../misc/PopoverMenu";
 import { BendEditor } from "./BendEditor";
+import { DebugPanel } from "./DebugPanel";
 import { PartPanel } from "./PartPanel";
 import { Score } from "./Score";
 import { SelectionPalette } from "./SelectionPalette";
@@ -34,6 +35,9 @@ export const EditorChrome = observer((props: { loaderUrl: string }) => {
       <Score />
       <SelectionPalette />
       <PartPanel />
+      <DebugPanel />
+
+      {/* Overlays, menus, and various things that may or may not show based on the UI state */}
       <MuzartContextMenu />
       <BendEditor />
       <TimeSignatureEditor />

@@ -226,19 +226,3 @@ export interface TimeSignature extends LayoutElement<LineElement> {
   type: "TimeSignature";
   timeSignature: notation.TimeSignature;
 }
-
-/**
- * Find the ancestor element of a given type.
- *
- * @returns The element whose `type` matches the given `type`. If `e` itself is of the given type, `e` will be returned.
- */
-export const getAncestorOfType = <T extends AnyLayoutElement>(e: AnyLayoutElement, type: string): T | null => {
-  let current: AnyLayoutElement | undefined | null = e;
-  while (current) {
-    if (current.type == type) {
-      return current as T;
-    }
-    current = current.parent;
-  }
-  return current ?? null;
-};

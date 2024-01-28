@@ -157,7 +157,7 @@ export const Score = observer((_props: Record<string, never>) => {
         application.selection.chordIndex,
         application.selection.noteIndex,
         application.selection.note,
-        application.debug.enabled,
+        application.debug.hoveredElement,
         renderState.epoch,
       ],
       () => {
@@ -250,6 +250,7 @@ export const Score = observer((_props: Record<string, never>) => {
         }
       }
 
+      application.debug.setHoveredElement(hit?.element ?? null);
       application.canvas.setCursor(cursor);
     },
     [application],

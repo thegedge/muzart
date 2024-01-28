@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { inRange, last } from "lodash";
 import { autorun, makeAutoObservable } from "mobx";
-import layout, { getAncestorOfType, layOutScore } from "../../layout";
+import layout, { layOutScore } from "../../layout";
+import { getAncestorOfType } from "../../layout/utils";
 import * as notation from "../../notation";
 import { StorableObject, numberOrDefault } from "../storage/Storage";
 

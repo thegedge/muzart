@@ -24,22 +24,26 @@
 @layer components {
   .chrome {
     grid-template-areas:
-      "palette     score"
-      "part-panel  part-panel";
+      "left-panel       score      right-panel"
+      "bottom-panel  bottom-panel bottom-panel";
 
     grid-template-rows: 1fr max-content;
-    grid-template-columns: max-content 1fr;
+    grid-template-columns: max-content 1fr max-content;
 
     .score {
       grid-area: score;
     }
 
     .palette {
-      grid-area: palette;
+      grid-area: left-panel;
+    }
+
+    .debug-panel {
+      grid-area: right-panel;
     }
 
     .part-panel {
-      grid-area: part-panel;
+      grid-area: bottom-panel;
     }
   }
 }
