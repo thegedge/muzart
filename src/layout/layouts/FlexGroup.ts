@@ -54,13 +54,13 @@ export abstract class FlexGroup<
   public parent: Parent | null = null;
   public box: Box;
 
-  private defaultStretchFactor: number;
-  private gap: number;
-  private wrap: boolean;
-  private mainAxisSpaceDistribution: FlexGroupConfig["mainAxisSpaceDistribution"];
-  private crossAxisAlignment: FlexGroupConfig["crossAxisAlignment"];
+  protected defaultStretchFactor: number;
+  protected gap: number;
+  protected wrap: boolean;
+  protected mainAxisSpaceDistribution: FlexGroupConfig["mainAxisSpaceDistribution"];
+  protected crossAxisAlignment: FlexGroupConfig["crossAxisAlignment"];
 
-  private startAttribute:
+  protected startAttribute:
     | {
         main: "x";
         cross: "y";
@@ -70,7 +70,7 @@ export abstract class FlexGroup<
         cross: "x";
       };
 
-  private dimensionAttribute:
+  protected dimensionAttribute:
     | {
         main: "width";
         cross: "height";
@@ -80,7 +80,7 @@ export abstract class FlexGroup<
         cross: "width";
       };
 
-  private endAttribute: "right" | "bottom";
+  protected endAttribute: "right" | "bottom";
 
   constructor(config?: Partial<FlexGroupConfig>) {
     this.gap = config?.gap ?? 0;

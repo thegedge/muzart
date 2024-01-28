@@ -1,5 +1,5 @@
 import { compact, uniqBy } from "lodash";
-import types, { Box, DEFAULT_MARGIN, DEFAULT_SERIF_FONT_FAMILY, LineElement, STAFF_LINE_HEIGHT } from "..";
+import types, { Box, DEFAULT_MARGIN, DEFAULT_SERIF_FONT_FAMILY, STAFF_LINE_HEIGHT } from "..";
 import * as notation from "../../notation";
 import { FlexGroup, FlexGroupElement } from "../layouts/FlexGroup";
 import { SimpleGroupElement } from "../layouts/SimpleGroup";
@@ -22,7 +22,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       box: new Box(0, 0, contentWidth, 0),
       axis: "vertical",
       defaultStretchFactor: 0,
-      // gap: 0.5 * STAFF_LINE_HEIGHT,
+      gap: 0.5 * STAFF_LINE_HEIGHT,
     });
 
     // Lay out the composition title, composer, etc
@@ -89,11 +89,6 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       );
     }
 
-    // Sometimes these can be quite long, so put some spacing between them
-    if (score.composer || score.transcriber) {
-      this.addElement(Space.fromDimensions(contentWidth, STAFF_LINE_HEIGHT));
-    }
-
     if (score.composer) {
       const height = 1.25 * STAFF_LINE_HEIGHT;
 
@@ -131,10 +126,18 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       );
     }
 
-    this.addElement(Space.fromDimensions(contentWidth, 2 * STAFF_LINE_HEIGHT));
+    this.addElement(Space.fromDimensions(contentWidth, STAFF_LINE_HEIGHT));
     this.maybeAddChordDiagrams();
 
     if (part.instrument instanceof notation.StringInstrument) {
+      const tuningsGroup = new FlexGroupElement<SimpleGroupElement<Text>>({
+        box: new Box(0, 0, contentWidth, 0),
+        axis: "vertical",
+        crossAxisAlignment: "start",
+        gap: 0,
+        defaultStretchFactor: 0,
+      });
+
       // TODO show alternative name for tuning
       const textSize = STAFF_LINE_HEIGHT;
       const stringNumbers = ["①", "②", "③", "④", "⑤", "⑥", "⑦"].slice(0, part.lineCount).reverse();
@@ -153,19 +156,24 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
 
       const offset = Math.round(texts.length / 2);
       for (let index = 0; index < offset; ++index) {
-        const group = new SimpleGroupElement<LineElement>();
-        group.addElement(texts[index]);
+        const rowGroup = new SimpleGroupElement<Text>();
+        rowGroup.addElement(texts[index]);
 
         if (offset + index < texts.length) {
           const text = texts[offset + index];
           text.box.x = textSize * 5;
-          group.addElement(text);
+          rowGroup.addElement(text);
         }
 
-        group.layout();
+        // TODO refactor layout system so things can grow
+        tuningsGroup.box.height += texts[index].box.height;
 
-        this.addElement(group);
+        tuningsGroup.addElement(rowGroup);
       }
+
+      tuningsGroup.layout();
+      console.log(tuningsGroup.box);
+      this.addElement(tuningsGroup);
     }
   }
 
@@ -202,7 +210,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
   }
 
   layout() {
-    this.box.height = this.children.reduce((h, c) => h + c.box.height, 0);
+    this.box.height = this.children.reduce((h, c) => h + c.box.height, 0) + (this.children.length - 1) * this.gap;
     super.layout();
   }
 }
