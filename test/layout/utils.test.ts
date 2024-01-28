@@ -64,7 +64,7 @@ describe("utils", () => {
     test("computes the min value from the given mapper function", () => {
       assert.equal(
         minMap(["abc", "1234", "cx", "longish"], (s) => s.length),
-        2
+        2,
       );
     });
 
@@ -73,9 +73,9 @@ describe("utils", () => {
         minMap(
           ["abc", "1234", "cx", "longish"],
           (s) => s.length,
-          (a, b) => b < a
+          (a, b) => b < a,
         ),
-        7
+        7,
       );
     });
   });
@@ -84,7 +84,7 @@ describe("utils", () => {
     test("computes the min value from the given mapper function", () => {
       assert.equal(
         maxMap(["abc", "1234", "cx", "longish"], (s) => s.length),
-        7
+        7,
       );
     });
 
@@ -93,9 +93,9 @@ describe("utils", () => {
         maxMap(
           ["abc", "1234", "cx", "longish"],
           (s) => s.length,
-          (a, b) => b < a
+          (a, b) => b < a,
         ),
-        2
+        2,
       );
     });
   });
@@ -118,7 +118,7 @@ describe("utils", () => {
           [2, 3, 0],
           [4, 7, 1],
           [8, 9, 0],
-        ]
+        ],
       );
     });
 
@@ -130,7 +130,7 @@ describe("utils", () => {
           [1, 2, 2],
           [3, 5, 3],
           [6, 6, 4],
-        ]
+        ],
       );
     });
 
@@ -141,7 +141,7 @@ describe("utils", () => {
           [0, 0, true],
           [2, 3, true],
           [8, 9, true],
-        ]
+        ],
       );
     });
   });

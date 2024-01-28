@@ -16,7 +16,7 @@ describe("Box", () => {
     test("encompasses the given boxes", () => {
       assert.equal(
         Box.encompass(new Box(0, 0, 10, 10), new Box(-5, 5, 22, 3), new Box(-100, -2, 5, 33)),
-        new Box(-100, -2, 117, 33)
+        new Box(-100, -2, 117, 33),
       );
     });
   });
