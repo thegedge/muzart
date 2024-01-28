@@ -148,7 +148,12 @@ export interface Stroke extends LayoutElement<LineElement> {
 export interface Text extends LayoutElement<LineElement> {
   type: "Text";
   text: string;
+
+  // Font size / line height
+  // TODO maybe have line height be different
   size: Millimetres;
+
+  readonly lines: string[];
   readonly isReadOnly?: boolean;
 }
 

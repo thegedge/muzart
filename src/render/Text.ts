@@ -3,7 +3,7 @@ import { DEFAULT_SANS_SERIF_FONT_FAMILY } from "../layout";
 import { RenderFunc } from "./types";
 
 export const Text: RenderFunc<layout.Text> = (element, render, context) => {
-  let x;
+  let x: number;
   let align: CanvasTextAlign;
   switch (context.style.textAlign) {
     case undefined:
@@ -23,25 +23,25 @@ export const Text: RenderFunc<layout.Text> = (element, render, context) => {
       throw new Error(`unsupported text-align value: ${context.style.textAlign}`);
   }
 
-  let y;
+  let startY: number;
   let baseline: CanvasTextBaseline;
   switch (context.style.verticalAlign) {
     case undefined:
     case "top":
-      y = element.box.y;
+      startY = element.box.y;
       baseline = "top";
       break;
     case "middle": {
-      y = element.box.centerY + 0.5 * element.size;
+      startY = element.box.centerY - 0.5 * element.size * (element.lines.length - 1) + 0.5 * element.size;
       baseline = "ideographic";
       break;
     }
     case "bottom":
-      y = element.box.bottom;
+      startY = element.box.bottom - element.size * (element.lines.length - 1);
       baseline = "ideographic";
       break;
     case "hanging":
-      y = element.box.y;
+      startY = element.box.y;
       baseline = "hanging";
       break;
     default:
@@ -57,5 +57,8 @@ export const Text: RenderFunc<layout.Text> = (element, render, context) => {
     ${element.size}px
     ${context.style.fontFamily ?? DEFAULT_SANS_SERIF_FONT_FAMILY}
   `;
-  render.fillText(element.text, x, y);
+
+  element.lines.forEach((line, i) => {
+    render.fillText(line, x, startY + i * element.size);
+  });
 };

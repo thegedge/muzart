@@ -42,6 +42,7 @@ export class Text extends LayoutElement<"Text", types.PageElement | types.LineEl
   readonly type = "Text";
   readonly size: number;
 
+  private lines_: string[];
   private value: string;
   private setText: ((value: string) => void) | undefined;
 
@@ -50,12 +51,17 @@ export class Text extends LayoutElement<"Text", types.PageElement | types.LineEl
 
     this.size = options.size;
     this.value = options.value;
+    this.lines_ = options.value.split("\n");
     this.setText = options.setText;
     this.style = options.style ?? {};
   }
 
   get isReadOnly(): boolean {
     return !this.setText;
+  }
+
+  get lines(): string[] {
+    return this.lines_;
   }
 
   get text(): string {
@@ -67,6 +73,7 @@ export class Text extends LayoutElement<"Text", types.PageElement | types.LineEl
       throw new Error("can't set text on a readonly text element");
     }
 
+    this.lines_ = this.value.split("\n");
     this.value = value;
     this.setText?.(value);
   }

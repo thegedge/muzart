@@ -45,7 +45,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       const height = 1.5 * STAFF_LINE_HEIGHT;
       this.addElement(
         Text.boundText(score, "artist", {
-          box: new Box(0, 0, contentWidth, 1.2 * height),
+          box: new Box(0, 0, contentWidth, 2 * height),
           size: height,
           style: {
             textAlign: "center",
@@ -61,7 +61,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       const height = 1.5 * STAFF_LINE_HEIGHT;
       this.addElement(
         Text.boundText(score, "album", {
-          box: new Box(0, 0, contentWidth, 1.2 * height),
+          box: new Box(0, 0, contentWidth, 2 * height),
           size: height,
           style: {
             textAlign: "center",
@@ -73,24 +73,20 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
     }
 
     if (score.comments) {
-      const height = STAFF_LINE_HEIGHT;
-
-      // TODO make these one text element that can do multiline, drop comments being an array
-      for (const comment of score.comments) {
-        this.addElement(
-          new Text({
-            box: new Box(0, 0, contentWidth, 1.5 * height),
-            size: height,
-            value: comment,
-            style: {
-              textAlign: "center",
-              verticalAlign: "middle",
-              fontFamily: DEFAULT_SERIF_FONT_FAMILY,
-              fontStyle: "italic",
-            },
-          }),
-        );
-      }
+      const height = 1.5 * STAFF_LINE_HEIGHT;
+      this.addElement(
+        new Text({
+          box: new Box(0, 0, contentWidth, height * score.comments.length),
+          size: height,
+          value: score.comments.join("\n"),
+          style: {
+            textAlign: "center",
+            verticalAlign: "top",
+            fontFamily: DEFAULT_SERIF_FONT_FAMILY,
+            fontStyle: "italic",
+          },
+        }),
+      );
     }
 
     // Sometimes these can be quite long, so put some spacing between them
