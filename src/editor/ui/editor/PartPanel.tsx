@@ -33,9 +33,9 @@ export const PartPanel = observer((_props: Record<string, never>) => {
   const numMeasures = score.score.parts[0]?.measures.length ?? 0;
 
   return (
-    <div className="part-panel flex max-h-48 w-full flex-col overflow-y-auto  print:hidden">
-      <div className="grid grid-cols-part-list items-center gap-y-px overflow-auto bg-inherit">
-        <div className="sticky left-0 top-0 z-20 flex h-7 items-center gap-px bg-inherit">
+    <div className="part-panel flex max-h-48 w-full flex-col overflow-y-auto print:hidden">
+      <div className="grid grid-cols-part-list items-center gap-y-px overflow-auto bg-gray-950/75 ">
+        <div className="backdrop-blur-2xs sticky left-0 top-0 z-20 flex h-7 items-center gap-px bg-inherit ">
           <div className="flex-1 px-4">Track</div>
           <div className="flex w-6 items-center justify-center p-0.5 text-gray-500">
             <SoloIcon title="Solo tracks" />
@@ -44,7 +44,7 @@ export const PartPanel = observer((_props: Record<string, never>) => {
             <SpeakerWaveIcon title="Muted tracks" />
           </div>
         </div>
-        <div className="sticky left-0 top-0 z-10 flex h-7 gap-px bg-inherit text-xs">
+        <div className="backdrop-blur-2xs sticky left-0 top-0 z-10 flex h-7 gap-px bg-inherit text-xs ">
           {range(numMeasures).map((measureIndex) => {
             const marker = score.score.parts[0]?.measures[measureIndex]?.marker;
             const showNumber = measureIndex == 0 || measureIndex % 10 == 9;
@@ -53,9 +53,9 @@ export const PartPanel = observer((_props: Record<string, never>) => {
                 key={measureIndex}
                 className={`flex h-6 w-6 items-center font-light ${
                   marker
-                    ? "justify-start whitespace-nowrap bg-inherit pl-1 text-2xs text-gray-400"
+                    ? "justify-start whitespace-nowrap pl-1 text-2xs text-gray-400"
                     : showNumber
-                      ? "justify-center bg-inherit" // if a marker happens to flow into a number, the two won't "clash"
+                      ? "justify-center" // if a marker happens to flow into a number, the two won't "clash"
                       : "justify-center"
                 }`}
               >

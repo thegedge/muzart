@@ -38,5 +38,6 @@ shdr
 smpl
 tuplet
 tuplets
+Unsolo
 valign
 wouter
