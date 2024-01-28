@@ -14,6 +14,7 @@ import {
   Part,
   PercussionInstrument,
   Pitch,
+  Repeat,
   Score,
   Slide,
   SlideType,
@@ -50,6 +51,7 @@ interface MeasureData {
     value: TimeSignature;
     changed: boolean;
   };
+  repeat?: Repeat;
 }
 
 interface GraceNote {
@@ -208,7 +210,7 @@ class GuitarProLoader {
       hasMarker,
       hasAlternateEnding,
       endOfRepeat,
-      _startOfRepeat,
+      startOfRepeat,
       hasTimeSignatureDenominator,
       hasTimeSignatureNumerator,
     ] = bits1;
@@ -231,12 +233,23 @@ class GuitarProLoader {
       );
     }
 
+    let repeatCount = 0;
     if (endOfRepeat) {
-      /* const numRepeats = */ this.cursor.nextNumber(NumberType.Uint8);
+      repeatCount = this.cursor.nextNumber(NumberType.Uint8);
     }
 
+    let alternateEndingNumber = 0;
     if (hasAlternateEnding) {
-      /* const alternateEnding = */ this.cursor.nextNumber(NumberType.Uint8);
+      alternateEndingNumber = this.cursor.nextNumber(NumberType.Uint8);
+    }
+
+    let repeat: Repeat | undefined;
+    if (startOfRepeat || repeatCount || alternateEndingNumber) {
+      repeat = {
+        start: startOfRepeat,
+        count: repeatCount,
+        alternateEndingNumber,
+      };
     }
 
     let marker: Marker | undefined;
@@ -260,6 +273,7 @@ class GuitarProLoader {
         value: timeSignature,
         changed: !!(numerator || denominator),
       },
+      repeat,
     };
   }
 

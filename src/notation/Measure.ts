@@ -8,17 +8,37 @@ export interface Marker {
   color: string; // RGB, encoded as hex string
 }
 
+export interface Repeat {
+  /** Whether this measure is the start of a repeat section */
+  start: boolean;
+
+  /** The number of repeats, if this measure is the end of a repeat section */
+  count: number;
+
+  /** Which alternate ending this measure acts as in a repeat section */
+  alternateEndingNumber: number;
+}
+
 interface MeasureOptions {
   /** 1-indexed number for this measure */
   number: number;
   chords: Chord[];
+
+  /** Various staff-level details that can change on a per-measure basis */
   staffDetails: StaffDetails;
 
+  /** Repeat information for this measure */
+  repeat?: Repeat;
+
+  /** A piece of text to identify this measure (e.g., intro, chorus, solo) */
   marker?: Marker;
 }
 
 export class Measure {
   constructor(private options: MeasureOptions) {
+    if (options.repeat) {
+      console.log(options.repeat);
+    }
     makeAutoObservable(this, undefined, { deep: true });
   }
 
