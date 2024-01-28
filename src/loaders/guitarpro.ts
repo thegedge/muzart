@@ -12,10 +12,12 @@ import {
   NoteDynamic,
   NoteOptions,
   Part,
+  PercussionInstrument,
   Pitch,
   Score,
   Slide,
   SlideType,
+  StringInstrument,
   StrokeDirection,
   TapStyle,
   TimeSignature,
@@ -137,6 +139,7 @@ class GuitarProLoader {
     for (let trackIndex = 0; trackIndex < numTracks; ++trackIndex) {
       const trackData = this.readTrackData();
       this.trackData.push(trackData);
+
       const midiData = midiPorts[trackData.midiPort - 1][trackData.midiChannel - 1];
       parts.push(
         new Part({
@@ -144,12 +147,17 @@ class GuitarProLoader {
           color: trackData.color,
           lineCount: trackData.strings.length,
           measures: [],
-          instrument: {
-            type: trackData.midiChannel == 10 ? "percussion" : "regular",
-            midiPreset: midiData.instrument ?? 24,
-            volume: midiData.volume,
-            tuning: trackData.strings,
-          },
+          instrument:
+            trackData.midiChannel == 10
+              ? new PercussionInstrument({
+                  midiPreset: midiData.instrument ?? 24,
+                  volume: midiData.volume,
+                })
+              : new StringInstrument({
+                  midiPreset: midiData.instrument ?? 24,
+                  volume: midiData.volume,
+                  tuning: trackData.strings,
+                }),
         }),
       );
     }

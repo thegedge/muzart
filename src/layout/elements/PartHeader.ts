@@ -138,7 +138,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
     this.addElement(Space.fromDimensions(contentWidth, 2 * STAFF_LINE_HEIGHT));
     this.maybeAddChordDiagrams();
 
-    if (part.instrument?.tuning) {
+    if (part.instrument instanceof notation.StringInstrument) {
       // TODO show alternative name for tuning
       const textSize = STAFF_LINE_HEIGHT;
       const stringNumbers = ["①", "②", "③", "④", "⑤", "⑥", "⑦"].slice(0, part.lineCount).reverse();

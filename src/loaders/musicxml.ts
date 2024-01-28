@@ -12,6 +12,7 @@ import {
   Score,
   StaffDetails,
   Step,
+  StringInstrument,
   TimeSignature,
 } from "../notation";
 import { NoteValue } from "../notation/NoteValue";
@@ -63,12 +64,12 @@ function parts(document: Document, node: Node): Part[] {
     const attributes = single(document, item, "measure[1]/attributes");
     const maybeTuning = attributes && tuning(document, attributes);
     if (maybeTuning) {
-      instrument = {
-        type: "regular",
+      // TODO how to determine the kind of instrument?
+      instrument = new StringInstrument({
         midiPreset: 24, // TODO where to get midi preset?
         volume: 1,
         tuning: maybeTuning,
-      };
+      });
     }
 
     return new Part({

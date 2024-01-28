@@ -1,5 +1,6 @@
 import { range } from "lodash";
 import { useMemo } from "preact/hooks";
+import { StringInstrument } from "../../notation";
 import { Action } from "../actions/Action";
 import { DecreaseNoteValue } from "../actions/editing/DecreaseNoteValue";
 import { DeleteNote } from "../actions/editing/DeleteNote";
@@ -102,7 +103,7 @@ const ACTION_GROUPS: Record<string, Command[]> = {
         static actionForState(application: Application) {
           const instrument = application.selection.part?.part.instrument;
           const chord = application.selection.chord?.chord;
-          if (!instrument || !chord) {
+          if (!(instrument instanceof StringInstrument) || !chord) {
             return null;
           }
 

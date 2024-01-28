@@ -127,7 +127,7 @@ export class SoundFont implements SourceGeneratorFactory {
 
     let bank = 0;
     let midiPreset = instrument.midiPreset;
-    if (instrument.type == "percussion") {
+    if (instrument instanceof notation.PercussionInstrument) {
       bank = 120;
       midiPreset = 0;
     }
@@ -139,7 +139,7 @@ export class SoundFont implements SourceGeneratorFactory {
     }
 
     let zonesWithInstrument: SoundFontZone[] = [];
-    if (instrument.type == "percussion") {
+    if (instrument instanceof notation.PercussionInstrument) {
       zonesWithInstrument = preset.zones.filter((zone) => SoundFontGeneratorType.Instrument in zone.generators);
     } else {
       const zoneWithInstrument = preset.zones.find((zone) => SoundFontGeneratorType.Instrument in zone.generators);

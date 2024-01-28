@@ -1,4 +1,5 @@
 barlines
+centibels
 dashies
 Emittery
 entrypoints
@@ -32,6 +33,8 @@ relayout
 repitching
 revivables
 sdta
+sfbk
+shdr
 smpl
 tuplet
 tuplets

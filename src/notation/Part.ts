@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { Measure } from "./Measure";
-import { Instrument } from "./instrument";
+import { Instrument } from "./instruments/Instrument";
 
 export interface PartOptions {
   name: string;

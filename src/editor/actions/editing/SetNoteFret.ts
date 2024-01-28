@@ -9,7 +9,7 @@ export class SetNoteFret extends Action {
   private shouldPlayNote = true;
 
   constructor(
-    private instrument: notation.Instrument,
+    private instrument: notation.StringInstrument,
     private chord: notation.Chord,
     private string: number,
     readonly fret: number,

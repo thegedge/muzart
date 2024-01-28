@@ -218,7 +218,8 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
   }
 
   generator(context: AudioContext, instrument: notation.Instrument): SourceGenerator | null {
-    const instrumentData = this.#supportedInstruments[instrument.type == "regular" ? instrument.midiPreset : 119];
+    const instrumentData =
+      this.#supportedInstruments[instrument instanceof notation.PercussionInstrument ? 119 : instrument.midiPreset];
     if (!instrumentData) {
       return null;
     }
