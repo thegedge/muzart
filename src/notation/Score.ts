@@ -4,7 +4,7 @@ import { Part } from "./Part";
 export interface ScoreOptions {
   parts: Part[];
 
-  comments?: string[];
+  comments?: string;
   title?: string;
   subTitle?: string;
   artist?: string;
@@ -18,7 +18,7 @@ export interface ScoreOptions {
 export class Score {
   private parts_: Part[];
 
-  public comments: string[] | undefined;
+  public comments: string | undefined;
   public title: string | undefined;
   public subTitle: string | undefined;
   public artist: string | undefined;

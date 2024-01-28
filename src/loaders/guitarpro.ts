@@ -193,7 +193,7 @@ class GuitarProLoader {
 
     return new Score({
       parts,
-      comments,
+      comments: comments.join("\n"),
       ...tabInformation,
     });
   }

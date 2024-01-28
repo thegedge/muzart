@@ -28,7 +28,14 @@ export class UIState {
 
   get editorFocused() {
     // TODO this works...for now
-    return document.activeElement?.tagName.toLowerCase() !== "input" && !this.contextMenuSubject;
+    const activeElement = document.activeElement?.tagName.toLowerCase();
+    return (
+      (!document.activeElement ||
+        (activeElement !== "input" &&
+          activeElement !== "textarea" &&
+          (!("isContentEditable" in document.activeElement) || !document.activeElement.isContentEditable))) &&
+      !this.contextMenuSubject
+    );
   }
 
   showContextMenuFor(subject: unknown, offsetX = 0, offsetY = 0) {

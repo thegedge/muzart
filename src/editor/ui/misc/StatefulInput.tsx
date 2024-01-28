@@ -8,6 +8,41 @@ import { StyleComputer } from "../../../utils/StyleComputer";
 import { changeTextAction } from "../../actions/editing/ChangeTextElement";
 import { Application } from "../../state/Application";
 
+export const StatefulInput = observer((props: { state: StatefulTextInputState }) => {
+  const text = useRef(props.state.element.text);
+  const inputRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // inputRef.current?.select();
+    inputRef.current?.focus();
+  }, [inputRef]);
+
+  return (
+    <div
+      ref={inputRef}
+      contentEditable
+      className="absolute whitespace-pre-wrap bg-white"
+      style={props.state.style}
+      onKeyDown={(e) => {
+        if (e.code == "Escape") {
+          e.preventDefault();
+          props.state.hide();
+        } else if (e.code == "Enter" && !e.shiftKey) {
+          // TODO should probably indicate whether or not an element is multiline
+          e.preventDefault();
+          props.state.complete(e.currentTarget.innerText);
+        }
+      }}
+      onInput={(e) => {
+        text.current = e.currentTarget.innerText;
+      }}
+      onBlur={(e) => props.state.complete(e.currentTarget.innerText)}
+    >
+      {text.current}
+    </div>
+  );
+});
+
 export class StatefulTextInputState {
   public visible = true;
 
@@ -33,8 +68,9 @@ export class StatefulTextInputState {
       top: `${box.y}px`,
       left: `${box.x}px`,
       width: `${box.width}px`,
-      height: `${box.height}px`,
+      minHeight: `${box.height}px`,
       fontSize: `${this.element.size * canvas.userspaceToCanvasFactor}px`,
+      lineHeight: `${this.element.size * canvas.userspaceToCanvasFactor}px`,
       outline: "none",
       ...this.styles,
     } as const;
@@ -53,36 +89,3 @@ export class StatefulTextInputState {
     this.visible = false;
   }
 }
-
-export const StatefulInput = observer((props: { state: StatefulTextInputState }) => {
-  const text = useRef(props.state.element.text);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    inputRef.current?.select();
-    inputRef.current?.focus();
-  }, [inputRef]);
-
-  return (
-    <input
-      ref={inputRef}
-      type="text"
-      value={text.current}
-      className="absolute"
-      style={props.state.style}
-      onKeyDown={(e) => {
-        if (e.code == "Escape") {
-          e.preventDefault();
-          props.state.hide();
-        } else if (e.code == "Enter") {
-          e.preventDefault();
-          props.state.complete(e.currentTarget.value);
-        }
-      }}
-      onChange={(e) => {
-        text.current = e.currentTarget.value;
-      }}
-      onBlur={(e) => props.state.complete(e.currentTarget.value)}
-    />
-  );
-});

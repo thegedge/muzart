@@ -22,7 +22,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       box: new Box(0, 0, contentWidth, 0),
       axis: "vertical",
       defaultStretchFactor: 0,
-      // TODO maybe try to make this work nicely with a gap
+      // gap: 0.5 * STAFF_LINE_HEIGHT,
     });
 
     // Lay out the composition title, composer, etc
@@ -42,10 +42,10 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
     }
 
     if (score.artist) {
-      const height = 1.5 * STAFF_LINE_HEIGHT;
+      const height = 2 * STAFF_LINE_HEIGHT;
       this.addElement(
         Text.boundText(score, "artist", {
-          box: new Box(0, 0, contentWidth, 2 * height),
+          box: new Box(0, 0, contentWidth, 1.5 * height),
           size: height,
           style: {
             textAlign: "center",
@@ -73,15 +73,15 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
     }
 
     if (score.comments) {
-      const height = 1.5 * STAFF_LINE_HEIGHT;
+      const height = 1.2 * STAFF_LINE_HEIGHT;
+      const numLines = score.comments.split("\n").length; // TODO faster count
       this.addElement(
-        new Text({
-          box: new Box(0, 0, contentWidth, height * score.comments.length),
+        Text.boundText(score, "comments", {
+          box: new Box(0, 0, contentWidth, height * numLines),
           size: height,
-          value: score.comments.join("\n"),
           style: {
             textAlign: "center",
-            verticalAlign: "top",
+            verticalAlign: "middle",
             fontFamily: DEFAULT_SERIF_FONT_FAMILY,
             fontStyle: "italic",
           },
