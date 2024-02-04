@@ -7,6 +7,7 @@ import { Command } from "../../state/Application";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Menu } from "../misc/Menu";
 import { PopoverMenu } from "../misc/PopoverMenu";
+import { Tooltip } from "../misc/Tooltip";
 import { BendEditor } from "./BendEditor";
 import { DebugPanel } from "./DebugPanel";
 import { PartPanel } from "./PartPanel";
@@ -41,6 +42,7 @@ export const EditorChrome = observer((props: { loaderUrl: string }) => {
       <MuzartContextMenu />
       <BendEditor />
       <TimeSignatureEditor />
+      <Tooltip />
     </div>
   );
 });

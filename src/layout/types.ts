@@ -145,7 +145,7 @@ export interface Stroke extends LayoutElement<LineElement> {
   stroke: notation.Stroke;
 }
 
-export interface Text extends LayoutElement<LineElement> {
+export interface Text extends LayoutElement<AllElements> {
   type: "Text";
   text: string;
 

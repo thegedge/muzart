@@ -30,8 +30,16 @@ export const renderScoreElement = (
     return;
   }
 
-  const stylesBefore = context.style;
-  const styles = merge(context.styler.stylesFor(element, context.ancestors), element.style);
+  const parentStyles = context.style;
+  const styles = merge(
+    {
+      color: parentStyles.color,
+      fill: parentStyles.fill,
+      stroke: parentStyles.stroke,
+    },
+    context.styler.stylesFor(element, context.ancestors),
+    element.style,
+  );
   if (styles.display == "none") {
     return;
   }
@@ -96,7 +104,7 @@ export const renderScoreElement = (
       }
     }
   } finally {
-    context.style = stylesBefore;
+    context.style = parentStyles;
     renderContext.restore();
   }
 };
@@ -104,16 +112,36 @@ export const renderScoreElement = (
 const applyStylesToRenderContext = (renderContext: CanvasRenderingContext2D, styles: CSS.Properties) => {
   // TODO we don't do a lot of double checking on whether or not the styles we're assigning work for canvas
 
-  if (styles.alignmentBaseline) {
-    renderContext.textBaseline = styles.alignmentBaseline as CanvasTextBaseline;
+  const currentColor = styles.color as string | CanvasGradient | CanvasPattern;
+
+  switch (styles.fill) {
+    case undefined:
+      // Inherited
+      break;
+    case "none":
+      renderContext.fillStyle = "transparent";
+      break;
+    case "currentcolor":
+      renderContext.fillStyle = currentColor;
+      break;
+    default:
+      renderContext.fillStyle = styles.fill;
+      break;
   }
 
-  if (styles.fill) {
-    renderContext.fillStyle = styles.fill == "none" ? "transparent" : styles.fill;
-  }
-
-  if (styles.stroke) {
-    renderContext.strokeStyle = styles.stroke == "none" ? "transparent" : styles.stroke;
+  switch (styles.stroke) {
+    case undefined:
+      // Inherited
+      break;
+    case "none":
+      renderContext.strokeStyle = "transparent";
+      break;
+    case "currentcolor":
+      renderContext.strokeStyle = currentColor;
+      break;
+    default:
+      renderContext.strokeStyle = styles.stroke;
+      break;
   }
 
   if (styles.strokeLinecap) {
@@ -126,6 +154,10 @@ const applyStylesToRenderContext = (renderContext: CanvasRenderingContext2D, sty
 
   if (styles.textAlign) {
     renderContext.textAlign = styles.textAlign as CanvasTextAlign;
+  }
+
+  if (styles.alignmentBaseline) {
+    renderContext.textBaseline = styles.alignmentBaseline as CanvasTextBaseline;
   }
 };
 

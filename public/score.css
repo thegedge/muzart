@@ -2,6 +2,7 @@
   stroke-width: 0.1;
   stroke: none;
   fill: none;
+  color: #000000;
 }
 
 .arc {
@@ -10,7 +11,7 @@
 }
 
 .bar-line {
-  stroke: #000000;
+  stroke: currentcolor;
 }
 
 .beam {
@@ -30,7 +31,7 @@
 }
 
 .chord-diagram {
-  color: #000000;
+  fill: currentcolor;
 }
 
 .decorated-text {
@@ -39,10 +40,16 @@
 }
 
 .dot {
-  fill: #000000;
+  fill: currentcolor;
+}
+
+.ellipse {
+  stroke: none;
+  fill: currentcolor;
 }
 
 .line {
+  stroke: currentcolor;
   stroke-width: 0.1;
 }
 
@@ -52,7 +59,6 @@
 
 .note {
   cursor: pointer;
-  color: #000000;
   background-color: #ffffff;
 }
 
@@ -77,18 +83,17 @@
 }
 
 .stroke {
-  fill: #000000;
-  stroke: #000000;
+  fill: currentcolor;
+  stroke: currentcolor;
   stroke-width: 0.1;
 }
 
 .text {
   cursor: text;
-  color: #000000;
 }
 
 .time-signature {
-  fill: #000000;
+  fill: currentcolor;
 }
 
 .vibrato {

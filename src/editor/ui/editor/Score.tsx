@@ -1,6 +1,6 @@
 import type * as CSS from "csstype";
 import { sumBy } from "lodash";
-import { reaction } from "mobx";
+import { autorun, reaction } from "mobx";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useRef, useState } from "preact/hooks";
 import layout, {
@@ -11,10 +11,12 @@ import layout, {
   STAFF_LINE_HEIGHT,
   ancestorOfType,
   chordWidth,
+  getAncestorOfType,
   hitTest,
   isChord,
   toAncestorCoordinateSystem,
 } from "../../../layout";
+import { ChordDiagram } from "../../../layout/elements/ChordDiagram";
 import { Note } from "../../../layout/elements/Note";
 import * as notation from "../../../notation";
 import { noteValueToSeconds } from "../../../playback/util/durations";
@@ -23,11 +25,14 @@ import { StyleComputer } from "../../../utils/StyleComputer";
 import { changeNoteAction } from "../../actions/editing/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../canvas/Canvas";
+import { CanvasState } from "../canvas/CanvasState";
+import { VirtualCanvasElement } from "../canvas/VirtualCanvasElement";
 import { StatefulInput, StatefulTextInputState } from "../misc/StatefulInput";
 import { ElementBoundPalette } from "./ElementBoundPalette";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
+
   const currentPlayingRefreshInterval = useRef(0);
   const renderState = useLocalObservable(() => ({ epoch: 0 }));
   const [textInputState, showTextInput] = useState<StatefulTextInputState | null>(null);
@@ -97,16 +102,13 @@ export const Score = observer((_props: Record<string, never>) => {
   }, [renderState]);
 
   useEffect(() => {
-    const part = application.selection.part;
-    if (!part) {
+    const score = application.selection.score;
+    if (!score) {
       return;
     }
 
     const render: RenderFunction = (context, viewport) => {
-      context.fillStyle = "";
-      context.strokeStyle = "#000000";
-
-      renderScoreElement(part, context, {
+      renderScoreElement(score, context, {
         application,
         viewport,
         styler,
@@ -229,7 +231,7 @@ export const Score = observer((_props: Record<string, never>) => {
   );
 
   const onMouseMove = useCallback(
-    (pt: Point) => {
+    (pt: Point, _event: MouseEvent) => {
       let cursor: CSS.Properties["cursor"] = "auto";
 
       const hit = hitTest(pt, application.selection.part);
@@ -240,20 +242,39 @@ export const Score = observer((_props: Record<string, never>) => {
           case "Rest":
             cursor = "pointer";
             break;
-          case "Text":
-            if (hit.element.parent?.type == "Note") {
+          case "Text": {
+            const parent = hit.element.parent;
+            if (parent?.type == "Note") {
               cursor = "pointer";
+            } else if (parent?.type == "ChordDiagram") {
+              if (getAncestorOfType(hit.element, "PageLine") !== null) {
+                cursor = "help";
+
+                // TODO figure out how to get TS to properly narrow this to a `ChordDiagram`
+                const diagram = (parent as ChordDiagram).diagram;
+                const diagramElementToRender = new ChordDiagram(diagram);
+
+                // TODO make this an "on enter" instead of checking truthiness of the tooltip
+                if (!application.state.tooltip) {
+                  application.state.showTooltip({
+                    subject: diagram,
+                    children: <RenderedChordDiagram diagram={diagramElementToRender} styler={styler} />,
+                    reference: new VirtualCanvasElement(hit.element, application.canvas),
+                  });
+                }
+              }
             } else if (!hit.element.isReadOnly) {
               cursor = "text";
             }
             break;
+          }
         }
       }
 
       application.debug.setHoveredElement(hit?.element ?? null);
       application.canvas.setCursor(cursor);
     },
-    [application],
+    [application.canvas, application.debug, application.selection.part, application.state, styler],
   );
 
   const onContextMenu = useCallback(
@@ -340,6 +361,45 @@ export const Score = observer((_props: Record<string, never>) => {
     </div>
   );
 });
+
+const RenderedChordDiagram = (props: { diagram: ChordDiagram; styler: StyleComputer }) => {
+  const application = useApplicationState();
+  const state = useMemo(() => {
+    const state = new CanvasState();
+
+    state.setRenderFunction((context, viewport) => {
+      renderScoreElement(props.diagram, context, {
+        application,
+        viewport,
+        ancestors: [],
+        style: { color: "#ffffff" },
+        styler: props.styler,
+      });
+    });
+
+    state.setUserSpaceSize(props.diagram.box);
+
+    return state;
+  }, [application, props.diagram, props.styler]);
+
+  useEffect(() => {
+    return autorun(() => {
+      if (!state.canvas) {
+        return;
+      }
+
+      // TODO return to this when we don't have to think about zoom, centering, etc and can just set a
+      state.setZoom(2.5);
+      state.centerViewportOn();
+    });
+  }, [application.debug, props.diagram, props.diagram.box.width, state]);
+
+  return (
+    <div className="relative max-h-48 max-w-48 overflow-hidden">
+      <Canvas state={state} disabled />
+    </div>
+  );
+};
 
 const selectionBoxFor = (chord: layout.Chord | layout.Rest, selectedNoteIndex: number) => {
   const PADDING = 3 * LINE_STROKE_WIDTH;

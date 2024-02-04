@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { PlaybackController } from "../../playback/PlaybackController";
 import { PropertyPaths } from "../../utils/types";
+import { TooltipProps } from "../ui/misc/Tooltip";
 
 /**
  * Captures all of the state that is related to the UI of the editor.
@@ -10,6 +11,9 @@ export class UIState {
   public contextMenuSubject: unknown = null;
   public contextMenuX = 0;
   public contextMenuY = 0;
+
+  public tooltip: TooltipProps | null = null;
+  private hideTooltipTimeout = 0;
 
   /** Whether or not the key bindings overlay should be visible */
   public helpVisible = false;
@@ -38,10 +42,10 @@ export class UIState {
     );
   }
 
-  showContextMenuFor(subject: unknown, offsetX = 0, offsetY = 0) {
+  showContextMenuFor(subject: unknown, x = 0, y = 0) {
     this.contextMenuSubject = subject;
-    this.contextMenuX = offsetX;
-    this.contextMenuY = offsetY;
+    this.contextMenuX = x;
+    this.contextMenuY = y;
   }
 
   hideContextMenu() {
@@ -58,6 +62,14 @@ export class UIState {
   hideModal() {
     this.modalSubject = null;
     this.modalProperty = "";
+  }
+
+  showTooltip(tooltip: TooltipProps) {
+    this.tooltip = tooltip;
+  }
+
+  hideTooltip() {
+    this.tooltip = null;
   }
 
   toggleHelp() {

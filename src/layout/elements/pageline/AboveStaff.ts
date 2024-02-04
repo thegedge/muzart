@@ -222,26 +222,12 @@ export class AboveStaff extends GridGroup<LineElement> {
         }
 
         if (element.chord.chordDiagram) {
-          if (this.showChordDiagrams) {
-            const diagram = element.chord.chordDiagram;
-            this.addElement(new ChordDiagram(diagram), {
-              startColumn: index + 1,
-              endColumn: index + 1,
-              group: "chords",
-            });
-          } else {
-            this.addElement(
-              Text.centered({
-                size: baseSize,
-                value: element.chord.chordDiagram.name,
-              }),
-              {
-                startColumn: index + 1,
-                endColumn: index + 1,
-                group: "chords",
-              },
-            );
-          }
+          const diagram = element.chord.chordDiagram;
+          this.addElement(new ChordDiagram(diagram, this.showChordDiagrams), {
+            startColumn: index + 1,
+            endColumn: index + 1,
+            group: "chords",
+          });
         }
 
         if (element.chord.text) {

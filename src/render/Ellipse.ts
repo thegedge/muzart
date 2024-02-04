@@ -1,7 +1,7 @@
 import layout from "../layout";
 import { RenderFunc } from "./types";
 
-export const Ellipse: RenderFunc<layout.Ellipse> = (element, render) => {
+export const Ellipse: RenderFunc<layout.Ellipse> = (element, render, context) => {
   render.beginPath();
   render.moveTo(element.box.x, element.box.y);
   render.ellipse(
@@ -13,6 +13,6 @@ export const Ellipse: RenderFunc<layout.Ellipse> = (element, render) => {
     0,
     2 * Math.PI,
   );
-  if (element.style?.fill) render.fill();
-  if (element.style?.stroke) render.stroke();
+  if (context.style.fill) render.fill();
+  if (context.style.stroke) render.stroke();
 };

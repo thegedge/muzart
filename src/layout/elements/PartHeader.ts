@@ -172,7 +172,6 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       }
 
       tuningsGroup.layout();
-      console.log(tuningsGroup.box);
       this.addElement(tuningsGroup);
     }
   }

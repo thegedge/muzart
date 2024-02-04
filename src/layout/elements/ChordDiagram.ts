@@ -14,10 +14,13 @@ export class ChordDiagram
 {
   readonly type = "ChordDiagram";
 
-  constructor(readonly diagram: notation.ChordDiagram) {
+  constructor(
+    readonly diagram: notation.ChordDiagram,
+    showDiagram = true,
+  ) {
     super(Box.empty()); // will figure this out after laid out
 
-    const diagram_ = diagram.diagram;
+    const diagram_ = showDiagram ? diagram.diagram : undefined;
 
     let verticalAlign: CSS.Properties["verticalAlign"];
     if (diagram_) {
@@ -35,7 +38,8 @@ export class ChordDiagram
         value: diagram.name,
         size: STAFF_LINE_HEIGHT,
         style: {
-          textAlign: "center",
+          // TODO always "center" once the chord diagrams are properly centered above chords
+          textAlign: diagram_ ? "center" : "left",
           verticalAlign,
           fontFamily: DEFAULT_SERIF_FONT_FAMILY,
         },

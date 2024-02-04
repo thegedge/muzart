@@ -28,7 +28,7 @@ export const KeyBindingsOverlay = observer(function KeyBindingsOverlay<T>(props:
                 <h2 className="text-3 mb-2 border-b-2 border-b-white/25 font-bold">{groupName}</h2>
                 <div className="grid grid-cols-key-bindings gap-x-4 gap-y-1">
                   {bindingsToShow.map((binding) => (
-                    <Fragment key={binding.name}>
+                    <Fragment key={binding.key}>
                       <KeyBinding binding={binding.key} />
                       <span>{binding.name}</span>
                     </Fragment>

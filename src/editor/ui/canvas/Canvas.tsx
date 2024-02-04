@@ -17,7 +17,11 @@ export interface Point {
 type MouseEventHandler = (p: Point, event: MouseEvent) => void;
 
 interface CanvasProps {
+  /** The state to use for this canvas element */
   state: CanvasState;
+
+  /** If true, all mouse/keyboard interactions are disabled (e.g., scrolling, zoom) */
+  disabled?: boolean;
 
   onContextMenu?: MouseEventHandler;
   onDoubleClick?: MouseEventHandler;
@@ -31,7 +35,7 @@ export const Canvas = observer((props: CanvasProps) => {
   const state = props.state;
 
   useEffect(() => {
-    if (!container) {
+    if (!container || props.disabled) {
       return;
     }
 
@@ -73,13 +77,11 @@ export const Canvas = observer((props: CanvasProps) => {
       clearTimeout(wheelTimeout);
       container.removeEventListener("wheel", wheelListener);
     };
-  }, [state, container]);
+  }, [state, container, props.disabled]);
 
   const setCanvasRef = useCallback<RefCallback<HTMLCanvasElement>>(
     (canvas) => {
-      if (canvas) {
-        state.setCanvas(canvas);
-      }
+      state.setCanvas(canvas);
     },
     [state],
   );

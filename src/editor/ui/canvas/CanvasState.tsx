@@ -39,7 +39,7 @@ export class CanvasState {
   render: RenderFunction = () => void 0;
 
   constructor() {
-    makeAutoObservable(this, {});
+    makeAutoObservable(this);
   }
 
   setCanvas(canvas: HTMLCanvasElement | null) {
@@ -58,13 +58,14 @@ export class CanvasState {
   setUserSpaceSize(size: Box) {
     this.userSpaceSize = size;
     this.updateViewport();
-    this.centerViewportOn();
   }
 
   setRenderFunction(f: RenderFunction) {
     this.render = f;
     this.redraw();
   }
+
+  // TODO can we adjust viewport directly and not have a zoom property at all?
 
   setZoom(zoom: number) {
     const canvasHalfWidth = (0.5 * (this.canvas?.width ?? 0)) / this.pixelRatio;
@@ -92,10 +93,6 @@ export class CanvasState {
   centerViewportOn(): void;
   centerViewportOn(x: number, y: number): void;
   centerViewportOn(x?: number, y?: number): void {
-    if (!this.canvas) {
-      return;
-    }
-
     if (typeof x == "undefined" || typeof y == "undefined") {
       if (this.canvasSpaceSize.width < this.canvasWidth) {
         this.scrollX = -0.5 * (this.canvasWidth - this.canvasSpaceSize.width);
@@ -113,38 +110,30 @@ export class CanvasState {
   }
 
   scrollBy(deltaX: number, deltaY: number) {
-    if (!this.canvas) {
-      return false;
-    }
-
     this.scrollTo(this.scrollX + deltaX, this.scrollY + deltaY);
   }
 
   scrollTo(x: number, y: number) {
-    if (!this.canvas) {
-      return;
-    }
-
-    let lowerX = 0;
-    let upperX = this.canvasSpaceSize.width - this.canvasWidth;
     const canvasSpaceWidth = this.canvasSpaceSize.width;
     const canvasSpaceViewportWidth = this.canvasWidth;
     if (canvasSpaceWidth < canvasSpaceViewportWidth) {
-      lowerX = -0.5 * (canvasSpaceViewportWidth - canvasSpaceWidth);
-      upperX = lowerX + canvasSpaceWidth - this.canvasWidth;
+      this.scrollX = -0.5 * (canvasSpaceViewportWidth - canvasSpaceWidth);
+    } else {
+      this.scrollX = clamp(x, 0, canvasSpaceWidth - canvasSpaceViewportWidth);
     }
 
-    this.scrollX = scrollWithClamping(this.scrollX, x, lowerX, upperX);
-    this.scrollY = scrollWithClamping(this.scrollY, y, 0, this.canvasSpaceSize.height - this.canvasHeight);
+    const canvasSpaceHeight = this.canvasSpaceSize.height;
+    const canvasSpaceViewportHeight = this.canvasHeight;
+    if (canvasSpaceHeight < canvasSpaceViewportHeight) {
+      this.scrollY = -0.5 * (canvasSpaceViewportHeight - canvasSpaceHeight);
+    } else {
+      this.scrollY = clamp(y, 0, canvasSpaceHeight - canvasSpaceViewportHeight);
+    }
 
     this.updateViewport();
   }
 
   ensureInView(userSpaceBox: Box) {
-    if (!this.canvas) {
-      return;
-    }
-
     if (this.viewport.contains(userSpaceBox)) {
       return;
     }
@@ -159,7 +148,6 @@ export class CanvasState {
 
   updateViewport() {
     if (
-      !this.canvas ||
       this.canvasWidth == 0 ||
       this.canvasHeight == 0 ||
       this.canvasSpaceSize.width == 0 ||
@@ -193,10 +181,6 @@ export class CanvasState {
   }
 
   canvasViewportToUserSpace(pt: Point): Point {
-    if (!this.canvas) {
-      return pt;
-    }
-
     return {
       x: (this.scrollX + pt.x) / this.userspaceToCanvasFactor,
       y: (this.scrollY + pt.y) / this.userspaceToCanvasFactor,
@@ -289,19 +273,15 @@ export class CanvasState {
   }
 }
 
-const scrollWithClamping = (current: number, desired: number, min: number, max: number) => {
+/**
+ * Move from the current value to the desired value, clamping to the given min and max.
+ */
+const clamp = (desired: number, min: number, max: number) => {
   if (desired < min) {
-    if (current > min) {
-      desired = min;
-    } else if (desired < current) {
-      desired = current;
-    }
+    return min;
   } else if (desired > max) {
-    if (current < max) {
-      desired = max;
-    } else if (desired > current) {
-      desired = current;
-    }
+    return max;
+  } else {
+    return desired;
   }
-  return desired;
 };

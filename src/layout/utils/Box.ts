@@ -95,6 +95,14 @@ export class Box {
     return this.x <= box.right && this.right >= box.x && this.y <= box.bottom && this.bottom >= box.y;
   }
 
+  get top() {
+    return this.y;
+  }
+
+  get left() {
+    return this.x;
+  }
+
   get right() {
     return this.x + this.width;
   }
