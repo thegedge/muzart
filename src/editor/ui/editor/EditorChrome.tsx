@@ -32,7 +32,7 @@ export const EditorChrome = observer((props: { loaderUrl: string }) => {
   }
 
   return (
-    <div className="chrome grid h-screen max-h-screen w-screen max-w-screen gap-px bg-gray-950 fill-gray-200 text-gray-200">
+    <div className="chrome relative grid h-screen max-h-screen w-screen max-w-screen gap-px bg-gray-950 fill-gray-200 text-gray-200">
       <Score />
       <SelectionPalette />
       <PartPanel />

@@ -1,5 +1,4 @@
 import {
-  FloatingPortal,
   arrow,
   computePosition,
   flip,
@@ -87,30 +86,28 @@ export const Tooltip = observer((_props: Record<string, never>) => {
   };
 
   return (
-    <FloatingPortal>
-      {application.state.tooltip && (
-        <div
-          ref={refs.setFloating}
-          {...props}
+    application.state.tooltip && (
+      <div
+        ref={refs.setFloating}
+        {...props}
+        style={{
+          ...floatingStyles,
+          fontSize: `${Math.log(-application.canvas.userspaceToCanvasFactor / PX_PER_MM)}px`,
+          filter: "drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.3))",
+        }}
+      >
+        <div className="rounded-md bg-gray-800 p-4">{application.state.tooltip.children}</div>
+        <svg
+          ref={arrowRef}
+          className="h-auto max-h-4 fill-gray-800"
+          viewBox="0 0 24 10"
           style={{
-            ...floatingStyles,
-            fontSize: `${Math.log(-application.canvas.userspaceToCanvasFactor / PX_PER_MM)}px`,
-            filter: "drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.3))",
+            transform: `rotate(${arrowRotations[side]})`,
           }}
         >
-          <div className="rounded-md bg-gray-800 p-4">{application.state.tooltip.children}</div>
-          <svg
-            ref={arrowRef}
-            className="h-auto max-h-4 fill-gray-800"
-            viewBox="0 0 24 10"
-            style={{
-              transform: `rotate(${arrowRotations[side]})`,
-            }}
-          >
-            <path d="M 0 0 c 12 1 10 10 12 10 C 14 10 12 1 24 0" />
-          </svg>
-        </div>
-      )}
-    </FloatingPortal>
+          <path d="M 0 0 c 12 1 10 10 12 10 C 14 10 12 1 24 0" />
+        </svg>
+      </div>
+    )
   );
 });
