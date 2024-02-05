@@ -301,7 +301,7 @@ export const Score = observer((_props: Record<string, never>) => {
 
   // Relative positioning to so element-bound palettes can be positioned relative to the score
   return (
-    <div className="score relative overflow-hidden bg-gray-500">
+    <div className="score relative h-full w-full overflow-hidden bg-gray-500">
       {textInputState?.visible && <StatefulInput state={textInputState} />}
       {application.state.modalSubject instanceof Note && application.state.modalProperty == "dynamic" && (
         <ElementBoundPalette

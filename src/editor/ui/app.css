@@ -23,12 +23,31 @@
 
 @layer components {
   .chrome {
-    grid-template-areas:
-      "left-panel       score      right-panel"
-      "bottom-panel  bottom-panel bottom-panel";
+    @media (max-width: 768px) {
+      grid-template-rows: 1fr;
+      grid-template-columns: 1fr;
+      grid-template-areas: "score";
 
-    grid-template-rows: 1fr max-content;
-    grid-template-columns: max-content 1fr max-content;
+      .debug-panel {
+        display: none;
+      }
+
+      .part-panel {
+        display: none;
+      }
+
+      .palette {
+        display: none;
+      }
+    }
+
+    @media (min-width: 769px) {
+      grid-template-rows: 1fr max-content;
+      grid-template-columns: max-content 1fr max-content;
+      grid-template-areas:
+        "left-panel       score      right-panel"
+        "bottom-panel  bottom-panel bottom-panel";
+    }
 
     .score {
       grid-area: score;
