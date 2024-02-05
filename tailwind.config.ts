@@ -37,11 +37,15 @@ export default {
         ex: "1.5em",
         screen: "100vw",
       },
+      maxHeight: {
+        screen: "100vh",
+      },
       maxWidth: {
         screen: "100vw",
       },
       padding: {
-        0.8: "3px",
+        "0.8": "0.2rem",
+        "1.2": "0.3rem",
       },
       textShadow: {
         DEFAULT: "0.5px 0.5px 0 var(--tw-shadow-color)",

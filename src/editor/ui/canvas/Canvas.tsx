@@ -79,6 +79,45 @@ export const Canvas = observer((props: CanvasProps) => {
     };
   }, [state, container, props.disabled]);
 
+  useEffect(() => {
+    if (!container || props.disabled) {
+      return;
+    }
+
+    let startX = 0;
+    let startY = 0;
+
+    const touchStartListener = (event: TouchEvent) => {
+      if (event.touches.length !== 1) {
+        return;
+      }
+
+      event.preventDefault();
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+    };
+
+    const touchMoveListener = (event: TouchEvent) => {
+      if (event.touches.length !== 1) {
+        return;
+      }
+
+      event.preventDefault();
+      const dx = event.touches[0].clientX - startX;
+      const dy = startY - event.touches[0].clientY;
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+      state.scrollBy(dx, dy);
+    };
+
+    container.addEventListener("touchstart", touchStartListener);
+    container.addEventListener("touchmove", touchMoveListener);
+    return () => {
+      container.removeEventListener("touchstart", touchStartListener);
+      container.removeEventListener("touchmove", touchMoveListener);
+    };
+  }, [state, container, props.disabled]);
+
   const setCanvasRef = useCallback<RefCallback<HTMLCanvasElement>>(
     (canvas) => {
       state.setCanvas(canvas);
