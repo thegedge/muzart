@@ -64,7 +64,7 @@ const ToolbarOverlayForSmallScreens = observer((_props: Record<string, never>) =
   const application = useApplicationState();
 
   return (
-    <div className="pointer-events-nonebottom-0 absolute left-0 right-0 top-0 flex flex-col items-end p-4 md:hidden">
+    <div className="pointer-events-none absolute bottom-0 left-0 right-0 top-0 flex flex-col items-end p-4 lg:hidden">
       <ToggleIconButton
         on={application.playback.playing}
         onIcon={PauseIcon}

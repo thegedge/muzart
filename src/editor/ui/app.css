@@ -23,7 +23,7 @@
 
 @layer components {
   .chrome {
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       grid-template-rows: 1fr;
       grid-template-columns: 1fr;
       grid-template-areas: "score";
