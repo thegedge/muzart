@@ -69,8 +69,8 @@ export class StatefulTextInputState {
       left: `${box.x}px`,
       width: `${box.width}px`,
       minHeight: `${box.height}px`,
-      fontSize: `${this.element.size * canvas.userspaceToCanvasFactor}px`,
-      lineHeight: `${this.element.size * canvas.userspaceToCanvasFactor}px`,
+      fontSize: `${this.element.size * canvas.userspaceToCanvasFactorX}px`,
+      lineHeight: `${this.element.size * canvas.userspaceToCanvasFactorX}px`,
       outline: "none",
       ...this.styles,
     } as const;

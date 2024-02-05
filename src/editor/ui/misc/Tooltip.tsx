@@ -92,7 +92,7 @@ export const Tooltip = observer((_props: Record<string, never>) => {
         {...props}
         style={{
           ...floatingStyles,
-          fontSize: `${Math.log(-application.canvas.userspaceToCanvasFactor / PX_PER_MM)}px`,
+          fontSize: `${Math.log(-application.canvas.userspaceToCanvasFactorX / PX_PER_MM)}px`,
           filter: "drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.3))",
         }}
       >

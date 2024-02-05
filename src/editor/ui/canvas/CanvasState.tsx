@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { Box, LINE_STROKE_WIDTH, PX_PER_MM } from "../../../layout";
+import { Box, LINE_STROKE_WIDTH } from "../../../layout";
 import { isRecord, numberOrDefault } from "../../storage/Storage";
 import { Point, RenderFunction } from "./Canvas";
 
@@ -14,20 +14,11 @@ export class CanvasState {
   /** The canvas element this state manages */
   canvas: HTMLCanvasElement | null = null;
 
-  /** The zoom level, a linear scaling factor applied to the entire canvas */
-  zoom = 1;
-
   /** The actual device pixel ratio */
   pixelRatio = devicePixelRatio;
 
   /** The viewport, in userspace coordinates */
   viewport = Box.empty();
-
-  /** The horizontal scroll offset, in canvas space */
-  scrollX = 0;
-
-  /** The vertical scroll offset, in canvas space */
-  scrollY = 0;
 
   /** The cursor to show for the canvas */
   cursor = "auto";
@@ -48,7 +39,7 @@ export class CanvasState {
     }
 
     this.canvas = canvas;
-    this.updateViewport();
+    this.redraw();
   }
 
   setCursor(cursor: this["cursor"]) {
@@ -57,7 +48,12 @@ export class CanvasState {
 
   setUserSpaceSize(size: Box) {
     this.userSpaceSize = size;
-    this.updateViewport();
+    this.redraw();
+  }
+
+  setViewport(viewport: Box) {
+    this.viewport = viewport;
+    this.redraw();
   }
 
   setRenderFunction(f: RenderFunction) {
@@ -65,75 +61,70 @@ export class CanvasState {
     this.redraw();
   }
 
-  // TODO can we adjust viewport directly and not have a zoom property at all?
-
-  setZoom(zoom: number) {
-    const canvasHalfWidth = (0.5 * (this.canvas?.width ?? 0)) / this.pixelRatio;
-    const canvasHalfHeight = (0.5 * (this.canvas?.height ?? 0)) / this.pixelRatio;
-    this.zoomCenteredOn(zoom, canvasHalfWidth, canvasHalfHeight);
-  }
-
-  zoomCenteredOn(zoom: number, x: number, y: number) {
-    const newZoom = Math.max(0.1, Math.min(5, zoom));
-    if (newZoom == this.zoom) {
-      return;
-    }
-
-    this.scrollX = (newZoom / this.zoom) * (this.scrollX + x) - x;
-    this.scrollY = (newZoom / this.zoom) * (this.scrollY + y) - y;
-    this.zoom = newZoom;
-    this.updateViewport();
-  }
-
   setPixelRatio(pixelRatio: number) {
     this.pixelRatio = pixelRatio;
-    this.updateViewport();
+    this.redraw();
   }
 
-  centerViewportOn(): void;
-  centerViewportOn(x: number, y: number): void;
-  centerViewportOn(x?: number, y?: number): void {
-    if (typeof x == "undefined" || typeof y == "undefined") {
-      if (this.canvasSpaceSize.width < this.canvasWidth) {
-        this.scrollX = -0.5 * (this.canvasWidth - this.canvasSpaceSize.width);
+  zoom(amount: number) {
+    const canvasHalfWidth = (0.5 * (this.canvas?.width ?? 0)) / this.pixelRatio;
+    const canvasHalfHeight = (0.5 * (this.canvas?.height ?? 0)) / this.pixelRatio;
+    this.zoomCenteredOn(amount, canvasHalfWidth, canvasHalfHeight);
+  }
+
+  zoomCenteredOn(amount: number, canvasX: number, canvasY: number) {
+    // What we're trying to do here is find a value for `amount` that prevents the viewport from being too small or too
+    // big, but we also want to maintain an aspect ratio. We do this by finding the limiting dimension, and then
+    // adjusting the amount so that the viewport fits within our specified bounds.
+    if (this.userSpaceSize.width < this.userSpaceSize.height) {
+      if (this.viewport.height * amount > this.userSpaceSize.height) {
+        amount = this.userSpaceSize.height / this.viewport.height;
+      } else if (this.viewport.height * amount < 10) {
+        amount = 10 / this.viewport.height;
       }
-
-      if (this.canvasSpaceSize.height < this.canvasHeight) {
-        this.scrollY = 0;
+    } else {
+      if (this.viewport.width * amount > this.userSpaceSize.width) {
+        amount = this.userSpaceSize.width / this.viewport.width;
+      } else if (this.viewport.width * amount < 10) {
+        amount = 10 / this.viewport.width;
       }
-    } else {
-      this.scrollX = x - 0.5 * this.canvasWidth;
-      this.scrollY = y - 0.5 * this.canvasHeight;
     }
 
-    this.updateViewport();
+    const width = this.viewport.width * amount;
+    const height = this.viewport.height * amount;
+
+    this.setViewport(
+      this.viewport.update({
+        x:
+          // width > this.userSpaceSize.width
+          // ? -(0.5 * (this.userSpaceSize.width - this.canvasWidth / this.userspaceToCanvasFactorX))
+          this.viewport.x + (canvasX / this.userspaceToCanvasFactorX) * (1 - amount),
+        y:
+          // height > this.userSpaceSize.height
+          // ? -(0.5 * (this.userSpaceSize.height - this.canvasHeight / this.userspaceToCanvasFactorY))
+          this.viewport.y + (canvasY / this.userspaceToCanvasFactorY) * (1 - amount),
+        width,
+        height,
+      }),
+    );
   }
 
-  scrollBy(deltaX: number, deltaY: number) {
-    this.scrollTo(this.scrollX + deltaX, this.scrollY + deltaY);
+  centerViewportOn(x: number, y: number) {
+    this.setViewport(
+      this.viewport.update({
+        x: x - 0.5 * this.viewport.width,
+        y: y - 0.5 * this.viewport.height,
+      }),
+    );
   }
 
-  scrollTo(x: number, y: number) {
-    const canvasSpaceWidth = this.canvasSpaceSize.width;
-    const canvasSpaceViewportWidth = this.canvasWidth;
-    if (canvasSpaceWidth < canvasSpaceViewportWidth) {
-      this.scrollX = -0.5 * (canvasSpaceViewportWidth - canvasSpaceWidth);
-    } else {
-      this.scrollX = clamp(x, 0, canvasSpaceWidth - canvasSpaceViewportWidth);
-    }
-
-    const canvasSpaceHeight = this.canvasSpaceSize.height;
-    const canvasSpaceViewportHeight = this.canvasHeight;
-    if (canvasSpaceHeight < canvasSpaceViewportHeight) {
-      this.scrollY = -0.5 * (canvasSpaceViewportHeight - canvasSpaceHeight);
-    } else {
-      this.scrollY = clamp(y, 0, canvasSpaceHeight - canvasSpaceViewportHeight);
-    }
-
-    this.updateViewport();
+  scrollBy(deltaCanvasX: number, deltaCanvasY: number) {
+    const userspaceDeltaX = deltaCanvasX / this.userspaceToCanvasFactorX;
+    const userspaceDeltaY = deltaCanvasY / this.userspaceToCanvasFactorY;
+    this.scrollTo(this.viewport.x + userspaceDeltaX, this.viewport.y + userspaceDeltaY);
   }
 
-  ensureInView(userSpaceBox: Box) {
+  scrollIntoView(userSpaceBox: Box) {
     if (this.viewport.contains(userSpaceBox)) {
       return;
     }
@@ -141,49 +132,49 @@ export class CanvasState {
     // TODO (maybe) depending on which direction we need to scroll, change how we decide to scroll. For example,
     //  when scrolling downwards, show an entire page after the given box, instead of centering.
 
-    const x = (userSpaceBox.centerX - 0.5 * this.viewport.width) * this.userspaceToCanvasFactor;
-    const y = (userSpaceBox.centerY - 0.5 * this.viewport.height) * this.userspaceToCanvasFactor;
+    const x = (userSpaceBox.centerX - 0.5 * this.viewport.width) * this.userspaceToCanvasFactorX;
+    const y = (userSpaceBox.centerY - 0.5 * this.viewport.height) * this.userspaceToCanvasFactorY;
     this.scrollTo(x, y);
   }
 
-  updateViewport() {
-    if (
-      this.canvasWidth == 0 ||
-      this.canvasHeight == 0 ||
-      this.canvasSpaceSize.width == 0 ||
-      this.canvasSpaceSize.height == 0
-    ) {
-      return;
-    }
-
-    // Ensure the scroll values are clamped
-    this.scrollX = Math.max(-this.canvasWidth, Math.min(this.scrollX, this.canvasSpaceSize.width));
-    this.scrollY = Math.max(-this.canvasHeight, Math.min(this.scrollY, this.canvasSpaceSize.height));
-
-    const { x, y } = this.canvasViewportToUserSpace({ x: 0, y: 0 });
-    this.viewport = new Box(
-      x,
-      y,
-      this.canvasWidth / this.userspaceToCanvasFactor,
-      this.canvasHeight / this.userspaceToCanvasFactor,
+  scrollTo(x: number, y: number) {
+    this.setViewport(
+      this.viewport.update({
+        x:
+          this.viewport.width < this.userSpaceSize.width
+            ? scrollWithClamping(this.viewport.x, x, 0, this.userSpaceSize.width - this.viewport.width)
+            : scrollWithClamping(
+                this.viewport.x,
+                x,
+                0.5 * (this.userSpaceSize.width - this.canvasWidth / this.userspaceToCanvasFactorX),
+                0.5 * (this.userSpaceSize.width - this.canvasWidth / this.userspaceToCanvasFactorX),
+              ),
+        y:
+          this.viewport.height < this.userSpaceSize.height
+            ? scrollWithClamping(this.viewport.y, y, 0, this.userSpaceSize.height - this.viewport.height)
+            : scrollWithClamping(
+                this.viewport.y,
+                y,
+                0.5 * (this.userSpaceSize.height - this.canvasHeight / this.userspaceToCanvasFactorY),
+                0.5 * (this.userSpaceSize.height - this.canvasHeight / this.userspaceToCanvasFactorY),
+              ),
+      }),
     );
-
-    this.redraw();
   }
 
   userSpaceToCanvasViewport(box: Box) {
     return new Box(
-      box.x * this.userspaceToCanvasFactor - this.scrollX,
-      box.y * this.userspaceToCanvasFactor - this.scrollY,
-      box.width * this.userspaceToCanvasFactor,
-      box.height * this.userspaceToCanvasFactor,
+      (box.x - this.viewport.x) * this.userspaceToCanvasFactorX,
+      (box.y - this.viewport.y) * this.userspaceToCanvasFactorY,
+      box.width * this.userspaceToCanvasFactorX,
+      box.height * this.userspaceToCanvasFactorY,
     );
   }
 
   canvasViewportToUserSpace(pt: Point): Point {
     return {
-      x: (this.scrollX + pt.x) / this.userspaceToCanvasFactor,
-      y: (this.scrollY + pt.y) / this.userspaceToCanvasFactor,
+      x: pt.x / this.userspaceToCanvasFactorX + this.viewport.x,
+      y: pt.y / this.userspaceToCanvasFactorY + this.viewport.y,
     };
   }
 
@@ -191,8 +182,8 @@ export class CanvasState {
     return new Box(
       0,
       0,
-      this.userSpaceSize.width * this.userspaceToCanvasFactor,
-      this.userSpaceSize.height * this.userspaceToCanvasFactor,
+      this.userSpaceSize.width * this.userspaceToCanvasFactorX,
+      this.userSpaceSize.height * this.userspaceToCanvasFactorY,
     );
   }
 
@@ -212,12 +203,12 @@ export class CanvasState {
     return this.canvas.parentElement.clientHeight;
   }
 
-  get userspaceToCanvasFactor() {
-    return this.zoom * PX_PER_MM;
+  get userspaceToCanvasFactorX() {
+    return this.canvasWidth / this.viewport.width;
   }
 
-  get userspaceToDeviceFactor() {
-    return this.userspaceToCanvasFactor * this.pixelRatio;
+  get userspaceToCanvasFactorY() {
+    return this.canvasHeight / this.viewport.height;
   }
 
   /** The handle of the last request animation frame */
@@ -225,6 +216,15 @@ export class CanvasState {
 
   redraw() {
     if (!this.canvas || !this.viewport) {
+      return;
+    }
+
+    if (
+      this.canvasWidth == 0 ||
+      this.canvasHeight == 0 ||
+      this.canvasSpaceSize.width == 0 ||
+      this.canvasSpaceSize.height == 0
+    ) {
       return;
     }
 
@@ -240,10 +240,12 @@ export class CanvasState {
         return;
       }
 
-      const factor = this.userspaceToDeviceFactor;
+      const factorX = this.userspaceToCanvasFactorX * this.pixelRatio;
+      const factorY = this.userspaceToCanvasFactorY * this.pixelRatio;
+
       context.resetTransform();
       context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      context.setTransform(factor, 0, 0, factor, -this.viewport.x * factor, -this.viewport.y * factor);
+      context.setTransform(factorX, 0, 0, factorY, -factorX * this.viewport.x, -factorY * this.viewport.y);
       context.lineWidth = LINE_STROKE_WIDTH;
       this.render(context, this.viewport);
     });
@@ -251,18 +253,11 @@ export class CanvasState {
 
   toJSON() {
     return {
-      scrollX: this.scrollX,
-      scrollY: this.scrollY,
       viewport: this.viewport,
-      zoom: this.zoom,
     };
   }
 
   fromJSON(value: Record<string, unknown>) {
-    this.scrollX = numberOrDefault(value.scrollX, 0);
-    this.scrollY = numberOrDefault(value.scrollY, 0);
-    this.zoom = numberOrDefault(value.zoom, 0);
-
     if (isRecord(value.viewport)) {
       const x = numberOrDefault(value.viewport.x, 0);
       const y = numberOrDefault(value.viewport.y, 0);
@@ -274,14 +269,22 @@ export class CanvasState {
 }
 
 /**
- * Move from the current value to the desired value, clamping to the given min and max.
+ * Clamp a desired value to a given min and max, but only if the current value is already within the min and max.
+ * If the current value is outside the min and max, the current value is returned.
  */
-const clamp = (desired: number, min: number, max: number) => {
+const scrollWithClamping = (current: number, desired: number, min: number, max: number) => {
   if (desired < min) {
-    return min;
+    if (current > min) {
+      desired = min;
+    } else if (desired < current) {
+      desired = current;
+    }
   } else if (desired > max) {
-    return max;
-  } else {
-    return desired;
+    if (current < max) {
+      desired = max;
+    } else if (desired > current) {
+      desired = current;
+    }
   }
+  return desired;
 };

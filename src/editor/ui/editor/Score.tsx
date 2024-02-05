@@ -1,6 +1,6 @@
 import type * as CSS from "csstype";
 import { sumBy } from "lodash";
-import { autorun, reaction } from "mobx";
+import { reaction } from "mobx";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useRef, useState } from "preact/hooks";
 import layout, {
@@ -52,11 +52,13 @@ export const Score = observer((_props: Record<string, never>) => {
 
   useEffect(() => {
     return reaction(
-      () => application.selection.part?.box,
+      () => application.selection.score?.box,
       (box) => {
         if (box) {
           application.canvas.setUserSpaceSize(box);
-          application.canvas.centerViewportOn();
+          application.canvas.setViewport(
+            new Box(0, 0, box.width, box.width * (application.canvas.canvasHeight / application.canvas.canvasWidth)),
+          );
         }
       },
       { fireImmediately: true },
@@ -117,7 +119,6 @@ export const Score = observer((_props: Record<string, never>) => {
       });
 
       if (application.playback.playing) {
-        // Playback box
         const measure = application.playback.currentMeasure;
         if (measure) {
           const currentTempo = application.playback.tempoOfSelection;
@@ -140,9 +141,7 @@ export const Score = observer((_props: Record<string, never>) => {
           );
         }
       } else if (application.selection.chord) {
-        // Selection box
         const selectionBox = selectionBoxFor(application.selection.chord, application.selection.noteIndex);
-
         context.fillStyle = "#f0f0a055";
         context.strokeStyle = "#a0a050";
         context.fillRect(selectionBox.x, selectionBox.y, selectionBox.width, selectionBox.height);
@@ -196,7 +195,7 @@ export const Score = observer((_props: Record<string, never>) => {
           box = toAncestorCoordinateSystem(line);
         }
 
-        application.canvas.ensureInView(box);
+        application.canvas.scrollIntoView(box);
       },
     );
   }, [application]);
@@ -377,25 +376,18 @@ const RenderedChordDiagram = (props: { diagram: ChordDiagram; styler: StyleCompu
       });
     });
 
+    // TODO properly draw chord diagram inside of its box so there's no need to translate
     state.setUserSpaceSize(props.diagram.box);
+    state.setViewport(props.diagram.box.translate(-2.5, 0));
 
     return state;
   }, [application, props.diagram, props.styler]);
 
-  useEffect(() => {
-    return autorun(() => {
-      if (!state.canvas) {
-        return;
-      }
-
-      // TODO return to this when we don't have to think about zoom, centering, etc and can just set a
-      state.setZoom(2.5);
-      state.centerViewportOn();
-    });
-  }, [application.debug, props.diagram, props.diagram.box.width, state]);
-
   return (
-    <div className="relative max-h-48 max-w-48 overflow-hidden">
+    <div
+      className="relative max-w-48 overflow-hidden"
+      style={{ aspectRatio: `${props.diagram.box.width} / ${props.diagram.box.height}` }}
+    >
       <Canvas state={state} disabled />
     </div>
   );

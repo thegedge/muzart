@@ -26,7 +26,7 @@ export const ElementBoundPalette = observer(
     const style = {
       top: `${box.y}px`,
       left: `${box.centerX}px`,
-      fontSize: `${Math.log(-application.canvas.userspaceToCanvasFactor / PX_PER_MM)}px`,
+      fontSize: `${Math.log(-application.canvas.userspaceToCanvasFactorY / PX_PER_MM)}px`,
       transform: `translate(-50%, -100%)`,
       color: "#ffffff",
       position: "absolute",

@@ -1,3 +1,4 @@
+import { Box } from "../../../layout";
 import { Application } from "../../state/Application";
 import { Action } from "../Action";
 
@@ -11,7 +12,13 @@ export class ResetZoom extends Action {
   }
 
   apply(application: Application) {
-    application.canvas.setZoom(1);
-    application.canvas.centerViewportOn();
+    const box = application.selection.score?.box;
+    if (!box) {
+      return;
+    }
+
+    application.canvas.setViewport(
+      new Box(0, 0, box.width, box.width * (application.canvas.canvasHeight / application.canvas.canvasWidth)),
+    );
   }
 }

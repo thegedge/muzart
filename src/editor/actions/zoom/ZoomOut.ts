@@ -11,6 +11,6 @@ export class ZoomOut extends Action {
   }
 
   apply(application: Application) {
-    application.canvas.setZoom(application.canvas.zoom / 1.2);
+    application.canvas.zoom(1.2);
   }
 }

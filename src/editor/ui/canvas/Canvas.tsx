@@ -58,7 +58,7 @@ export const Canvas = observer((props: CanvasProps) => {
         event.stopPropagation();
 
         if (zooming) {
-          state.zoomCenteredOn(state.zoom * Math.exp(-event.deltaY / PX_PER_MM / 100), event.offsetX, event.offsetY);
+          state.zoomCenteredOn(Math.exp(event.deltaY / PX_PER_MM / 100), event.offsetX, event.offsetY);
         }
       }
 

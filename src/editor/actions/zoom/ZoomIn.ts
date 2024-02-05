@@ -11,6 +11,6 @@ export class ZoomIn extends Action {
   }
 
   apply(application: Application) {
-    application.canvas.setZoom(application.canvas.zoom * 1.2);
+    application.canvas.zoom(1.0 / 1.2);
   }
 }
