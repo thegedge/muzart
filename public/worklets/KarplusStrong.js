@@ -90,17 +90,17 @@ class KarplusStrong extends AudioWorkletProcessor {
     const output = outputs[0][0];
 
     if (currentTime < this.start) {
-      output.fill(0.0);
+      output && output.fill(0.0);
       return true;
     }
 
     if (currentTime >= this.end) {
-      output.fill(0.0);
+      output && output.fill(0.0);
       return false;
     }
 
     for (let i = 0; i < output.length; ++i, ++this.bufferIndex) {
-      const frequency = parameters.frequency[i];
+      const frequency = parameters.frequency[i % parameters.frequency.length];
       const offset = Math.floor(sampleRate / frequency);
 
       let value = 0;
