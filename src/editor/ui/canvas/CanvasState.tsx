@@ -124,37 +124,37 @@ export class CanvasState {
     this.scrollTo(this.viewport.x + userspaceDeltaX, this.viewport.y + userspaceDeltaY);
   }
 
-  scrollIntoView(userSpaceBox: Box) {
-    if (this.viewport.contains(userSpaceBox)) {
+  scrollIntoView(userspaceBox: Box) {
+    if (this.viewport.contains(userspaceBox)) {
       return;
     }
 
     // TODO (maybe) depending on which direction we need to scroll, change how we decide to scroll. For example,
     //  when scrolling downwards, show an entire page after the given box, instead of centering.
 
-    const x = (userSpaceBox.centerX - 0.5 * this.viewport.width) * this.userspaceToCanvasFactorX;
-    const y = (userSpaceBox.centerY - 0.5 * this.viewport.height) * this.userspaceToCanvasFactorY;
+    const x = userspaceBox.centerX - 0.5 * this.viewport.width;
+    const y = userspaceBox.centerY - 0.5 * this.viewport.height;
     this.scrollTo(x, y);
   }
 
-  scrollTo(x: number, y: number) {
+  scrollTo(userspaceX: number, userspaceY: number) {
     this.setViewport(
       this.viewport.update({
         x:
           this.viewport.width < this.userSpaceSize.width
-            ? scrollWithClamping(this.viewport.x, x, 0, this.userSpaceSize.width - this.viewport.width)
+            ? scrollWithClamping(this.viewport.x, userspaceX, 0, this.userSpaceSize.width - this.viewport.width)
             : scrollWithClamping(
                 this.viewport.x,
-                x,
+                userspaceX,
                 0.5 * (this.userSpaceSize.width - this.canvasWidth / this.userspaceToCanvasFactorX),
                 0.5 * (this.userSpaceSize.width - this.canvasWidth / this.userspaceToCanvasFactorX),
               ),
         y:
           this.viewport.height < this.userSpaceSize.height
-            ? scrollWithClamping(this.viewport.y, y, 0, this.userSpaceSize.height - this.viewport.height)
+            ? scrollWithClamping(this.viewport.y, userspaceY, 0, this.userSpaceSize.height - this.viewport.height)
             : scrollWithClamping(
                 this.viewport.y,
-                y,
+                userspaceY,
                 0.5 * (this.userSpaceSize.height - this.canvasHeight / this.userspaceToCanvasFactorY),
                 0.5 * (this.userSpaceSize.height - this.canvasHeight / this.userspaceToCanvasFactorY),
               ),
