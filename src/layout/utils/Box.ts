@@ -95,6 +95,13 @@ export class Box {
     return this.x <= box.right && this.right >= box.x && this.y <= box.bottom && this.bottom >= box.y;
   }
 
+  /**
+   * Does this box equal the other?
+   */
+  equals(box: Box): boolean {
+    return this.x === box.x && this.y === box.y && this.width === box.width && this.height === box.height;
+  }
+
   get top() {
     return this.y;
   }

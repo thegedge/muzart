@@ -53,15 +53,20 @@ export const Score = observer((_props: Record<string, never>) => {
   useEffect(() => {
     return reaction(
       () => application.selection.score?.box,
-      (box) => {
+      (box, prev) => {
         if (box) {
           application.canvas.setUserSpaceSize(box);
-          application.canvas.setViewport(
-            new Box(0, 0, box.width, box.width * (application.canvas.canvasHeight / application.canvas.canvasWidth)),
-          );
+          if (!prev) {
+            application.canvas.setViewport(
+              new Box(0, 0, box.width, box.width * (application.canvas.canvasHeight / application.canvas.canvasWidth)),
+            );
+          }
         }
       },
-      { fireImmediately: true },
+      {
+        fireImmediately: true,
+        equals: (a, b) => !!(b ? a?.equals(b) : false),
+      },
     );
   }, [application]);
 
