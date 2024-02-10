@@ -1,10 +1,12 @@
+import { clamp } from "lodash";
+import { svgPathProperties } from "svg-path-properties";
 import * as notation from "../../notation";
 import { Drum, DrumOptions } from "../generators/Drum";
 import { PluckedString, PluckedStringOptions } from "../generators/PluckedString";
 import { OscillatorOptions, SimpleOscillator } from "../generators/SimpleOscillator";
 import { CompositeNode } from "../nodes/CompositeNode";
 import { EqualizerNode } from "../nodes/EqualizerNode";
-import { MidiInstrument, SourceGenerator, SourceGeneratorFactory } from "../types";
+import { SourceGenerator, SourceGeneratorFactory, type MidiInstrument } from "../types";
 
 type OscillatorGenerator = {
   type: "oscillator";
@@ -108,35 +110,88 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
 
           return {
             generate(note) {
-              const source = generator.generate(note);
-
               const preHi = 2000;
               const preLo = 150;
               const postFrequency = 10000;
-
               const frequency = Math.sqrt(preHi - preLo);
               const Q = frequency / (preHi - preLo);
 
-              const n = context.sampleRate;
-              const curve = new Float32Array(n);
-              const distortionAmount = 1;
-              const k = distortionAmount * 2000;
-              for (let i = 0, x; i < n; ++i) {
-                x = (i * 2) / n - 1;
-                curve[i] = ((1 + k / 101) * x) / (1 + (k / 101) * Math.abs(x));
+              // Create a curve that adjusts input/output like the following:
+              //
+              //  ^
+              //  |
+              //
+              //  O             ----
+              //  U            /
+              //  T       _   /
+              //         / \_/
+              //  |     /
+              //  v
+              //           <- IN ->
+              //
+              const pathW = 210.65314;
+              const pathH = 210.65159;
+              const tx = 0.13639704;
+              const ty = -45.30019;
+              const path = new svgPathProperties(
+                [
+                  ["M", 0.01371475 + tx, 255.93989 + ty],
+                  ["C", 2.4957989 + tx, 224.63855 + ty, 1.675487 + tx, 141.29052 + ty, 19.984253 + tx, 141.11971 + ty],
+                  ["c", 25.223313, -0.23531, 37.719831, 88.87167, 37.719831, 88.87167],
+                  ["c", 0, 0, 49.456596, -52.55299, 90.235276, -127.00691],
+                  ["c", 12.18918, -22.255104, 26.27927, -20.471436, 62.57729, -20.449335],
+                ] as unknown as string, // svg-path-properties is happy with this
+              );
+
+              const n = 512;
+
+              const pathLength = path.getTotalLength();
+              const points = [];
+              for (let i = 0; i < n; ++i) {
+                const x = i / (n - 1);
+                const p = path.getPointAtLength(x * pathLength);
+                points.push({ x: p.x / pathW, y: clamp(1.0 - p.y / pathH, 0, 1) });
               }
 
+              const curve = new Float32Array(n);
+              for (let i = 0, pointIndex = n - 1; 2 * i < n; ++i) {
+                const t = 1.0 - (2 * i) / (n - 1);
+
+                // Find the next point on the path whose x is lower than t
+                while (pointIndex > 0 && t < points[pointIndex].x - 1e-10) {
+                  --pointIndex;
+                }
+
+                let value: number;
+                if (pointIndex == n - 1) {
+                  value = points[pointIndex].y;
+                } else {
+                  // Linearly interpolate between the two points
+                  const { x, y } = points[pointIndex];
+                  const { x: prevX, y: prevY } = points[pointIndex + 1];
+                  value = prevY + ((y - prevY) / (x - prevX)) * (t - prevX);
+                }
+
+                curve[i] = value;
+                curve[n - i - 1] = value;
+              }
+
+              // Ensure the crossing points are zero to avoid "clicking"
+              curve[n / 2] = 0;
+              curve[n / 2 - 1] = 0;
+
               return CompositeNode.compose(
-                source,
+                generator.generate(note),
+
                 new BiquadFilterNode(context, {
                   type: "bandpass",
                   Q,
                   frequency,
                 }),
 
-                // Clip
+                // Distortion (clip + crossover)
                 new WaveShaperNode(context, {
-                  oversample: "4x",
+                  oversample: "none",
                   curve,
                 }),
 
@@ -149,7 +204,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
                 // Tone
                 new BiquadFilterNode(context, {
                   type: "lowpass",
-                  frequency: Math.pow(Math.abs(350), 2),
+                  frequency: Math.pow(200, 2),
                   Q: Math.SQRT1_2,
                 }),
               );
