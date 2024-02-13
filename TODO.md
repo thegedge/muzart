@@ -56,7 +56,9 @@
 
 - Text slightly clipped at the first line on a page; see Guitar 1 (slash) track of sweet child of mine, measure 130
 
-### Other
+### Audio
 
 - Vibrato doesn't work on mid/end sections of ties
 - Not hearing dead notes
+- Chords should probably have some kind of gain value applied to make them not sound super loud compared to a single
+  note. Could perhaps also do all of the combining in the karplus-strong audio worklet

@@ -59,7 +59,10 @@ export class Instrument {
    * @param when optional starting time, in seconds, from the current time
    * @param durationSecs optional duration to play the note for, override the node's value
    */
-  playNote(note: notation.Note, tempo: number, when?: number, durationSecs?: number): void {
+  playNote(
+    note: notation.Note,
+    { tempo, durationSecs, gain, when = 0 }: { tempo: number; when?: number; durationSecs?: number; gain?: number },
+  ): void {
     if (note.dead) {
       // TODO produce some percussive-y sound, we have Karplus-Strong now!
       return;
@@ -71,7 +74,7 @@ export class Instrument {
         return;
       }
 
-      const startTime = this.currentTime + (when ?? 0);
+      const startTime = this.currentTime + when;
       const duration = durationSecs ?? noteValueToSeconds(note.value, tempo);
 
       if (tieType == "stop") {
@@ -98,7 +101,13 @@ export class Instrument {
         }
       }
 
-      source.connect(this.destination);
+      if (gain) {
+        const gainNode = new WrappedNode(new GainNode(this.context, { gain }));
+        source.connect(gainNode);
+        gainNode.connect(this.destination);
+      } else {
+        source.connect(this.destination);
+      }
       source.start(startTime, durationSecs !== undefined || tieType === undefined ? duration : undefined);
 
       this.activeSources.set(note, source);

@@ -181,21 +181,29 @@ export class PlaybackController {
         }
 
         const instrument = this.instrumentForPart(partIndex);
-        if (instrument) {
-          let currentTime = offsetFromNowSecs;
-          for (const chord of measure.chords) {
-            if (!chord.rest) {
-              for (const note of chord.notes) {
-                instrument.playNote(note, this.tempoOfSelection, currentTime);
-                if (note.graceNote) {
-                  const graceNoteTime = noteValueToSeconds(note.graceNote.value, this.tempoOfSelection);
-                  instrument.playNote(note.graceNote, this.tempoOfSelection, currentTime - graceNoteTime);
-                }
+        if (!instrument) {
+          return;
+        }
+
+        const gain = partIndex == this.selection.partIndex ? undefined : 0.2;
+        let currentTime = offsetFromNowSecs;
+        for (const chord of measure.chords) {
+          if (!chord.rest) {
+            for (const note of chord.notes) {
+              instrument.playNote(note, { tempo: this.tempoOfSelection, when: currentTime, gain });
+
+              if (note.graceNote) {
+                const graceNoteTime = noteValueToSeconds(note.graceNote.value, this.tempoOfSelection);
+                instrument.playNote(note.graceNote, {
+                  tempo: this.tempoOfSelection,
+                  when: currentTime - graceNoteTime,
+                  gain,
+                });
               }
             }
-
-            currentTime += noteValueToSeconds(chord.value, this.tempoOfSelection);
           }
+
+          currentTime += noteValueToSeconds(chord.value, this.tempoOfSelection);
         }
       });
 
@@ -239,7 +247,7 @@ export class PlaybackController {
     if (note) {
       this.withPlayback(() => {
         this.instrument?.stop();
-        this.instrument?.playNote(note, this.tempoOfSelection, undefined, 1);
+        this.instrument?.playNote(note, { tempo: this.tempoOfSelection, durationSecs: 1 });
       });
     }
   }

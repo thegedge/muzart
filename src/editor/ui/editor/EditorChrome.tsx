@@ -86,7 +86,7 @@ const ToggleIconButton = (props: {
   const application = useApplicationState();
   const className = clsx(
     "pl-1.2 right-2 top-2 max-h-16 max-w-16 overflow-hidden rounded-full py-1 pr-0.8 shadow-modal hover:cursor-pointer pointer-events-auto",
-    props.on ? "text-white bg-gray-700 hover:bg-gray-700" : "text-gray-600 bg-white hover:bg-gray-100",
+    props.on ? "text-white bg-gray-700 hover:bg-gray-800" : "text-gray-600 bg-white hover:bg-gray-100",
   );
   return (
     <div className={className}>
