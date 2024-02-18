@@ -104,7 +104,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
             type: "plucked-string",
             options: {
               impulseType: "white-noise",
-              filterType: "gaussian",
+              filterType: "average",
             },
           });
 
@@ -178,6 +178,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
           curve[n / 2] = 0;
           curve[n / 2 - 1] = 0;
 
+          return generator;
           return {
             generate(note) {
               const pre = new BiquadFilterNode(context, {
