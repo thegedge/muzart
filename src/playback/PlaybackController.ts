@@ -6,6 +6,8 @@ import { NoteValue, NoteValueName } from "../notation";
 import { Instrument } from "./Instrument";
 import { DefaultSourceGenerator } from "./factories/DefaultSourceGenerator";
 import { SoundFont } from "./factories/SoundFont";
+import type { AudioNode } from "./nodes/AudioNode";
+import { WrappedNode } from "./nodes/WrappedNode";
 import { SourceGeneratorFactory } from "./types";
 import { noteValueToSeconds } from "./util/durations";
 
@@ -36,6 +38,8 @@ export class PlaybackController {
 
   private instruments_: Record<string, Instrument | null> = {};
 
+  private destination: AudioNode;
+
   constructor(private selection: Selection) {
     this.audioContext = new AudioContext();
     this.init().catch((err) => {
@@ -52,6 +56,8 @@ export class PlaybackController {
       this.reset();
       score = selection.score;
     });
+
+    this.destination = new WrappedNode(this.audioContext.destination);
 
     makeObservable(this, {
       playing: observable,
@@ -302,6 +308,7 @@ export class PlaybackController {
           context: this.audioContext,
           instrument: part.instrument,
           sourceGenerator,
+          destination: this.destination,
         });
         this.instruments_[midiPreset] = instrument;
       } catch (err) {

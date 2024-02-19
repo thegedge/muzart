@@ -29,4 +29,11 @@ export interface InstrumentOptions {
 
   /** A generator that can produce a source node for a given note */
   sourceGenerator: SourceGenerator;
+
+  /**
+   * An optional destination node for the instrument
+   *
+   * If not provided, the context destination will be used.
+   */
+  destination?: AudioNode;
 }

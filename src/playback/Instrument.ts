@@ -40,7 +40,7 @@ export class Instrument {
       }),
     );
 
-    this.destination.raw.connect(this.context.destination);
+    this.destination.connect(options.destination ?? new WrappedNode(this.context.destination));
   }
 
   /**
