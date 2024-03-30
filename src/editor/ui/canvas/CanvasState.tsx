@@ -228,15 +228,15 @@ export class CanvasState {
       return;
     }
 
-    const context = this.canvas.getContext("2d", { willReadFrequently: false });
-    if (!context) {
-      return;
-    }
-
     cancelAnimationFrame(this.frameHandle);
 
     this.frameHandle = requestAnimationFrame((_time) => {
       if (!this.canvas) {
+        return;
+      }
+
+      const context = this.canvas.getContext("2d", { willReadFrequently: false });
+      if (!context) {
         return;
       }
 

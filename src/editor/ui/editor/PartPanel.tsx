@@ -33,8 +33,8 @@ export const PartPanel = observer((_props: Record<string, never>) => {
   const numMeasures = score.score.parts[0]?.measures.length ?? 0;
 
   return (
-    <div className="part-panel flex max-h-48 w-full flex-col overflow-y-auto print:hidden">
-      <div className="grid grid-cols-part-list items-center gap-y-px overflow-auto bg-gray-950/75">
+    <div className="part-panel flex h-full w-full flex-col overflow-auto">
+      <div className="grid grid-cols-part-list items-center gap-y-px bg-gray-950/75">
         <div className="sticky left-0 top-0 z-20 flex h-7 items-center gap-px bg-inherit backdrop-blur-2xs">
           <div className="flex-1 px-4">Track</div>
           <div className="flex w-6 items-center justify-center p-0.5 text-gray-500">
@@ -94,9 +94,9 @@ const PartRow = observer(
 
     return (
       <>
-        <div className={`sticky left-0 flex h-full gap-px pr-px ${rowBackgroundColor}`} {...contextMenuHandlers}>
+        <div className={`sticky left-0 flex gap-px pr-px ${rowBackgroundColor}`} {...contextMenuHandlers}>
           <div
-            className="sticky flex h-full flex-1 cursor-pointer items-center px-4 text-xs font-extralight shadow-black text-shadow"
+            className="flex flex-1 cursor-pointer items-center px-4 text-xs font-extralight shadow-black text-shadow"
             onClick={onChange}
             data-part={partIndex}
           >

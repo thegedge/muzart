@@ -2,6 +2,7 @@ import { PauseIcon, PlayIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "preact/hooks";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import * as notation from "../../../notation";
 import { EditTimeSignature } from "../../actions/editing/EditTimeSignature";
 import { RemovePart } from "../../actions/editing/RemovePart";
@@ -36,10 +37,31 @@ export const EditorChrome = observer((props: { loaderUrl: string }) => {
 
   return (
     <div className="chrome relative grid h-screen max-h-screen w-screen max-w-screen gap-px bg-gray-950 fill-gray-200 text-gray-200">
-      <Score />
-      <SelectionPalette />
-      <PartPanel />
-      <DebugPanel />
+      <PanelGroup autoSaveId="muzart-chrome" direction="vertical">
+        <Panel defaultSize={80} minSize={10}>
+          <PanelGroup autoSaveId="muzart-chrome-inner" direction="horizontal">
+            <Panel order={1} defaultSize={20}>
+              <SelectionPalette />
+            </Panel>
+            <PanelResizeHandle hitAreaMargins={{ coarse: 0, fine: 0 }} />
+            <Panel order={2} minSize={10}>
+              <Score />
+            </Panel>
+            {application.debug.enabled && (
+              <>
+                <PanelResizeHandle hitAreaMargins={{ coarse: 0, fine: 0 }} />
+                <Panel order={3} defaultSize={20}>
+                  <DebugPanel />
+                </Panel>
+              </>
+            )}
+          </PanelGroup>
+        </Panel>
+        <PanelResizeHandle hitAreaMargins={{ coarse: 0, fine: 0 }} />
+        <Panel order={4}>
+          <PartPanel />
+        </Panel>
+      </PanelGroup>
 
       {/* Overlays, menus, and various things that may or may not show based on the UI state */}
       <MuzartContextMenu />

@@ -5,10 +5,6 @@ import { useApplicationState } from "../../utils/ApplicationStateContext";
 
 export const DebugPanel = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
-  if (!application.debug.enabled) {
-    return null;
-  }
-
   return (
     <div className="debug-panel flex h-full min-w-72 max-w-72 flex-col gap-4 p-4 text-sm">
       <ElementTree element={application.debug.hoveredElement} />

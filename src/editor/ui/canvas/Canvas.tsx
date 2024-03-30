@@ -1,3 +1,4 @@
+import { debounce } from "lodash";
 import { observer } from "mobx-react-lite";
 import { RefCallback } from "preact";
 import { useCallback, useEffect, useState } from "preact/hooks";
@@ -124,6 +125,42 @@ export const Canvas = observer((props: CanvasProps) => {
     },
     [state],
   );
+
+  useEffect(() => {
+    if (!container) {
+      return;
+    }
+
+    let previousBorderBox: ResizeObserverSize | null = null;
+    console.log(state.viewport);
+
+    const observer = new ResizeObserver(
+      debounce(
+        (entries: ResizeObserverEntry[]) => {
+          const borderBox = entries[0].borderBoxSize[0];
+          if (previousBorderBox) {
+            const factorW = borderBox.inlineSize / previousBorderBox.inlineSize;
+            const factorH = borderBox.blockSize / previousBorderBox.blockSize;
+            state.setViewport(
+              state.viewport.update({
+                width: state.viewport.width * factorW,
+                height: state.viewport.height * factorH,
+              }),
+            );
+          }
+          previousBorderBox = borderBox;
+        },
+        // TODO this delay means when we reveal more canvas we have to wait to see it painted, which isn't the greatest UX
+        150,
+        { trailing: true },
+      ),
+    );
+    observer.observe(container, { box: "border-box" });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [container, state]);
 
   return (
     <div ref={setContainer} className="h-full w-full overflow-hidden">
