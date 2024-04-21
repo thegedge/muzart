@@ -28,7 +28,7 @@ export class StaffOverlay extends SimpleGroupElement<LineElement> {
     // TODO tabs sometimes put a P/H above to indicate whether it's a hammer on or pull off
 
     this.staffElements.forEach(({ element, measure }, index) => {
-      if (element.type !== "Chord" || !element.chord) {
+      if (element.type !== "Chord") {
         return;
       }
 
@@ -74,7 +74,7 @@ export class StaffOverlay extends SimpleGroupElement<LineElement> {
   private layOutSlides() {
     const yoffset = LINE_STROKE_WIDTH * 3;
     this.staffElements.forEach(({ element, measure }, index) => {
-      if (element.type !== "Chord" || !element.chord) {
+      if (element.type !== "Chord") {
         return;
       }
 

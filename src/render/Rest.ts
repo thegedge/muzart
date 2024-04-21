@@ -9,7 +9,7 @@ export const Rest: RenderFunc<layout.Rest> = (element, render, { application }) 
     return null;
   }
 
-  const instrument = application.selection.part?.part?.instrument;
+  const instrument = application.selection.part?.part.instrument;
 
   // TODO with a properly sized box, we should be able to place these without needing the selection.
   //   Also, once we have score notation, staff line count may differ from tab -> score, so this isn't right.

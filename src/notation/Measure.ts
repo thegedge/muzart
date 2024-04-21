@@ -39,8 +39,11 @@ export class Measure {
   }
 
   get isValid() {
+    if (!this.staffDetails.time) {
+      return false;
+    }
     const measureDuration = this.chords.reduce((sum, chord) => sum + chord.value.toDecimal(), 0);
-    const expectedDuration = this.staffDetails.time!.value.toDecimal();
+    const expectedDuration = this.staffDetails.time.value.toDecimal();
     return Math.abs(measureDuration - expectedDuration) < 1e-10;
   }
 

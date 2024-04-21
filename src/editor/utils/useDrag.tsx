@@ -74,7 +74,7 @@ export function useDrag<T>(options: OnDragOptions<T>) {
     window.addEventListener("pointerup", onPointerUp);
     boundingRect.current = element.getBoundingClientRect();
     dragging.current = target;
-    options?.onDragStart?.(target);
+    options.onDragStart?.(target);
   };
 
   return {

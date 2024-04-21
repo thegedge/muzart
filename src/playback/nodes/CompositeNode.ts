@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AudioNode } from "./AudioNode";
 import { WrappedNode } from "./WrappedNode";
 import { WebAudioNode } from "./node_helpers";
@@ -22,15 +21,12 @@ export class CompositeNode extends AudioNode {
       return new WrappedNode(current);
     });
 
-    muzartNodes.reduce(
-      (previous, current) => {
-        if (previous) {
-          previous.connect(current);
-        }
-        return current;
-      },
-      null as AudioNode | null,
-    );
+    muzartNodes.reduce<AudioNode | null>((previous, current) => {
+      if (previous) {
+        previous.connect(current);
+      }
+      return current;
+    }, null);
 
     return new CompositeNode(muzartNodes[0], muzartNodes[nodes.length - 1]);
   };

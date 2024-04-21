@@ -58,11 +58,7 @@ export class StatefulTextInputState {
   }
 
   get style(): CSSProperties {
-    const canvas = this.application?.canvas;
-    if (!canvas || !this.element) {
-      return {};
-    }
-
+    const canvas = this.application.canvas;
     const box = canvas.userSpaceToCanvasViewport(toAncestorCoordinateSystem(this.element));
     return {
       top: `${box.y}px`,

@@ -76,6 +76,7 @@ export const renderScoreElement = (
 
     applyStylesToRenderContext(renderContext, styles);
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     RenderFunctions[element.type]?.(element, renderContext, context);
 
     // Render children, if any

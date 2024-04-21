@@ -51,6 +51,7 @@ export class StyleComputer<ElementType extends AnyLayoutElement = AnyLayoutEleme
             const attributeSelector = rest.join("").slice(0, -1);
             const [name, value] = attributeSelector.split("=");
             clazz = first.substring(1);
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             attribute = [name as keyof ElementType, value?.slice(1, -1)];
           } else {
             clazz = selector.substring(1);

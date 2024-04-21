@@ -167,6 +167,7 @@ export class SoundFont implements SourceGeneratorFactory {
 
     const sampleKeyPairs = sfInstruments.flatMap((sfInstrument) => {
       let globalZone: SoundFontZone | undefined = sfInstrument.zones[0];
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       const hasGlobalZone = !globalZone?.generators[SoundFontGeneratorType.SampleId];
       if (!hasGlobalZone) {
         globalZone = undefined;

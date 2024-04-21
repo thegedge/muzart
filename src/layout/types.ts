@@ -14,7 +14,6 @@ export interface MaybeLayout<Args extends unknown[] = []> {
   layout?: (...args: Args) => void;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface LayoutElement<ParentT extends AnyLayoutElement | null, LayoutArgs extends never[] = never[]>
   extends HasBox,
     MaybeLayout<LayoutArgs> {

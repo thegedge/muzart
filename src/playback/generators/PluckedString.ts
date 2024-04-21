@@ -67,7 +67,10 @@ export class PluckedString implements SourceGenerator {
     });
 
     const frequency = karplusStrongNode.parameters.get("frequency");
-    frequency!.setValueAtTime(note.pitch.toFrequency(), 0);
+    if (!frequency) {
+      throw new Error("Frequency parameter not found");
+    }
+    frequency.setValueAtTime(note.pitch.toFrequency(), 0);
 
     return new AudioWorkletNode(karplusStrongNode);
   }

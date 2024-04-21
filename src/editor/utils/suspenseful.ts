@@ -25,6 +25,7 @@ export function suspenseful<T>(promiseOrAsyncFunc: () => Promise<T>): Suspensefu
   const read = () => {
     switch (status) {
       case "pending":
+        // eslint-disable-next-line @typescript-eslint/only-throw-error -- React suspense requires us to throw the promise
         throw suspender;
       case "error":
         throw error;

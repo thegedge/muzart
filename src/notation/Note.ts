@@ -231,7 +231,7 @@ export class Note {
    * If fromStart, force fetching the property from the starting note for the tie.
    */
   get<T extends keyof NoteOptions>(property: T, fromStart = false): NoteOptions[T] | undefined {
-    if (!fromStart || !this.options.tie || this.options.tie?.type == "start") {
+    if (!fromStart || !this.options.tie || this.options.tie.type == "start") {
       const v = this.options[property];
       if (v) {
         return v;

@@ -24,10 +24,6 @@ export class Sampler implements SourceGenerator {
   private buffers: Map<number, SampleZone>;
 
   constructor(private options: SamplerOptions) {
-    if (!options.buffers) {
-      throw new Error("no sample buffers provided to Sampler");
-    }
-
     this.buffers = new Map(options.buffers);
   }
 

@@ -81,7 +81,7 @@ const FormControls = observer((props: { timeSignature: ObservableTimeSignature }
   const application = useApplicationState();
 
   // TODO we're assuming this part is the part that contains the measure below
-  const part = application.selection?.part?.part;
+  const part = application.selection.part?.part;
   if (!part) {
     return null;
   }

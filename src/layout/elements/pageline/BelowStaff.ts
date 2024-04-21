@@ -39,6 +39,7 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
     const beats = this.groupElementsOnBeat(measureElement.measure, measureElement.children);
     for (const beat of beats) {
       const firstElement = beat[0];
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!firstElement) {
         continue;
       }
@@ -160,7 +161,6 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
   private layOutBeams(measureBox: Box, beatElements: BeatElements[]) {
     let y = STEM_HEIGHT - BEAM_HEIGHT;
     const beamCounts = beatElements.map((element) => this.numBeams(element));
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       // Find runs of elements that still need a beam drawn, then draw a beam between the two
       const beamRuns = runs(beamCounts, (v) => (v > 0 ? true : undefined));
@@ -193,7 +193,7 @@ export class BelowStaff extends SimpleGroupElement<LineElement> {
 
   private groupElementsOnBeat(measure: notation.Measure, line: LineElement[]) {
     let beatAmount = 0.25; // TODO What do default to? Currently assuming quarter beat, hence 0.25.
-    const timeBeat = measure.staffDetails.time?.value?.toBeat();
+    const timeBeat = measure.staffDetails.time?.value.toBeat();
     if (timeBeat) {
       beatAmount = timeBeat.value.toDecimal() * timeBeat.count;
     }

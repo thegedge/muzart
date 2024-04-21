@@ -215,7 +215,7 @@ export class CanvasState {
   private frameHandle = -1;
 
   redraw() {
-    if (!this.canvas || !this.viewport) {
+    if (!this.canvas) {
       return;
     }
 

@@ -177,6 +177,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
   }
 
   maybeAddChordDiagrams() {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- okay with this, but one day will be configurable
     if (!this.summarizeChords) {
       return;
     }

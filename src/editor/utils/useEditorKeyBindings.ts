@@ -55,14 +55,14 @@ export const useEditorKeyBindings = (): KeyBindings<OtherContext> => {
     () =>
       Object.entries(ACTION_GROUPS).flatMap(([group, actions]) => {
         return actions
-          .filter((action) => action.defaultKeyBinding)
+          .filter((action): action is Command & { defaultKeyBinding: string } => !!action.defaultKeyBinding)
           .map(
             (actionFactory) =>
               ({
                 name: actionFactory.name,
                 group,
                 when: actionFactory.when,
-                key: actionFactory.defaultKeyBinding!,
+                key: actionFactory.defaultKeyBinding,
                 action(_context) {
                   const action = actionFactory.actionForState(application);
                   application.dispatch(action);
@@ -95,7 +95,7 @@ const ACTION_GROUPS: Record<string, Command[]> = {
     EditDynamic,
     EditHarmonic,
     ...range(10).map((fret) => {
-      return class {
+      return class extends SetNoteFret {
         static readonly name = "Set note fret";
         static readonly when = "editorFocused && !isPlaying";
         static readonly defaultKeyBinding = String(fret);
@@ -109,18 +109,18 @@ const ACTION_GROUPS: Record<string, Command[]> = {
 
           let actualFret = fret;
           if (previousAction instanceof SetNoteFret) {
-            const previousFret = previousAction.fret ?? NaN;
+            const previousFret = previousAction.fret;
             if (previousFret < 10 && Date.now() - previousActionTime < COMBINE_PREVIOUS_TIME_THRESHOLD_MS) {
               // TODO in this scenario we want to combine this action with the previous one, but currently we just push
               actualFret = 10 * previousFret + fret;
             }
           }
 
-          return new SetNoteFret(instrument, chord, application.selection.noteIndex + 1, actualFret);
+          return new this(instrument, chord, application.selection.noteIndex + 1, actualFret);
         }
       };
     }),
-    class {
+    class extends DotNote {
       static readonly name = "Dot note";
       static readonly when = "editorFocused && !isPlaying";
       static readonly defaultKeyBinding = ".";
@@ -139,7 +139,7 @@ const ACTION_GROUPS: Record<string, Command[]> = {
           }
         }
 
-        return new DotNote(chord, note, actualDots);
+        return new this(chord, note, actualDots);
       }
     },
     toggleNoteFeatureAction("hammerOnPullOff"),

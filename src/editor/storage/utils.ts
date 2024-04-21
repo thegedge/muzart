@@ -29,7 +29,7 @@ export const blobToDataURI = (blob: Blob): Promise<string> => {
         return;
       }
 
-      reject("unexpected result when converting blob to data uri");
+      reject(new Error("unexpected result when converting blob to data uri"));
     };
 
     fr.onerror = () => {

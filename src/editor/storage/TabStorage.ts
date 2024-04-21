@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition -- loaders[x] is always defined, but it may not be (easier to ignore than do some other things) */
 import { AsyncStorage } from "./Storage";
 import { TABS_NAMESPACE } from "./namespaces";
 

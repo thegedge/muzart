@@ -290,7 +290,7 @@ export class AboveStaff extends GridGroup<LineElement> {
 
   private layOutBends() {
     this.staffElements.forEach(({ element }, index) => {
-      if (element.type !== "Chord" || !element.chord) {
+      if (element.type !== "Chord") {
         return;
       }
 
@@ -309,7 +309,7 @@ export class AboveStaff extends GridGroup<LineElement> {
 
   private layOutSimpleAboveStaffElements() {
     this.staffElements.forEach(({ element }, index) => {
-      if (element.type !== "Chord" || !element.chord) {
+      if (element.type !== "Chord") {
         return;
       }
 

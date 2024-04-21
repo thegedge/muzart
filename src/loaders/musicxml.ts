@@ -154,15 +154,13 @@ function key(document: Document, node: Node): Key | undefined {
 
 function tuning(document: Document, node: Node): Pitch[] | undefined {
   const tuning = many(document, node, "staff-details/staff-tuning");
-  if (tuning) {
-    // TODO use `line` attribute to order, but for now we assume correct ordering
-    return tuning.map((pitch) => {
-      const step = textQuery(document, pitch, "tuning-step") as unknown as Step;
-      const octave = parseInt(textQuery(document, pitch, "tuning-octave"));
-      const alter = parseInt(textQueryMaybe(document, pitch, "tuning-alter") || "0");
-      return new Pitch(step, octave, alter);
-    });
-  }
+  // TODO use `line` attribute to order, but for now we assume correct ordering
+  return tuning.map((pitch) => {
+    const step = textQuery(document, pitch, "tuning-step") as unknown as Step;
+    const octave = parseInt(textQuery(document, pitch, "tuning-octave"));
+    const alter = parseInt(textQueryMaybe(document, pitch, "tuning-alter") || "0");
+    return new Pitch(step, octave, alter);
+  });
 }
 
 function chords(document: Document, node: Node): Chord[] {

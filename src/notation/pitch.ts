@@ -29,7 +29,8 @@ export class Pitch {
    */
   static fromScientificNotation(value: string): Pitch {
     const semitoneOffset = SEMITONE_OFFSETS[value[0] as Step];
-    if (semitoneOffset == undefined) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (semitoneOffset === undefined) {
       throw new Error(`first character must be one of ${Object.values(Step).join(", ")}`);
     }
 

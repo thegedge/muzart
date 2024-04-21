@@ -91,24 +91,20 @@ const BendFormControls = observer((props: { bend: ObservableBend }) => {
   const bend = props.bend;
 
   const clearBend = () => {
-    if (bend.note) {
-      application.dispatch(changeNoteAction({ bend: undefined }));
-    }
+    application.dispatch(changeNoteAction({ bend: undefined }));
     application.state.hideModal();
   };
 
   const setBend = () => {
-    if (props.bend.note) {
-      application.dispatch(
-        changeNoteAction({
-          bend: {
-            type: bend.type,
-            amplitude: bend.amplitude,
-            points: bend.points,
-          },
-        }),
-      );
-    }
+    application.dispatch(
+      changeNoteAction({
+        bend: {
+          type: bend.type,
+          amplitude: bend.amplitude,
+          points: bend.points,
+        },
+      }),
+    );
     application.state.hideModal();
   };
 

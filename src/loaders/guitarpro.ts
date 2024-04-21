@@ -26,7 +26,7 @@ import { NoteValue, NoteValueName } from "../notation/NoteValue";
 import { Loader } from "./Loader";
 import { BufferCursor, NumberType } from "./util/BufferCursor";
 
-const debug = !!import.meta.env?.VITE_DEBUG_APP;
+const debug = !!import.meta.env.VITE_DEBUG_APP;
 
 const VERSION_REGEX = /FICHIER GUITAR PRO v(?<version>\d{1}\.\d{1,2})/;
 
@@ -150,11 +150,11 @@ class GuitarProLoader {
           instrument:
             trackData.midiChannel == 10
               ? new PercussionInstrument({
-                  midiPreset: midiData.instrument ?? 24,
+                  midiPreset: midiData.instrument,
                   volume: midiData.volume,
                 })
               : new StringInstrument({
-                  midiPreset: midiData.instrument ?? 24,
+                  midiPreset: midiData.instrument,
                   volume: midiData.volume,
                   tuning: trackData.strings,
                 }),
@@ -566,6 +566,7 @@ class GuitarProLoader {
 
     const noteOptions: NoteOptions = {
       pitch: stringTuning.adjust(fret),
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- may not be the case in the future
       value: duration == 0 ? defaultNoteValue : NoteValue.fromNumber(duration),
       dead: noteType === 3,
       tie: noteType === 2 ? { type: "stop" } : undefined,
@@ -1003,6 +1004,7 @@ class GuitarProLoader {
     try {
       let versionNumber = Number.NaN;
       if (execResult) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         versionNumber = parseInt(execResult[1] ?? "");
       }
 

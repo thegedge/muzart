@@ -5,7 +5,7 @@ export type AsyncResult<ValueT, ErrorT = unknown> =
   | { pending: false; value: ValueT; error: undefined }
   | { pending: false; value: undefined; error: ErrorT };
 
-export const useAsync = <ValueT, ErrorT = unknown>(
+export const useAsync = <ValueT, ErrorT = Error>(
   f: () => Promise<ValueT>,
   deps: Inputs = [],
 ): AsyncResult<ValueT, ErrorT> => {
@@ -15,7 +15,6 @@ export const useAsync = <ValueT, ErrorT = unknown>(
     value: undefined,
   });
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const memoizedF = useCallback(f, deps);
 
   useEffect(() => {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { inRange, last } from "lodash";
 import { autorun, makeAutoObservable } from "mobx";
 import layout, { layOutScore } from "../../layout";
@@ -30,9 +29,12 @@ export class Selection implements StorableObject {
   }
 
   get page(): layout.Page | undefined {
-    const page = this.part?.children.find((p) =>
-      inRange(this.measureIndex + 1, p.measures[0].measure.number, last(p.measures)!.measure.number + 1),
-    );
+    const page = this.part?.children.find((p) => {
+      const rangeStart = p.measures[0].measure.number;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- there's always at least one measure
+      const rangeEnd = last(p.measures)!.measure.number + 1;
+      return inRange(this.measureIndex + 1, rangeStart, rangeEnd);
+    });
     if (!page) {
       throw new Error("current measure not found in any page");
     }
@@ -53,7 +55,7 @@ export class Selection implements StorableObject {
     }
 
     // Need the `as` here because TS doesn't understand that the type check internally prevents returning anything else
-    const noteIndex = this.chord?.chord.notes.findIndex((note) => note.placement?.string == this.noteIndex + 1);
+    const noteIndex = this.chord.chord.notes.findIndex((note) => note.placement?.string == this.noteIndex + 1);
     return noteIndex == -1 ? undefined : this.chord.notes[noteIndex];
   }
 
@@ -71,25 +73,29 @@ export class Selection implements StorableObject {
   }
 
   update(selection: Partial<Selection>) {
-    const partChanged = selection.partIndex != undefined && selection.partIndex != this.partIndex;
+    const partIndex = selection.partIndex;
+    const partChanged = partIndex != undefined && selection.partIndex != this.partIndex;
     if (partChanged) {
-      this.partIndex = selection.partIndex!;
+      this.partIndex = partIndex;
       this.reflow();
     }
 
-    const measureChanged = selection.measureIndex != undefined && selection.measureIndex != this.measureIndex;
+    const measureIndex = selection.measureIndex;
+    const measureChanged = measureIndex != undefined && selection.measureIndex != this.measureIndex;
     if (measureChanged) {
-      this.measureIndex = selection.measureIndex!;
+      this.measureIndex = measureIndex;
     }
 
-    const chordChanged = selection.chordIndex != undefined && selection.chordIndex != this.chordIndex;
+    const chordIndex = selection.chordIndex;
+    const chordChanged = chordIndex != undefined && selection.chordIndex != this.chordIndex;
     if (chordChanged) {
-      this.chordIndex = selection.chordIndex!;
+      this.chordIndex = chordIndex;
     }
 
-    const noteChanged = selection.noteIndex != undefined && selection.noteIndex != this.noteIndex;
+    const noteIndex = selection.noteIndex;
+    const noteChanged = noteIndex != undefined && selection.noteIndex != this.noteIndex;
     if (noteChanged) {
-      this.noteIndex = selection.noteIndex!;
+      this.noteIndex = noteIndex;
     }
 
     if (partChanged || measureChanged) {

@@ -96,10 +96,6 @@ export class Chord {
 
   changeNote(note: Note | NoteOptions): Note | undefined {
     const chordNote = new Note(this, note instanceof Note ? note.options : note);
-    if (!chordNote.pitch) {
-      throw new Error("must provide pitching when adding a new note");
-    }
-
     const existingIndex = this.notes.findIndex((n) => n.placement?.string == chordNote.placement?.string);
     if (existingIndex >= 0) {
       const existing = this.notes[existingIndex];

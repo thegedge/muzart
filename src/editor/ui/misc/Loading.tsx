@@ -3,7 +3,6 @@ import { PageCallout } from "../layout/PageCallout";
 export const Loading = () => {
   return (
     <PageCallout>
-      Loading
       <BouncingDot delayMS={100} />
       <BouncingDot delayMS={200} />
       <BouncingDot delayMS={300} />

@@ -17,12 +17,20 @@ export class IndexedDbStorage extends AsyncStorage {
 
     this.db = new Promise((resolve, reject) => {
       const request = indexedDB.open(name, version);
+
       request.onsuccess = () => {
         resolve(request.result);
         this.db = request.result;
       };
-      request.onerror = () => reject(request.error);
-      request.onblocked = () => reject(new Error("upgrade blocked by another tab")); // TODO deal with blocked upgrade
+
+      request.onerror = () => {
+        reject(request.error ?? new Error("unknown error opening IndexedDB"));
+      };
+
+      request.onblocked = () => {
+        reject(new Error("upgrade blocked by another tab")); // TODO deal with blocked upgrade
+      };
+
       request.onupgradeneeded = (event) => {
         const target = event.target;
         if (!target) {
@@ -31,8 +39,7 @@ export class IndexedDbStorage extends AsyncStorage {
           throw error;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-        const db: IDBDatabase = (target as any).result;
+        const db = (target as IDBVersionChangeEvent & IDBRequest<IDBDatabase>).result;
         upgrade(event.oldVersion, event.newVersion, db);
       };
     });
@@ -44,9 +51,9 @@ export class IndexedDbStorage extends AsyncStorage {
     const transaction = db.transaction([namespace], "readwrite");
     const objectStore = transaction.objectStore(namespace);
     const request = objectStore.put(value, subkey);
-    return await new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
+      request.onerror = () => reject(request.error ?? new Error("unknown error setting value"));
     });
   }
 
@@ -56,9 +63,9 @@ export class IndexedDbStorage extends AsyncStorage {
     const transaction = db.transaction([namespace], "readwrite");
     const objectStore = transaction.objectStore(namespace);
     const request = objectStore.delete(subkey);
-    return await new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
+      request.onerror = () => reject(request.error ?? new Error("unknown error deleting value"));
     });
   }
 
@@ -70,7 +77,7 @@ export class IndexedDbStorage extends AsyncStorage {
     const request = objectStore.get(subkey);
     return await new Promise<string | null>((resolve, reject) => {
       request.onsuccess = () => resolve(request.result as string);
-      request.onerror = () => reject(request.error);
+      request.onerror = () => reject(request.error ?? new Error("unknown error getting from IndexedDB storage"));
     });
   }
 
@@ -82,7 +89,7 @@ export class IndexedDbStorage extends AsyncStorage {
     const request = objectStore.getAllKeys();
     return await new Promise<string[]>((resolve, reject) => {
       request.onsuccess = () => resolve(request.result.map((key) => String(key)));
-      request.onerror = () => reject(request.error);
+      request.onerror = () => reject(request.error ?? new Error("unknown error listing IndexedDB storage"));
     });
   }
 }

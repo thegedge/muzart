@@ -60,10 +60,6 @@ export const NoteValueIcon = (props: JSX.SVGAttributes<SVGSVGElement> & { noteVa
   const { noteValue, ...svgProps } = props;
   const noteValueName = noteValue instanceof NoteValue ? noteValue.name : noteValue;
   const icon = NoteValues[noteValueName];
-  if (!icon) {
-    return <>{noteValueCharacter(noteValueName)}</>;
-  }
-
   const dotted = noteValue instanceof NoteValue ? noteValue.dots : 0;
 
   const stemHeight = Math.max(3, icon.flags);
@@ -101,27 +97,4 @@ export const NoteValueIcon = (props: JSX.SVGAttributes<SVGSVGElement> & { noteVa
       ))}
     </svg>
   );
-};
-
-const noteValueCharacter = (value: NoteValueName) => {
-  switch (value) {
-    case NoteValueName.Whole:
-      return "1";
-    case NoteValueName.Half:
-      return "2";
-    case NoteValueName.Quarter:
-      return "4";
-    case NoteValueName.Eighth:
-      return "8";
-    case NoteValueName.Sixteenth:
-      return "16";
-    case NoteValueName.ThirtySecond:
-      return "32";
-    case NoteValueName.SixtyFourth:
-      return "64";
-    case NoteValueName.OneTwentyEighth:
-      return "128";
-    default:
-      return "";
-  }
 };

@@ -1,4 +1,3 @@
-import { humanize, underscore } from "inflected";
 import * as notation from "../../../notation";
 import { Application } from "../../state/Application";
 import { Action } from "../Action";
@@ -43,9 +42,9 @@ const METADATA: Record<BooleanNoteFeatures, { name: string; defaultKeyBinding: s
 
 export const toggleNoteFeatureAction = (feature: BooleanNoteFeatures) => {
   return class ToggleNoteFeature extends Action {
-    static readonly name = METADATA[feature]?.name ?? `Toggle ${humanize(underscore(feature))}`;
+    static readonly name = METADATA[feature].name;
     static readonly when = "editorFocused";
-    static readonly defaultKeyBinding = METADATA[feature]?.defaultKeyBinding ?? null;
+    static readonly defaultKeyBinding = METADATA[feature].defaultKeyBinding;
 
     static actionForState(application: Application) {
       const chord = application.selection.chord?.chord;

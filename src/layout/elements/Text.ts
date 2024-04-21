@@ -18,7 +18,7 @@ export class Text extends LayoutElement<"Text", types.PageElement | types.LineEl
     return new Text({
       ...options,
       style: {
-        ...options?.style,
+        ...options.style,
         textAlign: "center",
         verticalAlign: "middle",
       },

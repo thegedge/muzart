@@ -271,6 +271,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
   generator(context: AudioContext, instrument: notation.Instrument): SourceGenerator | null {
     const instrumentData =
       this.#supportedInstruments[instrument instanceof notation.PercussionInstrument ? 119 : instrument.midiPreset];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!instrumentData) {
       return null;
     }

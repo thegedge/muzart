@@ -6,8 +6,7 @@ const renderApp = async () => {
     // Ugh, linters sometimes... Not sure why TS can't find the declaration file for preact/debug as a dynamic import,
     // but is totally fine when it's a static import.
     //
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error -- TS can't find the declaration file for preact/debug as a dynamic import, and I don't care
     await import("preact/debug");
   }
 

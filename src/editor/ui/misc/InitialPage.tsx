@@ -7,7 +7,7 @@ import { useAsync } from "../../utils/useAsync";
 export const InitialPage = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
   const { loading, tabStorage } = application;
-  const [epoch, refresh] = useReducer<number, void>((v) => v + 1, 0);
+  const [epoch, refresh] = useReducer<number, number>((previousEpoch, epoch) => Math.max(previousEpoch, epoch) + 1, 0);
 
   const { value: lines, error } = useAsync(async () => {
     if (loading) {
@@ -82,7 +82,7 @@ export const InitialPage = observer((_props: Record<string, never>) => {
                         className="inline-flex items-center justify-center rounded-sm px-2 py-1 hover:bg-gray-200"
                         onClick={(e) => {
                           e.preventDefault();
-                          refresh();
+                          refresh(epoch);
                           void remove();
                         }}
                       >

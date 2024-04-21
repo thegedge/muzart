@@ -1,5 +1,3 @@
-/* eslint-disable react/jsx-key */
-
 // TODO looks like the three could be messed up
 
 const DigitPaths = [

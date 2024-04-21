@@ -14,7 +14,7 @@ export function ancestorOfType<SourceT extends AnyLayoutElement, AncestorT exten
   while (e && e.type != ancestorType) {
     e = e.parent;
   }
-  return (e as AncestorT) ?? null;
+  return (e as AncestorT | undefined) ?? null;
 }
 
 /**
@@ -170,9 +170,8 @@ export function runs<T, V>(
   for (const v of values) {
     const newMapped = mapper(v, mapped);
     const endCurrentRun = newMapped == undefined || newMapped != mapped;
-    if (endCurrentRun && start !== null) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      runs.push([start, index - 1, mapped!]);
+    if (endCurrentRun && start !== null && mapped !== undefined) {
+      runs.push([start, index - 1, mapped]);
       start = null;
       mapped = undefined;
     }
@@ -185,9 +184,8 @@ export function runs<T, V>(
     ++index;
   }
 
-  if (start !== null) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    runs.push([start, index - 1, mapped!]);
+  if (start !== null && mapped !== undefined) {
+    runs.push([start, index - 1, mapped]);
   }
 
   return runs;
@@ -199,14 +197,14 @@ export function runs<T, V>(
  * @returns The element whose `type` matches the given `type`. If `e` itself is of the given type, `e` will be returned.
  */
 export const getAncestorOfType = <T extends AnyLayoutElement>(e: AnyLayoutElement, type: string): T | null => {
-  let current: AnyLayoutElement | undefined | null = e;
+  let current: AnyLayoutElement | null = e;
   while (current) {
     if (current.type == type) {
       return current as T;
     }
     current = current.parent;
   }
-  return current ?? null;
+  return current;
 };
 
 /**

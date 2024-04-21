@@ -225,10 +225,8 @@ export const Score = observer((_props: Record<string, never>) => {
   const onDoubleClick = useCallback(
     (pt: Point) => {
       const hit = hitTest(pt, application.selection.part);
-      if (hit) {
-        if (hit?.element.type == "Text" && !hit.element.isReadOnly) {
-          showTextInput(new StatefulTextInputState(application, hit.element, styler));
-        }
+      if (hit?.element.type == "Text" && !hit.element.isReadOnly) {
+        showTextInput(new StatefulTextInputState(application, hit.element, styler));
       }
     },
     [application, styler],

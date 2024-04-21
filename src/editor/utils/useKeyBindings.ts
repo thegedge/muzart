@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition -- bindings[binding] could be undefined, but I don't want to type it that way right now*/
 import { useEffect } from "preact/hooks";
 import { IS_MAC } from "../../utils/platform";
 
@@ -32,14 +33,11 @@ export const useKeyBindings = <StateT, ContextOtherT = never>(
   state: StateT,
 ): void => {
   useEffect(() => {
-    const bindingGroups = keyBindings.reduce(
-      (bindings, binding) => {
-        bindings[binding.key] ??= [];
-        bindings[binding.key].push(binding);
-        return bindings;
-      },
-      {} as Record<string, KeyBinding<ContextOtherT>[]>,
-    );
+    const bindingGroups = keyBindings.reduce<Record<string, KeyBinding<ContextOtherT>[]>>((bindings, binding) => {
+      bindings[binding.key] ??= [];
+      bindings[binding.key].push(binding);
+      return bindings;
+    }, {});
 
     let context: KeyBindingContext<ContextOtherT> = {};
 

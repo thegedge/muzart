@@ -30,7 +30,6 @@ interface CanvasProps {
   onMouseMove?: MouseEventHandler;
 }
 
-// eslint-disable-next-line react/display-name
 export const Canvas = observer((props: CanvasProps) => {
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const state = props.state;

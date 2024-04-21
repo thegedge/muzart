@@ -12,7 +12,7 @@ export class LocalStorage extends SyncStorage {
 
   /** @override */
   delete(namespace: string, subkey: string) {
-    return this.localStorage.removeItem(`${namespace}/${subkey}`);
+    this.localStorage.removeItem(`${namespace}/${subkey}`);
   }
 
   /** @override */

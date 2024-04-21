@@ -160,6 +160,7 @@ export class PlaybackController {
 
       score.score.parts.forEach((part, partIndex) => {
         const measure = part.measures[currentMeasureIndex];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (!measure) {
           return;
         }
@@ -289,7 +290,7 @@ export class PlaybackController {
 
   private instrumentForPart(partIndex: number): Instrument | null {
     const part = this.selection.score?.score.parts[partIndex];
-    if (!this.sourceGeneratorFactory || !part?.instrument) {
+    if (!part?.instrument) {
       return null;
     }
 
@@ -299,7 +300,7 @@ export class PlaybackController {
     let instrument = this.instruments_[midiPreset];
     if (!instrument) {
       try {
-        const sourceGenerator = this.sourceGeneratorFactory?.generator(this.audioContext, part.instrument);
+        const sourceGenerator = this.sourceGeneratorFactory.generator(this.audioContext, part.instrument);
         if (!sourceGenerator) {
           return null;
         }

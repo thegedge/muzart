@@ -3,9 +3,9 @@
 // TODO it's really cool to have this as an audio worklet, but I think it'd be way better to make this work with regular Web Audio nodes
 
 /**
- * @typedef {{ type: "start"; when?: number; durationSecs?: number }} StartEvent
- * @typedef {{ type: "stop"; }} StopEvent
- * @typedef {{ data: StopEvent | StartEvent }} KarplusStrongEvent
+ * @typedef {{ type: "start"; when?: number; durationSecs?: number }} KarplusStrongStartEvent
+ * @typedef {{ type: "stop"; }} KarplusStrongStopEvent
+ * @typedef {{ data: KarplusStrongStopEvent | KarplusStrongStartEvent }} KarplusStrongEvent
  *
  * @typedef {"white-noise" | "sine" | "noisy-sine"} ImpulseType
  * @typedef {"average" | "gaussian" | "random-negation"} FilterType
@@ -80,7 +80,7 @@ class KarplusStrong extends AudioWorkletProcessor {
   }
 
   /**
-   * @param inputs {Float32Array[][]}
+   * @param _inputs {Float32Array[][]}
    * @param outputs {Float32Array[][]}
    * @param parameters {{ frequency: number[] }}
    * @returns {boolean}
@@ -152,4 +152,5 @@ class KarplusStrong extends AudioWorkletProcessor {
   }
 }
 
+// @ts-ignore
 registerProcessor("karplus-strong", KarplusStrong);

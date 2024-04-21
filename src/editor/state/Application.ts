@@ -115,7 +115,7 @@ export class Application {
       this.loading = true;
       this.currentTabUrl_ = new URL(url);
 
-      const blob: Blob = yield this.tabStorage.load(this.currentTabUrl_);
+      const blob: Blob | null = yield this.tabStorage.load(this.currentTabUrl_);
       if (!blob) {
         throw new Error(`couldn't load tab: ${this.currentTabUrl_.pathname}`);
       }

@@ -4,10 +4,7 @@ import { SimpleGroup } from "../layouts/SimpleGroup";
 import { Box } from "../utils";
 import { Text } from "./Text";
 
-export class DecoratedText
-  extends SimpleGroup<types.Text, "DecoratedText", types.AnyLayoutElement>
-  implements types.DecoratedText
-{
+export class DecoratedText extends SimpleGroup<types.Text, "DecoratedText"> implements types.DecoratedText {
   readonly type = "DecoratedText";
 
   readonly textElement: Text;
@@ -32,7 +29,6 @@ export class DecoratedText
       textAlign = "center";
     }
 
-    this.style ??= {};
     this.style.textAlign = textAlign;
     this.textElement = new Text({
       box: new Box(0, 0, box.width, box.height),

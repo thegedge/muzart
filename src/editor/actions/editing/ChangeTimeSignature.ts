@@ -20,9 +20,10 @@ export class ChangeTimeSignature extends Action {
 
   apply(_application: Application) {
     const measureIndex = this.part.measures.indexOf(this.measure);
-
-    // TODO remove the !
-    const previousTimeSignature = this.part.measures[measureIndex - 1].staffDetails.time!.value;
+    const previousTimeSignature = this.part.measures[measureIndex - 1]?.staffDetails.time?.value;
+    if (!previousTimeSignature) {
+      throw new Error("previous time signature not found");
+    }
 
     if (this.timeSignature) {
       this.measure.setTimeSignature({
