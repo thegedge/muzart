@@ -169,7 +169,6 @@ export const Canvas = observer((props: CanvasProps) => {
         style={{
           width: window.screen.width,
           height: window.screen.height,
-          imageRendering: "crisp-edges",
           cursor: state.cursor,
         }}
         onMouseDown={props.onMouseDown && wrapMouseEvent(state, props.onMouseDown)}
