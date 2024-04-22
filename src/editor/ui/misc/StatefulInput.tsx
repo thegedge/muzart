@@ -1,8 +1,9 @@
+import clsx from "clsx";
 import * as CSS from "csstype";
 import { merge } from "lodash";
 import { makeAutoObservable } from "mobx";
 import { observer } from "mobx-react-lite";
-import { CSSProperties, useEffect, useRef } from "preact/compat";
+import { useEffect, useRef, type CSSProperties } from "preact/compat";
 import layout, { toAncestorCoordinateSystem } from "../../../layout";
 import { StyleComputer } from "../../../utils/StyleComputer";
 import { changeTextAction } from "../../actions/editing/ChangeTextElement";
@@ -17,12 +18,18 @@ export const StatefulInput = observer((props: { state: StatefulTextInputState })
     inputRef.current?.focus();
   }, [inputRef]);
 
+  const className = clsx(
+    "absolute flex whitespace-pre-wrap bg-white",
+    textAlignToTailwindClass(props.state.style.textAlign),
+    verticalAlignToTailwindClass(props.state.style.verticalAlign),
+  );
+
   return (
     <div
       ref={inputRef}
       contentEditable
-      className="absolute whitespace-pre-wrap bg-white"
-      style={props.state.style}
+      className={className}
+      style={props.state.style as CSSProperties}
       onKeyDown={(e) => {
         if (e.code == "Escape") {
           e.preventDefault();
@@ -57,7 +64,7 @@ export class StatefulTextInputState {
     makeAutoObservable(this, undefined, { deep: false });
   }
 
-  get style(): CSSProperties {
+  get style(): CSS.Properties {
     const canvas = this.application.canvas;
     const box = canvas.userSpaceToCanvasViewport(toAncestorCoordinateSystem(this.element));
     return {
@@ -85,3 +92,28 @@ export class StatefulTextInputState {
     this.visible = false;
   }
 }
+
+const textAlignToTailwindClass = (value: CSS.Property.TextAlign | undefined) => {
+  switch (value) {
+    case "center":
+      return "justify-center";
+    case "right":
+      return "justify-end";
+    default:
+      return "justify-start";
+  }
+};
+
+const verticalAlignToTailwindClass = (value: CSS.Property.VerticalAlign | undefined) => {
+  switch (value) {
+    case "middle":
+      return "items-center";
+    case "baseline":
+    case "bottom":
+    case "sub":
+    case "text-bottom":
+      return "items-end";
+    default:
+      return "items-start";
+  }
+};
