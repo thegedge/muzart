@@ -22,26 +22,6 @@
 }
 
 @layer components {
-  .chrome {
-    @media (max-width: 1024px) {
-      grid-template-rows: 1fr;
-      grid-template-columns: 1fr;
-      grid-template-areas: "score";
-
-      .debug-panel {
-        display: none;
-      }
-
-      .part-panel {
-        display: none;
-      }
-
-      .palette {
-        display: none;
-      }
-    }
-  }
-
   [data-resize-handle] {
     @apply relative z-top transition-colors duration-300 ease-out hover:bg-gray-400;
   }

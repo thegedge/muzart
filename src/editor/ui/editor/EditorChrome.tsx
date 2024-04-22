@@ -1,7 +1,7 @@
 import { PauseIcon, PlayIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import * as notation from "../../../notation";
 import { EditTimeSignature } from "../../actions/editing/EditTimeSignature";
@@ -35,6 +35,36 @@ export const EditorChrome = observer((props: { loaderUrl: string }) => {
     return null;
   }
 
+  const [bodyWidth, setBodyWidth] = useState(window.screen.width);
+
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      setBodyWidth(entries[0].contentBoxSize[0].inlineSize);
+    });
+
+    observer.observe(document.body);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <>
+      {bodyWidth < 768 ? <SmallScreenView /> : <RegularScreenView />}
+      <MuzartContextMenu />
+      <BendEditor />
+      <TimeSignatureEditor />
+      <Tooltip />
+      <ToolbarOverlayForSmallScreens />
+    </>
+  );
+});
+
+const SmallScreenView = observer((_props: Record<string, never>) => {
+  return <Score />;
+});
+
+const RegularScreenView = observer((_props: Record<string, never>) => {
+  const application = useApplicationState();
+
   return (
     <div className="chrome relative grid h-screen max-h-screen w-screen max-w-screen gap-px bg-gray-950 fill-gray-200 text-gray-200">
       <PanelGroup autoSaveId="muzart-chrome" direction="vertical">
@@ -62,15 +92,6 @@ export const EditorChrome = observer((props: { loaderUrl: string }) => {
           <PartPanel />
         </Panel>
       </PanelGroup>
-
-      {/* Overlays, menus, and various things that may or may not show based on the UI state */}
-      <MuzartContextMenu />
-      <BendEditor />
-      <TimeSignatureEditor />
-      <Tooltip />
-
-      {/* Overlays for small screens */}
-      <ToolbarOverlayForSmallScreens />
     </div>
   );
 });
@@ -107,7 +128,7 @@ const ToggleIconButton = (props: {
 }) => {
   const application = useApplicationState();
   const className = clsx(
-    "pl-1.2 right-2 top-2 max-h-16 max-w-16 overflow-hidden rounded-full py-1 pr-0.8 shadow-modal hover:cursor-pointer pointer-events-auto",
+    "pl-1.2 right-2 top-2 max-h-12 max-w-12 overflow-hidden rounded-full py-1 pr-0.8 shadow-modal hover:cursor-pointer pointer-events-auto",
     props.on ? "text-white hover:bg-gray-800" : "text-gray-600 hover:bg-gray-100",
     props.on ? "bg-gray-700" : "bg-white",
   );
