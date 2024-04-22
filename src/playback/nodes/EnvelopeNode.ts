@@ -52,7 +52,7 @@ export interface Envelope {
 /**
  * Create an "attack, decay, sustain, release" envelope for a given parameter.
  */
-export const createEnvelope = (param: AudioParam, envelope: Envelope, when: number) => {
+const createEnvelope = (param: AudioParam, envelope: Envelope, when: number) => {
   const { attack, decay, sustain, release } = envelope;
   const value = param.value;
 

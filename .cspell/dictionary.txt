@@ -13,6 +13,7 @@ igen
 imod
 jianpu
 Karplus
+knip
 locrian
 mixolydian
 muzart

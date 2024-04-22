@@ -7,7 +7,7 @@ const STANDARD_HEAD_PATH = {
   height: 0.85615134,
 };
 
-export const NoteValues = {
+const NoteValues = {
   [NoteValueName.Whole]: {
     stemmed: false,
     flags: 0,

@@ -40,7 +40,7 @@ export const Menu = (props: MenuProps) => {
   );
 };
 
-export const MenuItem = (props: HTMLAttributes<HTMLDivElement>) => {
+const MenuItem = (props: HTMLAttributes<HTMLDivElement>) => {
   return (
     <div
       {...props}

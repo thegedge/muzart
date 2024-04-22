@@ -2,6 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 // @ts-check
 
+import tseslint from "typescript-eslint";
+
 // @ts-expect-error -- Could not find a declaration file for module
 import eslint from "@eslint/js";
 // @ts-expect-error -- Could not find a declaration file for module
@@ -13,8 +15,9 @@ import promisePlugin from "eslint-plugin-promise";
 // @ts-expect-error -- Could not find a declaration file for module
 import reactPlugin from "eslint-plugin-react";
 // @ts-expect-error -- Could not find a declaration file for module
+import prettierPlugin from "eslint-config-prettier";
+// @ts-expect-error -- Could not find a declaration file for module
 import reactHooksPlugin from "eslint-plugin-react-hooks";
-import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
@@ -188,5 +191,9 @@ export default tseslint.config(
       "react/no-unknown-property": "off",
       "react/react-in-jsx-scope": "off",
     },
+  },
+
+  {
+    rules: prettierPlugin.rules,
   },
 );

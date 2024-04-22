@@ -18,7 +18,7 @@ declare global {
   }
 }
 
-export const ApplicationStateContext = createContext<Application | null>(null);
+const ApplicationStateContext = createContext<Application | null>(null);
 
 export const useApplicationState = (): Application => {
   const state = useContext(ApplicationStateContext);

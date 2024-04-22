@@ -109,15 +109,6 @@ export class CanvasState {
     );
   }
 
-  centerViewportOn(x: number, y: number) {
-    this.setViewport(
-      this.viewport.update({
-        x: x - 0.5 * this.viewport.width,
-        y: y - 0.5 * this.viewport.height,
-      }),
-    );
-  }
-
   scrollBy(deltaCanvasX: number, deltaCanvasY: number) {
     const userspaceDeltaX = deltaCanvasX / this.userspaceToCanvasFactorX;
     const userspaceDeltaY = deltaCanvasY / this.userspaceToCanvasFactorY;
@@ -187,7 +178,7 @@ export class CanvasState {
     );
   }
 
-  // TODO these are assuming overflow, with no padding, margin, etc
+  // TODO these don't observe the parent element's size changing, so no one will react to that
 
   get canvasWidth() {
     if (!this.canvas?.parentElement) {

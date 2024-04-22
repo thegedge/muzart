@@ -1,4 +1,4 @@
-export class OutOfBoundsError extends Error {
+class OutOfBoundsError extends Error {
   constructor(message?: string) {
     super(message || "out of bounds");
   }

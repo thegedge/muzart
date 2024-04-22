@@ -131,7 +131,6 @@ export const Canvas = observer((props: CanvasProps) => {
     }
 
     let previousBorderBox: ResizeObserverSize | null = null;
-    console.log(state.viewport);
 
     const observer = new ResizeObserver(
       debounce(
