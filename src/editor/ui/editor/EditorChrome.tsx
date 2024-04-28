@@ -1,6 +1,7 @@
 import { PauseIcon, PlayIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
+import type { PropsWithChildren } from "preact/compat";
 import { useEffect, useState } from "preact/hooks";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import * as notation from "../../../notation";
@@ -35,8 +36,7 @@ export const EditorChrome = observer((props: { loaderUrl: string }) => {
     return null;
   }
 
-  const [bodyWidth, setBodyWidth] = useState(window.screen.width);
-
+  const [bodyWidth, setBodyWidth] = useState<number>(document.body.clientWidth);
   useEffect(() => {
     const observer = new ResizeObserver((entries) => {
       setBodyWidth(entries[0].contentBoxSize[0].inlineSize);
@@ -46,23 +46,25 @@ export const EditorChrome = observer((props: { loaderUrl: string }) => {
     return () => observer.disconnect();
   }, []);
 
+  const EditorComponent = bodyWidth < 768 ? SmallScreenView : RegularScreenView;
+
   return (
-    <>
-      {bodyWidth < 768 ? <SmallScreenView /> : <RegularScreenView />}
+    <EditorComponent>
+      <Score />
       <MuzartContextMenu />
       <BendEditor />
       <TimeSignatureEditor />
       <Tooltip />
       <ToolbarOverlayForSmallScreens />
-    </>
+    </EditorComponent>
   );
 });
 
-const SmallScreenView = observer((_props: Record<string, never>) => {
-  return <Score />;
+const SmallScreenView = observer((props: PropsWithChildren) => {
+  return <>{props.children}</>;
 });
 
-const RegularScreenView = observer((_props: Record<string, never>) => {
+const RegularScreenView = observer((props: PropsWithChildren) => {
   const application = useApplicationState();
 
   return (
@@ -75,7 +77,7 @@ const RegularScreenView = observer((_props: Record<string, never>) => {
             </Panel>
             <PanelResizeHandle hitAreaMargins={{ coarse: 0, fine: 0 }} />
             <Panel order={2} minSize={10}>
-              <Score />
+              {props.children}
             </Panel>
             {application.debug.enabled && (
               <>
