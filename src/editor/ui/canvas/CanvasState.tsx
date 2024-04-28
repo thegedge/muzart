@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { Box, LINE_STROKE_WIDTH } from "../../../layout";
 import { isRecord, numberOrDefault } from "../../storage/Storage";
-import { Point, RenderFunction } from "./Canvas";
+import { RenderFunction, type Point } from "./Canvas";
 
 /**
  * Manages the canvas state, translating between various coordinate spaces:
@@ -13,6 +13,12 @@ import { Point, RenderFunction } from "./Canvas";
 export class CanvasState {
   /** The canvas element this state manages */
   canvas: HTMLCanvasElement | null = null;
+
+  /** The width of the visible canvas */
+  canvasWidth = 0;
+
+  /** The height of the visible canvas */
+  canvasHeight = 0;
 
   /** The actual device pixel ratio */
   pixelRatio = devicePixelRatio;
@@ -29,8 +35,17 @@ export class CanvasState {
   /** The function to call when a redraw needs to occur */
   render: RenderFunction = () => void 0;
 
+  // Non-observed properties on a parent element
+  parentElementObserver: ResizeObserver | undefined;
+
   constructor() {
-    makeAutoObservable(this);
+    makeAutoObservable(this, {
+      parentElementObserver: false,
+    });
+  }
+
+  dispose() {
+    this.parentElementObserver?.disconnect();
   }
 
   setCanvas(canvas: HTMLCanvasElement | null) {
@@ -38,7 +53,26 @@ export class CanvasState {
       return;
     }
 
+    this.parentElementObserver?.disconnect();
     this.canvas = canvas;
+
+    // TODO if parent element is null, can we listen for canvas being attached?
+    if (canvas && canvas.parentElement) {
+      this.parentElementObserver = new ResizeObserver((entries) => {
+        const borderBox = entries[0].borderBoxSize[0];
+        this.setCanvasSize(borderBox.inlineSize, borderBox.blockSize);
+      });
+      this.parentElementObserver.observe(canvas.parentElement);
+      this.setCanvasSize(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight);
+    }
+
+    this.redraw();
+  }
+
+  setCanvasSize(width: number, height: number) {
+    this.canvasWidth = width;
+    this.canvasHeight = height;
+    this.viewport = this.viewport.update({ height: (this.viewport.width * height) / width });
     this.redraw();
   }
 
@@ -176,22 +210,6 @@ export class CanvasState {
       this.userSpaceSize.width * this.userspaceToCanvasFactorX,
       this.userSpaceSize.height * this.userspaceToCanvasFactorY,
     );
-  }
-
-  // TODO these don't observe the parent element's size changing, so no one will react to that
-
-  get canvasWidth() {
-    if (!this.canvas?.parentElement) {
-      return 0;
-    }
-    return this.canvas.parentElement.clientWidth;
-  }
-
-  get canvasHeight() {
-    if (!this.canvas?.parentElement) {
-      return 0;
-    }
-    return this.canvas.parentElement.clientHeight;
   }
 
   get userspaceToCanvasFactorX() {

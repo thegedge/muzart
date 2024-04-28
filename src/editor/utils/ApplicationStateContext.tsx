@@ -45,6 +45,10 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
   }, []);
 
   useEffect(() => {
+    return () => application.dispose();
+  }, [application]);
+
+  useEffect(() => {
     window.Muzart = application;
 
     application.settingsStorage.loadObject(APPLICATION_NAMESPACE, APPLICATION_STATE_KEY, application);

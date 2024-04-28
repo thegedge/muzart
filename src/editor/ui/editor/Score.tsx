@@ -57,9 +57,8 @@ export const Score = observer((_props: Record<string, never>) => {
         if (box) {
           application.canvas.setUserSpaceSize(box);
           if (!prev) {
-            application.canvas.setViewport(
-              new Box(0, 0, box.width, box.width * (application.canvas.canvasHeight / application.canvas.canvasWidth)),
-            );
+            const aspectRatio = application.canvas.canvasWidth / application.canvas.canvasHeight;
+            application.canvas.setViewport(new Box(0, 0, box.width, box.width / aspectRatio));
           }
         }
       },
@@ -366,9 +365,13 @@ export const Score = observer((_props: Record<string, never>) => {
 
 const RenderedChordDiagram = (props: { diagram: ChordDiagram; styler: StyleComputer }) => {
   const application = useApplicationState();
-  const state = useMemo(() => {
-    const state = new CanvasState();
 
+  const state = useMemo(() => new CanvasState(), []);
+  useEffect(() => {
+    return () => state.dispose();
+  }, [state]);
+
+  useEffect(() => {
     state.setRenderFunction((context, viewport) => {
       renderScoreElement(props.diagram, context, {
         application,
@@ -382,9 +385,7 @@ const RenderedChordDiagram = (props: { diagram: ChordDiagram; styler: StyleCompu
     // TODO properly draw chord diagram inside of its box so there's no need to translate
     state.setUserSpaceSize(props.diagram.box);
     state.setViewport(props.diagram.box.translate(-2.5, 0));
-
-    return state;
-  }, [application, props.diagram, props.styler]);
+  }, [state, application, props.diagram, props.styler]);
 
   return (
     <div

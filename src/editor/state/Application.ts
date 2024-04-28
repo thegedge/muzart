@@ -70,6 +70,10 @@ export class Application {
     makeAutoObservable(this, undefined, { deep: false });
   }
 
+  dispose() {
+    this.canvas.dispose();
+  }
+
   get currentTabUrl() {
     return this.currentTabUrl_;
   }
