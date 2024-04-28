@@ -131,31 +131,31 @@ export const Canvas = observer((props: CanvasProps) => {
     }
 
     let previousBorderBox: ResizeObserverSize | null = null;
-
-    const observer = new ResizeObserver(
-      debounce(
-        (entries: ResizeObserverEntry[]) => {
-          const borderBox = entries[0].borderBoxSize[0];
-          if (previousBorderBox) {
-            const factorW = borderBox.inlineSize / previousBorderBox.inlineSize;
-            const factorH = borderBox.blockSize / previousBorderBox.blockSize;
-            state.setViewport(
-              state.viewport.update({
-                width: state.viewport.width * factorW,
-                height: state.viewport.height * factorH,
-              }),
-            );
-          }
-          previousBorderBox = borderBox;
-        },
-        // TODO this delay means when we reveal more canvas we have to wait to see it painted, which isn't the greatest UX
-        150,
-        { trailing: true },
-      ),
+    const debouncedObserver = debounce(
+      (entries: ResizeObserverEntry[]) => {
+        const borderBox = entries[0].borderBoxSize[0];
+        if (previousBorderBox) {
+          const factorW = borderBox.inlineSize / previousBorderBox.inlineSize;
+          const factorH = borderBox.blockSize / previousBorderBox.blockSize;
+          state.setViewport(
+            state.viewport.update({
+              width: state.viewport.width * factorW,
+              height: state.viewport.height * factorH,
+            }),
+          );
+        }
+        previousBorderBox = borderBox;
+      },
+      // TODO this delay means when we reveal more canvas we have to wait to see it painted, which isn't the greatest UX
+      150,
+      { trailing: true },
     );
+
+    const observer = new ResizeObserver(debouncedObserver);
     observer.observe(container, { box: "border-box" });
 
     return () => {
+      debouncedObserver.cancel();
       observer.disconnect();
     };
   }, [container, state]);
