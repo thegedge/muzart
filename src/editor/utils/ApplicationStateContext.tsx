@@ -2,6 +2,7 @@ import { comparer, reaction } from "mobx";
 import { ComponentChildren, createContext } from "preact";
 import { Suspense } from "preact/compat";
 import { useContext, useEffect, useMemo } from "preact/hooks";
+import { Box } from "../../layout";
 import { PlaybackController } from "../../playback/PlaybackController";
 import { Application } from "../state/Application";
 import { Selection } from "../state/Selection";
@@ -46,6 +47,25 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
 
   useEffect(() => {
     return () => application.dispose();
+  }, [application]);
+
+  useEffect(() => {
+    return reaction(
+      () => application.selection.score?.box,
+      (box, prev) => {
+        if (box) {
+          application.canvas.setUserSpaceSize(box);
+          if (!prev) {
+            const aspectRatio = application.canvas.canvasWidth / application.canvas.canvasHeight;
+            application.canvas.setViewport(new Box(0, 0, box.width, box.width / aspectRatio));
+          }
+        }
+      },
+      {
+        fireImmediately: true,
+        equals: (a, b) => !!(b ? a?.equals(b) : false),
+      },
+    );
   }, [application]);
 
   useEffect(() => {

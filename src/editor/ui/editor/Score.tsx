@@ -51,25 +51,6 @@ export const Score = observer((_props: Record<string, never>) => {
   }, []);
 
   useEffect(() => {
-    return reaction(
-      () => application.selection.score?.box,
-      (box, prev) => {
-        if (box) {
-          application.canvas.setUserSpaceSize(box);
-          if (!prev) {
-            const aspectRatio = application.canvas.canvasWidth / application.canvas.canvasHeight;
-            application.canvas.setViewport(new Box(0, 0, box.width, box.width / aspectRatio));
-          }
-        }
-      },
-      {
-        fireImmediately: true,
-        equals: (a, b) => !!(b ? a?.equals(b) : false),
-      },
-    );
-  }, [application]);
-
-  useEffect(() => {
     const disposer = reaction(
       () => application.playback.playing,
       (playing) => {
