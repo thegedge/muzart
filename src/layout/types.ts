@@ -6,6 +6,19 @@ export type Millimetres = number;
 export type Alignment = "start" | "center" | "end";
 export type VerticalOrientation = "above" | "below";
 
+/**
+ * Context propagated throughout the layout process.
+ */
+export type LayoutContext = {
+  /**
+   * Mode to use by layout algorithms
+   *
+   * `normal` is the default layout style, rendering the score as pages with gap.
+   * `compact` tries to minimize the margins and paddings, which is good for small screens.
+   */
+  layoutMode: "compact" | "normal";
+};
+
 export interface HasBox {
   box: Box;
 }

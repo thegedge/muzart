@@ -7,10 +7,9 @@ export class Page extends LayoutElement<"Page", types.Part> implements types.Pag
   readonly type = "Page";
   readonly content: FlexGroupElement<types.PageElement>;
 
-  constructor(box: Box) {
+  constructor(box: Box, margins = DEFAULT_MARGINS) {
     super(box);
 
-    const margins = DEFAULT_MARGINS;
     const contentWidth = box.width - margins.left - margins.right;
     const contentHeight = box.height - margins.top - margins.bottom;
     const pageContentBox = new Box(margins.left, margins.top, contentWidth, contentHeight);

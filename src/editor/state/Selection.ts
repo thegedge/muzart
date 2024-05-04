@@ -12,6 +12,9 @@ export class Selection implements StorableObject {
   public chordIndex = 0;
   public noteIndex = 0;
 
+  private bodyWidth = document.body.clientWidth;
+  private bodyHeight = document.body.clientHeight;
+
   private score_: notation.Score | null = null;
   private reflowDisposer: (() => void) | null = null;
 
@@ -61,6 +64,15 @@ export class Selection implements StorableObject {
 
   get element() {
     return this.note ?? this.chord ?? this.measure;
+  }
+
+  get isSmallScreen() {
+    return this.bodyWidth <= 768 || this.bodyHeight <= 768;
+  }
+
+  setBodyDimensions(width: number, height: number) {
+    this.bodyWidth = width;
+    this.bodyHeight = height;
   }
 
   reset() {
@@ -283,7 +295,11 @@ export class Selection implements StorableObject {
     if (score && partIndex >= 0) {
       this.reflowDisposer = autorun(() => {
         // TODO figure out why I can't do this immediately (mobx complains about setting things outside of an action)
-        this.setScoreWithoutReset(layOutScore(score, [partIndex]));
+        this.setScoreWithoutReset(
+          layOutScore(score, [partIndex], {
+            layoutMode: this.isSmallScreen ? "compact" : "normal",
+          }),
+        );
       });
     }
   }

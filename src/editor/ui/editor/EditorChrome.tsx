@@ -2,7 +2,7 @@ import { PauseIcon, PlayIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import type { PropsWithChildren } from "preact/compat";
-import { useEffect, useState } from "preact/hooks";
+import { useEffect } from "preact/hooks";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import * as notation from "../../../notation";
 import { EditTimeSignature } from "../../actions/editing/EditTimeSignature";
@@ -36,19 +36,19 @@ export const EditorChrome = observer((props: { loaderUrl: string }) => {
     return null;
   }
 
-  const [bodyWidth, setBodyWidth] = useState(document.body.clientWidth);
-  const [bodyHeight, setBodyHeight] = useState(document.body.clientHeight);
   useEffect(() => {
     const observer = new ResizeObserver((entries) => {
-      setBodyWidth(entries[0].contentBoxSize[0].inlineSize);
-      setBodyHeight(entries[0].contentBoxSize[0].blockSize);
+      application.selection.setBodyDimensions(
+        entries[0].contentBoxSize[0].inlineSize,
+        entries[0].contentBoxSize[0].blockSize,
+      );
     });
 
     observer.observe(document.body);
     return () => observer.disconnect();
-  }, []);
+  }, [application]);
 
-  const EditorComponent = bodyWidth < 768 || bodyHeight < 768 ? SmallScreenView : RegularScreenView;
+  const EditorComponent = application.selection.isSmallScreen ? SmallScreenView : RegularScreenView;
 
   return (
     <EditorComponent>

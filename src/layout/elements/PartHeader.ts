@@ -1,5 +1,5 @@
 import { compact, uniqBy } from "lodash";
-import types, { Box, DEFAULT_MARGIN, DEFAULT_SERIF_FONT_FAMILY, STAFF_LINE_HEIGHT } from "..";
+import types, { Box, DEFAULT_MARGIN, DEFAULT_SERIF_FONT_FAMILY, STAFF_LINE_HEIGHT, type LayoutContext } from "..";
 import * as notation from "../../notation";
 import { FlexGroup, FlexGroupElement } from "../layouts/FlexGroup";
 import { SimpleGroupElement } from "../layouts/SimpleGroup";
@@ -17,17 +17,20 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
     readonly score: notation.Score,
     readonly part: notation.Part,
     readonly contentWidth: number,
+    readonly context: LayoutContext,
   ) {
+    const heightFactor = context.layoutMode === "compact" ? 0.8 * STAFF_LINE_HEIGHT : STAFF_LINE_HEIGHT;
+
     super({
       box: new Box(0, 0, contentWidth, 0),
       axis: "vertical",
       defaultStretchFactor: 0,
-      gap: 0.5 * STAFF_LINE_HEIGHT,
+      gap: 0.5 * heightFactor,
     });
 
     // Lay out the composition title, composer, etc
     if (score.title) {
-      const height = 4 * STAFF_LINE_HEIGHT;
+      const height = 4 * heightFactor;
       this.addElement(
         Text.boundText(score, "title", {
           box: new Box(0, 0, contentWidth, 1.5 * height),
@@ -42,7 +45,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
     }
 
     if (score.artist) {
-      const height = 2 * STAFF_LINE_HEIGHT;
+      const height = 2 * heightFactor;
       this.addElement(
         Text.boundText(score, "artist", {
           box: new Box(0, 0, contentWidth, 1.5 * height),
@@ -58,7 +61,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
     }
 
     if (score.album) {
-      const height = 1.5 * STAFF_LINE_HEIGHT;
+      const height = 1.5 * heightFactor;
       this.addElement(
         Text.boundText(score, "album", {
           box: new Box(0, 0, contentWidth, 2 * height),
@@ -73,7 +76,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
     }
 
     if (score.comments) {
-      const height = 1.2 * STAFF_LINE_HEIGHT;
+      const height = 1.2 * heightFactor;
       const numLines = score.comments.split("\n").length; // TODO faster count
       this.addElement(
         Text.boundText(score, "comments", {
@@ -90,7 +93,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
     }
 
     if (score.composer) {
-      const height = 1.25 * STAFF_LINE_HEIGHT;
+      const height = 1.25 * heightFactor;
 
       this.addElement(
         new Text({
@@ -109,7 +112,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
 
     // Don't show the transcriber if the same as the composer (assume they're one and the same)
     if (score.transcriber && score.transcriber != score.composer) {
-      const height = 1.25 * STAFF_LINE_HEIGHT;
+      const height = 1.25 * heightFactor;
 
       this.addElement(
         new Text({
@@ -126,7 +129,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       );
     }
 
-    this.addElement(Space.fromDimensions(contentWidth, STAFF_LINE_HEIGHT));
+    this.addElement(Space.fromDimensions(contentWidth, heightFactor));
     this.maybeAddChordDiagrams();
 
     if (part.instrument instanceof notation.StringInstrument) {
@@ -139,7 +142,7 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       });
 
       // TODO show alternative name for tuning
-      const textSize = STAFF_LINE_HEIGHT;
+      const textSize = heightFactor;
       const stringNumbers = ["①", "②", "③", "④", "⑤", "⑥", "⑦"].slice(0, part.lineCount).reverse();
       const texts: Text[] = part.instrument.tuning.map(
         (pitch, index) =>
