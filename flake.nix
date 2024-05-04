@@ -17,7 +17,7 @@
             codepack = pkgs.corepack;
             direnv = pkgs.nix-direnv;
             nixpkgs-fmt = pkgs.nixpkgs-fmt;
-            nodejs = pkgs.nodejs_21;
+            nodejs = pkgs.nodejs_22;
           };
 
           devShell = pkgs.mkShell {
