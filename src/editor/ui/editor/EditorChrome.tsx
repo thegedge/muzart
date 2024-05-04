@@ -36,17 +36,19 @@ export const EditorChrome = observer((props: { loaderUrl: string }) => {
     return null;
   }
 
-  const [bodyWidth, setBodyWidth] = useState<number>(document.body.clientWidth);
+  const [bodyWidth, setBodyWidth] = useState(document.body.clientWidth);
+  const [bodyHeight, setBodyHeight] = useState(document.body.clientHeight);
   useEffect(() => {
     const observer = new ResizeObserver((entries) => {
       setBodyWidth(entries[0].contentBoxSize[0].inlineSize);
+      setBodyHeight(entries[0].contentBoxSize[0].blockSize);
     });
 
     observer.observe(document.body);
     return () => observer.disconnect();
   }, []);
 
-  const EditorComponent = bodyWidth < 768 ? SmallScreenView : RegularScreenView;
+  const EditorComponent = bodyWidth < 768 || bodyHeight < 768 ? SmallScreenView : RegularScreenView;
 
   return (
     <EditorComponent>
