@@ -1,5 +1,5 @@
 import { inRange, last } from "lodash";
-import { autorun, makeAutoObservable } from "mobx";
+import { action, autorun, makeAutoObservable } from "mobx";
 import layout, { layOutScore } from "../../layout";
 import { getAncestorOfType } from "../../layout/utils";
 import * as notation from "../../notation";
@@ -19,7 +19,13 @@ export class Selection implements StorableObject {
   private reflowDisposer: (() => void) | null = null;
 
   constructor() {
-    makeAutoObservable(this, undefined, { deep: false });
+    makeAutoObservable(
+      this,
+      {
+        setScoreWithoutReset: action,
+      },
+      { deep: false },
+    );
   }
 
   get part(): layout.Part | undefined {
@@ -283,7 +289,7 @@ export class Selection implements StorableObject {
     this.noteIndex = numberOrDefault(value.noteIndex, 0);
   }
 
-  private setScoreWithoutReset(score: layout.Score | null) {
+  setScoreWithoutReset(score: layout.Score | null) {
     this.score = score;
   }
 

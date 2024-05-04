@@ -76,7 +76,7 @@ export class Chord {
   }
 
   get rest() {
-    return this.options.notes.length == 0;
+    return this.notes_.length == 0;
   }
 
   removeNote(note: Note) {
