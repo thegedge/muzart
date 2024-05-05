@@ -7,6 +7,8 @@ import "./app.css";
 import { EditorRouter } from "./editor/EditorRouter";
 import { KeyBindingsOverlay } from "./editor/KeyBindingsOverlay";
 import { GithubFork } from "./misc/GithubFork";
+import { Suspense } from "preact/compat";
+import { Loading } from "./misc/Loading";
 
 export const App = () => {
   return (
@@ -16,7 +18,9 @@ export const App = () => {
         <ErrorBoundary>
           <ApplicationState>
             <KeyBindings />
-            <EditorRouter />
+            <Suspense fallback={<Loading />}>
+              <EditorRouter />
+            </Suspense>
           </ApplicationState>
         </ErrorBoundary>
       </Router>

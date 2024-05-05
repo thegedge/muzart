@@ -10,6 +10,7 @@ import { RemovePart } from "../../actions/editing/RemovePart";
 import { TogglePlayback } from "../../actions/playback/TogglePlayback";
 import { Command } from "../../state/Application";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
+import { Loading } from "../misc/Loading";
 import { Menu } from "../misc/Menu";
 import { PopoverMenu } from "../misc/PopoverMenu";
 import { Tooltip } from "../misc/Tooltip";
@@ -33,7 +34,7 @@ export const EditorChrome = observer((props: { loaderUrl: string }) => {
   }
 
   if (application.loading) {
-    return null;
+    return <Loading />;
   }
 
   const EditorComponent = application.isSmallScreen ? SmallScreenView : RegularScreenView;

@@ -15,7 +15,7 @@ export default class ErrorBoundary extends Component<{ children: ComponentChildr
     if (this.state.error) {
       return (
         <PageCallout>
-          <div>
+          <div className="w-full">
             <h1 className="text-3xl text-red-600">Error: {this.state.error.message}</h1>
             {this.state.error.stack && (
               <pre className="w-full whitespace-pre-wrap text-xl">

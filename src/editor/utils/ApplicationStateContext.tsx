@@ -1,6 +1,5 @@
 import { comparer, reaction } from "mobx";
 import { ComponentChildren, createContext } from "preact";
-import { Suspense } from "preact/compat";
 import { useContext, useEffect, useMemo } from "preact/hooks";
 import layout, {
   ancestorOfType,
@@ -17,7 +16,6 @@ import { IndexedDbStorage } from "../storage/IndexedDbStorage";
 import { LocalStorage } from "../storage/LocalStorage";
 import { TabStorage } from "../storage/TabStorage";
 import { APPLICATION_NAMESPACE, APPLICATION_STATE_KEY, TABS_NAMESPACE } from "../storage/namespaces";
-import { Loading } from "../ui/misc/Loading";
 import { selectionBoxFor } from "../ui/misc/selectionBoxFor";
 
 declare global {
@@ -154,9 +152,5 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
     void application.playback.loadSoundFont(defaultSoundfont);
   }, [application]);
 
-  return (
-    <Suspense fallback={<Loading />}>
-      <ApplicationStateContext.Provider value={application}>{props.children}</ApplicationStateContext.Provider>
-    </Suspense>
-  );
+  return <ApplicationStateContext.Provider value={application}>{props.children}</ApplicationStateContext.Provider>;
 };

@@ -134,12 +134,16 @@ export class Application {
       return;
     }
 
+    this.loading = true;
+
     // We can't properly lay out a score until we know the width/height of the body
-    yield when(() => this.bodyWidth != 0 && this.bodyHeight != 0);
+    yield Promise.all([
+      when(() => this.bodyWidth != 0 && this.bodyHeight != 0),
+      new Promise((resolve) => window.setTimeout(resolve, 200)),
+    ]);
 
     try {
       this.error = null;
-      this.loading = true;
       this.currentTabUrl_ = new URL(url);
 
       const blob: Blob | null = yield this.tabStorage.load(this.currentTabUrl_);
