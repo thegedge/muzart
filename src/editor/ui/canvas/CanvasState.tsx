@@ -1,3 +1,4 @@
+import * as CSS from "csstype";
 import { makeAutoObservable } from "mobx";
 import { Box, LINE_STROKE_WIDTH } from "../../../layout";
 import { isRecord, numberOrDefault } from "../../storage/Storage";
@@ -25,9 +26,6 @@ export class CanvasState {
 
   /** The viewport, in userspace coordinates */
   viewport = Box.empty();
-
-  /** The cursor to show for the canvas */
-  cursor = "auto";
 
   /** The size of the user coordinate space */
   userSpaceSize = Box.empty();
@@ -76,8 +74,8 @@ export class CanvasState {
     this.redraw();
   }
 
-  setCursor(cursor: this["cursor"]) {
-    this.cursor = cursor;
+  setCursor(cursor: CSS.Property.Cursor) {
+    this.canvas?.style.setProperty("cursor", cursor);
   }
 
   setUserSpaceSize(size: Box) {

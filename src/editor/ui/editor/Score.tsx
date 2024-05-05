@@ -23,8 +23,8 @@ import { Canvas, Point, RenderFunction } from "../canvas/Canvas";
 import { CanvasState } from "../canvas/CanvasState";
 import { VirtualCanvasElement } from "../canvas/VirtualCanvasElement";
 import { StatefulInput, StatefulTextInputState } from "../misc/StatefulInput";
-import { ElementBoundPalette } from "./ElementBoundPalette";
 import { selectionBoxFor } from "../misc/selectionBoxFor";
+import { ElementBoundPalette } from "./ElementBoundPalette";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
