@@ -30,19 +30,17 @@ const includeAllImporters = (modules: ModuleNode[]) => {
 export default defineConfig(async ({ mode }): Promise<UserConfig> => {
   let port = 80;
   let https: ServerOptions["https"] | undefined;
-  if (mode !== "production") {
-    const certFileExists = await fs
-      .access("muzart.dev+4.pem")
-      .then(() => true)
-      .catch(() => false);
+  const certFileExists = await fs
+    .access("muzart.dev+4.pem")
+    .then(() => true)
+    .catch(() => false);
 
-    if (certFileExists) {
-      port = 443;
-      https = {
-        cert: "muzart.dev+4.pem",
-        key: "muzart.dev+4-key.pem",
-      };
-    }
+  if (certFileExists) {
+    port = 443;
+    https = {
+      cert: "muzart.dev+4.pem",
+      key: "muzart.dev+4-key.pem",
+    };
   }
 
   return {
