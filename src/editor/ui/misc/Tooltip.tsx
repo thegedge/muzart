@@ -20,7 +20,7 @@ import { VirtualCanvasElement } from "../canvas/VirtualCanvasElement";
 
 export type TooltipProps = {
   subject: unknown;
-  children: JSX.Element;
+  children: () => JSX.Element;
   reference: VirtualCanvasElement;
   delay?: number;
 };
@@ -36,7 +36,7 @@ export const Tooltip = (_props: Record<string, never>) => {
 
     onOpenChange(open: boolean) {
       if (!open) {
-        application.state.hideTooltip();
+        application.state.hideTooltipImmediately();
       }
     },
 
@@ -98,7 +98,7 @@ export const Tooltip = (_props: Record<string, never>) => {
                 filter: "drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.3))",
               }}
             >
-              <div className="rounded-md bg-gray-800 p-4">{application.state.tooltip.children}</div>
+              <div className="rounded-md bg-gray-800 p-4">{application.state.tooltip.children()}</div>
               <svg
                 ref={arrowRef}
                 className="h-auto max-h-4 fill-gray-800"

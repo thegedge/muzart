@@ -23,7 +23,13 @@ export class UIState {
   public modalProperty = "";
 
   constructor(readonly playback: PlaybackController) {
-    makeAutoObservable(this, undefined, { deep: false });
+    makeAutoObservable(
+      this,
+      {
+        hideTooltip: false,
+      },
+      { deep: false },
+    );
   }
 
   get isPlaying() {
@@ -65,11 +71,25 @@ export class UIState {
   }
 
   showTooltip(tooltip: TooltipProps) {
-    this.tooltip = tooltip;
+    if (!this.tooltip || this.tooltip.subject !== tooltip.subject) {
+      this.tooltip = tooltip;
+    }
+
+    clearTimeout(this.hideTooltipTimeout);
+    this.hideTooltipTimeout = 0;
   }
 
   hideTooltip() {
+    if (this.tooltip && !this.hideTooltipTimeout) {
+      this.hideTooltipTimeout = window.setTimeout(() => {
+        this.hideTooltipImmediately();
+      }, this.tooltip.delay ?? 500);
+    }
+  }
+
+  hideTooltipImmediately() {
     this.tooltip = null;
+    clearTimeout(this.hideTooltipTimeout);
   }
 
   toggleHelp() {

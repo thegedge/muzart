@@ -25,6 +25,7 @@ import { StatefulInput, StatefulTextInputState } from "../misc/StatefulInput";
 import { selectionBoxFor } from "../misc/selectionBoxFor";
 import { ElementBoundPalette } from "./ElementBoundPalette";
 import { RenderedChordDiagram } from "./RenderedChordDiagram";
+import type { TooltipProps } from "../misc/Tooltip";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
@@ -178,6 +179,7 @@ export const Score = observer((_props: Record<string, never>) => {
   const onMouseMove = useCallback(
     (pt: Point, _event: MouseEvent) => {
       let cursor: CSS.Properties["cursor"] = "auto";
+      let tooltip: TooltipProps | null = null;
 
       const hit = hitTest(pt, application.selection.part);
       if (hit) {
@@ -189,9 +191,9 @@ export const Score = observer((_props: Record<string, never>) => {
             break;
           case "Text": {
             const parent = hit.element.parent;
-            if (parent?.type == "Note") {
+            if (parent?.type === "Note") {
               cursor = "pointer";
-            } else if (parent?.type == "ChordDiagram") {
+            } else if (parent?.type === "ChordDiagram") {
               if (getAncestorOfType(hit.element, "PageLine") !== null) {
                 cursor = "help";
 
@@ -199,14 +201,11 @@ export const Score = observer((_props: Record<string, never>) => {
                 const diagram = (parent as ChordDiagram).diagram;
                 const diagramElementToRender = new ChordDiagram(diagram);
 
-                // TODO make this an "on enter" instead of checking truthiness of the tooltip
-                if (!application.state.tooltip) {
-                  application.state.showTooltip({
-                    subject: diagram,
-                    children: <RenderedChordDiagram diagram={diagramElementToRender} styler={styler} />,
-                    reference: new VirtualCanvasElement(hit.element, application.canvas),
-                  });
-                }
+                tooltip = {
+                  subject: diagram,
+                  children: () => <RenderedChordDiagram diagram={diagramElementToRender} styler={styler} />,
+                  reference: new VirtualCanvasElement(hit.element, application.canvas),
+                };
               }
             } else if (!hit.element.isReadOnly) {
               cursor = "text";
@@ -214,6 +213,12 @@ export const Score = observer((_props: Record<string, never>) => {
             break;
           }
         }
+      }
+
+      if (tooltip) {
+        application.state.showTooltip(tooltip);
+      } else {
+        application.state.hideTooltip();
       }
 
       application.debug.setHoveredElement(hit?.element ?? null);
