@@ -50,6 +50,10 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
   }, [application]);
 
   useEffect(() => {
+    if (!application.canvas.canvas) {
+      return;
+    }
+
     return reaction(
       () => application.selection.score?.box,
       (box, prev) => {
@@ -66,7 +70,7 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
         equals: (a, b) => !!(b ? a?.equals(b) : false),
       },
     );
-  }, [application]);
+  }, [application, application.canvas.canvas]);
 
   useEffect(() => {
     window.Muzart = application;
