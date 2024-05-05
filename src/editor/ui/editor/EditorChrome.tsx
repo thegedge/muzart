@@ -36,19 +36,7 @@ export const EditorChrome = observer((props: { loaderUrl: string }) => {
     return null;
   }
 
-  useEffect(() => {
-    const observer = new ResizeObserver((entries) => {
-      application.selection.setBodyDimensions(
-        entries[0].contentBoxSize[0].inlineSize,
-        entries[0].contentBoxSize[0].blockSize,
-      );
-    });
-
-    observer.observe(document.body);
-    return () => observer.disconnect();
-  }, [application]);
-
-  const EditorComponent = application.selection.isSmallScreen ? SmallScreenView : RegularScreenView;
+  const EditorComponent = application.isSmallScreen ? SmallScreenView : RegularScreenView;
 
   return (
     <EditorComponent>

@@ -1,5 +1,6 @@
 import { isString } from "lodash";
-import { flow, makeAutoObservable } from "mobx";
+import { flow, makeAutoObservable, reaction } from "mobx";
+import { Box, layOutScore } from "../../layout";
 import { load } from "../../loaders";
 import * as notation from "../../notation";
 import { PlaybackController } from "../../playback/PlaybackController";
@@ -49,6 +50,15 @@ export class Application {
   /** The state of the editor's canvas */
   public canvas: CanvasState;
 
+  /** A disposer for the autorun that reflows the score whenever it changes */
+  reflowDisposer: (() => void) | null = null;
+
+  /** The width of the document body */
+  public bodyWidth = document.body.clientWidth;
+
+  /** The height of the document body */
+  public bodyHeight = document.body.clientHeight;
+
   /**
    * The undo stack for the editor.
    *
@@ -71,11 +81,21 @@ export class Application {
   }
 
   dispose() {
+    this.reflowDisposer?.();
     this.canvas.dispose();
   }
 
   get currentTabUrl() {
     return this.currentTabUrl_;
+  }
+
+  get isSmallScreen() {
+    return this.bodyWidth <= 768 || this.bodyHeight <= 768;
+  }
+
+  setBodyDimensions(width: number, height: number) {
+    this.bodyWidth = width;
+    this.bodyHeight = height;
   }
 
   dispatch(actionOrCommand: Action | Command | null) {
@@ -156,7 +176,47 @@ export class Application {
   }
 
   setScore(score: notation.Score | null, resetSelection = true) {
-    this.selection.setScore(score, resetSelection);
+    // We wrap the layout in an `autorun` so that the layout is recomputed whenever the score changes.
+    this.reflowDisposer?.();
+
+    if (score) {
+      this.reflowDisposer = reaction(
+        () => {
+          // `document.body.clientHeight` can be 0 at this point, so wait for it to get set to the proper value
+          if (this.bodyWidth == 0 || this.bodyHeight == 0) {
+            return undefined;
+          }
+
+          const partIndex = resetSelection ? 0 : this.selection.partIndex;
+          return layOutScore(score, [partIndex], {
+            layoutMode: this.isSmallScreen ? "compact" : "normal",
+          });
+        },
+        (layoutScore, previous) => {
+          if (!layoutScore) {
+            return;
+          }
+
+          this.selection.setScore(layoutScore, resetSelection);
+          this.canvas.setUserSpaceSize(layoutScore.box);
+
+          if (!previous) {
+            const box = layoutScore.box;
+            const aspectRatio = this.canvas.canvasWidth / this.canvas.canvasHeight;
+            this.canvas.setViewport(new Box(0, 0, box.width, box.width / aspectRatio));
+          }
+
+          // After the first run, never reset the selection
+          resetSelection = false;
+        },
+        {
+          fireImmediately: true,
+        },
+      );
+    } else {
+      this.selection.setScore(null);
+    }
+
     this.playback.reset();
   }
 }

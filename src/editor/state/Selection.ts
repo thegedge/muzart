@@ -1,8 +1,7 @@
 import { inRange, last } from "lodash";
-import { action, autorun, makeAutoObservable } from "mobx";
-import layout, { layOutScore } from "../../layout";
+import { makeAutoObservable } from "mobx";
+import layout from "../../layout";
 import { getAncestorOfType } from "../../layout/utils";
-import * as notation from "../../notation";
 import { StorableObject, numberOrDefault } from "../storage/Storage";
 
 export class Selection implements StorableObject {
@@ -12,20 +11,8 @@ export class Selection implements StorableObject {
   public chordIndex = 0;
   public noteIndex = 0;
 
-  private bodyWidth = document.body.clientWidth;
-  private bodyHeight = document.body.clientHeight;
-
-  private score_: notation.Score | null = null;
-  private reflowDisposer: (() => void) | null = null;
-
   constructor() {
-    makeAutoObservable(
-      this,
-      {
-        setScoreWithoutReset: action,
-      },
-      { deep: false },
-    );
+    makeAutoObservable(this, undefined, { deep: false });
   }
 
   get part(): layout.Part | undefined {
@@ -72,15 +59,6 @@ export class Selection implements StorableObject {
     return this.note ?? this.chord ?? this.measure;
   }
 
-  get isSmallScreen() {
-    return this.bodyWidth <= 768 || this.bodyHeight <= 768;
-  }
-
-  setBodyDimensions(width: number, height: number) {
-    this.bodyWidth = width;
-    this.bodyHeight = height;
-  }
-
   reset() {
     this.update({
       partIndex: 0,
@@ -95,7 +73,6 @@ export class Selection implements StorableObject {
     const partChanged = partIndex != undefined && selection.partIndex != this.partIndex;
     if (partChanged) {
       this.partIndex = partIndex;
-      this.reflow();
     }
 
     const measureIndex = selection.measureIndex;
@@ -119,7 +96,7 @@ export class Selection implements StorableObject {
     if (partChanged || measureChanged) {
       // So normally we'd use `this.measure`, but when we change parts and have to reflow, the reflow is in an autorun, and mobx
       // reaction-y things are _scheduled_, so `this.score` hasn't properly been set up yet, and `this.part` will be undefined.
-      const measure = this.score_?.parts[this.partIndex]?.measures[this.measureIndex];
+      const measure = this.score?.score.parts[this.partIndex]?.measures[this.measureIndex];
       if (measure) {
         if (this.chordIndex >= measure.chords.length) {
           this.chordIndex = 0;
@@ -252,8 +229,8 @@ export class Selection implements StorableObject {
     });
   }
 
-  setScore(score: notation.Score | null, resetSelection = true) {
-    this.score_ = score;
+  setScore(score: layout.Score | null, resetSelection = true) {
+    this.score = score;
 
     if (resetSelection || score == null) {
       // This forces an update in `this.update` below
@@ -268,8 +245,6 @@ export class Selection implements StorableObject {
         chordIndex: 0,
         noteIndex: 0,
       });
-    } else {
-      this.reflow();
     }
   }
 
@@ -287,26 +262,5 @@ export class Selection implements StorableObject {
     this.measureIndex = numberOrDefault(value.measureIndex, 0);
     this.chordIndex = numberOrDefault(value.chordIndex, 0);
     this.noteIndex = numberOrDefault(value.noteIndex, 0);
-  }
-
-  setScoreWithoutReset(score: layout.Score | null) {
-    this.score = score;
-  }
-
-  private reflow() {
-    this.reflowDisposer?.();
-
-    const score = this.score_;
-    const partIndex = this.partIndex;
-    if (score && partIndex >= 0) {
-      this.reflowDisposer = autorun(() => {
-        // TODO figure out why I can't do this immediately (mobx complains about setting things outside of an action)
-        this.setScoreWithoutReset(
-          layOutScore(score, [partIndex], {
-            layoutMode: this.isSmallScreen ? "compact" : "normal",
-          }),
-        );
-      });
-    }
   }
 }

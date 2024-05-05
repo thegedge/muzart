@@ -185,6 +185,9 @@ export class PartHeader extends FlexGroup<types.PageElement, "Group", types.Part
       return;
     }
 
+    // TODO this is slow-ish to call in a tight loop, even when no chord diagrams, because there can be a lot of measures.
+    //   Not a big deal right now, but may want to optimize later (store at the score/part level on load, have chords reference them, etc.)
+
     // Get all unique chord diagrams
     const allDiagrams = this.part.measures.flatMap((measure) => {
       return compact(measure.chords.map((chord) => (chord.chordDiagram?.diagram ? chord.chordDiagram : null)));
