@@ -186,22 +186,25 @@ export class Application {
       this.reflowDisposer = reaction(
         () => {
           const partIndex = resetSelection ? 0 : this.selection.partIndex;
-          return layOutScore(score, [partIndex], {
-            layoutMode: this.isSmallScreen ? "compact" : "normal",
-          });
+          const layoutMode = this.isSmallScreen ? "compact" : "normal";
+
+          return {
+            score: layOutScore(score, [partIndex], { layoutMode }),
+            layoutMode,
+          };
         },
-        (layoutScore, previous) => {
-          if (!layoutScore) {
-            return;
-          }
+        (current, previous) => {
+          this.selection.setScore(current.score, resetSelection);
+          this.canvas.setUserSpaceSize(current.score.box);
 
-          this.selection.setScore(layoutScore, resetSelection);
-          this.canvas.setUserSpaceSize(layoutScore.box);
-
-          if (!previous) {
-            const box = layoutScore.box;
+          // TODO it would be nice to somehow maintain the same-ish viewport across layout changes, but for now we
+          //  just reset every time the layout style changes.
+          if (current.layoutMode !== previous?.layoutMode) {
+            const box = current.score.box;
             const aspectRatio = this.canvas.canvasWidth / this.canvas.canvasHeight;
-            this.canvas.setViewport(new Box(0, 0, box.width, box.width / aspectRatio));
+            this.canvas.setViewport(
+              new Box(this.canvas.viewport.x, this.canvas.viewport.y, box.width, box.width / aspectRatio),
+            );
           }
 
           // After the first run, never reset the selection

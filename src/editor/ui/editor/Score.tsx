@@ -4,12 +4,7 @@ import { reaction } from "mobx";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useRef, useState } from "preact/hooks";
 import layout, {
-  AllElements,
-  Box,
-  LINE_STROKE_WIDTH,
-  LineElement,
   STAFF_LINE_HEIGHT,
-  ancestorOfType,
   chordWidth,
   getAncestorOfType,
   hitTest,
@@ -29,6 +24,7 @@ import { CanvasState } from "../canvas/CanvasState";
 import { VirtualCanvasElement } from "../canvas/VirtualCanvasElement";
 import { StatefulInput, StatefulTextInputState } from "../misc/StatefulInput";
 import { ElementBoundPalette } from "./ElementBoundPalette";
+import { selectionBoxFor } from "../misc/selectionBoxFor";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
@@ -151,39 +147,6 @@ export const Score = observer((_props: Record<string, never>) => {
       },
     );
   }, [application.canvas, application, application.selection.part, renderState, styler]);
-
-  useEffect(() => {
-    return reaction(
-      () =>
-        [
-          application.playback.currentMeasure ?? application.selection.element,
-          application.selection.noteIndex,
-        ] as const,
-      ([element, selectedNoteIndex]) => {
-        if (!element) {
-          return;
-        }
-
-        let box: Box;
-        if (element.type == "Chord" || element.type == "Rest") {
-          box = selectionBoxFor(element, selectedNoteIndex);
-        } else if (element.type == "Note") {
-          const chord = ancestorOfType<LineElement, layout.Chord>(element, "Chord");
-          if (chord) {
-            box = selectionBoxFor(chord, selectedNoteIndex);
-          } else {
-            const line = ancestorOfType<AllElements>(element, "PageLine") ?? element;
-            box = toAncestorCoordinateSystem(line);
-          }
-        } else {
-          const line = ancestorOfType<AllElements>(element, "PageLine") ?? element;
-          box = toAncestorCoordinateSystem(line);
-        }
-
-        application.canvas.scrollIntoView(box);
-      },
-    );
-  }, [application]);
 
   const onMouseDown = useCallback(
     (pt: Point) => {
@@ -376,16 +339,4 @@ const RenderedChordDiagram = (props: { diagram: ChordDiagram; styler: StyleCompu
       <Canvas state={state} disabled />
     </div>
   );
-};
-
-const selectionBoxFor = (chord: layout.Chord | layout.Rest, selectedNoteIndex: number) => {
-  const PADDING = 3 * LINE_STROKE_WIDTH;
-  const chordBox = toAncestorCoordinateSystem(chord);
-  return chordBox
-    .update({
-      y: chordBox.y + selectedNoteIndex * STAFF_LINE_HEIGHT,
-      width: chord.type == "Chord" ? chordBox.width : STAFF_LINE_HEIGHT,
-      height: STAFF_LINE_HEIGHT,
-    })
-    .expand(PADDING);
 };
