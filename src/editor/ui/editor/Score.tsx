@@ -20,11 +20,11 @@ import { StyleComputer } from "../../../utils/StyleComputer";
 import { changeNoteAction } from "../../actions/editing/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../canvas/Canvas";
-import { CanvasState } from "../canvas/CanvasState";
 import { VirtualCanvasElement } from "../canvas/VirtualCanvasElement";
 import { StatefulInput, StatefulTextInputState } from "../misc/StatefulInput";
 import { selectionBoxFor } from "../misc/selectionBoxFor";
 import { ElementBoundPalette } from "./ElementBoundPalette";
+import { RenderedChordDiagram } from "./RenderedChordDiagram";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
@@ -306,37 +306,3 @@ export const Score = observer((_props: Record<string, never>) => {
     </div>
   );
 });
-
-const RenderedChordDiagram = (props: { diagram: ChordDiagram; styler: StyleComputer }) => {
-  const application = useApplicationState();
-
-  const state = useMemo(() => new CanvasState(), []);
-  useEffect(() => {
-    return () => state.dispose();
-  }, [state]);
-
-  useEffect(() => {
-    state.setRenderFunction((context, viewport) => {
-      renderScoreElement(props.diagram, context, {
-        application,
-        viewport,
-        ancestors: [],
-        style: { color: "#ffffff" },
-        styler: props.styler,
-      });
-    });
-
-    // TODO properly draw chord diagram inside of its box so there's no need to translate
-    state.setUserSpaceSize(props.diagram.box);
-    state.setViewport(props.diagram.box.translate(-2.5, 0));
-  }, [state, application, props.diagram, props.styler]);
-
-  return (
-    <div
-      className="relative max-w-48 overflow-hidden"
-      style={{ aspectRatio: `${props.diagram.box.width} / ${props.diagram.box.height}` }}
-    >
-      <Canvas state={state} disabled />
-    </div>
-  );
-};

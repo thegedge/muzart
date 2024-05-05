@@ -32,19 +32,25 @@ export class ChordDiagram
     const width = 4 * STAFF_LINE_HEIGHT;
     const height = (diagram_ ? 7 : 1) * STAFF_LINE_HEIGHT;
 
-    this.addElement(
-      new Text({
-        box: new Box(0, 0, width, STAFF_LINE_HEIGHT),
-        value: diagram.name,
-        size: STAFF_LINE_HEIGHT,
-        style: {
-          // TODO always "center" once the chord diagrams are properly centered above chords
-          textAlign: diagram_ ? "center" : "left",
-          verticalAlign,
-          fontFamily: DEFAULT_SERIF_FONT_FAMILY,
-        },
-      }),
-    );
+    let y = 0;
+
+    if (diagram.name) {
+      this.addElement(
+        new Text({
+          box: new Box(0, 0, width, STAFF_LINE_HEIGHT),
+          value: diagram.name,
+          size: STAFF_LINE_HEIGHT,
+          style: {
+            // TODO always "center" once the chord diagrams are properly centered above chords
+            textAlign: diagram_ ? "center" : "left",
+            verticalAlign,
+            fontFamily: DEFAULT_SERIF_FONT_FAMILY,
+          },
+        }),
+      );
+
+      y += STAFF_LINE_HEIGHT;
+    }
 
     if (diagram_) {
       const numFrets = 5; // TODO make this configurable
@@ -53,7 +59,6 @@ export class ChordDiagram
       const textSize = 1.25 * STAFF_LINE_HEIGHT;
       const fretboardH = height - textSize - STAFF_LINE_HEIGHT;
 
-      const fretY = 2 * STAFF_LINE_HEIGHT;
       const fretW = width / (numStrings - 1);
       const fretH = fretboardH / numFrets;
 
@@ -61,7 +66,7 @@ export class ChordDiagram
         this.addElement(
           Text.centered({
             value: diagram_.baseFret.toString(),
-            box: new Box(-textSize + 2 * LINE_STROKE_WIDTH, fretY, fretH, fretH),
+            box: new Box(-textSize + 2 * LINE_STROKE_WIDTH, y + STAFF_LINE_HEIGHT, fretH, fretH),
             size: fretH,
             style: {
               fontFamily: DEFAULT_SERIF_FONT_FAMILY,
@@ -96,7 +101,7 @@ export class ChordDiagram
 
         this.addElement(
           new Text({
-            box: new Box((numStrings - index - 1.5) * fretW, STAFF_LINE_HEIGHT, fretW, height),
+            box: new Box((numStrings - index - 1.5) * fretW, y, fretW, height),
             size: textSize,
             value,
             style: {
@@ -108,25 +113,27 @@ export class ChordDiagram
         );
       });
 
+      y += STAFF_LINE_HEIGHT;
+
       // The nut
-      const line = Line.horizontal(-0.5 * LINE_STROKE_WIDTH, width + 0.5 * LINE_STROKE_WIDTH, fretY);
+      const line = Line.horizontal(-0.5 * LINE_STROKE_WIDTH, width + 0.5 * LINE_STROKE_WIDTH, y);
       line.style.strokeWidth = String(LINE_STROKE_WIDTH * (diagram_.baseFret == 1 ? 5 : 1));
       this.addElement(line);
 
       // Fret lines of the fretboard
       range(1, numFrets + 1).forEach((fret) => {
-        this.addElement(Line.horizontal(0, width, fretY + fretH * fret));
+        this.addElement(Line.horizontal(0, width, y + fretH * fret));
       });
 
       // Vertical lines of the fretboard
       range(numStrings).forEach((string) => {
-        this.addElement(Line.vertical(fretY, fretY + fretboardH, fretW * string));
+        this.addElement(Line.vertical(y, y + fretboardH, fretW * string));
       });
 
       diagram_.frets.forEach((fret, index) => {
         if (fret && fret > 0) {
           const cx = (numStrings - index - 1) * fretW;
-          const cy = fretY + (fret - diagram_.baseFret + 0.5) * fretH;
+          const cy = y + (fret - diagram_.baseFret + 0.5) * fretH;
           this.addElement(Ellipse.circle(cx, cy, 0.3 * fretW));
         }
       });
@@ -134,9 +141,9 @@ export class ChordDiagram
       diagram_.barres.forEach((barre) => {
         const startX = (numStrings - barre.firstString - 1) * fretW;
         const endX = (numStrings - barre.lastString - 1) * fretW;
-        const y = fretY + (barre.baseFret - diagram_.baseFret + 0.5) * fretH;
+        const barreY = y + (barre.baseFret - diagram_.baseFret + 0.5) * fretH;
 
-        const barreLine = Line.horizontal(startX, endX, y);
+        const barreLine = Line.horizontal(startX, endX, barreY);
         barreLine.style.strokeWidth = String(0.6 * fretW);
 
         this.addElement(Ellipse.circle(startX, y, 0.3 * fretW));
