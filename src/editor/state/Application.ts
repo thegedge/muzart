@@ -1,5 +1,5 @@
 import { isString } from "lodash";
-import { flow, makeAutoObservable, reaction } from "mobx";
+import { flow, makeAutoObservable, reaction, when, type IReactionDisposer } from "mobx";
 import { Box, layOutScore } from "../../layout";
 import { load } from "../../loaders";
 import * as notation from "../../notation";
@@ -51,7 +51,7 @@ export class Application {
   public canvas: CanvasState;
 
   /** A disposer for the autorun that reflows the score whenever it changes */
-  reflowDisposer: (() => void) | null = null;
+  reflowDisposer: IReactionDisposer | null = null;
 
   /** The width of the document body */
   public bodyWidth = document.body.clientWidth;
@@ -134,6 +134,9 @@ export class Application {
       return;
     }
 
+    // We can't properly lay out a score until we know the width/height of the body
+    yield when(() => this.bodyWidth != 0 && this.bodyHeight != 0);
+
     try {
       this.error = null;
       this.loading = true;
@@ -182,11 +185,6 @@ export class Application {
     if (score) {
       this.reflowDisposer = reaction(
         () => {
-          // `document.body.clientHeight` can be 0 at this point, so wait for it to get set to the proper value
-          if (this.bodyWidth == 0 || this.bodyHeight == 0) {
-            return undefined;
-          }
-
           const partIndex = resetSelection ? 0 : this.selection.partIndex;
           return layOutScore(score, [partIndex], {
             layoutMode: this.isSmallScreen ? "compact" : "normal",
