@@ -161,26 +161,32 @@ export class CanvasState {
   }
 
   scrollTo(userspaceX: number, userspaceY: number) {
+    let minX: number;
+    let maxX: number;
+    if (this.viewport.width <= this.userSpaceSize.width) {
+      minX = this.userSpaceSize.left;
+      maxX = this.userSpaceSize.right - this.viewport.width;
+    } else {
+      const width = 0.5 * (this.userSpaceSize.width - this.canvasWidth / this.userspaceToCanvasFactorX);
+      minX = width;
+      maxX = width;
+    }
+
+    let minY: number;
+    let maxY: number;
+    if (this.viewport.height <= this.userSpaceSize.height) {
+      minY = this.userSpaceSize.top;
+      maxY = this.userSpaceSize.bottom - this.viewport.height;
+    } else {
+      const height = 0.5 * (this.userSpaceSize.width - this.canvasWidth / this.userspaceToCanvasFactorX);
+      minY = height;
+      maxY = height;
+    }
+
     this.setViewport(
       this.viewport.update({
-        x:
-          this.viewport.width < this.userSpaceSize.width
-            ? scrollWithClamping(this.viewport.x, userspaceX, 0, this.userSpaceSize.width - this.viewport.width)
-            : scrollWithClamping(
-                this.viewport.x,
-                userspaceX,
-                0.5 * (this.userSpaceSize.width - this.canvasWidth / this.userspaceToCanvasFactorX),
-                0.5 * (this.userSpaceSize.width - this.canvasWidth / this.userspaceToCanvasFactorX),
-              ),
-        y:
-          this.viewport.height < this.userSpaceSize.height
-            ? scrollWithClamping(this.viewport.y, userspaceY, 0, this.userSpaceSize.height - this.viewport.height)
-            : scrollWithClamping(
-                this.viewport.y,
-                userspaceY,
-                0.5 * (this.userSpaceSize.height - this.canvasHeight / this.userspaceToCanvasFactorY),
-                0.5 * (this.userSpaceSize.height - this.canvasHeight / this.userspaceToCanvasFactorY),
-              ),
+        x: scrollWithClamping(this.viewport.x, userspaceX, minX, maxX),
+        y: scrollWithClamping(this.viewport.y, userspaceY, minY, maxY),
       }),
     );
   }
