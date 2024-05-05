@@ -31,8 +31,9 @@ export const RenderedChordDiagram = (props: { diagram: ChordDiagram; styler: Sty
     });
 
     // TODO properly draw chord diagram inside of its box so there's no need to translate
+    const baseFret = diagram.diagram.diagram?.baseFret ?? 1;
     state.setUserSpaceSize(props.diagram.box);
-    state.setViewport(props.diagram.box.translate(-2.5, 0));
+    state.setViewport(props.diagram.box.translate(baseFret > 1 ? -2.5 : -1, 0));
   }, [state, application, props.diagram, props.styler]);
 
   return (
