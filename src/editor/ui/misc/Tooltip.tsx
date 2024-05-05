@@ -11,7 +11,7 @@ import {
 } from "@floating-ui/react";
 import clsx from "clsx";
 import { reaction } from "mobx";
-import { observer } from "mobx-react-lite";
+import { Observer } from "mobx-react-lite";
 import { JSX } from "preact";
 import { useRef } from "preact/hooks";
 import { PX_PER_MM } from "../../../layout";
@@ -25,7 +25,7 @@ export type TooltipProps = {
   delay?: number;
 };
 
-export const Tooltip = observer((_props: Record<string, never>) => {
+export const Tooltip = (_props: Record<string, never>) => {
   const application = useApplicationState();
   const arrowRef = useRef<SVGSVGElement>(null);
 
@@ -52,8 +52,6 @@ export const Tooltip = observer((_props: Record<string, never>) => {
       );
     },
   });
-
-  refs.setReference(application.state.tooltip?.reference ?? null);
 
   const dismiss = useDismiss(context);
   const role = useRole(context, { role: "tooltip" });
@@ -86,28 +84,35 @@ export const Tooltip = observer((_props: Record<string, never>) => {
   };
 
   return (
-    application.state.tooltip && (
-      <div
-        ref={refs.setFloating}
-        {...props}
-        style={{
-          ...floatingStyles,
-          fontSize: `${Math.log(-application.canvas.userspaceToCanvasFactorX / PX_PER_MM)}px`,
-          filter: "drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.3))",
-        }}
-      >
-        <div className="rounded-md bg-gray-800 p-4">{application.state.tooltip.children}</div>
-        <svg
-          ref={arrowRef}
-          className="h-auto max-h-4 fill-gray-800"
-          viewBox="0 0 24 10"
-          style={{
-            transform: `rotate(${arrowRotations[side]})`,
-          }}
-        >
-          <path d="M 0 0 c 12 1 10 10 12 10 C 14 10 12 1 24 0" />
-        </svg>
-      </div>
-    )
+    <Observer>
+      {() => {
+        refs.setReference(application.state.tooltip?.reference ?? null);
+        return (
+          application.state.tooltip && (
+            <div
+              ref={refs.setFloating}
+              {...props}
+              style={{
+                ...floatingStyles,
+                fontSize: `${Math.log(-application.canvas.userspaceToCanvasFactorX / PX_PER_MM)}px`,
+                filter: "drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.3))",
+              }}
+            >
+              <div className="rounded-md bg-gray-800 p-4">{application.state.tooltip.children}</div>
+              <svg
+                ref={arrowRef}
+                className="h-auto max-h-4 fill-gray-800"
+                viewBox="0 0 24 10"
+                style={{
+                  transform: `rotate(${arrowRotations[side]})`,
+                }}
+              >
+                <path d="M 0 0 c 12 1 10 10 12 10 C 14 10 12 1 24 0" />
+              </svg>
+            </div>
+          )
+        );
+      }}
+    </Observer>
   );
-});
+};
