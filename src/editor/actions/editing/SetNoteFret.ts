@@ -24,7 +24,6 @@ export class SetNoteFret extends Action {
     let newNote: notation.Note;
     if (this.note) {
       newNote = new notation.Note(
-        this.chord,
         this.note.withChanges({
           pitch: tuning.adjust(this.fret),
           placement: {
@@ -35,7 +34,7 @@ export class SetNoteFret extends Action {
         }),
       );
     } else {
-      newNote = new notation.Note(this.chord, {
+      newNote = new notation.Note({
         value: this.chord.value,
         pitch: tuning.adjust(this.fret),
         placement: {

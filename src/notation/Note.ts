@@ -84,10 +84,7 @@ export interface NoteOptions {
 export class Note {
   private text: string;
 
-  constructor(
-    readonly chord: Chord,
-    readonly options: NoteOptions,
-  ) {
+  constructor(readonly options: NoteOptions) {
     this.text = (() => {
       let text;
       if (this.dead) {

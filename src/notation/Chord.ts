@@ -47,7 +47,7 @@ export class Chord {
   private notes_: Note[];
 
   constructor(private options: ChordOptions) {
-    this.notes_ = options.notes.map((n) => new Note(this, n));
+    this.notes_ = options.notes.map((n) => new Note(n));
     makeAutoObservable(this, undefined, { deep: true });
   }
 
@@ -95,7 +95,7 @@ export class Chord {
   }
 
   changeNote(note: Note | NoteOptions): Note | undefined {
-    const chordNote = new Note(this, note instanceof Note ? note.options : note);
+    const chordNote = new Note(note instanceof Note ? note.options : note);
     const existingIndex = this.notes.findIndex((n) => n.placement?.string == chordNote.placement?.string);
     if (existingIndex >= 0) {
       const existing = this.notes[existingIndex];

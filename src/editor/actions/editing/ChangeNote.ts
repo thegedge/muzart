@@ -10,10 +10,12 @@ export const changeNoteAction = (changes: Partial<notation.Note>) => {
 
     static actionForState(application: Application) {
       const note = application.selection.note?.note;
-      return note ? new ChangeNote(note, changes) : null;
+      const chord = application.selection.chord?.chord;
+      return chord && note ? new ChangeNote(chord, note, changes) : null;
     }
 
     constructor(
+      private chord: notation.Chord,
       private note: notation.Note,
       private changes: Partial<notation.Note>,
     ) {
@@ -21,11 +23,11 @@ export const changeNoteAction = (changes: Partial<notation.Note>) => {
     }
 
     apply(_application: Application) {
-      this.note.chord.changeNote(this.note.withChanges(this.changes));
+      this.chord.changeNote(this.note.withChanges(this.changes));
     }
 
     undo() {
-      this.note.chord.changeNote(this.note);
+      this.chord.changeNote(this.note);
     }
   };
 };

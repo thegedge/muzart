@@ -583,7 +583,7 @@ class GuitarProLoader {
       const effects = this.readNoteEffects();
       if (effects.graceNote) {
         // TODO let's not do this "as unknown as T" thingy
-        noteOptions.graceNote = new Note(null as unknown as Chord, {
+        noteOptions.graceNote = new Note({
           pitch: stringTuning.adjust(fret),
           value: effects.graceNote.value,
           dynamic: effects.graceNote.dynamic,
