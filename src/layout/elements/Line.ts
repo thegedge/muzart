@@ -2,7 +2,7 @@ import types from "..";
 import { Box } from "../utils";
 import { LayoutElement } from "./LayoutElement";
 
-export class Line extends LayoutElement<"Line", types.PageElement | types.LineElement> implements types.Line {
+export class Line extends LayoutElement<"Line", types.LineElement> implements types.Line {
   readonly type = "Line";
 
   static vertical(y1: number, y2: number, x: number) {

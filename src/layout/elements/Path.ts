@@ -1,8 +1,8 @@
-import types from "..";
+import type types from "..";
 import { Box } from "../utils";
 import { LayoutElement } from "./LayoutElement";
 
-export class Path extends LayoutElement<"Path", types.PageElement | types.LineElement> implements types.Path {
+export class Path extends LayoutElement<"Path", types.PageLine | types.ChordDiagram> implements types.Path {
   readonly type = "Path";
 
   constructor(

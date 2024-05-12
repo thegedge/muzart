@@ -1,10 +1,13 @@
 import * as CSS from "csstype";
-import types, { Millimetres, TextDecoration } from "..";
+import types, { Millimetres, TextDecoration, type LineElement } from "..";
 import { SimpleGroup } from "../layouts/SimpleGroup";
 import { Box } from "../utils";
 import { Text } from "./Text";
 
-export class DecoratedText extends SimpleGroup<types.Text, "DecoratedText"> implements types.DecoratedText {
+export class DecoratedText
+  extends SimpleGroup<types.Text, "DecoratedText", LineElement>
+  implements types.DecoratedText
+{
   readonly type = "DecoratedText";
 
   readonly textElement: Text;

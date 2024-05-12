@@ -31,7 +31,7 @@ export interface LayoutElement<ParentT extends AnyLayoutElement | null, LayoutAr
   extends HasBox,
     MaybeLayout<LayoutArgs> {
   type: string;
-  parent: LayoutElement<ParentT> | null;
+  parent: ParentT | null;
   style?: CSS.Properties;
   className?: string;
 }
@@ -98,6 +98,7 @@ export type LineElement =
   | TimeSignature
   | Vibrato;
 
+// TODO eliminate LineElement as a parent below, and have it be PageLine instead (potentially unioned with others)
 export interface Arc extends LayoutElement<LineElement> {
   type: "Arc";
   orientation: VerticalOrientation;
@@ -130,7 +131,7 @@ export interface Ellipse extends LayoutElement<ChordDiagram> {
   type: "Ellipse";
 }
 
-export interface Line extends LayoutElement<PageLine | ChordDiagram> {
+export interface Line extends LayoutElement<LineElement> {
   type: "Line";
 }
 
@@ -139,7 +140,7 @@ export interface Path extends LayoutElement<PageLine | ChordDiagram> {
   path: Path2D;
 }
 
-export interface Space extends LayoutElement<LineElement> {
+export interface Space extends LayoutElement<LineElement | PageElement> {
   type: "Space";
 }
 

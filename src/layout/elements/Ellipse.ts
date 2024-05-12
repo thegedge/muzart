@@ -2,7 +2,7 @@ import types from "..";
 import { Box } from "../utils";
 import { LayoutElement } from "./LayoutElement";
 
-export class Ellipse extends LayoutElement<"Ellipse", types.PageElement | types.LineElement> implements types.Ellipse {
+export class Ellipse extends LayoutElement<"Ellipse", types.ChordDiagram> implements types.Ellipse {
   readonly type = "Ellipse";
 
   static circle(cx: number, cy: number, r: number) {
