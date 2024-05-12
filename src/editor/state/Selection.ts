@@ -1,7 +1,7 @@
-import { inRange, last } from "lodash";
+import { inRange, last, minBy } from "lodash";
 import { makeAutoObservable } from "mobx";
-import layout from "../../layout";
-import { getAncestorOfType } from "../../layout/utils";
+import layout, { type AllElements } from "../../layout";
+import { getAncestorOfType, toAncestorCoordinateSystem } from "../../layout/utils";
 import { StorableObject, numberOrDefault } from "../storage/Storage";
 
 export class Selection implements StorableObject {
@@ -198,8 +198,48 @@ export class Selection implements StorableObject {
   }
 
   previousNote() {
+    if (!this.part) {
+      return;
+    }
+
     if (this.noteIndex > 0) {
       this.update({ noteIndex: this.noteIndex - 1 });
+      return;
+    }
+
+    // Try to find the closest chord above us, if there's another line below us
+    if (!this.chord) {
+      return;
+    }
+
+    const currentPageLine = this.measure?.parent?.parent as AllElements | null;
+    if (currentPageLine?.type !== "PageLine") {
+      return;
+    }
+
+    const pages = this.part.children;
+    const lines = pages.flatMap((page) =>
+      page.content.children.filter((child): child is layout.PageLine => child.type === "PageLine"),
+    );
+    const currentPageLineIndex = lines.findIndex((line) => line === currentPageLine);
+    if (currentPageLineIndex <= 0) {
+      return;
+    }
+
+    const chordX = toAncestorCoordinateSystem(this.chord).x;
+    const nextLine = lines[currentPageLineIndex - 1];
+    const nextLineChords = nextLine.measures.flatMap((measure) =>
+      measure.chords.map((chord) => [measure, chord] as const),
+    );
+    const closestChordOnNextLine = minBy(nextLineChords, ([_, chord]) =>
+      Math.abs(toAncestorCoordinateSystem(chord).x - chordX),
+    );
+    if (closestChordOnNextLine) {
+      this.update({
+        measureIndex: closestChordOnNextLine[0].measure.number - 1,
+        chordIndex: closestChordOnNextLine[0].chords.indexOf(closestChordOnNextLine[1]),
+        noteIndex: this.part.part.lineCount - 1,
+      });
     }
   }
 
@@ -210,6 +250,42 @@ export class Selection implements StorableObject {
 
     if (this.noteIndex < this.part.part.lineCount - 1) {
       this.update({ noteIndex: this.noteIndex + 1 });
+      return;
+    }
+
+    // Try to find the closest chord below us, if there's another line below us
+    if (!this.chord) {
+      return;
+    }
+
+    const currentPageLine = this.measure?.parent?.parent as AllElements | null;
+    if (currentPageLine?.type !== "PageLine") {
+      return;
+    }
+
+    const pages = this.part.children;
+    const lines = pages.flatMap((page) =>
+      page.content.children.filter((child): child is layout.PageLine => child.type === "PageLine"),
+    );
+    const currentPageLineIndex = lines.findIndex((line) => line === currentPageLine);
+    if (currentPageLineIndex === -1 || currentPageLineIndex === lines.length - 1) {
+      return;
+    }
+
+    const chordX = toAncestorCoordinateSystem(this.chord).x;
+    const nextLine = lines[currentPageLineIndex + 1];
+    const nextLineChords = nextLine.measures.flatMap((measure) =>
+      measure.chords.map((chord) => [measure, chord] as const),
+    );
+    const closestChordOnNextLine = minBy(nextLineChords, ([_, chord]) =>
+      Math.abs(toAncestorCoordinateSystem(chord).x - chordX),
+    );
+    if (closestChordOnNextLine) {
+      this.update({
+        measureIndex: closestChordOnNextLine[0].measure.number - 1,
+        chordIndex: closestChordOnNextLine[0].chords.indexOf(closestChordOnNextLine[1]),
+        noteIndex: 0,
+      });
     }
   }
 
