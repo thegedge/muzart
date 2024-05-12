@@ -99,6 +99,9 @@ export abstract class AsyncStorage {
 
 export const isRecord = (value: unknown): value is Record<string, unknown> => {
   switch (typeof value) {
+    case "function":
+      // Functions or classes (not instances of classes, those are objects)
+      return true;
     case "object":
       return value != null;
     default:

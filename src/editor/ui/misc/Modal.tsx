@@ -1,12 +1,13 @@
-import { ComponentChildren } from "preact";
+import { ComponentChildren, type Ref } from "preact";
+import { forwardRef } from "preact/compat";
 
-export const Modal = (props: { title: string; children?: ComponentChildren }) => {
+export const Modal = forwardRef((props: { title: string; children?: ComponentChildren }, ref?: Ref<HTMLDivElement>) => {
   return (
-    <div className="absolute bottom-0 left-0 right-0 top-0 z-top flex items-center justify-center p-16 backdrop-blur-sm backdrop-brightness-50">
-      <div className="flex flex-col items-center justify-center rounded bg-gray-200 text-black shadow-modal">
+    <div ref={ref} className="modal" popover="manual">
+      <div className="flex flex-col items-center justify-center rounded bg-gray-200 text-black">
         <div className="w-full rounded-t bg-gray-300 p-2 font-bold">{props.title}</div>
         <div className="p-4">{props.children}</div>
       </div>
     </div>
   );
-};
+});

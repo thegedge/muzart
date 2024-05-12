@@ -22,6 +22,18 @@
 }
 
 @layer components {
+  .modal {
+    @apply items-center justify-center bg-transparent p-0 shadow-modal;
+
+    &::backdrop {
+      backdrop-filter: blur(4px) brightness(0.5);
+    }
+
+    &:popover-open {
+      display: flex;
+    }
+  }
+
   [data-resize-handle] {
     @apply relative z-top transition-colors duration-300 ease-out hover:bg-gray-400;
   }

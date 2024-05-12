@@ -135,8 +135,8 @@ export const Canvas = observer((props: CanvasProps) => {
           height: window.screen.height,
           imageRendering: "high-quality",
         }}
-        onMouseDown={props.onMouseDown && wrapMouseEvent(state, props.onMouseDown)}
         onDblClick={props.onDoubleClick && wrapMouseEvent(state, props.onDoubleClick)}
+        onMouseDown={props.onMouseDown && wrapMouseEvent(state, props.onMouseDown)}
         onMouseMove={props.onMouseMove && wrapMouseEvent(state, props.onMouseMove)}
         onContextMenu={props.onContextMenu && wrapMouseEvent(state, props.onContextMenu)}
       />

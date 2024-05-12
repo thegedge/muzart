@@ -2,7 +2,7 @@ import { clamp, range } from "lodash";
 import { observable } from "mobx";
 import { observer } from "mobx-react-lite";
 import { JSX } from "preact";
-import { useMemo, useRef } from "preact/hooks";
+import { useLayoutEffect, useMemo, useRef } from "preact/hooks";
 import { bendPath } from "../../../layout/elements/Bend";
 import * as notation from "../../../notation";
 import { Bend, BendPoint, BendType, defaultBendPointsForType } from "../../../notation";
@@ -24,11 +24,21 @@ type ObservableBend = Bend & {
 export const BendEditor = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
   const note = narrowInstance(application.state.modalSubject, notation.Note);
-  if (!note || application.state.modalProperty != "bend") {
-    return null;
-  }
 
-  return <BendEditorInner note={note} />;
+  const popoverRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    if (!popoverRef.current) {
+      return;
+    }
+
+    note ? popoverRef.current.showPopover() : popoverRef.current.hidePopover();
+  }, [note]);
+
+  return (
+    <Modal ref={popoverRef} title="Bend">
+      {note && application.state.modalProperty == "bend" && <BendEditorInner note={note} />}
+    </Modal>
+  );
 });
 
 const BendEditorInner = observer((props: { note: notation.Note }) => {
@@ -77,12 +87,10 @@ const BendEditorInner = observer((props: { note: notation.Note }) => {
   }, [props.note]);
 
   return (
-    <Modal title="Bend">
-      <div className="flex flex-row items-center justify-between gap-4">
-        <BendPointGrid bend={bend} className="min-w-[50vw] flex-1" />
-        <BendFormControls bend={bend} />
-      </div>
-    </Modal>
+    <div className="flex flex-row items-center justify-between gap-4">
+      <BendPointGrid bend={bend} className="min-w-[50vw] flex-1" />
+      <BendFormControls bend={bend} />
+    </div>
   );
 });
 
