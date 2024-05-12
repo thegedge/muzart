@@ -36,7 +36,7 @@ import { ZoomIn } from "../actions/zoom/ZoomIn";
 import { ZoomOut } from "../actions/zoom/ZoomOut";
 import { Application, Command } from "../state/Application";
 import { useApplicationState } from "./ApplicationStateContext";
-import { KeyBinding, KeyBindings, useKeyBindings } from "./useKeyBindings";
+import { KEY_BINDING_SEPARATOR, KeyBinding, KeyBindings, bindingKeyCompare, useKeyBindings } from "./useKeyBindings";
 
 type OtherContext = Action;
 
@@ -51,31 +51,31 @@ export const useEditorKeyBindings = (): KeyBindings<OtherContext> => {
   const application = useApplicationState();
   const state = application.state;
 
-  const keyBindings = useMemo(
-    () =>
-      Object.entries(ACTION_GROUPS).flatMap(([group, actions]) => {
-        return actions
-          .filter((action): action is Command & { defaultKeyBinding: string } => !!action.defaultKeyBinding)
-          .map(
-            (actionFactory) =>
-              ({
-                name: actionFactory.name,
-                group,
-                when: actionFactory.when,
-                key: actionFactory.defaultKeyBinding,
-                action(_context) {
-                  const action = actionFactory.actionForState(application);
-                  application.dispatch(action);
+  const keyBindings = useMemo(() => {
+    return Object.entries(ACTION_GROUPS).flatMap(([group, actions]) => {
+      return actions
+        .filter((action): action is Command & { defaultKeyBinding: string } => !!action.defaultKeyBinding)
+        .map((actionFactory) => {
+          return {
+            name: actionFactory.name,
+            group,
+            when: actionFactory.when,
+            key: actionFactory.defaultKeyBinding
+              .split(KEY_BINDING_SEPARATOR)
+              .sort((a, b) => bindingKeyCompare(a, b))
+              .join(KEY_BINDING_SEPARATOR),
+            action(_context) {
+              const action = actionFactory.actionForState(application);
+              application.dispatch(action);
 
-                  // TODO we kind of want to clear this when some action is dispatched to the application outside of a key binding
-                  previousAction = action;
-                  previousActionTime = Date.now();
-                },
-              }) as KeyBinding<OtherContext>,
-          );
-      }),
-    [application],
-  );
+              // TODO we kind of want to clear this when some action is dispatched to the application outside of a key binding
+              previousAction = action;
+              previousActionTime = Date.now();
+            },
+          } as KeyBinding<OtherContext>;
+        });
+    });
+  }, [application]);
 
   useKeyBindings(keyBindings, state);
 

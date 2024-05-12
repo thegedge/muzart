@@ -4,7 +4,7 @@ import { Action } from "../Action";
 export class NextPart extends Action {
   static readonly name = "Next part";
   static readonly when = "editorFocused";
-  static readonly defaultKeyBinding = "Alt + $mod + ArrowDown";
+  static readonly defaultKeyBinding = "$mod + Alt + ArrowDown";
 
   static actionForState(_application: Application) {
     return new NextPart();

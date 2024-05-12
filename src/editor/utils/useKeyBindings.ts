@@ -22,6 +22,31 @@ export const KEY_BINDING_SEPARATOR = " + ";
 
 export type KeyBindings<T = never> = KeyBinding<T>[];
 
+const bindingKeyOrderValue = (v: string) => {
+  switch (v) {
+    case "$mod":
+      return "$1";
+    case "Shift":
+      return "$2";
+    case "Alt":
+      return "$3";
+    default:
+      return v;
+  }
+};
+
+export const bindingKeyCompare = (a: string, b: string) => {
+  const aCompare = bindingKeyOrderValue(a);
+  const bCompare = bindingKeyOrderValue(b);
+  if (aCompare < bCompare) {
+    return -1;
+  } else if (aCompare > bCompare) {
+    return 1;
+  } else {
+    return 0;
+  }
+};
+
 /**
  * Install a keydown listener to handle the supplied key bindings.
  *
@@ -43,16 +68,18 @@ export const useKeyBindings = <StateT, ContextOtherT = never>(
 
     const listener = (event: KeyboardEvent) => {
       const pieces = [];
+
+      // These are pushed in the order we sort by when compuring the binding groups above
+      if ((IS_MAC && event.metaKey) || (!IS_MAC && event.ctrlKey)) {
+        pieces.push("$mod");
+      }
+
       if (event.shiftKey) {
         pieces.push("Shift");
       }
 
       if (event.altKey) {
         pieces.push("Alt");
-      }
-
-      if ((IS_MAC && event.metaKey) || (!IS_MAC && event.ctrlKey)) {
-        pieces.push("$mod");
       }
 
       pieces.push(event.key);
