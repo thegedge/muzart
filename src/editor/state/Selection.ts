@@ -305,10 +305,10 @@ export class Selection implements StorableObject {
     });
   }
 
-  setScore(score: layout.Score | null, resetSelection = true) {
+  setScore(score: layout.Score | null) {
     this.score = score;
 
-    if (resetSelection || score == null) {
+    if (score == null) {
       // This forces an update in `this.update` below
       this.partIndex = -1;
       this.measureIndex = -1;
