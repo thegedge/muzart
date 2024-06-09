@@ -195,6 +195,7 @@ export class Application {
           return {
             score: layOutScore(score, [partIndex], { layoutMode }),
             layoutMode,
+            partIndex: this.selection.partIndex,
           };
         },
         (current, previous) => {
