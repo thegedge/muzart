@@ -133,7 +133,7 @@ export const Canvas = observer((props: CanvasProps) => {
         style={{
           width: window.screen.width,
           height: window.screen.height,
-          imageRendering: "high-quality",
+          imageRendering: "crisp-edges",
         }}
         onDblClick={props.onDoubleClick && wrapMouseEvent(state, props.onDoubleClick)}
         onMouseDown={props.onMouseDown && wrapMouseEvent(state, props.onMouseDown)}
