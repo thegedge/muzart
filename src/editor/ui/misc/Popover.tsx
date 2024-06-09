@@ -3,17 +3,6 @@ import { type JSX } from "preact";
 import { forwardRef, useEffect, useRef, type PropsWithChildren } from "preact/compat";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 
-declare module "preact" {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface HTMLAttributes {
-      popover?: "auto" | "manual" | undefined;
-      popovertarget?: string | undefined;
-      popovertargetaction?: "hide" | "show" | "toggle" | undefined;
-    }
-  }
-}
-
 export const Popover = forwardRef<HTMLElement, PropsWithChildren<JSX.HTMLAttributes>>((props, ref) => {
   const application = useApplicationState();
   const modalRef = useRef<HTMLDivElement>(null);

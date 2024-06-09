@@ -51,7 +51,7 @@ export const PartPanel = observer((_props: Record<string, never>) => {
             return (
               <div
                 key={measureIndex}
-                className={`relative flex h-6 w-6 items-center font-light  ${
+                className={`relative flex h-6 w-6 items-center font-light ${
                   marker ? "justify-start whitespace-nowrap pl-1 text-2xs text-gray-400" : "justify-center"
                 }`}
               >

@@ -66,7 +66,7 @@ function PaletteEntry<T>(props: { onClick: () => void; children: ComponentChildr
     <span
       onClick={props.onClick}
       className={`cursor-pointer rounded-md px-3 py-1 text-center hover:bg-gray-600 ${
-        props.current ? " bg-gray-500" : ""
+        props.current ? "bg-gray-500" : ""
       }`}
     >
       {props.children}
