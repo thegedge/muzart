@@ -8,9 +8,10 @@ import { PlayCircleIcon as SoloIcon } from "@heroicons/react/24/solid";
 import { range } from "lodash";
 import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useEffect, useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { JSXInternal } from "preact/src/jsx";
 import { Measure, Part } from "../../../notation";
+import { ChangePartName } from "../../actions/editing/ChangePartName";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { useMuzartContextMenu } from "./useMuzartContextMenu";
 
@@ -80,6 +81,10 @@ const PartRow = observer(
     const partColor = part.color ?? "rgb(156, 163, 175)";
     const rowBackgroundColor = partIndex == selection.partIndex ? "bg-gray-700" : "bg-gray-800";
 
+    const contextMenuHandlers = useMuzartContextMenu(part);
+    const application = useApplicationState();
+    const nameElementRef = useRef<HTMLDivElement>(null);
+
     const toggleSolo: JSXInternal.GenericEventHandler<HTMLElement> = (event) => {
       event.preventDefault();
       playback.toggleSolo(props.partIndex);
@@ -90,18 +95,26 @@ const PartRow = observer(
       playback.toggleMute(props.partIndex);
     };
 
-    const contextMenuHandlers = useMuzartContextMenu(part);
+    const partNameChanged = (_event: FocusEvent) => {
+      if (nameElementRef.current) {
+        const newPartName = nameElementRef.current.innerText.trim().replaceAll(/\n\r\t/g, " ");
+        application.dispatch(new ChangePartName(part, newPartName));
+      }
+    };
 
     return (
       <>
         <div className={`sticky left-0 flex gap-px pr-px ${rowBackgroundColor}`} {...contextMenuHandlers}>
           <div
-            className="flex flex-1 cursor-pointer items-center px-4 text-xs font-extralight shadow-black text-shadow"
+            ref={nameElementRef}
+            className="flex flex-1 cursor-text items-center px-4 text-xs font-extralight shadow-black text-shadow"
             onClick={onChange}
+            onBlur={partNameChanged}
             data-part={partIndex}
-          >
-            {part.name}
-          </div>
+            // This is the only way to avoid weird artifacts with the "contentEditable" attribute
+            dangerouslySetInnerHTML={{ __html: part.name }}
+            contentEditable
+          />
           <button
             type="button"
             name="solo"

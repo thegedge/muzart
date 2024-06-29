@@ -35,4 +35,8 @@ export class Part {
   get instrument() {
     return this.options.instrument;
   }
+
+  setName(name: string) {
+    this.options.name = name;
+  }
 }
