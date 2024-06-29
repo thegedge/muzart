@@ -9,7 +9,6 @@
 - Score
   - Edit all of the bits of the score header
 - Parts
-  - Add
   - Change instrument
   - Change name
   - Change color

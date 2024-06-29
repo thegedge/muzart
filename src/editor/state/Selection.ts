@@ -68,7 +68,7 @@ export class Selection implements StorableObject {
     });
   }
 
-  update(selection: Partial<Selection>) {
+  update(selection: Partial<Pick<Selection, "partIndex" | "measureIndex" | "chordIndex" | "noteIndex">>) {
     const partIndex = selection.partIndex;
     const partChanged = partIndex != undefined && selection.partIndex != this.partIndex;
     if (partChanged) {

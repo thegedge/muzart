@@ -47,8 +47,14 @@ export class Score {
     return this.parts_;
   }
 
-  addPart(part: Part, index = 0) {
-    this.parts_.splice(index, 0, part);
+  addPart(part: Part, index?: number) {
+    if (index === undefined) {
+      this.parts_.push(part);
+      return this.parts.length - 1;
+    } else {
+      this.parts_.splice(index, 0, part);
+      return index;
+    }
   }
 
   removePart(part: Part) {

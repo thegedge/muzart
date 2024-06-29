@@ -20,6 +20,7 @@ import { PartPanel } from "./PartPanel";
 import { Score } from "./Score";
 import { SelectionPalette } from "./SelectionPalette";
 import { TimeSignatureEditor } from "./TimeSignatureEditor";
+import { AddPart } from "../../actions/editing/AddPart";
 
 export const EditorChrome = observer((props: { loaderUrl: string }) => {
   const { loaderUrl: url } = props;
@@ -156,7 +157,7 @@ const MuzartContextMenu = observer((_props: Record<string, never>) => {
 
   let items: Command[];
   if (state.contextMenuSubject instanceof notation.Part) {
-    items = [RemovePart];
+    items = [AddPart, RemovePart];
   } else if (state.contextMenuSubject instanceof notation.Measure) {
     items = [EditTimeSignature];
   } else {
