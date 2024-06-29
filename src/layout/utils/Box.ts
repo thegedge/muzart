@@ -15,7 +15,10 @@ export class Box {
    * Compute a box that encompasses all of the given boxes.
    */
   static encompass(...boxes: Box[]) {
-    return boxes.reduce((encompassBox, box) => encompassBox.encompass(box));
+    if (boxes.length == 0) {
+      return Box.empty();
+    }
+    return boxes.reduce((encompassBox, box) => encompassBox.encompass(box), Box.empty());
   }
 
   constructor(

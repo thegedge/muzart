@@ -9,8 +9,8 @@ describe("Box", () => {
   });
 
   describe(".encompass", () => {
-    test("returns the given box when it's the only argument", () => {
-      assert.equal(Box.encompass(new Box(1, 2, 3, 4)), new Box(1, 2, 3, 4));
+    test("returns an empty box when none given", () => {
+      assert.equal(Box.encompass(), Box.empty());
     });
 
     test("encompasses the given boxes", () => {
