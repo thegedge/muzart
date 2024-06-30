@@ -5,7 +5,7 @@ import { makeAutoObservable } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, type CSSProperties } from "preact/compat";
 import layout, { toAncestorCoordinateSystem } from "../../../layout";
-import { StyleComputer } from "../../../utils/StyleComputer";
+import { StyleComputer } from "../../../render/StyleComputer";
 import { changeTextAction } from "../../actions/editing/ChangeTextElement";
 import { Application } from "../../state/Application";
 

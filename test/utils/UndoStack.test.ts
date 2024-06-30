@@ -1,5 +1,5 @@
 import { beforeEach, describe, test } from "vitest";
-import { UndoStack } from "../../src/utils/UndoStack";
+import { UndoStack } from "../../src/editor/utils/UndoStack";
 import { assert } from "../testing";
 
 describe("UndoStack", () => {

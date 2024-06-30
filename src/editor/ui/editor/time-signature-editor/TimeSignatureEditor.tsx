@@ -1,7 +1,7 @@
 import { observer, useLocalObservable } from "mobx-react-lite";
 import * as notation from "../../../../notation";
-import { narrowInstance } from "../../../../utils/narrow";
 import { useApplicationState } from "../../../utils/ApplicationStateContext";
+import { narrowInstance } from "../../../utils/narrow";
 import { Modal } from "../../misc/Modal";
 import { TimeSignatureForm } from "./TimeSignatureForm";
 

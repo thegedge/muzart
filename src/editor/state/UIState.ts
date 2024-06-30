@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { PlaybackController } from "../../playback/PlaybackController";
-import { PropertyPaths } from "../../utils/types";
 import { TooltipProps } from "../ui/misc/Tooltip";
+import { PropertyPaths } from "../utils/types";
 
 /**
  * Captures all of the state that is related to the UI of the editor.

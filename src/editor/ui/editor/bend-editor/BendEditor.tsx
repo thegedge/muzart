@@ -3,11 +3,11 @@ import { observer } from "mobx-react-lite";
 import { useLayoutEffect, useMemo, useRef } from "preact/hooks";
 import * as notation from "../../../../notation";
 import { Bend, BendPoint, BendType, defaultBendPointsForType } from "../../../../notation";
-import { narrowInstance } from "../../../../utils/narrow";
+import { changeNoteAction } from "../../../actions/editing/note/ChangeNote";
 import { useApplicationState } from "../../../utils/ApplicationStateContext";
+import { narrowInstance } from "../../../utils/narrow";
 import { Modal } from "../../misc/Modal";
 import { BendPointGrid } from "./BendPointGrid";
-import { changeNoteAction } from "../../../actions/editing/note/ChangeNote";
 
 export type ObservableBend = Bend & {
   note: notation.Note;

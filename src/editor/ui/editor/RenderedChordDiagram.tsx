@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "preact/hooks";
 import { ChordDiagram } from "../../../layout/elements/ChordDiagram";
 import { renderScoreElement } from "../../../render/renderScoreElement";
-import { StyleComputer } from "../../../utils/StyleComputer";
+import { StyleComputer } from "../../../render/StyleComputer";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas } from "../canvas/Canvas";
 import { CanvasState } from "../canvas/CanvasState";

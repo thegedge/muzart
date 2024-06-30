@@ -1,6 +1,6 @@
 import * as notation from "../../../../notation";
-import { narrowInstance } from "../../../../utils/narrow";
 import type { Application } from "../../../state/Application";
+import { narrowInstance } from "../../../utils/narrow";
 import { Action } from "../../Action";
 
 export class RemovePart extends Action {

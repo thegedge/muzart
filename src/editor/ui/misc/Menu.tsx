@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import { VNode, isValidElement } from "preact";
 import { Children, HTMLAttributes } from "preact/compat";
-import { MaybeArray } from "../../../utils/types";
 import { Command } from "../../state/Application";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
+import { MaybeArray } from "../../utils/types";
 
 export type MenuProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   children: MaybeArray<VNode | Command>;

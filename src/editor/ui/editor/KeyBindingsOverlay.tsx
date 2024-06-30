@@ -1,8 +1,8 @@
 import { groupBy } from "lodash";
 import { observer } from "mobx-react-lite";
 import { Fragment } from "preact";
-import { IS_MAC } from "../../../utils/platform";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
+import { IS_MAC } from "../../utils/platform";
 import { KEY_BINDING_SEPARATOR, KeyBindings } from "../../utils/useKeyBindings";
 
 export const KeyBindingsOverlay = observer(function KeyBindingsOverlay<T>(props: { bindings: KeyBindings<T> }) {

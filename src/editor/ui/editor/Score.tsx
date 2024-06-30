@@ -16,7 +16,8 @@ import { Note } from "../../../layout/elements/Note";
 import * as notation from "../../../notation";
 import { noteValueToSeconds } from "../../../playback/util/durations";
 import { renderScoreElement } from "../../../render/renderScoreElement";
-import { StyleComputer } from "../../../utils/StyleComputer";
+import { StyleComputer } from "../../../render/StyleComputer";
+import { changeNoteAction } from "../../actions/editing/note/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../canvas/Canvas";
 import { VirtualCanvasElement } from "../canvas/VirtualCanvasElement";
@@ -25,7 +26,6 @@ import { StatefulInput, StatefulTextInputState } from "../misc/StatefulInput";
 import type { TooltipProps } from "../misc/Tooltip";
 import { selectionBoxFor } from "../utils/selectionBoxFor";
 import { RenderedChordDiagram } from "./RenderedChordDiagram";
-import { changeNoteAction } from "../../actions/editing/note/ChangeNote";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
