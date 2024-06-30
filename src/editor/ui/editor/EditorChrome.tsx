@@ -5,6 +5,7 @@ import type { PropsWithChildren } from "preact/compat";
 import { useEffect } from "preact/hooks";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import * as notation from "../../../notation";
+import { AddPart } from "../../actions/editing/AddPart";
 import { EditTimeSignature } from "../../actions/editing/EditTimeSignature";
 import { RemovePart } from "../../actions/editing/RemovePart";
 import { TogglePlayback } from "../../actions/playback/TogglePlayback";
@@ -14,13 +15,12 @@ import { Loading } from "../misc/Loading";
 import { Menu } from "../misc/Menu";
 import { PopoverMenu } from "../misc/PopoverMenu";
 import { Tooltip } from "../misc/Tooltip";
-import { BendEditor } from "./BendEditor";
+import { BendEditor } from "./bend-editor/BendEditor";
 import { DebugPanel } from "./DebugPanel";
-import { PartPanel } from "./PartPanel";
+import { PartPanel } from "./part-panel/PartPanel";
 import { Score } from "./Score";
-import { SelectionPalette } from "./SelectionPalette";
-import { TimeSignatureEditor } from "./TimeSignatureEditor";
-import { AddPart } from "../../actions/editing/AddPart";
+import { SelectionPalette } from "./selection-palette/SelectionPalette";
+import { TimeSignatureEditor } from "./time-signature-editor/TimeSignatureEditor";
 
 export const EditorChrome = observer((props: { loaderUrl: string }) => {
   const { loaderUrl: url } = props;

@@ -21,11 +21,11 @@ import { changeNoteAction } from "../../actions/editing/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { Canvas, Point, RenderFunction } from "../canvas/Canvas";
 import { VirtualCanvasElement } from "../canvas/VirtualCanvasElement";
+import { ElementBoundPalette } from "../misc/ElementBoundPalette";
 import { StatefulInput, StatefulTextInputState } from "../misc/StatefulInput";
-import { selectionBoxFor } from "../misc/selectionBoxFor";
-import { ElementBoundPalette } from "./ElementBoundPalette";
-import { RenderedChordDiagram } from "./RenderedChordDiagram";
 import type { TooltipProps } from "../misc/Tooltip";
+import { selectionBoxFor } from "../utils/selectionBoxFor";
+import { RenderedChordDiagram } from "./RenderedChordDiagram";
 
 export const Score = observer((_props: Record<string, never>) => {
   const application = useApplicationState();

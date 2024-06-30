@@ -16,7 +16,7 @@ import { IndexedDbStorage } from "../storage/IndexedDbStorage";
 import { LocalStorage } from "../storage/LocalStorage";
 import { TabStorage } from "../storage/TabStorage";
 import { APPLICATION_NAMESPACE, APPLICATION_STATE_KEY, TABS_NAMESPACE } from "../storage/namespaces";
-import { selectionBoxFor } from "../ui/misc/selectionBoxFor";
+import { selectionBoxFor } from "../ui/utils/selectionBoxFor";
 
 declare global {
   interface Window {
