@@ -1,4 +1,4 @@
-import { type BooleanNoteFeatures, toggleNoteFeatureAction } from "../../../actions/editing/ToggleNoteFeature";
+import { type BooleanNoteFeatures, toggleNoteFeatureAction } from "../../../actions/editing/note/ToggleNoteFeature";
 import { useApplicationState } from "../../../utils/ApplicationStateContext";
 import { PaletteButton } from "./PaletteButton";
 import type { PaletteButtonProps } from "./PaletteButtonProps";

@@ -1,7 +1,7 @@
-import * as notation from "../../../notation";
-import { narrowInstance } from "../../../utils/narrow";
-import { Application } from "../../state/Application";
-import { Action } from "../Action";
+import * as notation from "../../../../notation";
+import { narrowInstance } from "../../../../utils/narrow";
+import type { Application } from "../../../state/Application";
+import { Action } from "../../Action";
 
 export class RemovePart extends Action {
   static readonly name = "Remove part";

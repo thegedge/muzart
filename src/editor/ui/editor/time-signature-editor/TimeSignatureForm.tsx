@@ -1,8 +1,8 @@
 import { observer } from "mobx-react-lite";
 import * as notation from "../../../../notation";
-import { ChangeTimeSignature } from "../../../actions/editing/ChangeTimeSignature";
 import { useApplicationState } from "../../../utils/ApplicationStateContext";
 import type { ObservableTimeSignature } from "./TimeSignatureEditor";
+import { ChangeTimeSignature } from "../../../actions/editing/measure/ChangeTimeSignature";
 
 export const TimeSignatureForm = observer((props: { timeSignature: ObservableTimeSignature }) => {
   const application = useApplicationState();

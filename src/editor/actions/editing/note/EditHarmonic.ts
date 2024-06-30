@@ -1,6 +1,6 @@
-import { Note } from "../../../layout/elements/Note";
-import { Application } from "../../state/Application";
-import { Action } from "../Action";
+import { Note } from "../../../../layout/elements/Note";
+import type { Application } from "../../../state/Application";
+import { Action } from "../../Action";
 
 export class EditHarmonic extends Action {
   static readonly name = "Toggle edit harmonic";

@@ -5,9 +5,6 @@ import type { PropsWithChildren } from "preact/compat";
 import { useEffect } from "preact/hooks";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import * as notation from "../../../notation";
-import { AddPart } from "../../actions/editing/AddPart";
-import { EditTimeSignature } from "../../actions/editing/EditTimeSignature";
-import { RemovePart } from "../../actions/editing/RemovePart";
 import { TogglePlayback } from "../../actions/playback/TogglePlayback";
 import { Command } from "../../state/Application";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
@@ -21,6 +18,9 @@ import { PartPanel } from "./part-panel/PartPanel";
 import { Score } from "./Score";
 import { SelectionPalette } from "./selection-palette/SelectionPalette";
 import { TimeSignatureEditor } from "./time-signature-editor/TimeSignatureEditor";
+import { EditTimeSignature } from "../../actions/editing/measure/EditTimeSignature";
+import { AddPart } from "../../actions/editing/part/AddPart";
+import { RemovePart } from "../../actions/editing/part/RemovePart";
 
 export const EditorChrome = observer((props: { loaderUrl: string }) => {
   const { loaderUrl: url } = props;

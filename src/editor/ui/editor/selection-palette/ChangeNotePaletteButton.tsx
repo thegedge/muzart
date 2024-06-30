@@ -1,5 +1,5 @@
 import * as notation from "../../../../notation";
-import { changeNoteAction } from "../../../actions/editing/ChangeNote";
+import { changeNoteAction } from "../../../actions/editing/note/ChangeNote";
 import { useApplicationState } from "../../../utils/ApplicationStateContext";
 import { PaletteButton } from "./PaletteButton";
 import type { PaletteButtonProps } from "./PaletteButtonProps";

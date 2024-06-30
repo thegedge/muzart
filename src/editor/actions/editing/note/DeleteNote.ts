@@ -1,6 +1,6 @@
-import * as notation from "../../../notation";
-import { Application } from "../../state/Application";
-import { Action } from "../Action";
+import * as notation from "../../../../notation";
+import type { Application } from "../../../state/Application";
+import { Action } from "../../Action";
 
 // TODO assuming a stringed + fretted instrument below. Will need to fix eventually.
 

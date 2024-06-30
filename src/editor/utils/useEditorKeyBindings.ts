@@ -1,18 +1,17 @@
 import { range } from "lodash";
 import { useMemo } from "preact/hooks";
 import { StringInstrument } from "../../notation";
-import { Action } from "../actions/Action";
-import { DecreaseNoteValue } from "../actions/editing/DecreaseNoteValue";
-import { DeleteNote } from "../actions/editing/DeleteNote";
-import { DotNote } from "../actions/editing/DotNote";
-import { EditBend } from "../actions/editing/EditBend";
-import { EditDynamic } from "../actions/editing/EditDynamic";
-import { EditHarmonic } from "../actions/editing/EditHarmonic";
 import { HideModal } from "../actions/editing/HideModal";
-import { IncreaseNoteValue } from "../actions/editing/IncreaseNoteValue";
+import { DecreaseNoteValue } from "../actions/editing/note/DecreaseNoteValue";
+import { DeleteNote } from "../actions/editing/note/DeleteNote";
+import { DotNote } from "../actions/editing/note/DotNote";
+import { EditBend } from "../actions/editing/note/EditBend";
+import { EditDynamic } from "../actions/editing/note/EditDynamic";
+import { EditHarmonic } from "../actions/editing/note/EditHarmonic";
+import { IncreaseNoteValue } from "../actions/editing/note/IncreaseNoteValue";
+import { SetNoteFret } from "../actions/editing/note/SetNoteFret";
+import { toggleNoteFeatureAction } from "../actions/editing/note/ToggleNoteFeature";
 import { Redo } from "../actions/editing/Redo";
-import { SetNoteFret } from "../actions/editing/SetNoteFret";
-import { toggleNoteFeatureAction } from "../actions/editing/ToggleNoteFeature";
 import { Undo } from "../actions/editing/Undo";
 import { FirstPage } from "../actions/navigation/FirstPage";
 import { LastPage } from "../actions/navigation/LastPage";
@@ -34,9 +33,15 @@ import { TogglePlayback } from "../actions/playback/TogglePlayback";
 import { ResetZoom } from "../actions/zoom/ResetZoom";
 import { ZoomIn } from "../actions/zoom/ZoomIn";
 import { ZoomOut } from "../actions/zoom/ZoomOut";
-import { Application, Command } from "../state/Application";
+import type { Action, Command, Application } from "../state/Application";
 import { useApplicationState } from "./ApplicationStateContext";
-import { KEY_BINDING_SEPARATOR, KeyBinding, KeyBindings, bindingKeyCompare, useKeyBindings } from "./useKeyBindings";
+import {
+  type KeyBindings,
+  KEY_BINDING_SEPARATOR,
+  bindingKeyCompare,
+  type KeyBinding,
+  useKeyBindings,
+} from "./useKeyBindings";
 
 type OtherContext = Action;
 

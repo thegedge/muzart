@@ -1,15 +1,15 @@
 import { observer } from "mobx-react-lite";
 import type { ComponentChildren } from "preact";
 import { HarmonicStyle, NoteDynamic, NoteValue, NoteValueName } from "../../../../notation";
-import { changeNoteValueAction } from "../../../actions/editing/ChangeNoteValue";
-import { dotNoteAction } from "../../../actions/editing/DotNote";
-import { EditBend } from "../../../actions/editing/EditBend";
 import { NoteValueIcon } from "../../../resources/note_values";
 import { useApplicationState } from "../../../utils/ApplicationStateContext";
-import { PaletteGroup } from "./PaletteGroup";
-import { TogglePaletteButton } from "./TogglePaletteButton";
 import { ChangeNotePaletteButton } from "./ChangeNotePaletteButton";
 import { PaletteButton } from "./PaletteButton";
+import { PaletteGroup } from "./PaletteGroup";
+import { TogglePaletteButton } from "./TogglePaletteButton";
+import { changeNoteValueAction } from "../../../actions/editing/note/ChangeNoteValue";
+import { dotNoteAction } from "../../../actions/editing/note/DotNote";
+import { EditBend } from "../../../actions/editing/note/EditBend";
 
 export const NoteSettingsForm = observer(() => {
   const application = useApplicationState();

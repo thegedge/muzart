@@ -8,10 +8,10 @@ import { observer } from "mobx-react-lite";
 import { useRef } from "preact/hooks";
 import type { JSXInternal } from "preact/src/jsx";
 import type { Part } from "../../../../notation";
-import { ChangePartName } from "../../../actions/editing/ChangePartName";
 import { useApplicationState } from "../../../utils/ApplicationStateContext";
 import { useMuzartContextMenu } from "../useMuzartContextMenu";
 import { MeasureBox } from "./MeasureBox";
+import { ChangePartName } from "../../../actions/editing/part/ChangePartName";
 
 export const PartRow = observer(
   (props: { part: Part; partIndex: number; onChange: JSXInternal.MouseEventHandler<HTMLElement> }) => {
