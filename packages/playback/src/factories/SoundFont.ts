@@ -1,6 +1,6 @@
 import { BufferCursor, NumberType } from "@muzart/loaders";
 import * as notation from "@muzart/notation";
-import { compact, uniqBy } from "lodash";
+import { compact, uniqBy } from "lodash-es";
 import { Sampler } from "../generators/Sampler";
 import { SourceGenerator, SourceGeneratorFactory } from "../types";
 

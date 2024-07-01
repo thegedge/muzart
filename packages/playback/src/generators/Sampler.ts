@@ -1,5 +1,5 @@
 import * as notation from "@muzart/notation";
-import { memoize } from "lodash";
+import { memoize } from "lodash-es";
 import { SampleZone, SoundFontGeneratorType } from "../factories/SoundFont";
 import { CompositeNode } from "../nodes/CompositeNode";
 import { EnvelopeNode } from "../nodes/EnvelopeNode";

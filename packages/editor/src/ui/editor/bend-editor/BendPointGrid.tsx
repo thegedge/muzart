@@ -1,6 +1,6 @@
 import { bendPath } from "@muzart/layout";
 import type { Bend, BendPoint } from "@muzart/notation";
-import { clamp, range } from "lodash";
+import { clamp, range } from "lodash-es";
 import { observer } from "mobx-react-lite";
 import type { JSX } from "preact";
 import { useRef } from "preact/hooks";

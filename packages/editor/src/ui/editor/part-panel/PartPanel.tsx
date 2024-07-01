@@ -1,6 +1,6 @@
 import { SpeakerWaveIcon } from "@heroicons/react/24/outline";
 import { PlayCircleIcon as SoloIcon } from "@heroicons/react/24/solid";
-import { range } from "lodash";
+import { range } from "lodash-es";
 import { observer } from "mobx-react-lite";
 import { useApplicationState } from "../../../utils/ApplicationStateContext";
 import { PartRow } from "./PartRow";

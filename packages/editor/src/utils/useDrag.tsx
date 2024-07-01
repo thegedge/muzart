@@ -1,4 +1,4 @@
-import { clamp } from "lodash";
+import { clamp } from "lodash-es";
 import { RefObject } from "preact";
 import { useRef } from "preact/hooks";
 

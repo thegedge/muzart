@@ -1,6 +1,6 @@
 import { load } from "@muzart/loaders";
 import { assert } from "@muzart/testing";
-import { range } from "lodash";
+import { range } from "lodash-es";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, test } from "vitest";

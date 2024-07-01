@@ -3,7 +3,7 @@ import { load } from "@muzart/loaders";
 import * as notation from "@muzart/notation";
 import { PlaybackController } from "@muzart/playback";
 import { DebugContext } from "@muzart/render";
-import { isString } from "lodash";
+import { isString } from "lodash-es";
 import { flow, makeAutoObservable, reaction, when, type IReactionDisposer } from "mobx";
 import { SyncStorage, isRecord } from "../storage/Storage";
 import { TabStorage } from "../storage/TabStorage";

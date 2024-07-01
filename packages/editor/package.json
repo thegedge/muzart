@@ -20,7 +20,7 @@
     "@muzart/render": "workspace:*",
     "@muzart/testing": "workspace:*",
     "clsx": "^2.1.1",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "mobx": "^6.12.4",
     "mobx-react-lite": "^4.0.7",
     "preact": "^10.22.0",
@@ -33,7 +33,7 @@
   "devDependencies": {
     "@preact/preset-vite": "^2.8.3",
     "@types/audioworklet": "^0.0.56",
-    "@types/lodash": "^4.17.6",
+    "@types/lodash-es": "^4.17.6",
     "@types/node": "^20.14.9",
     "autoprefixer": "^10.4.19",
     "css-loader": "^7.1.2",

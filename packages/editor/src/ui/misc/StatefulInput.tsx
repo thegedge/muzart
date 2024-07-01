@@ -2,7 +2,7 @@ import * as layout from "@muzart/layout";
 import { StyleComputer } from "@muzart/render";
 import clsx from "clsx";
 import type * as CSS from "csstype";
-import { merge } from "lodash";
+import { merge } from "lodash-es";
 import { makeAutoObservable } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, type CSSProperties } from "preact/compat";

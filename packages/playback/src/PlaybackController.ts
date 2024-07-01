@@ -1,6 +1,6 @@
 import * as layout from "@muzart/layout";
 import { NoteValue, NoteValueName } from "@muzart/notation";
-import { range } from "lodash";
+import { range } from "lodash-es";
 import { action, autorun, flow, makeObservable, observable } from "mobx";
 import { maxMap } from "../../layout/src";
 import { Instrument } from "./Instrument";

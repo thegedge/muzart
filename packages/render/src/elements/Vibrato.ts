@@ -1,5 +1,5 @@
 import * as layout from "@muzart/layout";
-import { range } from "lodash";
+import { range } from "lodash-es";
 import { RenderFunc } from "../types";
 
 export const Vibrato: RenderFunc<layout.Vibrato> = (element, render) => {

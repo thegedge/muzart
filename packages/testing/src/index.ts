@@ -1,4 +1,4 @@
-import { isMatch } from "lodash";
+import { isMatch } from "lodash-es";
 import { inspect } from "util";
 import * as vitest from "vitest";
 

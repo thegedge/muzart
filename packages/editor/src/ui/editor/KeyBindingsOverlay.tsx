@@ -1,4 +1,4 @@
-import { groupBy } from "lodash";
+import { groupBy } from "lodash-es";
 import { observer } from "mobx-react-lite";
 import { Fragment } from "preact";
 import { useApplicationState } from "../../utils/ApplicationStateContext";

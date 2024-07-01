@@ -1,5 +1,5 @@
 import * as notation from "@muzart/notation";
-import { compact, uniqBy } from "lodash";
+import { compact, uniqBy } from "lodash-es";
 import { DEFAULT_MARGIN, DEFAULT_SERIF_FONT_FAMILY, STAFF_LINE_HEIGHT } from "../constants";
 import { FlexGroup, FlexGroupElement } from "../layouts/FlexGroup";
 import { SimpleGroupElement } from "../layouts/SimpleGroup";

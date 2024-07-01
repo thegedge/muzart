@@ -3,7 +3,7 @@ import * as notation from "@muzart/notation";
 import { noteValueToSeconds } from "@muzart/playback";
 import { StyleComputer, renderScoreElement } from "@muzart/render";
 import type * as CSS from "csstype";
-import { sumBy } from "lodash";
+import { sumBy } from "lodash-es";
 import { reaction } from "mobx";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useRef, useState } from "preact/hooks";

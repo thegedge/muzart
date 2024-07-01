@@ -1,5 +1,5 @@
 import { Chord, Measure, Note, Score, StaffDetails, changed } from "@muzart/notation";
-import { isString, pickBy, range } from "lodash";
+import { isString, pickBy, range } from "lodash-es";
 import guitarPro from "./guitarpro";
 import musicXml from "./musicxml";
 

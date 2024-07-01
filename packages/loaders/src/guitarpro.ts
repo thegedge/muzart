@@ -23,7 +23,7 @@ import {
   TapStyle,
   TimeSignature,
 } from "@muzart/notation";
-import { omit, padStart, range, zip } from "lodash";
+import { omit, padStart, range, zip } from "lodash-es";
 import { Loader } from "./Loader";
 import { BufferCursor, NumberType } from "./util/BufferCursor";
 

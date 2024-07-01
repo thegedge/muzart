@@ -1,8 +1,8 @@
 import { assert, describe, test } from "@muzart/testing";
-import { maxBy } from "lodash";
+import { maxBy } from "lodash-es";
 import { type FlexGroupConfig, FlexGroupElement } from "../../src/layouts/FlexGroup";
-import { elem, end, size, start } from "../elementHelpers";
 import { Box } from "../../src/utils/Box";
+import { elem, end, size, start } from "../elementHelpers";
 
 interface TestScenario {
   /** Options for the flex group element */

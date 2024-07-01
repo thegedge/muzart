@@ -1,6 +1,6 @@
 import * as layout from "@muzart/layout";
 import type * as CSS from "csstype";
-import { merge } from "lodash";
+import { merge } from "lodash-es";
 import { Arc } from "./elements/Arc";
 import { BarLine } from "./elements/BarLine";
 import { Beam } from "./elements/Beam";

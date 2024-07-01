@@ -1,8 +1,8 @@
 import { assert, describe, test } from "@muzart/testing";
-import { maxBy } from "lodash";
+import { maxBy } from "lodash-es";
 import { type Constraint, GridGroup, type Options } from "../../src/layouts/GridGroup";
-import { elem, end } from "../elementHelpers";
 import { Box } from "../../src/utils/Box";
+import { elem, end } from "../elementHelpers";
 
 interface TestScenario {
   /** Display name for this scenario. */

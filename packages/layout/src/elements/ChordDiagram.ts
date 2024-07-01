@@ -1,6 +1,6 @@
 import * as notation from "@muzart/notation";
 import type * as CSS from "csstype";
-import { range } from "lodash";
+import { range } from "lodash-es";
 import { DEFAULT_SERIF_FONT_FAMILY, LINE_STROKE_WIDTH, STAFF_LINE_HEIGHT } from "../constants";
 import { SimpleGroup } from "../layouts/SimpleGroup";
 import { Box } from "../utils/Box";

@@ -1,4 +1,4 @@
-import { memoize, range } from "lodash";
+import { memoize, range } from "lodash-es";
 import { STAFF_LINE_HEIGHT } from "../../constants";
 import { FlexGroupElement } from "../../layouts/FlexGroup";
 import { SimpleGroup } from "../../layouts/SimpleGroup";

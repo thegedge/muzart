@@ -1,6 +1,6 @@
 import type { AllElements } from "@muzart/layout";
 import * as layout from "@muzart/layout";
-import { inRange, last, minBy } from "lodash";
+import { inRange, last, minBy } from "lodash-es";
 import { makeAutoObservable } from "mobx";
 import { StorableObject, numberOrDefault } from "../storage/Storage";
 

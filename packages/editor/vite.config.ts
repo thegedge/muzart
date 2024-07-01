@@ -54,23 +54,9 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
     },
 
     esbuild: {
-      // logOverride: {
-      //   "this-is-undefined-in-esm": "silent",
-      // },
       minifyIdentifiers: mode == "production",
       keepNames: mode != "production",
-      // jsx: "preserve",
-      // jsxFactory: "h",
-      // jsxFragment: "Fragment",
-      // jsxImportSource: "preact/compat",
     },
-
-    // resolve: {
-    //   alias: {
-    //     "react": new URL(import.meta.resolve("preact/compat")).pathname,
-    //     "react-dom": new URL(import.meta.resolve("preact/compat")).pathname,
-    //   },
-    // },
 
     plugins: [
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call

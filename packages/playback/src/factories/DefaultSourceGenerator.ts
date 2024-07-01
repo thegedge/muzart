@@ -1,5 +1,5 @@
 import * as notation from "@muzart/notation";
-import { clamp } from "lodash";
+import { clamp } from "lodash-es";
 import { svgPathProperties } from "svg-path-properties";
 import { Drum, DrumOptions } from "../generators/Drum";
 import { PluckedString, PluckedStringOptions } from "../generators/PluckedString";

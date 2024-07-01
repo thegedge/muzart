@@ -1,5 +1,5 @@
 import { Box, Margins } from "@muzart/layout";
-import { pick } from "lodash";
+import { pick } from "lodash-es";
 import { JSXInternal } from "preact/src/jsx";
 
 type HasBox = { box: Box };

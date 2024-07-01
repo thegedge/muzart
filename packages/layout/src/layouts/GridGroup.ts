@@ -1,9 +1,9 @@
-import { every, last, zip } from "lodash";
+import { every, last, zip } from "lodash-es";
 import { Alignment } from "..";
 import type { AnyLayoutElement } from "../elements/LayoutElement";
 import { maxMap } from "../utils";
-import { AbstractGroup } from "./AbstractGroup";
 import type { Box } from "../utils/Box";
+import { AbstractGroup } from "./AbstractGroup";
 
 export interface Options {
   /** The initial box for the group */

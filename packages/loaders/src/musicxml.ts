@@ -15,7 +15,7 @@ import {
   StringInstrument,
   TimeSignature,
 } from "@muzart/notation";
-import { compact, range } from "lodash";
+import { compact, range } from "lodash-es";
 import { Loader } from "./Loader";
 
 // TODO this is pretty slow, so perhaps a SAX-based parser

@@ -1,6 +1,6 @@
 import { type AnyLayoutElement } from "@muzart/layout";
 import type * as CSS from "csstype";
-import { camelCase } from "lodash";
+import { camelCase } from "lodash-es";
 
 /**
  * Takes a Muzart-specific stylesheet to compute styles for rendered elements.

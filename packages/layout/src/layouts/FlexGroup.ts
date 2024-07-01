@@ -1,4 +1,4 @@
-import { last } from "lodash";
+import { last } from "lodash-es";
 import { Alignment } from "..";
 import { LayoutElement, type AnyLayoutElement } from "../elements/LayoutElement";
 import { Box } from "../utils/Box";

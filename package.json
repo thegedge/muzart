@@ -6,6 +6,7 @@
   "scripts": {
     "build": "pnpm -F=editor build",
     "build:github": "pnpm -F=editor build:github",
+    "bundle:visualize": "cd packages/editor && npx vite-bundle-visualizer",
     "dev": "pnpm -F=editor dev",
     "lint": "pnpm run lint:prettier && pnpm run lint:eslint",
     "lint:eslint": "eslint --cache --max-warnings=0",

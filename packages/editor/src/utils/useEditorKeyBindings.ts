@@ -1,5 +1,5 @@
 import { StringInstrument } from "@muzart/notation";
-import { range } from "lodash";
+import { range } from "lodash-es";
 import { useMemo } from "preact/hooks";
 import { HideModal } from "../actions/editing/HideModal";
 import { DecreaseNoteValue } from "../actions/editing/note/DecreaseNoteValue";
