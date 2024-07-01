@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+
+    "baseUrl": "./",
+    "paths": {
+      "react": ["./node_modules/preact/compat"],
+      "react-dom": ["./node_modules/preact/compat"]
+    }
+  },
+  "include": ["src", "types", "*.mjs", "*.js", "*.ts", "public/worklets"],
+  "exclude": ["public", "dist"]
+}

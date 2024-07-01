@@ -1,16 +1,16 @@
 # dependencies
-/node_modules
-/.pnp
+**/node_modules
+**/.pnp
 .pnp.js
-/.direnv
+**/.direnv
 
 # testing
-/coverage
+**/coverage
 
 # production
-/build
-/dist
-/public
+**/build
+**/dist
+/packages/editor/public
 
 # Miscellaneous
 *.pem

@@ -1,0 +1,254 @@
+import { last } from "lodash";
+import { Alignment } from "..";
+import { LayoutElement, type AnyLayoutElement } from "../elements/LayoutElement";
+import { Box } from "../utils/Box";
+
+export type Axis = "vertical" | "horizontal";
+
+export type FlexGroupConfig = {
+  box: Box;
+
+  /** The gap between elements. */
+  gap: number;
+
+  /** The direction of the main axis. */
+  axis: Axis;
+
+  /** Wrap elements that overflow the main axis size. */
+  wrap: boolean;
+
+  /** The default stretch factor, for elements added without one */
+  defaultStretchFactor: number;
+
+  /**
+   * How to distribute space among elements on the main axis, like `justify-content` in CSS
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content
+   */
+  mainAxisSpaceDistribution: Alignment; // TODO other alignments
+
+  /**
+   * How to ditribute space among elements on the cross axis, like `align-items` in CSS
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/CSS/align-items
+   */
+  crossAxisAlignment: Alignment;
+};
+
+/**
+ * A group that lays out objects along an axis.
+ *
+ * If, after laying out the children, there is still space left in the box of this group, distribute that space to all
+ * children that can be stretched (flex props with a non-null factor).
+ */
+export abstract class FlexGroup<Type extends string, ChildT extends AnyLayoutElement> extends LayoutElement<Type> {
+  readonly children: ChildT[] = [];
+  private stretchFactors: number[] = [];
+  private originalBoxes: Box[] = [];
+
+  protected defaultStretchFactor: number;
+  protected gap: number;
+  protected wrap: boolean;
+  protected mainAxisSpaceDistribution: FlexGroupConfig["mainAxisSpaceDistribution"];
+  protected crossAxisAlignment: FlexGroupConfig["crossAxisAlignment"];
+
+  protected startAttribute:
+    | {
+        main: "x";
+        cross: "y";
+      }
+    | {
+        main: "y";
+        cross: "x";
+      };
+
+  protected dimensionAttribute:
+    | {
+        main: "width";
+        cross: "height";
+      }
+    | {
+        main: "height";
+        cross: "width";
+      };
+
+  protected endAttribute: "right" | "bottom";
+
+  constructor(config?: Partial<FlexGroupConfig>) {
+    super(config?.box ?? Box.empty());
+
+    this.gap = config?.gap ?? 0;
+    this.defaultStretchFactor = config?.defaultStretchFactor ?? 1;
+
+    if (config?.axis == "vertical") {
+      this.startAttribute = { main: "y", cross: "x" };
+      this.dimensionAttribute = { main: "height", cross: "width" };
+      this.endAttribute = "bottom";
+    } else {
+      this.startAttribute = { main: "x", cross: "y" };
+      this.dimensionAttribute = { main: "width", cross: "height" };
+      this.endAttribute = "right";
+    }
+
+    this.mainAxisSpaceDistribution = config?.mainAxisSpaceDistribution ?? "start";
+    this.crossAxisAlignment = config?.crossAxisAlignment ?? "start";
+    this.wrap = config?.wrap ?? false;
+  }
+
+  /**
+   * Add an element to this flex group.
+   *
+   * **Note**: The element should already be set to its desired size along the main axis.
+   *
+   * @param element the element to add
+   * @param factor optional stretch factor to use
+   */
+  addElement(element: ChildT, factor = this.defaultStretchFactor): void {
+    const lastElement = last(this.children);
+    if (lastElement) {
+      element.box[this.startAttribute.main] = lastElement.box[this.endAttribute] + this.gap;
+    } else {
+      element.box[this.startAttribute.main] = 0;
+    }
+
+    element.parent = this;
+    this.children.push(element);
+    this.stretchFactors.push(factor);
+    this.originalBoxes.push(element.box);
+  }
+
+  // TODO if we could configure this group with "wraps", we could get something like flex-wrap in CSS and not need `tryAddElement`
+
+  /**
+   * Try adding an element to this flex group, but only if it will fit along the main axis.
+   *
+   * **Note**: The element should already be set to its desired size along the main axis.
+   *
+   * @param element the element to add
+   * @param factor optional stretch factor to use
+   *
+   * @returns `true` if the element was added, `false` otherwise
+   */
+  tryAddElement(element: ChildT, factor = this.defaultStretchFactor): boolean {
+    const lastElement = last(this.children);
+    if (lastElement) {
+      const newEnd = lastElement.box[this.endAttribute] + this.gap + element.box[this.dimensionAttribute.main];
+      if (newEnd > this.box[this.dimensionAttribute.main]) {
+        return false;
+      }
+    }
+
+    this.addElement(element, factor);
+    return true;
+  }
+
+  /**
+   * Reposition and scale all children so that they fill this flex group's box
+   */
+  layout() {
+    if (this.children.length == 0) {
+      return;
+    }
+
+    let index = 0;
+    let crossAxisStart = 0;
+    while (index < this.children.length) {
+      const startIndex = index;
+      if (this.wrap) {
+        // Figure out which elements can fit on a single line
+        let remainingMain = this.box[this.dimensionAttribute.main];
+        while (remainingMain > 0 && index < this.children.length) {
+          const child = this.children[index];
+          child.box = this.originalBoxes[index].clone();
+
+          const childMainAxisSize = child.box[this.dimensionAttribute.main];
+          if (index == startIndex) {
+            // We need this branch to ensure a child too large for a line is still added, avoiding an otherwise infinite loop
+            remainingMain -= childMainAxisSize;
+          } else if (childMainAxisSize + this.gap <= remainingMain) {
+            remainingMain -= childMainAxisSize + this.gap;
+          } else {
+            break;
+          }
+
+          index += 1;
+        }
+      } else {
+        index = this.children.length;
+      }
+
+      const childrenMainTotal = this.children
+        .slice(startIndex, index)
+        .reduce((width, c) => width + c.box[this.dimensionAttribute.main], 0);
+      const extraSpace =
+        this.box[this.dimensionAttribute.main] - childrenMainTotal - (index - startIndex - 1) * this.gap;
+
+      let factorsSum = this.stretchFactors.slice(startIndex, index).reduce((sum, p) => sum + p, 0);
+      let mainAxisStart: number;
+      if (factorsSum == 0) {
+        // Space distribution only makes sense when there's no stretchable items (i.e., factorsSum == 0) because otherwise
+        // we'll consume all the extra space and want the first child to be at 0.
+        switch (this.mainAxisSpaceDistribution) {
+          case "start":
+            mainAxisStart = 0;
+            break;
+          case "center":
+            mainAxisStart = 0.5 * extraSpace;
+            break;
+          case "end":
+            mainAxisStart = extraSpace;
+            break;
+        }
+
+        factorsSum = 1;
+      } else {
+        mainAxisStart = 0;
+      }
+
+      // Adjust main axis attributes
+      let crossAxisSize = 0;
+      for (let childIndex = startIndex; childIndex < index; ++childIndex) {
+        const child = this.children[childIndex];
+        const factor = this.stretchFactors[childIndex];
+
+        child.box[this.startAttribute.main] = mainAxisStart;
+        child.box[this.dimensionAttribute.main] += extraSpace * (factor / factorsSum);
+
+        // TODO should this come first, then the above two lines?
+        child.layout?.();
+
+        mainAxisStart += child.box[this.dimensionAttribute.main] + this.gap;
+        crossAxisSize = Math.max(crossAxisSize, child.box[this.dimensionAttribute.cross]);
+      }
+
+      // Adjust cross axis attributes
+      for (let childIndex = startIndex; childIndex < index; ++childIndex) {
+        const child = this.children[childIndex];
+
+        let offset: number;
+        switch (this.crossAxisAlignment) {
+          case "start":
+            offset = 0;
+            break;
+          case "center":
+            offset = 0.5 * (crossAxisSize - child.box[this.dimensionAttribute.cross]);
+            break;
+          case "end":
+            offset = crossAxisSize - child.box[this.dimensionAttribute.cross];
+            break;
+        }
+
+        child.box[this.startAttribute.cross] = crossAxisStart + offset;
+      }
+
+      // TODO support a separate gap for the cross axis
+      crossAxisStart += crossAxisSize + this.gap;
+    }
+
+    this.box[this.dimensionAttribute.cross] = crossAxisStart - this.gap;
+  }
+}
+
+export class FlexGroupElement<ChildT extends AnyLayoutElement> extends FlexGroup<"Group", ChildT> {
+  readonly type = "Group";
+}

@@ -7,65 +7,10 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@floating-ui/react':
-        specifier: ^0.26.18
-        version: 0.26.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@heroicons/react':
-        specifier: ^2.1.4
-        version: 2.1.4(react@18.3.1)
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
-      emittery:
-        specifier: ^1.0.3
-        version: 1.0.3
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-      mobx:
-        specifier: ^6.12.4
-        version: 6.12.4
-      mobx-react-lite:
-        specifier: ^4.0.7
-        version: 4.0.7(mobx@6.12.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      preact:
-        specifier: ^10.22.0
-        version: 10.22.0
-      react-resizable-panels:
-        specifier: ^2.0.19
-        version: 2.0.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      svg-path-properties:
-        specifier: ^1.3.0
-        version: 1.3.0
-      wouter:
-        specifier: ^3.3.0
-        version: 3.3.0(react@18.3.1)
     devDependencies:
       '@eslint/js':
         specifier: ^9.6.0
         version: 9.6.0
-      '@preact/preset-vite':
-        specifier: ^2.8.3
-        version: 2.8.3(@babel/core@7.24.7)(preact@10.22.0)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))
-      '@types/audioworklet':
-        specifier: ^0.0.56
-        version: 0.0.56
-      '@types/lodash':
-        specifier: ^4.17.6
-        version: 4.17.6
-      '@types/node':
-        specifier: ^20.14.9
-        version: 20.14.9
-      autoprefixer:
-        specifier: ^10.4.19
-        version: 10.4.19(postcss@8.4.39)
-      css-loader:
-        specifier: ^7.1.2
-        version: 7.1.2(webpack@5.92.1)
-      csstype:
-        specifier: ^3.1.3
-        version: 3.1.3
       eslint:
         specifier: ^8.0.0
         version: 8.57.0
@@ -93,18 +38,6 @@ importers:
       pnpm:
         specifier: ^9.4.0
         version: 9.4.0
-      postcss:
-        specifier: ^8.4.39
-        version: 8.4.39
-      postcss-loader:
-        specifier: ^8.1.1
-        version: 8.1.1(postcss@8.4.39)(typescript@5.5.2)(webpack@5.92.1)
-      postcss-nesting:
-        specifier: ^12.1.5
-        version: 12.1.5(postcss@8.4.39)
-      postcss-preset-env:
-        specifier: ^9.5.14
-        version: 9.5.14(postcss@8.4.39)
       prettier:
         specifier: ^3.3.2
         version: 3.3.2
@@ -114,12 +47,6 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.6.5
         version: 0.6.5(prettier@3.3.2)
-      style-loader:
-        specifier: ^4.0.0
-        version: 4.0.0(webpack@5.92.1)
-      tailwindcss:
-        specifier: ^3.4.4
-        version: 3.4.4
       typescript:
         specifier: ^5.5.2
         version: 5.5.2
@@ -132,6 +59,265 @@ importers:
       vitest:
         specifier: ^1.6.0
         version: 1.6.0(@types/node@20.14.9)(terser@5.31.1)
+
+  packages/editor:
+    dependencies:
+      '@floating-ui/react':
+        specifier: ^0.26.18
+        version: 0.26.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@heroicons/react':
+        specifier: ^2.1.4
+        version: 2.1.4(react@18.3.1)
+      '@muzart/layout':
+        specifier: workspace:*
+        version: link:../layout
+      '@muzart/loaders':
+        specifier: workspace:*
+        version: link:../loaders
+      '@muzart/notation':
+        specifier: workspace:*
+        version: link:../notation
+      '@muzart/playback':
+        specifier: workspace:*
+        version: link:../playback
+      '@muzart/render':
+        specifier: workspace:*
+        version: link:../render
+      '@muzart/testing':
+        specifier: workspace:*
+        version: link:../testing
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      mobx:
+        specifier: ^6.12.4
+        version: 6.12.4
+      mobx-react-lite:
+        specifier: ^4.0.7
+        version: 4.0.7(mobx@6.12.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      preact:
+        specifier: ^10.22.0
+        version: 10.22.0
+      react-resizable-panels:
+        specifier: ^2.0.19
+        version: 2.0.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      svg-path-properties:
+        specifier: ^1.3.0
+        version: 1.3.0
+      vite:
+        specifier: ^5.3.2
+        version: 5.3.2(@types/node@20.14.9)(terser@5.31.1)
+      vite-tsconfig-paths:
+        specifier: ^4.3.2
+        version: 4.3.2(typescript@5.5.2)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))
+      wouter:
+        specifier: ^3.3.0
+        version: 3.3.0(react@18.3.1)
+    devDependencies:
+      '@preact/preset-vite':
+        specifier: ^2.8.3
+        version: 2.8.3(@babel/core@7.24.7)(preact@10.22.0)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))
+      '@types/audioworklet':
+        specifier: ^0.0.56
+        version: 0.0.56
+      '@types/lodash':
+        specifier: ^4.17.6
+        version: 4.17.6
+      '@types/node':
+        specifier: ^20.14.9
+        version: 20.14.9
+      autoprefixer:
+        specifier: ^10.4.19
+        version: 10.4.19(postcss@8.4.39)
+      css-loader:
+        specifier: ^7.1.2
+        version: 7.1.2(webpack@5.92.1)
+      csstype:
+        specifier: ^3.1.3
+        version: 3.1.3
+      postcss:
+        specifier: ^8.4.39
+        version: 8.4.39
+      postcss-loader:
+        specifier: ^8.1.1
+        version: 8.1.1(postcss@8.4.39)(typescript@5.5.2)(webpack@5.92.1)
+      postcss-nesting:
+        specifier: ^12.1.5
+        version: 12.1.5(postcss@8.4.39)
+      postcss-preset-env:
+        specifier: ^9.5.14
+        version: 9.5.14(postcss@8.4.39)
+      style-loader:
+        specifier: ^4.0.0
+        version: 4.0.0(webpack@5.92.1)
+      tailwindcss:
+        specifier: ^3.4.4
+        version: 3.4.4
+      typescript:
+        specifier: ^5.5.2
+        version: 5.5.2
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@20.14.9)(terser@5.31.1)
+
+  packages/layout:
+    dependencies:
+      '@muzart/layout':
+        specifier: workspace:*
+        version: 'link:'
+      '@muzart/notation':
+        specifier: workspace:*
+        version: link:../notation
+      '@muzart/testing':
+        specifier: workspace:*
+        version: link:../testing
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+    devDependencies:
+      '@muzart/loaders':
+        specifier: workspace:*
+        version: link:../loaders
+      '@types/lodash':
+        specifier: ^4.17.6
+        version: 4.17.6
+      '@types/node':
+        specifier: ^20.14.9
+        version: 20.14.9
+      csstype:
+        specifier: ^3.1.3
+        version: 3.1.3
+      typescript:
+        specifier: ^5.5.2
+        version: 5.5.2
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@20.14.9)(terser@5.31.1)
+
+  packages/loaders:
+    dependencies:
+      '@muzart/notation':
+        specifier: workspace:*
+        version: link:../notation
+      '@muzart/testing':
+        specifier: workspace:*
+        version: link:../testing
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+    devDependencies:
+      '@types/lodash':
+        specifier: ^4.17.6
+        version: 4.17.6
+      '@types/node':
+        specifier: ^20.14.9
+        version: 20.14.9
+      typescript:
+        specifier: ^5.5.2
+        version: 5.5.2
+
+  packages/notation:
+    dependencies:
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      mobx:
+        specifier: ^6.12.4
+        version: 6.12.4
+    devDependencies:
+      '@types/lodash':
+        specifier: ^4.17.6
+        version: 4.17.6
+      '@types/node':
+        specifier: ^20.14.9
+        version: 20.14.9
+      typescript:
+        specifier: ^5.5.2
+        version: 5.5.2
+
+  packages/playback:
+    dependencies:
+      '@muzart/layout':
+        specifier: workspace:*
+        version: link:../layout
+      '@muzart/loaders':
+        specifier: workspace:*
+        version: link:../loaders
+      '@muzart/notation':
+        specifier: workspace:*
+        version: link:../notation
+      emittery:
+        specifier: ^1.0.3
+        version: 1.0.3
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      mobx:
+        specifier: ^6.12.4
+        version: 6.12.4
+      svg-path-properties:
+        specifier: ^1.3.0
+        version: 1.3.0
+    devDependencies:
+      '@types/lodash':
+        specifier: ^4.17.6
+        version: 4.17.6
+      '@types/node':
+        specifier: ^20.14.9
+        version: 20.14.9
+      typescript:
+        specifier: ^5.5.2
+        version: 5.5.2
+
+  packages/render:
+    dependencies:
+      '@muzart/layout':
+        specifier: workspace:*
+        version: link:../layout
+      '@muzart/notation':
+        specifier: workspace:*
+        version: link:../notation
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      mobx:
+        specifier: ^6.12.4
+        version: 6.12.4
+    devDependencies:
+      '@types/lodash':
+        specifier: ^4.17.6
+        version: 4.17.6
+      '@types/node':
+        specifier: ^20.14.9
+        version: 20.14.9
+      csstype:
+        specifier: ^3.1.3
+        version: 3.1.3
+      typescript:
+        specifier: ^5.5.2
+        version: 5.5.2
+
+  packages/testing:
+    dependencies:
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      mobx:
+        specifier: ^6.12.4
+        version: 6.12.4
+    devDependencies:
+      '@types/lodash':
+        specifier: ^4.17.6
+        version: 4.17.6
+      '@types/node':
+        specifier: ^20.14.9
+        version: 20.14.9
+      typescript:
+        specifier: ^5.5.2
+        version: 5.5.2
 
 packages:
 
@@ -1871,6 +2057,9 @@ packages:
     resolution: {integrity: sha512-Y1zNGV+pzQdh7H39l9zgB4PJqjRNqydvdYCDG4HFXM4XuvSaQQlEc91IU1yALL8gUTDomgBAfz3XJdmUS+oo0w==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
+  globrex@0.1.2:
+    resolution: {integrity: sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==}
+
   gopd@1.0.1:
     resolution: {integrity: sha512-d65bNlIadxvpb/A2abVdlqKqV563juRnZ1Wtk6s1sIR8uNsXR70xqIzVqxVf1eTqDunwT2MkczEeaezCKTZhwA==}
 
@@ -3288,6 +3477,16 @@ packages:
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
 
+  tsconfck@3.1.1:
+    resolution: {integrity: sha512-00eoI6WY57SvZEVjm13stEVE90VkEdJAFGgpFLTsZbJyW/LwFQ7uQxJHWpZ2hzSWgCPKc9AnBnNP+0X7o3hAmQ==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+    peerDependencies:
+      typescript: ^5.0.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   tsconfig-paths@3.15.0:
     resolution: {integrity: sha512-2Ac2RgzDe/cn48GvOe3M+o82pEFewD3UPbyoUHHdKasHwJKjds4fLXWf/Ux5kATBKN20oaFGu+jbElp1pos0mg==}
 
@@ -3383,11 +3582,6 @@ packages:
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
-  use-sync-external-store@1.2.0:
-    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-
   use-sync-external-store@1.2.2:
     resolution: {integrity: sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==}
     peerDependencies:
@@ -3400,6 +3594,14 @@ packages:
     resolution: {integrity: sha512-de6HJgzC+TFzOu0NTC4RAIsyf/DY/ibWDYQUcuEA84EMHhcefTUGkjFHKKEJhQN4A+6I0u++kr3l36ZF2d7XRw==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
+
+  vite-tsconfig-paths@4.3.2:
+    resolution: {integrity: sha512-0Vd/a6po6Q+86rPlntHye7F31zA2URZMbH8M3saAZ/xR9QoGN/L21bxEGfXdWmFdNkqPpRdxFT7nmNe12e9/uA==}
+    peerDependencies:
+      vite: '*'
+    peerDependenciesMeta:
+      vite:
+        optional: true
 
   vite@5.3.2:
     resolution: {integrity: sha512-6lA7OBHBlXUxiJxbO5aAY2fsHHzDr1q7DvXYnyZycRs2Dz+dXBWuhpWHvmljTRTpQC2uvGmUFFkSHF2vGo90MA==}
@@ -5617,6 +5819,8 @@ snapshots:
       merge2: 1.4.1
       slash: 4.0.0
 
+  globrex@0.1.2: {}
+
   gopd@1.0.1:
     dependencies:
       get-intrinsic: 1.2.1
@@ -6048,7 +6252,7 @@ snapshots:
     dependencies:
       mobx: 6.12.4
       react: 18.3.1
-      use-sync-external-store: 1.2.0(react@18.3.1)
+      use-sync-external-store: 1.2.2(react@18.3.1)
     optionalDependencies:
       react-dom: 18.3.1(react@18.3.1)
 
@@ -7050,6 +7254,10 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
+  tsconfck@3.1.1(typescript@5.5.2):
+    optionalDependencies:
+      typescript: 5.5.2
+
   tsconfig-paths@3.15.0:
     dependencies:
       '@types/json5': 0.0.29
@@ -7176,10 +7384,6 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  use-sync-external-store@1.2.0(react@18.3.1):
-    dependencies:
-      react: 18.3.1
-
   use-sync-external-store@1.2.2(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -7202,6 +7406,17 @@ snapshots:
       - sugarss
       - supports-color
       - terser
+
+  vite-tsconfig-paths@4.3.2(typescript@5.5.2)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1)):
+    dependencies:
+      debug: 4.3.5
+      globrex: 0.1.2
+      tsconfck: 3.1.1(typescript@5.5.2)
+    optionalDependencies:
+      vite: 5.3.2(@types/node@20.14.9)(terser@5.31.1)
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
 
   vite@5.3.2(@types/node@20.14.9)(terser@5.31.1):
     dependencies:

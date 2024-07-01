@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
-    "jsx": "preserve",
-    "lib": ["ESNext"],
+    "lib": ["DOM", "ESNext"],
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Node",
@@ -18,13 +17,8 @@
     "noImplicitAny": true,
     "skipLibCheck": true,
     "strict": true,
-    "useDefineForClassFields": true,
-
-    "paths": {
-      "react": ["./node_modules/preact/compat/"],
-      "react-dom": ["./node_modules/preact/compat/"]
-    }
+    "useDefineForClassFields": true
   },
-  "include": ["src", "test", "types", "public/worklets", "*.mjs", "*.js", "*.ts"],
-  "exclude": ["dist", "public"]
+  "include": ["src", "test", "types", "*.mjs", "*.js", "*.ts"],
+  "exclude": ["dist", "vitest.config.ts"]
 }

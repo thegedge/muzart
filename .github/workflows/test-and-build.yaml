@@ -92,7 +92,7 @@ jobs:
         run: |
           REPO_URL="https://${{ github.actor }}:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
 
-          cd dist
+          cd packages/editor/dist
           git init
           git remote add origin "${REPO_URL}"
           git add -A
