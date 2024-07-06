@@ -180,7 +180,7 @@ export class Selection implements StorableObject {
       return;
     }
 
-    if (this.chordIndex == this.measure.chords.length - 1) {
+    if (this.chordIndex == this.measure.measure.chords.length - 1) {
       const lastMeasureNumber = last(this.part.part.measures)?.number;
       if (!lastMeasureNumber) {
         return;

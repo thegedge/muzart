@@ -47,6 +47,17 @@ export class Measure {
     return Math.abs(measureDuration - expectedDuration) < 1e-10;
   }
 
+  addChord(chord: Chord) {
+    this.options.chords.push(chord);
+  }
+
+  removeChord(chord: Chord) {
+    const index = this.options.chords.indexOf(chord);
+    if (index >= 0) {
+      this.options.chords.splice(index, 1);
+    }
+  }
+
   setTimeSignature(timeSignature: Changeable<TimeSignature> | undefined) {
     this.staffDetails.time = timeSignature;
   }

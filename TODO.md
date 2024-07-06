@@ -19,8 +19,6 @@
     - Clef
     - Key signature
 - Chords
-  - Add
-  - Remove
   - Clear
   - Chord diagrams
   - Edit text annotation
