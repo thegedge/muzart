@@ -21,12 +21,10 @@ export default {
         "2xs": "0.6rem",
       },
       gridTemplateColumns: {
-        // Track name/solo/mute :: Measure box list
-        "part-list": "max-content 1fr",
-
         // binding :: description
         "key-bindings": "7em auto",
       },
+
       keyframes: {
         bounce: {
           "0%, 100%": { transform: "translateY(-25%)" },

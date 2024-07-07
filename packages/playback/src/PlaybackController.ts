@@ -1,5 +1,5 @@
-import * as layout from "@muzart/layout";
-import { NoteValue, NoteValueName } from "@muzart/notation";
+import type * as layout from "@muzart/layout";
+import * as notation from "@muzart/notation";
 import { range } from "lodash-es";
 import { action, autorun, flow, makeObservable, observable } from "mobx";
 import { maxMap } from "../../layout/src";
@@ -100,12 +100,18 @@ export class PlaybackController {
     return this.instrumentForPart(this.selection.partIndex);
   }
 
-  toggleMute(index: number) {
-    this.mutedParts[index] = !this.mutedParts[index];
+  toggleMute(part: notation.Part) {
+    const index = this.selection.score?.score.parts.indexOf(part) ?? -1;
+    if (index >= 0) {
+      this.mutedParts[index] = !this.mutedParts[index];
+    }
   }
 
-  toggleSolo(index: number) {
-    this.soloedParts[index] = !this.soloedParts[index];
+  toggleSolo(part: notation.Part) {
+    const index = this.selection.score?.score.parts.indexOf(part) ?? -1;
+    if (index >= 0) {
+      this.soloedParts[index] = !this.soloedParts[index];
+    }
   }
 
   *loadSoundFont(source: string | URL | File | Response | ArrayBuffer): Generator<Promise<SoundFont>> {
@@ -294,7 +300,7 @@ export class PlaybackController {
       currentTempo = maybeTempoChange ?? currentTempo;
 
       // TODO Does a whole note always span an entire measure?
-      return noteValueToSeconds(new NoteValue(NoteValueName.Whole), currentTempo);
+      return noteValueToSeconds(new notation.NoteValue(notation.NoteValueName.Whole), currentTempo);
     });
   }
 
