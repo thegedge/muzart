@@ -75,7 +75,7 @@ export const PartListingRow = observer((props: { part: Part }) => {
         className="flex items-center justify-center bg-inherit p-0.5"
       >
         {playback.soloedParts[partIndex] ? (
-          <UnsoloIcon className="text-white hover:text-gray-400" title="Only play this track" />
+          <UnsoloIcon className="text-white hover:text-gray-400" title="Play other tracks" />
         ) : (
           <SoloIcon className="text-gray-500 hover:text-gray-300" title="Only play this track" />
         )}
@@ -87,7 +87,7 @@ export const PartListingRow = observer((props: { part: Part }) => {
         className="flex items-center justify-center rounded-r bg-inherit p-0.5"
       >
         {playback.mutedParts[partIndex] ? (
-          <UnmuteIcon className="text-white hover:text-gray-400" title="Mute this track" />
+          <UnmuteIcon className="text-white hover:text-gray-400" title="Unmute this track" />
         ) : (
           <MuteIcon className="text-gray-500 hover:text-gray-300" title="Mute this track" />
         )}
