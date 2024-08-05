@@ -29,15 +29,15 @@
     "eslint-plugin-promise": "^6.2.0",
     "eslint-plugin-react": "^7.34.3",
     "eslint-plugin-react-hooks": "^4.6.2",
-    "knip": "^5.23.2",
-    "pnpm": "^9.4.0",
-    "prettier": "^3.3.2",
-    "prettier-plugin-packagejson": "^2.5.0",
+    "knip": "^5.27.0",
+    "pnpm": "^9.6.0",
+    "prettier": "^3.3.3",
+    "prettier-plugin-packagejson": "^2.5.1",
     "prettier-plugin-tailwindcss": "^0.6.5",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.4",
     "typescript-eslint": "^7.14.1",
-    "vite": "^5.3.2",
-    "vitest": "^1.6.0"
+    "vite": "^5.3.5",
+    "vitest": "^2.0.5"
   },
   "packageManager": "pnpm@9.5.0-beta.0+sha512.c2e60e7ed04e459591c982f2760cd8f7d1f48fe1ca4d46ccbbf8377df1eb2d077ace1e9d334b06250dddf23c03b4562858f77992b9a3bb4a93355aefd173df32",
   "pnpm": {
