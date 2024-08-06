@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition -- bindings[binding] could be undefined, but I don't want to type it that way right now*/
+import console from "console";
 import { useEffect } from "preact/hooks";
 import { IS_MAC } from "./platform";
 
@@ -82,11 +83,14 @@ export const useKeyBindings = <StateT, ContextOtherT = never>(
         pieces.push("Alt");
       }
 
-      pieces.push(event.key);
-      const sequence = pieces.join(KEY_BINDING_SEPARATOR);
-      const bindings = bindingGroups[sequence];
+      let sequence = [...pieces, event.code].join(KEY_BINDING_SEPARATOR);
+      let bindings = bindingGroups[sequence];
       if (!bindings) {
-        return;
+        sequence = [...pieces, event.key].join(KEY_BINDING_SEPARATOR);
+        bindings = bindingGroups[sequence];
+        if (!bindings) {
+          return;
+        }
       }
 
       const applicableBindings = bindings.filter((binding) => {

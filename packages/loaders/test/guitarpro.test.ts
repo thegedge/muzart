@@ -22,17 +22,15 @@ describe("guitarpro", () => {
     assert.equal(score.parts[0].measures[30].chords[0].notes.length, 1);
     assert.matches(score.parts[0].measures[30].chords[0].notes[0], {
       value: { dots: 0, name: "half" },
-      options: {
-        pitch: { step: "E", octave: 3, alterations: 0 },
-        placement: { fret: 2, string: 4 },
-        vibrato: true,
-        dead: false,
-        ghost: false,
-        letRing: false,
-        palmMute: false,
-        staccato: false,
-        hammerOnPullOff: false,
-      },
+      pitch: { step: "E", octave: 3, alterations: 0 },
+      placement: { fret: 2, string: 4 },
+      vibrato: true,
+      dead: false,
+      ghost: false,
+      letRing: false,
+      palmMute: false,
+      staccato: false,
+      hammerOnPullOff: false,
     });
     assert.equal(score.parts[0].measures[30].chords[0].notes[0].toString(), "2");
   });

@@ -9,7 +9,7 @@ export const TogglePaletteButton = (
   const application = useApplicationState();
   const { property, ...buttonProps } = props;
   const command = toggleNoteFeatureAction(property);
-  const isToggled = application.selection.note?.note.options[property] ?? false;
+  const isToggled = application.selection.note?.note[property] ?? false;
 
   return <PaletteButton {...buttonProps} command={command} active={isToggled} />;
 };

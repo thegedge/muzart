@@ -1,4 +1,3 @@
-import { isMatch } from "lodash-es";
 import { inspect } from "util";
 import * as vitest from "vitest";
 
@@ -98,11 +97,7 @@ const identityEqual = <T>(actual: T, expected: T, message?: string) => {
 };
 
 const matches = <T1 extends object, T2 extends object>(actual: T1, expected: T2, message?: string) => {
-  if (!isMatch(actual, expected)) {
-    const actualString = JSON.stringify(actual);
-    const expectedString = JSON.stringify(expected);
-    vitest.expect.fail(message || `${actualString} does not match ${expectedString}`);
-  }
+  vitest.expect(actual, message).toMatchObject(expected);
 };
 
 const atLeast = (actual: number, expected: number, epsilon = EPSILON, message?: string) => {

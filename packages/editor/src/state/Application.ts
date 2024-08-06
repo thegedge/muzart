@@ -5,6 +5,7 @@ import { PlaybackController } from "@muzart/playback";
 import { DebugContext } from "@muzart/render";
 import { isString } from "lodash-es";
 import { flow, makeAutoObservable, reaction, when, type IReactionDisposer } from "mobx";
+import type { navigate } from "wouter/use-browser-location";
 import { SyncStorage, isRecord } from "../storage/Storage";
 import { TabStorage } from "../storage/TabStorage";
 import { CanvasState } from "../ui/canvas/CanvasState";
@@ -33,6 +34,9 @@ export type Command = {
   actionForContextMenu?(application: Application): Action | null;
 };
 
+/** A navigational function for the application */
+export type Navigator = typeof navigate;
+
 /** The root state of the Muzart editor */
 export class Application {
   /** Whether the application is currently loading a score */
@@ -50,14 +54,29 @@ export class Application {
   /** The state of the editor's canvas */
   public canvas: CanvasState;
 
-  /** A disposer for the autorun that reflows the score whenever it changes */
-  reflowDisposer: IReactionDisposer | null = null;
+  /** Storage to use for various application settings */
+  readonly settingsStorage: SyncStorage;
+
+  /** Storage to use for loading, listing, and storing tabs */
+  readonly tabStorage: TabStorage;
+
+  /** The current selection in the application */
+  readonly selection: Selection;
+
+  /** A controller for playing the current tab */
+  readonly playback: PlaybackController;
+
+  /** A function to navigate within the application */
+  readonly navigate: Navigator;
 
   /** The width of the document body */
   public bodyWidth = document.body.clientWidth;
 
   /** The height of the document body */
   public bodyHeight = document.body.clientHeight;
+
+  /** A disposer for the autorun that reflows the score whenever it changes */
+  private reflowDisposer: IReactionDisposer | null = null;
 
   /**
    * The undo stack for the editor.
@@ -69,12 +88,18 @@ export class Application {
   /** The URL of the tab currently loaded into this app context */
   private currentTabUrl_: URL | null = null;
 
-  constructor(
-    public settingsStorage: SyncStorage,
-    public tabStorage: TabStorage,
-    public selection: Selection,
-    public playback: PlaybackController,
-  ) {
+  constructor(options: {
+    settingsStorage: SyncStorage;
+    tabStorage: TabStorage;
+    selection: Selection;
+    playback: PlaybackController;
+    navigate: Navigator;
+  }) {
+    this.settingsStorage = options.settingsStorage;
+    this.tabStorage = options.tabStorage;
+    this.selection = options.selection;
+    this.playback = options.playback;
+    this.navigate = options.navigate;
     this.canvas = new CanvasState();
     this.state = new UIState(this.playback);
     makeAutoObservable(this, undefined, { deep: false });
@@ -218,6 +243,7 @@ export class Application {
       this.selection.setScore(null);
     }
 
+    this.undoStack.clear();
     this.playback.reset();
   }
 }

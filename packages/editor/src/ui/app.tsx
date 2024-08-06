@@ -1,3 +1,4 @@
+import { Suspense } from "preact/compat";
 import { useEffect, useState } from "preact/hooks";
 import { BaseLocationHook, Router } from "wouter";
 import { ApplicationState } from "../utils/ApplicationStateContext";
@@ -7,7 +8,6 @@ import "./app.css";
 import { EditorRouter } from "./editor/EditorRouter";
 import { KeyBindingsOverlay } from "./editor/KeyBindingsOverlay";
 import { GithubFork } from "./misc/GithubFork";
-import { Suspense } from "preact/compat";
 import { Loading } from "./misc/Loading";
 
 export const App = () => {

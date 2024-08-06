@@ -22,6 +22,7 @@ export async function load(source: File | Response | URL | string, type?: ScoreD
 export enum ScoreDataType {
   GuitarPro = "Guitar Pro",
   MusicXML = "MusicXML",
+  Muzart = "Muzart",
   Unknown = "Unknown",
 }
 
@@ -46,6 +47,8 @@ export const determineScoreType = (source: File | Response) => {
 
   if (GUITAR_PRO_REGEX.test(filename)) {
     return ScoreDataType.GuitarPro;
+  } else if (filename.endsWith(".muz") || filename.endsWith(".muzart")) {
+    return ScoreDataType.Muzart;
   } else if (filename.endsWith(".xml") || filename.endsWith(".musicxml") || mimeType === "application/xml") {
     return ScoreDataType.MusicXML;
   }
@@ -60,16 +63,19 @@ function loadScore(buffer: ArrayBuffer, type: ScoreDataType): Score {
 
   console.time("loadScore");
   try {
-    let score;
     switch (type) {
-      case ScoreDataType.MusicXML:
-        score = musicXml(buffer).load();
-        break;
-      case ScoreDataType.GuitarPro:
-        score = guitarPro(buffer).load();
+      case ScoreDataType.MusicXML: {
+        const score = musicXml(buffer).load();
+        return postProcess(score);
+      }
+      case ScoreDataType.GuitarPro: {
+        const score = guitarPro(buffer).load();
+        return postProcess(score);
+      }
+      case ScoreDataType.Muzart:
+        const scoreData = JSON.parse(new TextDecoder().decode(buffer));
+        return new Score(scoreData);
     }
-
-    return postProcess(score);
   } finally {
     console.timeEnd("loadScore");
   }
@@ -129,7 +135,7 @@ function linkTiedNotes(score: Score): void {
 
           if (note.tie?.type === "stop") {
             if (trackedNote) {
-              note.options.tie = {
+              note.tie = {
                 type: "middle",
                 next: trackedNote,
                 nextChord: trackedChord,
@@ -144,7 +150,7 @@ function linkTiedNotes(score: Score): void {
             trackedNotes[note.placement.string] = note;
             trackedChords[note.placement.string] = chord;
           } else if (trackedNote) {
-            note.options.tie = {
+            note.tie = {
               type: "start",
               next: trackedNote,
               nextChord: trackedChord,

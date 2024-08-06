@@ -1,7 +1,7 @@
 import { Bend } from "./Bend";
 import { Chord } from "./Chord";
 import { NoteValue } from "./NoteValue";
-import { Pitch } from "./pitch";
+import { Pitch } from "./Pitch";
 
 export type TieType = "start" | "stop" | "middle";
 
@@ -57,9 +57,6 @@ export interface Tie {
 }
 
 export interface NoteOptions {
-  // Ensure `Note` cannot be used for `NoteOptions`
-  text?: never;
-
   pitch: Pitch;
   value: NoteValue;
   placement?: Placement;
@@ -69,7 +66,7 @@ export interface NoteOptions {
   dead?: boolean;
   dynamic?: NoteDynamic;
   ghost?: boolean;
-  graceNote?: Note;
+  graceNote?: NoteOptions;
   hammerOnPullOff?: boolean;
   harmonic?: HarmonicStyle;
   letRing?: boolean;
@@ -84,7 +81,47 @@ export interface NoteOptions {
 export class Note {
   private text: string;
 
-  constructor(readonly options: NoteOptions) {
+  public pitch: Pitch;
+  public value: NoteValue;
+
+  public placement: Placement | undefined;
+  public accent_: AccentStyle | undefined;
+  public bend: Bend | undefined;
+  public dead: boolean;
+  public dynamic_: NoteDynamic | undefined;
+  public ghost_: boolean;
+  public graceNote: Note | undefined;
+  public hammerOnPullOff: boolean;
+  public harmonic_: HarmonicStyle | undefined;
+  public letRing_: boolean;
+  public palmMute: boolean;
+  public slide: Slide | undefined;
+  public staccato: boolean;
+  public tie: Tie | undefined;
+  public tremoloPicking_: NoteValue | undefined;
+  public vibrato_: boolean;
+
+  constructor(options: NoteOptions) {
+    this.pitch = Pitch.fromJSON(options.pitch);
+    this.value = new NoteValue(options.value.name, options.value);
+
+    this.placement = options.placement;
+    this.accent_ = options.accent;
+    this.bend = options.bend;
+    this.dead = !!options.dead;
+    this.dynamic_ = options.dynamic;
+    this.ghost_ = !!options.ghost;
+    this.graceNote = options.graceNote && new Note(options.graceNote);
+    this.hammerOnPullOff = !!options.hammerOnPullOff;
+    this.harmonic_ = options.harmonic;
+    this.letRing_ = !!options.letRing;
+    this.palmMute = !!options.palmMute;
+    this.slide = options.slide;
+    this.staccato = !!options.staccato;
+    this.tie = options.tie;
+    this.tremoloPicking_ = options.tremoloPicking && new NoteValue(options.tremoloPicking.name, options.tremoloPicking);
+    this.vibrato_ = !!options.vibrato;
+
     this.text = (() => {
       let text;
       if (this.dead) {
@@ -105,76 +142,32 @@ export class Note {
     })();
   }
 
-  get pitch() {
-    return this.options.pitch;
+  get vibrato(): boolean {
+    return !!this.get("vibrato_");
   }
 
-  get value() {
-    return this.options.value;
+  get letRing(): boolean {
+    return !!this.get("letRing_");
   }
 
-  get placement() {
-    return this.options.placement;
+  get tremoloPicking(): NoteValue | undefined {
+    return this.get("tremoloPicking_") as NoteValue | undefined;
   }
 
-  get tie() {
-    return this.options.tie;
+  get ghost(): boolean {
+    return !!this.get("ghost_");
   }
 
-  get bend() {
-    return this.options.bend;
+  get harmonic(): HarmonicStyle | undefined {
+    return this.get("harmonic_") as HarmonicStyle | undefined;
   }
 
-  get slide() {
-    return this.options.slide;
+  get accent(): AccentStyle | undefined {
+    return this.get("accent_") as AccentStyle | undefined;
   }
 
-  get vibrato() {
-    return this.get("vibrato");
-  }
-
-  get letRing() {
-    return this.get("letRing");
-  }
-
-  get tremoloPicking() {
-    return this.get("tremoloPicking");
-  }
-
-  get dead() {
-    return !!this.options.dead;
-  }
-
-  get ghost() {
-    return this.get("ghost");
-  }
-
-  get harmonic() {
-    return this.get("harmonic");
-  }
-
-  get accent() {
-    return this.get("accent");
-  }
-
-  get palmMute() {
-    return !!this.options.palmMute;
-  }
-
-  get staccato() {
-    return !!this.options.staccato;
-  }
-
-  get dynamic() {
-    return this.get("dynamic");
-  }
-
-  get hammerOnPullOff() {
-    return !!this.options.hammerOnPullOff;
-  }
-
-  get graceNote() {
-    return this.options.graceNote;
+  get dynamic(): NoteDynamic | undefined {
+    return this.get("dynamic_") as NoteDynamic | undefined;
   }
 
   get harmonicString() {
@@ -200,23 +193,23 @@ export class Note {
     }
   }
 
-  withChanges(changes: Partial<NoteOptions>): NoteOptions {
-    return {
-      ...this.options,
-      ...changes,
-    };
-  }
-
-  toString() {
-    return this.text;
-  }
-
   get rootTieNote(): Note {
     if (this.tie?.previous) {
       return this.tie.previous.rootTieNote;
     }
 
     return this;
+  }
+
+  withChanges(changes: Partial<NoteOptions>): NoteOptions {
+    return {
+      ...this,
+      ...changes,
+    };
+  }
+
+  toString() {
+    return this.text;
   }
 
   /**
@@ -227,16 +220,16 @@ export class Note {
    *
    * If fromStart, force fetching the property from the starting note for the tie.
    */
-  get<T extends keyof NoteOptions>(property: T, fromStart = false): NoteOptions[T] | undefined {
-    if (!fromStart || !this.options.tie || this.options.tie.type == "start") {
-      const v = this.options[property];
+  protected get<T extends keyof Note>(property: T, fromStart = false): unknown {
+    if (!fromStart || !this.tie || this.tie.type == "start") {
+      const v = this[property];
       if (v) {
         return v;
       }
     }
 
-    if (this.options.tie?.previous) {
-      return this.options.tie.previous.get(property, fromStart);
+    if (this.tie?.previous) {
+      return this.tie.previous.get(property, fromStart);
     }
   }
 }

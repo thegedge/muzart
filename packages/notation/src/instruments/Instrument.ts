@@ -1,4 +1,4 @@
-import { computed, makeObservable, observable } from "mobx";
+import { makeObservable } from "mobx";
 
 export type InstrumentOptions = {
   /** MIDI preset # for the instrument */
@@ -9,19 +9,18 @@ export type InstrumentOptions = {
 };
 
 export abstract class Instrument<OptionsT extends InstrumentOptions = InstrumentOptions> {
-  constructor(readonly options: OptionsT) {
+  abstract readonly type: string;
+
+  public midiPreset: number;
+  public volume: number;
+
+  constructor(options: OptionsT) {
+    this.midiPreset = options.midiPreset;
+    this.volume = options.volume;
+
     makeObservable(this, {
-      options: observable.deep,
-      midiPreset: computed,
-      volume: computed,
+      midiPreset: true,
+      volume: true,
     });
-  }
-
-  get midiPreset() {
-    return this.options.midiPreset;
-  }
-
-  get volume() {
-    return this.options.volume;
   }
 }

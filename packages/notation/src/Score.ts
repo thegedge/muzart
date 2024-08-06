@@ -1,9 +1,9 @@
 import { makeAutoObservable } from "mobx";
 import { Part } from "./Part";
+import { initArray } from "./utils";
 
 export interface ScoreOptions {
-  parts: Part[];
-
+  parts?: Part[];
   comments?: string;
   title?: string;
   subTitle?: string;
@@ -28,17 +28,17 @@ export class Score {
   public transcriber: string | undefined;
   public instructions: string | undefined;
 
-  constructor(options: ScoreOptions) {
-    this.parts_ = options.parts;
-    this.comments = options.comments;
-    this.title = options.title;
-    this.subTitle = options.subTitle;
-    this.artist = options.artist;
-    this.album = options.album;
-    this.composer = options.composer;
-    this.copyright = options.copyright;
-    this.transcriber = options.transcriber;
-    this.instructions = options.instructions;
+  constructor(options?: ScoreOptions) {
+    this.parts_ = initArray(Part, options?.parts);
+    this.comments = options?.comments;
+    this.title = options?.title;
+    this.subTitle = options?.subTitle;
+    this.artist = options?.artist;
+    this.album = options?.album;
+    this.composer = options?.composer;
+    this.copyright = options?.copyright;
+    this.transcriber = options?.transcriber;
+    this.instructions = options?.instructions;
 
     makeAutoObservable(this, undefined, { deep: true });
   }
@@ -62,5 +62,20 @@ export class Score {
     if (index >= 0) {
       this.parts_.splice(index, 1);
     }
+  }
+
+  toJSON() {
+    return {
+      parts: this.parts,
+      comments: this.comments,
+      title: this.title,
+      subTitle: this.subTitle,
+      artist: this.artist,
+      album: this.album,
+      composer: this.composer,
+      copyright: this.copyright,
+      transcriber: this.transcriber,
+      instructions: this.instructions,
+    };
   }
 }

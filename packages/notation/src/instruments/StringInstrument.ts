@@ -1,5 +1,5 @@
-import { computed, makeObservable } from "mobx";
-import { Pitch } from "../pitch";
+import { makeObservable } from "mobx";
+import { Pitch } from "../Pitch";
 import { Instrument, InstrumentOptions } from "./Instrument";
 
 export type StringInstrumentOptions = InstrumentOptions & {
@@ -8,14 +8,17 @@ export type StringInstrumentOptions = InstrumentOptions & {
 };
 
 export class StringInstrument extends Instrument<StringInstrumentOptions> {
+  readonly type = "string";
+
+  public tuning: Pitch[];
+
   constructor(options: StringInstrumentOptions) {
     super(options);
-    makeObservable(this, {
-      tuning: computed,
-    });
-  }
 
-  get tuning() {
-    return this.options.tuning;
+    this.tuning = options.tuning.map((pitch) => Pitch.fromJSON(pitch));
+
+    makeObservable(this, {
+      tuning: true,
+    });
   }
 }

@@ -12,6 +12,7 @@ import { IncreaseNoteValue } from "../actions/editing/note/IncreaseNoteValue";
 import { SetNoteFret } from "../actions/editing/note/SetNoteFret";
 import { toggleNoteFeatureAction } from "../actions/editing/note/ToggleNoteFeature";
 import { Redo } from "../actions/editing/Redo";
+import { NewScore } from "../actions/editing/score/NewScore";
 import { Undo } from "../actions/editing/Undo";
 import { FirstPage } from "../actions/navigation/FirstPage";
 import { LastPage } from "../actions/navigation/LastPage";
@@ -91,6 +92,7 @@ const ACTION_GROUPS: Record<string, Command[]> = {
   Playback: [TogglePlayback],
   Zoom: [ZoomIn, ZoomOut, ResetZoom],
   Editing: [
+    NewScore,
     Undo,
     Redo,
     DeleteNote,

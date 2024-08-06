@@ -2,7 +2,6 @@ import {
   Chord,
   Clef,
   ClefSign,
-  Instrument,
   Key,
   Measure,
   NoteOptions,
@@ -12,7 +11,6 @@ import {
   Score,
   StaffDetails,
   Step,
-  StringInstrument,
   TimeSignature,
 } from "@muzart/notation";
 import { compact, range } from "lodash-es";
@@ -60,16 +58,26 @@ function parts(document: Document, node: Node): Part[] {
     const name = textQueryMaybe(document, node, `part-list/score-part[@id='${id}']/part-name`);
     const staffLines = textQueryMaybe(document, item, "//staff-details/staff-lines");
 
-    let instrument: Instrument | undefined = undefined;
+    let instrument;
     const attributes = single(document, item, "measure[1]/attributes");
     const maybeTuning = attributes && tuning(document, attributes);
     if (maybeTuning) {
       // TODO how to determine the kind of instrument?
-      instrument = new StringInstrument({
+      instrument = {
+        type: "string",
         midiPreset: 24, // TODO where to get midi preset?
         volume: 1,
         tuning: maybeTuning,
-      });
+      } as const;
+    } else {
+      // TODO maybe introduce a default instrument without any tuning
+      const STANDARD_TUNING = ["E4", "B3", "G3", "D3", "A2", "E2"];
+      instrument = {
+        type: "string",
+        midiPreset: 25, // Acoustic guitar
+        volume: 0.8125,
+        tuning: STANDARD_TUNING.map((pitch) => Pitch.fromScientificNotation(pitch)),
+      } as const;
     }
 
     return new Part({

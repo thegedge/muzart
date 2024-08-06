@@ -14,7 +14,7 @@ export function ChangeNotePaletteButton<PropertyT extends keyof notation.NoteOpt
 
   const { property, value, ...buttonProps } = props;
   const note = application.selection.note?.note;
-  const isCurrentValue = note ? note.options[property] == value : false;
+  const isCurrentValue = note ? note[property] == value : false;
   const command = changeNoteAction({ [property]: isCurrentValue ? undefined : value });
 
   return <PaletteButton {...buttonProps} command={command} active={isCurrentValue} />;

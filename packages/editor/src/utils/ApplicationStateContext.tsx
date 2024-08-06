@@ -3,9 +3,11 @@ import { PlaybackController } from "@muzart/playback";
 import { comparer, reaction } from "mobx";
 import { ComponentChildren, createContext } from "preact";
 import { useContext, useEffect, useMemo } from "preact/hooks";
+import { useLocation } from "wouter";
 import { Application } from "../state/Application";
 import { Selection } from "../state/Selection";
 import { DemoStorage } from "../storage/DemoStorage";
+import { EmptyStorage } from "../storage/EmptyStorage";
 import { IndexedDbStorage } from "../storage/IndexedDbStorage";
 import { LocalStorage } from "../storage/LocalStorage";
 import { TabStorage } from "../storage/TabStorage";
@@ -29,10 +31,12 @@ export const useApplicationState = (): Application => {
 };
 
 export const ApplicationState = (props: { children?: ComponentChildren }) => {
+  const [_location, navigate] = useLocation();
   const application = useMemo(() => {
     const settingsStorage = new LocalStorage();
     const tabStorage = new TabStorage({
       "demo": new DemoStorage(["Song13.gp4"]),
+      "empty": new EmptyStorage(),
       "indexed-db": new IndexedDbStorage("muzart_tabs", 1, (oldVersion, _newVersion, db) => {
         if (oldVersion < 1) {
           db.createObjectStore(TABS_NAMESPACE);
@@ -41,7 +45,13 @@ export const ApplicationState = (props: { children?: ComponentChildren }) => {
     });
     const selection = new Selection();
     const playback = new PlaybackController(selection);
-    return new Application(settingsStorage, tabStorage, selection, playback);
+    return new Application({
+      settingsStorage,
+      tabStorage,
+      selection,
+      playback,
+      navigate,
+    });
   }, []);
 
   useEffect(() => {

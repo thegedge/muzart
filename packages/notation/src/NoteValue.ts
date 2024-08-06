@@ -66,6 +66,25 @@ export class NoteValue {
     }
   }
 
+  static fromJSON(value: unknown) {
+    switch (typeof value) {
+      case "string":
+        return NoteValue.fromString(value);
+      case "number":
+        return NoteValue.fromNumber(value);
+      case "object": {
+        if (value === null) {
+          throw new Error("unexpected null value");
+        }
+
+        const { name, dots, tuplet } = value as { name: string; dots?: number; tuplet?: Tuplet };
+        return new NoteValue(name as NoteValueName, { dots, tuplet });
+      }
+      default:
+        throw new Error(`unexpected input: ${value}`);
+    }
+  }
+
   readonly dots: number;
   readonly tuplet?: Tuplet;
 
@@ -219,6 +238,14 @@ export class NoteValue {
     // ```
 
     return (2 - 1 / (1 << this.dots)) / denominator;
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      dots: this.dots,
+      tuplet: this.tuplet,
+    };
   }
 }
 

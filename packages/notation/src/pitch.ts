@@ -68,6 +68,36 @@ export class Pitch {
     return new Pitch(pitch[0] as Step, octave, pitch.length - 1);
   }
 
+  /**
+   * Construct a pitch from a JSON object.
+   */
+  static fromJSON(value: unknown): Pitch {
+    switch (typeof value) {
+      case "string":
+        return Pitch.fromScientificNotation(value);
+      case "number":
+        return Pitch.fromMidi(value);
+      case "object": {
+        if (value === null) {
+          throw new Error("pitch value cannot be null");
+        }
+
+        if (!("step" in value) || !("octave" in value)) {
+          throw new Error("pitch object must include 'step' and 'octave' properties");
+        }
+
+        if (typeof value.octave !== "number") {
+          throw new Error(`octave must be a number, but received "${value.octave}"`);
+        }
+
+        const alterations = "alterations" in value ? Number(value.alterations) : 0;
+        return new Pitch(value.step as Step, value.octave, alterations);
+      }
+      default:
+        throw new Error(`invalid pitch value: ${value}`);
+    }
+  }
+
   constructor(
     readonly step: Step,
     readonly octave: number,
@@ -109,5 +139,13 @@ export class Pitch {
       alterations = (fancy ? "♭" : "b").repeat(-this.alterations);
     }
     return `${this.step}${alterations}${this.octave}`;
+  }
+
+  toJSON() {
+    return {
+      step: this.step,
+      octave: this.octave,
+      alterations: this.alterations,
+    };
   }
 }

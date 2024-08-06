@@ -6,6 +6,15 @@ export interface Beat {
 }
 
 export class TimeSignature {
+  static fromJSON(value: unknown) {
+    if (typeof value === "object" && value !== null) {
+      const { value: noteValue, count } = value as { value: unknown; count: unknown };
+      return new TimeSignature(NoteValue.fromJSON(noteValue), count as number);
+    }
+
+    throw new Error("Invalid TimeSignature value");
+  }
+
   constructor(
     readonly value: NoteValue,
     readonly count: number,
@@ -55,5 +64,12 @@ export class TimeSignature {
    */
   isEqual(other: TimeSignature) {
     return this.count === other.count && this.value.isEqual(other.value);
+  }
+
+  toJSON() {
+    return {
+      value: this.value.toJSON(),
+      count: this.count,
+    };
   }
 }

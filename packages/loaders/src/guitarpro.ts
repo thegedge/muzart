@@ -888,10 +888,10 @@ class GuitarProLoader {
   }
 
   readMidiChannels() {
-    const ports = [];
+    const ports: any[] = [];
 
     for (let port = 1; port <= 4; ++port) {
-      const channels = [];
+      const channels: any[] = [];
       for (let channel = 1; channel <= 16; ++channel) {
         const instrument = this.cursor.nextNumber(NumberType.Uint32);
         const volume = this.cursor.nextNumber(NumberType.Uint8);

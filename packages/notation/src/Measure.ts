@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { Chord } from "./Chord";
 import { TimeSignature } from "./TimeSignature";
 import { Changeable, StaffDetails } from "./staff";
+import { initArray } from "./utils";
 
 export interface Marker {
   text: string;
@@ -11,31 +12,29 @@ export interface Marker {
 interface MeasureOptions {
   /** 1-indexed number for this measure */
   number: number;
-  chords: Chord[];
+  chords?: Chord[];
   staffDetails: StaffDetails;
-
   marker?: Marker;
 }
 
 export class Measure {
-  constructor(private options: MeasureOptions) {
+  public number: number;
+  public chords: Chord[];
+  public staffDetails: StaffDetails;
+  public marker: Marker | undefined;
+
+  constructor(options: MeasureOptions) {
+    this.number = options.number;
+    this.chords = initArray(Chord, options.chords);
+    this.staffDetails = {
+      ...options.staffDetails,
+      time: options.staffDetails.time && {
+        changed: options.staffDetails.time.changed,
+        value: TimeSignature.fromJSON(options.staffDetails.time.value),
+      },
+    };
+    this.marker = options.marker;
     makeAutoObservable(this, undefined, { deep: true });
-  }
-
-  get number() {
-    return this.options.number;
-  }
-
-  get chords() {
-    return this.options.chords;
-  }
-
-  get staffDetails() {
-    return this.options.staffDetails;
-  }
-
-  get marker() {
-    return this.options.marker;
   }
 
   get isValid() {
@@ -48,17 +47,26 @@ export class Measure {
   }
 
   addChord(chord: Chord) {
-    this.options.chords.push(chord);
+    this.chords.push(chord);
   }
 
   removeChord(chord: Chord) {
-    const index = this.options.chords.indexOf(chord);
+    const index = this.chords.indexOf(chord);
     if (index >= 0) {
-      this.options.chords.splice(index, 1);
+      this.chords.splice(index, 1);
     }
   }
 
   setTimeSignature(timeSignature: Changeable<TimeSignature> | undefined) {
     this.staffDetails.time = timeSignature;
+  }
+
+  toJSON() {
+    return {
+      number: this.number,
+      chords: this.chords,
+      staffDetails: this.staffDetails,
+      marker: this.marker,
+    };
   }
 }

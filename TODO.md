@@ -42,6 +42,7 @@
 
 - Swap out body with SVG when printing (see beforeprint / afterprint listeners)
 - Remember play/mute settings for tracks
+- Find a better way of constructing all the notation objects
 
 ## Bugs
 
