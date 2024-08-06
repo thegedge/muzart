@@ -53,7 +53,7 @@ export const MeasureArea = observer((props: { score: Score }) => {
         const contextMenuHandlers = useMuzartContextMenu(part);
         const partColor = part.color ?? "rgb(156, 163, 175)";
         return (
-          <div className="contents" {...contextMenuHandlers}>
+          <div key={partIndex} className="contents" {...contextMenuHandlers}>
             {part.measures.map((measure) => (
               <MeasureBox
                 key={measure.number}
