@@ -1,4 +1,3 @@
-import { PauseIcon, PlayIcon } from "@heroicons/react/24/outline";
 import * as notation from "@muzart/notation";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
@@ -11,6 +10,7 @@ import { RemovePart } from "../../actions/editing/part/RemovePart";
 import { TogglePlayback } from "../../actions/playback/TogglePlayback";
 import { Command } from "../../state/Application";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
+import { PauseIcon, PlayIcon, type IconType } from "../icons";
 import { Loading } from "../misc/Loading";
 import { Menu } from "../misc/Menu";
 import { PopoverMenu } from "../misc/PopoverMenu";
@@ -89,13 +89,6 @@ const RegularScreenView = observer((props: PropsWithChildren) => {
     </div>
   );
 });
-
-type IconType = React.ForwardRefExoticComponent<
-  React.PropsWithoutRef<React.SVGProps<SVGSVGElement>> & {
-    title?: string;
-    titleId?: string;
-  } & React.RefAttributes<SVGSVGElement>
->;
 
 const ToolbarOverlayForSmallScreens = observer((_props: Record<string, never>) => {
   const application = useApplicationState();

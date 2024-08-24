@@ -25,9 +25,9 @@ export const MeasureArea = observer((props: { score: Score }) => {
     <div
       className="grid flex-1 items-stretch justify-stretch gap-px bg-gray-950/75"
       style={{
-        gridTemplateColumns: `repeat(${numMeasures}, 1.5rem)`,
-        gridAutoRows: "1.5rem",
-        gridTemplateRows: "1.75rem", // h-7
+        gridTemplateColumns: `repeat(${numMeasures}, 1.75rem)`,
+        gridAutoRows: "1.75rem", // h-7
+        gridTemplateRows: "2rem", // h-8
       }}
     >
       {range(numMeasures).map((measureIndex) => {
