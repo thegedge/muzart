@@ -1,0 +1,103 @@
+.score {
+  stroke-width: 0.1;
+  stroke: none;
+  fill: none;
+  color: #000000;
+}
+
+.arc {
+  stroke-linecap: round;
+  fill: #555555;
+}
+
+.bar-line {
+  stroke: currentcolor;
+}
+
+.beam {
+  fill: #333333;
+}
+
+.bend {
+  fill: #555555;
+  stroke: #555555;
+  stroke-width: 0.1;
+  text-align: center;
+  alignment-baseline: hanging;
+}
+
+.chord {
+  cursor: pointer;
+}
+
+.chord-diagram {
+  fill: currentcolor;
+}
+
+.decorated-text {
+  stroke: #333333;
+  vertical-align: middle;
+}
+
+.dot {
+  fill: currentcolor;
+}
+
+.ellipse {
+  stroke: none;
+  fill: currentcolor;
+}
+
+.line {
+  stroke: currentcolor;
+  stroke-width: 0.1;
+}
+
+.measure[valid="false"] {
+  background-color: #ff000011;
+}
+
+.note {
+  cursor: pointer;
+  background-color: #ffffff;
+}
+
+.page {
+  background-color: #ffffff;
+  box-shadow: 0 0 12mm rgb(0, 0, 0, 0.25);
+}
+
+.path {
+  fill: none;
+  stroke: #333333;
+}
+
+.rest {
+  cursor: pointer;
+  fill: #333333;
+}
+
+.slide {
+  stroke: #555555;
+  stroke-width: 0.15; /* 1.5 * default */
+}
+
+.stroke {
+  fill: currentcolor;
+  stroke: currentcolor;
+  stroke-width: 0.1;
+}
+
+.text {
+  cursor: text;
+}
+
+.time-signature {
+  fill: currentcolor;
+}
+
+.vibrato {
+  fill: #555555;
+  stroke: #555555;
+  stroke-width: 0.1;
+}
