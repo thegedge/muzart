@@ -1,5 +1,5 @@
+import { CanvasState } from "@muzart/canvas";
 import { type AnyLayoutElement, Box, toAncestorCoordinateSystem } from "@muzart/layout";
-import { CanvasState } from "./CanvasState";
 
 /**
  * Represents an element in the canvas as a virtual DOM element.

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@floating-ui/react": "^0.26.18",
+    "@muzart/canvas": "workspace:*",
     "@muzart/layout": "workspace:*",
     "@muzart/loaders": "workspace:*",
     "@muzart/notation": "workspace:*",

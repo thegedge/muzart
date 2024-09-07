@@ -16,7 +16,7 @@ import { Observer } from "mobx-react-lite";
 import { JSX } from "preact";
 import { useRef } from "preact/hooks";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { VirtualCanvasElement } from "../canvas/VirtualCanvasElement";
+import type { VirtualCanvasElement } from "./VirtualCanvasElement";
 
 export type TooltipProps = {
   subject: unknown;

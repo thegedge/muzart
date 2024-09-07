@@ -1,13 +1,10 @@
-import { Box, PX_PER_MM } from "@muzart/layout";
 import { observer } from "mobx-react-lite";
+import type { JSX } from "preact";
 import { RefCallback } from "preact";
 import { useCallback, useEffect, useState } from "preact/hooks";
-import { JSXInternal } from "preact/src/jsx";
 import { CanvasState } from "./CanvasState";
 
-export interface RenderFunction {
-  (context: CanvasRenderingContext2D, viewport: Box): void;
-}
+const PX_PER_MM = 4; // assuming 96 pixels per inch, rounded up (from 3.7795275591) so we have integers
 
 export interface Point {
   x: number;
@@ -144,7 +141,7 @@ export const Canvas = observer((props: CanvasProps) => {
   );
 });
 
-const wrapMouseEvent = (state: CanvasState, handler: MouseEventHandler): JSXInternal.MouseEventHandler<HTMLElement> => {
+const wrapMouseEvent = (state: CanvasState, handler: MouseEventHandler): JSX.MouseEventHandler<HTMLElement> => {
   return (event) => {
     const pt = state.canvasViewportToUserSpace({ x: event.offsetX, y: event.offsetY });
     handler(pt, event);

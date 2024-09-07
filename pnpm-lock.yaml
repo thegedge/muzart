@@ -60,11 +60,39 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5(@types/node@22.1.0)(terser@5.31.3)
 
+  packages/canvas:
+    dependencies:
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
+      mobx:
+        specifier: ^6.12.4
+        version: 6.12.4
+      mobx-react-lite:
+        specifier: ^4.0.7
+        version: 4.0.7(mobx@6.12.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    devDependencies:
+      '@types/node':
+        specifier: ^20.14.9
+        version: 20.14.14
+      csstype:
+        specifier: ^3.1.3
+        version: 3.1.3
+      preact:
+        specifier: ^10.22.0
+        version: 10.22.0
+      typescript:
+        specifier: ^5.5.2
+        version: 5.5.4
+
   packages/editor:
     dependencies:
       '@floating-ui/react':
         specifier: ^0.26.18
         version: 0.26.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@muzart/canvas':
+        specifier: workspace:*
+        version: link:../canvas
       '@muzart/layout':
         specifier: workspace:*
         version: link:../layout

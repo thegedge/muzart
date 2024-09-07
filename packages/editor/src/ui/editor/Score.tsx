@@ -1,3 +1,4 @@
+import { Canvas, RenderFunction, type Point } from "@muzart/canvas";
 import * as layout from "@muzart/layout";
 import * as notation from "@muzart/notation";
 import { noteValueToSeconds } from "@muzart/playback";
@@ -9,11 +10,10 @@ import { observer, useLocalObservable } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { changeNoteAction } from "../../actions/editing/note/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { Canvas, Point, RenderFunction } from "../canvas/Canvas";
-import { VirtualCanvasElement } from "../canvas/VirtualCanvasElement";
 import { ElementBoundPalette } from "../misc/ElementBoundPalette";
 import { StatefulInput, StatefulTextInputState } from "../misc/StatefulInput";
 import type { TooltipProps } from "../misc/Tooltip";
+import { VirtualCanvasElement } from "../misc/VirtualCanvasElement";
 import { selectionBoxFor } from "../utils/selectionBoxFor";
 import { RenderedChordDiagram } from "./RenderedChordDiagram";
 

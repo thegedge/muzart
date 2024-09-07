@@ -1,3 +1,4 @@
+import { CanvasState } from "@muzart/canvas";
 import { Box, layOutScore } from "@muzart/layout";
 import { load } from "@muzart/loaders";
 import * as notation from "@muzart/notation";
@@ -8,7 +9,6 @@ import { flow, makeAutoObservable, reaction, when, type IReactionDisposer } from
 import type { navigate } from "wouter/use-browser-location";
 import { SyncStorage, isRecord } from "../storage/Storage";
 import { TabStorage } from "../storage/TabStorage";
-import { CanvasState } from "../ui/canvas/CanvasState";
 import { UndoStack } from "../utils/UndoStack";
 import { Selection } from "./Selection";
 import { UIState } from "./UIState";

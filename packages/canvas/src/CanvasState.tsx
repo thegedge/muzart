@@ -1,8 +1,13 @@
-import { Box, LINE_STROKE_WIDTH } from "@muzart/layout";
 import type * as CSS from "csstype";
 import { makeAutoObservable } from "mobx";
-import { isRecord, numberOrDefault } from "../../storage/Storage";
-import { RenderFunction, type Point } from "./Canvas";
+import { isRecord, numberOrDefault } from "../../editor/src/storage/Storage";
+import { LINE_STROKE_WIDTH } from "../../layout/src/constants";
+import { Box } from "./Box";
+import { type Point } from "./Canvas";
+
+export interface RenderFunction {
+  (context: CanvasRenderingContext2D, viewport: Box): void;
+}
 
 /**
  * Manages the canvas state, translating between various coordinate spaces:
