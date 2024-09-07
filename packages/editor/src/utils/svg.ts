@@ -1,6 +1,6 @@
 import { Box, Margins } from "@muzart/layout";
 import { pick } from "lodash-es";
-import { JSXInternal } from "preact/src/jsx";
+import { JSX } from "preact";
 
 type HasBox = { box: Box };
 
@@ -8,19 +8,19 @@ type HasBox = { box: Box };
 // DOM Props
 //
 
-export const sizeProps = (box: Box): Partial<JSXInternal.CSSProperties> => {
+export const sizeProps = (box: Box): Partial<JSX.CSSProperties> => {
   return { width: `${box.width}in`, height: `${box.height}in` };
 };
 
-export const positionProps = (box: Box): Partial<JSXInternal.CSSProperties> => {
+export const positionProps = (box: Box): Partial<JSX.CSSProperties> => {
   return { top: `${box.y}in`, left: `${box.x}in` };
 };
 
-export const boxProps = (box: Box): Partial<JSXInternal.CSSProperties> => {
+export const boxProps = (box: Box): Partial<JSX.CSSProperties> => {
   return Object.assign(sizeProps(box), positionProps(box));
 };
 
-export const marginProps = (margins: Margins): Partial<JSXInternal.CSSProperties> => {
+export const marginProps = (margins: Margins): Partial<JSX.CSSProperties> => {
   return {
     paddingLeft: `${margins.left}in`,
     paddingRight: `${margins.right}in`,
@@ -33,14 +33,14 @@ export const marginProps = (margins: Margins): Partial<JSXInternal.CSSProperties
 // SVG props
 //
 
-export const svgSizeProps = (box: Box | HasBox): Partial<Pick<JSXInternal.SVGAttributes, "width" | "height">> => {
+export const svgSizeProps = (box: Box | HasBox): Partial<Pick<JSX.SVGAttributes, "width" | "height">> => {
   if ("box" in box) {
     box = box.box;
   }
   return { width: box.width, height: box.height };
 };
 
-export const svgPositionProps = (box: Box | HasBox): Partial<Pick<JSXInternal.SVGAttributes, "x" | "y">> => {
+export const svgPositionProps = (box: Box | HasBox): Partial<Pick<JSX.SVGAttributes, "x" | "y">> => {
   if ("box" in box) {
     box = box.box;
   }

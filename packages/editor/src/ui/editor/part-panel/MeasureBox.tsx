@@ -1,17 +1,12 @@
 import type { Measure } from "@muzart/notation";
 import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
+import type { JSX } from "preact";
 import { useEffect, useMemo, useState } from "preact/hooks";
-import type { JSXInternal } from "preact/src/jsx";
 import { useApplicationState } from "../../../utils/ApplicationStateContext";
 
 export const MeasureBox = observer(
-  (props: {
-    measure: Measure;
-    partIndex: number;
-    color: string;
-    onChange: JSXInternal.MouseEventHandler<HTMLElement>;
-  }) => {
+  (props: { measure: Measure; partIndex: number; color: string; onChange: JSX.MouseEventHandler<HTMLElement> }) => {
     const { measure, partIndex, color, onChange } = props;
     const { playback, selection } = useApplicationState();
     const [selected, setSelected] = useState(false);

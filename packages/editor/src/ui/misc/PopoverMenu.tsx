@@ -1,8 +1,7 @@
 import clsx from "clsx";
-import { VNode } from "preact";
+import { JSX, VNode } from "preact";
 import { HTMLAttributes } from "preact/compat";
 import { useState } from "preact/hooks";
-import { JSXInternal } from "preact/src/jsx";
 import { Menu } from "./Menu";
 
 // TODO VNode<typeof Menu> isn't typechecking properly (allows any element)
@@ -17,7 +16,7 @@ export const PopoverMenu = (
   const [left, setLeft] = useState(-1);
   const [top, setTop] = useState(-1);
 
-  const hideMenu: JSXInternal.MouseEventHandler<HTMLElement> = (event) => {
+  const hideMenu: JSX.MouseEventHandler<HTMLElement> = (event) => {
     event.preventDefault();
     event.stopPropagation();
     props.onHideMenu();

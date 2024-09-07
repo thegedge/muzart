@@ -1,9 +1,9 @@
 import { PercussionInstrument, StringInstrument, type Part } from "@muzart/notation";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
+import type { JSX } from "preact";
 import type { ChangeEvent } from "preact/compat";
 import { useRef } from "preact/hooks";
-import type { JSXInternal } from "preact/src/jsx";
 
 import { ChangePartName } from "../../../actions/editing/part/ChangePartName";
 import { useApplicationState } from "../../../utils/ApplicationStateContext";
@@ -34,12 +34,12 @@ export const PartListingRow = observer((props: { part: Part }) => {
   const application = useApplicationState();
   const nameElementRef = useRef<HTMLDivElement>(null);
 
-  const toggleSolo: JSXInternal.GenericEventHandler<HTMLElement> = (event) => {
+  const toggleSolo: JSX.GenericEventHandler<HTMLElement> = (event) => {
     event.preventDefault();
     playback.toggleSolo(props.part);
   };
 
-  const toggleMute: JSXInternal.GenericEventHandler<HTMLElement> = (event) => {
+  const toggleMute: JSX.GenericEventHandler<HTMLElement> = (event) => {
     event.preventDefault();
     playback.toggleMute(props.part);
   };
