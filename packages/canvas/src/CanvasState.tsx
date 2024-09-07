@@ -1,7 +1,5 @@
 import type * as CSS from "csstype";
 import { makeAutoObservable } from "mobx";
-import { isRecord, numberOrDefault } from "../../editor/src/storage/Storage";
-import { LINE_STROKE_WIDTH } from "../../layout/src/constants";
 import { Box } from "./Box";
 import { type Point } from "./Canvas";
 
@@ -305,4 +303,27 @@ const scrollWithClamping = (current: number, desired: number, min: number, max: 
     }
   }
   return desired;
+};
+
+// Copied from layout package
+// TODO make this configured on the state itself
+
+const LINE_STROKE_WIDTH = 0.1;
+
+// Copied from editor/src/storage/Storage.ts
+
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  switch (typeof value) {
+    case "function":
+      // Functions or classes (not instances of classes, those are objects)
+      return true;
+    case "object":
+      return value != null;
+    default:
+      return false;
+  }
+};
+
+const numberOrDefault = (value: unknown, defaultValue: number): number => {
+  return typeof value == "number" ? value : defaultValue;
 };

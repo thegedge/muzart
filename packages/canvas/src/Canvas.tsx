@@ -1,6 +1,5 @@
 import { observer } from "mobx-react-lite";
-import type { JSX } from "preact";
-import { RefCallback } from "preact";
+import type { JSX, RefCallback } from "preact";
 import { useCallback, useEffect, useState } from "preact/hooks";
 import { CanvasState } from "./CanvasState";
 
