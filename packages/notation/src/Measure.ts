@@ -18,7 +18,9 @@ interface MeasureOptions {
 }
 
 export class Measure {
+  /** @deprecated eventually moving to this measure's index inside the parent part */
   public number: number;
+
   public chords: Chord[];
   public staffDetails: StaffDetails;
   public marker: Marker | undefined;

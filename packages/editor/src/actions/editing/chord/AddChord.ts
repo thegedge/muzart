@@ -10,6 +10,7 @@ export class AddChord extends Action {
   static actionForState(application: Application) {
     const measure = application.selection.measure?.measure;
     const value = application.selection.chord?.chord.value;
+    // TODO if measure is invalid, clamp the value to the nearest valid value
     return measure && value ? new AddChord(measure, value) : null;
   }
 

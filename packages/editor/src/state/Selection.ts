@@ -181,12 +181,7 @@ export class Selection implements StorableObject {
     }
 
     if (this.chordIndex == this.measure.measure.chords.length - 1) {
-      const lastMeasureNumber = last(this.part.part.measures)?.number;
-      if (!lastMeasureNumber) {
-        return;
-      }
-
-      if (this.measureIndex < lastMeasureNumber) {
+      if (this.measureIndex < this.part.part.measures.length - 1) {
         this.update({
           measureIndex: this.measureIndex + 1,
           chordIndex: 0,

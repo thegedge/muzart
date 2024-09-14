@@ -10,7 +10,6 @@
   - Edit all of the bits of the score header
 - Parts
   - Change instrument
-  - Change name
   - Change color
 - Measure
   - Tempo
@@ -54,8 +53,9 @@
 
 - Text slightly clipped at the first line on a page; see Guitar 1 (slash) track of sweet child of mine, measure 146
 
-### Audio
+### Playback
 
+- Playback box keeps going (only sometimes, maybe all the time?) when reaching the end
 - Vibrato doesn't work on mid/end sections of ties
 - Not hearing dead notes
 - Chords should probably have some kind of gain value applied to make them not sound super loud compared to a single

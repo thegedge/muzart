@@ -41,6 +41,17 @@ export class Part {
     this.name = name;
   }
 
+  addMeasure(measure: Measure) {
+    this.measures.push(measure);
+  }
+
+  removeMeasure(measure: Measure) {
+    const index = this.measures.indexOf(measure);
+    if (index !== -1) {
+      this.measures.splice(index, 1);
+    }
+  }
+
   toJSON() {
     return {
       name: this.name,
