@@ -14,7 +14,7 @@
         in
         {
           packages = {
-            codepack = pkgs.corepack;
+            corepack = pkgs.corepack;
             direnv = pkgs.nix-direnv;
             nixpkgs-fmt = pkgs.nixpkgs-fmt;
             nodejs = pkgs.nodejs_22;
