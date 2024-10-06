@@ -58,7 +58,10 @@ export class Chord {
     this.tapped_ = options.tapped;
     this.stroke_ = options.stroke;
     this.chordDiagram_ = options.chordDiagram;
+
     makeAutoObservable(this, undefined, { deep: true });
+
+    this.notes_.forEach((note) => Note.track(note));
   }
 
   get value() {
@@ -93,6 +96,7 @@ export class Chord {
     const existingIndex = this.notes.findIndex((n) => n.placement?.string == note.placement?.string);
     if (existingIndex >= 0) {
       this.notes_.splice(existingIndex, 1);
+      Note.untrack(note.id);
     }
   }
 
@@ -106,6 +110,9 @@ export class Chord {
 
   changeNote(note: Note | NoteOptions): Note | undefined {
     const chordNote = new Note(note);
+
+    Note.track(chordNote);
+
     const existingIndex = this.notes.findIndex((n) => n.placement?.string == chordNote.placement?.string);
     if (existingIndex >= 0) {
       const existing = this.notes[existingIndex];

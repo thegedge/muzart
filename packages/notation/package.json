@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "lodash-es": "^4.17.21",
-    "mobx": "^6.12.4"
+    "mobx": "^6.12.4",
+    "nanoid": "^5.0.7"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.6",

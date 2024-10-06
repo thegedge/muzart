@@ -2,12 +2,12 @@ import { makeAutoObservable } from "mobx";
 import { Instrument } from "./instruments/Instrument";
 import { PercussionInstrument } from "./instruments/PercussionInstrument";
 import { StringInstrument } from "./instruments/StringInstrument";
-import { Measure } from "./Measure";
+import { Measure, type MeasureOptions } from "./Measure";
 import { initArray, initPolyObject } from "./utils";
 
 export interface PartOptions {
   name: string;
-  measures?: Measure[];
+  measures?: MeasureOptions[];
   lineCount: number;
   color?: string;
   instrument: StringInstrument | PercussionInstrument;

@@ -1,4 +1,4 @@
-import { Chord, Measure, NoteValue, type Part } from "@muzart/notation";
+import { Measure, NoteValue, type Part } from "@muzart/notation";
 import type { Application } from "../../../state/Application";
 import { Action } from "../../Action";
 
@@ -29,11 +29,7 @@ export class AddMeasure extends Action {
         tempo: tempo && { changed: false, value: tempo.value },
         time: time && { changed: false, value: time.value },
       },
-      chords: [
-        new Chord({
-          value: NoteValue.fromNumber(1),
-        }),
-      ],
+      chords: [{ value: NoteValue.fromNumber(1) }],
     });
   }
 

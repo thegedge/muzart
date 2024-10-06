@@ -1,9 +1,9 @@
 import { makeAutoObservable } from "mobx";
-import { Part } from "./Part";
+import { Part, type PartOptions } from "./Part";
 import { initArray } from "./utils";
 
 export interface ScoreOptions {
-  parts?: Part[];
+  parts?: PartOptions[];
   comments?: string;
   title?: string;
   subTitle?: string;

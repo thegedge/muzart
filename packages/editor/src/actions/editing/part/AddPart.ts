@@ -36,7 +36,7 @@ export class AddPart extends Action {
 
 const STANDARD_TUNING = ["E4", "B3", "G3", "D3", "A2", "E2"];
 
-export const newPart = (score: notation.Score) => {
+export const newPart = (score: notation.Score): notation.Part => {
   const instrument = new notation.StringInstrument({
     // Acoustic guitar, standard tuning
     midiPreset: 25,
@@ -44,56 +44,51 @@ export const newPart = (score: notation.Score) => {
     tuning: STANDARD_TUNING.map((pitch) => notation.Pitch.fromScientificNotation(pitch)),
   });
 
-  const measures = (score.parts[0]?.measures ?? []).map(
-    (m, index) =>
-      new notation.Measure({
-        number: index + 1,
-        staffDetails: {
-          clef: m.staffDetails.clef && { ...m.staffDetails.clef },
-          key: m.staffDetails.key && { ...m.staffDetails.key },
-          tempo: m.staffDetails.tempo && { ...m.staffDetails.tempo },
-          time: m.staffDetails.time && { ...m.staffDetails.time },
-        },
-        chords: [
-          new notation.Chord({
-            value: notation.NoteValue.fromString("whole"),
-            notes: [],
-          }),
-        ],
-      }),
-  );
+  const measures = (score.parts[0]?.measures ?? []).map((m, index) => ({
+    number: index + 1,
+    staffDetails: {
+      clef: m.staffDetails.clef && { ...m.staffDetails.clef },
+      key: m.staffDetails.key && { ...m.staffDetails.key },
+      tempo: m.staffDetails.tempo && { ...m.staffDetails.tempo },
+      time: m.staffDetails.time && { ...m.staffDetails.time },
+    },
+    chords: [
+      {
+        value: notation.NoteValue.fromString("whole"),
+        notes: [],
+      },
+    ],
+  }));
 
   if (measures.length == 0) {
-    measures.push(
-      new notation.Measure({
-        number: 1,
-        chords: [
-          new notation.Chord({
-            value: notation.NoteValue.fromString("whole"),
-            notes: [],
-          }),
-        ],
-        // TODO double check these values
-        staffDetails: {
-          clef: {
-            changed: true,
-            value: { sign: "G", line: 2 },
-          },
-          key: {
-            changed: true,
-            value: { fifths: 0 },
-          },
-          time: {
-            changed: true,
-            value: new notation.TimeSignature(new notation.NoteValue(notation.NoteValueName.Quarter), 4),
-          },
-          tempo: {
-            changed: true,
-            value: 128,
-          },
+    measures.push({
+      number: 1,
+      chords: [
+        {
+          value: notation.NoteValue.fromString("whole"),
+          notes: [],
         },
-      }),
-    );
+      ],
+      // TODO double check these values
+      staffDetails: {
+        clef: {
+          changed: true,
+          value: { sign: "G", line: 2 },
+        },
+        key: {
+          changed: true,
+          value: { fifths: 0 },
+        },
+        time: {
+          changed: true,
+          value: new notation.TimeSignature(new notation.NoteValue(notation.NoteValueName.Quarter), 4),
+        },
+        tempo: {
+          changed: true,
+          value: 128,
+        },
+      },
+    });
   }
 
   return new notation.Part({

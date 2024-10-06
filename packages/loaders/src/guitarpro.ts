@@ -6,13 +6,11 @@ import {
   ChordDiagram,
   HarmonicStyle,
   Marker,
-  Measure,
   Note,
   NoteDynamic,
   NoteOptions,
   NoteValue,
   NoteValueName,
-  Part,
   PercussionInstrument,
   Pitch,
   Score,
@@ -22,6 +20,8 @@ import {
   StrokeDirection,
   TapStyle,
   TimeSignature,
+  type ChordOptions,
+  type PartOptions,
 } from "@muzart/notation";
 import { omit, padStart, range, zip } from "lodash-es";
 import { Loader } from "./Loader";
@@ -141,7 +141,7 @@ class GuitarProLoader {
     // Track props
     //------------------------------------------------------------------------------------------------
 
-    const parts: Part[] = [];
+    const parts: PartOptions[] = [];
 
     this.debug("track data");
     for (let trackIndex = 0; trackIndex < numTracks; ++trackIndex) {
@@ -149,25 +149,23 @@ class GuitarProLoader {
       this.trackData.push(trackData);
 
       const midiData = midiPorts[trackData.midiPort - 1][trackData.midiChannel - 1];
-      parts.push(
-        new Part({
-          name: trackData.name,
-          color: trackData.color,
-          lineCount: trackData.strings.length,
-          measures: [],
-          instrument:
-            trackData.midiChannel == 10
-              ? new PercussionInstrument({
-                  midiPreset: midiData.instrument,
-                  volume: midiData.volume,
-                })
-              : new StringInstrument({
-                  midiPreset: midiData.instrument,
-                  volume: midiData.volume,
-                  tuning: trackData.strings,
-                }),
-        }),
-      );
+      parts.push({
+        name: trackData.name,
+        color: trackData.color,
+        lineCount: trackData.strings.length,
+        measures: [],
+        instrument:
+          trackData.midiChannel == 10
+            ? new PercussionInstrument({
+                midiPreset: midiData.instrument,
+                volume: midiData.volume,
+              })
+            : new StringInstrument({
+                midiPreset: midiData.instrument,
+                volume: midiData.volume,
+                tuning: trackData.strings,
+              }),
+      });
     }
 
     //------------------------------------------------------------------------------------------------
@@ -176,26 +174,29 @@ class GuitarProLoader {
 
     for (let measureIndex = 0; measureIndex < numMeasures; ++measureIndex) {
       for (let trackIndex = 0; trackIndex < numTracks; ++trackIndex) {
+        const measures = parts[trackIndex].measures;
+        if (!measures) {
+          throw new Error("unreachable");
+        }
+
         this.debug({ trackIndex, measureIndex });
 
         const tempoBefore = this.currentMeasureTempo;
         const numBeats = this.cursor.nextNumber(NumberType.Uint32);
         const chords = range(numBeats).map(() => this.readBeat(this.trackData[trackIndex]));
 
-        parts[trackIndex].measures.push(
-          new Measure({
-            chords,
-            number: measureIndex + 1,
-            marker: this.measureData[measureIndex].marker,
-            staffDetails: {
-              time: this.measureData[measureIndex].timeSignature,
-              tempo: {
-                value: this.currentMeasureTempo,
-                changed: measureIndex == 0 || tempoBefore != this.currentMeasureTempo,
-              },
+        measures.push({
+          chords,
+          number: measureIndex + 1,
+          marker: this.measureData[measureIndex].marker,
+          staffDetails: {
+            time: this.measureData[measureIndex].timeSignature,
+            tempo: {
+              value: this.currentMeasureTempo,
+              changed: measureIndex == 0 || tempoBefore != this.currentMeasureTempo,
             },
-          }),
-        );
+          },
+        });
       }
     }
 
@@ -312,7 +313,7 @@ class GuitarProLoader {
     };
   }
 
-  readBeat(trackData: TrackData): Chord {
+  readBeat(trackData: TrackData): ChordOptions {
     const bits1 = bits(this.cursor.nextNumber(NumberType.Uint8));
     const [_blank1, hasStatus, hasTuplet, hasMixTableChangeEvent, hasEffects, hasText, hasChordDiagram, dotted] = bits1;
 
@@ -373,13 +374,13 @@ class GuitarProLoader {
       }
     }
 
-    return new Chord({
+    return {
       notes,
       chordDiagram,
       text,
       value: duration,
       ...effects,
-    });
+    };
   }
 
   readBeatEffects(): Pick<Chord, "tapped" | "stroke"> {

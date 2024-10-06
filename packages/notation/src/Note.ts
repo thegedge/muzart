@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid/non-secure";
 import { Bend } from "./Bend";
 import { Chord } from "./Chord";
 import { NoteValue } from "./NoteValue";
@@ -71,6 +72,8 @@ export type Tie =
     };
 
 export interface NoteOptions {
+  id?: string;
+
   pitch: Pitch;
   value: NoteValue;
   placement?: Placement;
@@ -93,6 +96,33 @@ export interface NoteOptions {
 }
 
 export class Note {
+  private static noteMapping = new Map<string, WeakRef<Note>>();
+
+  static track(note: Note): void {
+    const existing = this.noteMapping.get(note.id);
+    if (!existing) {
+      this.noteMapping.set(note.id, new WeakRef(note));
+      return;
+    }
+
+    if (existing.deref() !== note) {
+      throw new Error("two notes have the same id");
+    }
+  }
+
+  static untrack(noteId: string): void {
+    this.noteMapping.delete(noteId);
+  }
+
+  static clear(): void {
+    this.noteMapping.clear();
+  }
+
+  static resolve(noteId: string): Note | undefined {
+    return this.noteMapping.get(noteId)?.deref() ?? undefined;
+  }
+
+  public readonly id: string;
   private text: string;
 
   public pitch: Pitch;
@@ -116,6 +146,7 @@ export class Note {
   public vibrato_: boolean;
 
   constructor(options: NoteOptions) {
+    this.id = options.id || nanoid(); // TODO don't ignore collisions
     this.pitch = Pitch.fromJSON(options.pitch);
     this.value = new NoteValue(options.value.name, options.value);
 
@@ -219,6 +250,7 @@ export class Note {
     return {
       ...this,
       ...changes,
+      id: undefined,
     };
   }
 

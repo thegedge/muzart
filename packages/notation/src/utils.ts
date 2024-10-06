@@ -18,7 +18,7 @@ export const initPolyObject = <
         throw new Error(`No constructor found for "${value.type}"`);
       }
 
-      return new constructor(value) as InstanceType<Types[string]>;
+      return value instanceof constructor ? value : (new constructor(value) as InstanceType<Types[string]>);
     }
 
     throw new Error(
@@ -36,5 +36,5 @@ export const initPolyObject = <
 };
 
 export const initArray = <T extends { new (options: any): any }>(constructor: T, value: any[] | undefined | null) => {
-  return (value ?? []).map((item) => new constructor(item));
+  return (value ?? []).map((item) => (item instanceof constructor ? item : new constructor(item)));
 };

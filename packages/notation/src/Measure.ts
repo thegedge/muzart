@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { Chord } from "./Chord";
+import { Chord, type ChordOptions } from "./Chord";
 import { TimeSignature } from "./TimeSignature";
 import { Changeable, StaffDetails } from "./staff";
 import { initArray } from "./utils";
@@ -9,10 +9,10 @@ export interface Marker {
   color: string; // RGB, encoded as hex string
 }
 
-interface MeasureOptions {
+export interface MeasureOptions {
   /** 1-indexed number for this measure */
   number: number;
-  chords?: Chord[];
+  chords?: ChordOptions[];
   staffDetails: StaffDetails;
   marker?: Marker;
 }

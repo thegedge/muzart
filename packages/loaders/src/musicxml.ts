@@ -1,17 +1,17 @@
 import {
-  Chord,
   Clef,
   ClefSign,
   Key,
-  Measure,
   NoteOptions,
   NoteValue,
-  Part,
   Pitch,
   Score,
   StaffDetails,
   Step,
   TimeSignature,
+  type ChordOptions,
+  type MeasureOptions,
+  type PartOptions,
 } from "@muzart/notation";
 import { compact, range } from "lodash-es";
 import { Loader } from "./Loader";
@@ -52,7 +52,7 @@ function load(source: string): Score {
   });
 }
 
-function parts(document: Document, node: Node): Part[] {
+function parts(document: Document, node: Node): PartOptions[] {
   return many(document, node, "part").map((item, index) => {
     const id = textQueryMaybe(document, item, "@id");
     const name = textQueryMaybe(document, node, `part-list/score-part[@id='${id}']/part-name`);
@@ -80,24 +80,21 @@ function parts(document: Document, node: Node): Part[] {
       } as const;
     }
 
-    return new Part({
+    return {
       name: name ?? `Part ${index + 1}`,
       lineCount: parseInt(staffLines || "6"), // TODO default to previous in same staff?
       measures: measures(document, item),
       instrument,
-    });
+    };
   });
 }
 
-function measures(document: Document, node: Node): Measure[] {
-  return many(document, node, "measure").map(
-    (item, index) =>
-      new Measure({
-        chords: chords(document, item),
-        number: index + 1,
-        staffDetails: staves(document, item)[0],
-      }),
-  );
+function measures(document: Document, node: Node): MeasureOptions[] {
+  return many(document, node, "measure").map((item, index) => ({
+    chords: chords(document, item),
+    number: index + 1,
+    staffDetails: staves(document, item)[0],
+  }));
 }
 
 function staves(document: Document, node: Node): StaffDetails[] {
@@ -171,8 +168,8 @@ function tuning(document: Document, node: Node): Pitch[] | undefined {
   });
 }
 
-function chords(document: Document, node: Node): Chord[] {
-  const chords: Chord[] = [];
+function chords(document: Document, node: Node): ChordOptions[] {
+  const chords: ChordOptions[] = [];
 
   // TODO turn this into an iterate, can probably do some fancy lodash thing to partition
   const result = document.evaluate("note", node, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
@@ -191,7 +188,7 @@ function chords(document: Document, node: Node): Chord[] {
     }
 
     if (notes.length > 0) {
-      chords.push(new Chord({ notes, value: notes[0].value }));
+      chords.push({ notes, value: notes[0].value });
     }
   }
 
