@@ -9,7 +9,7 @@ type BooleanFeatures<T> = {
 
 export type BooleanNoteFeatures = BooleanFeatures<Omit<notation.NoteOptions, "text">>;
 
-const METADATA: Record<BooleanNoteFeatures, { name: string; defaultKeyBinding: string }> = {
+const METADATA: Record<BooleanNoteFeatures, { name: string; defaultKeyBinding: string | null }> = {
   dead: {
     name: "Toggle dead note",
     defaultKeyBinding: "x",
@@ -64,7 +64,7 @@ export const toggleNoteFeatureAction = (feature: BooleanNoteFeatures) => {
       this.chord.changeNote(this.note.withChanges({ [this.feature]: !this.note[this.feature] }));
     }
 
-    undo() {
+    undo(_application: Application) {
       this.chord.changeNote(this.note);
     }
   };

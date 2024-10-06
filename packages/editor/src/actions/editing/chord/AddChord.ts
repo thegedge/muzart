@@ -28,7 +28,7 @@ export class AddChord extends Action {
     this.measure.addChord(this.chord);
   }
 
-  undo() {
+  undo(_application: Application) {
     this.measure.removeChord(this.chord);
   }
 }

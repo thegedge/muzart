@@ -26,7 +26,7 @@ export const changeNoteAction = (changes: Partial<notation.Note>) => {
       this.chord.changeNote(this.note.withChanges(this.changes));
     }
 
-    undo() {
+    undo(_application: Application) {
       this.chord.changeNote(this.note);
     }
   };

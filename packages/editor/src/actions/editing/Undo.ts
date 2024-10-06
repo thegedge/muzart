@@ -11,6 +11,6 @@ export class Undo extends Action {
   }
 
   apply(application: Application) {
-    application.undo();
+    application.undo(application);
   }
 }

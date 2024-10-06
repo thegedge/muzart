@@ -34,7 +34,7 @@ export class RemovePart extends Action {
     this.score.removePart(this.part);
   }
 
-  undo() {
+  undo(_application: Application) {
     this.score.addPart(this.part, this.index);
   }
 }

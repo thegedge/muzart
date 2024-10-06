@@ -27,7 +27,7 @@ export class DeleteNote extends Action {
     this.chord.removeNote(this.note);
   }
 
-  undo() {
+  undo(_application: Application) {
     this.chord.changeNote(this.note);
   }
 }

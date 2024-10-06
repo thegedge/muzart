@@ -38,7 +38,7 @@ export class ChangeTimeSignature extends Action {
     }
   }
 
-  undo() {
+  undo(_application: Application) {
     this.measure.setTimeSignature(this.oldTimeSignature);
   }
 }

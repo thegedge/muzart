@@ -140,7 +140,7 @@ export class Application {
     actionOrCommand.apply(this);
   }
 
-  undo() {
+  undo(_application: Application) {
     const action = this.undoStack.undo();
     if (action) {
       action.undo();

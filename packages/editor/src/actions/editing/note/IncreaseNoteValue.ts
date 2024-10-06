@@ -21,7 +21,7 @@ export class IncreaseNoteValue extends Action {
     this.chord.setValue(this.chord.value.increase());
   }
 
-  undo() {
+  undo(_application: Application) {
     this.chord.setValue(this.chord.value.decrease());
   }
 }

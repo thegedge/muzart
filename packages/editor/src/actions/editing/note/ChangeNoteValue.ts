@@ -27,7 +27,7 @@ export const changeNoteValueAction = (value: notation.NoteValueName) => {
       this.chord.setValue(this.chord.value.withName(this.value));
     }
 
-    undo() {
+    undo(_application: Application) {
       this.chord.setValue(this.chord.value.withName(this.previousValue));
     }
   };

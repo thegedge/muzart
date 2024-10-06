@@ -28,7 +28,7 @@ export const changeTextAction = (element: layout.Text, text: string) => {
       this.element.text = this.text;
     }
 
-    undo() {
+    undo(_application: Application) {
       this.element.text = this.prev;
     }
   };

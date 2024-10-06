@@ -29,7 +29,7 @@ export class AddPart extends Action {
     application.selection.update({ partIndex });
   }
 
-  undo() {
+  undo(_application: Application) {
     this.score.removePart(this.part);
   }
 }

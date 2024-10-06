@@ -53,7 +53,7 @@ export class SetNoteFret extends Action {
     }
   }
 
-  undo() {
+  undo(_application: Application) {
     if (this.note) {
       this.chord.changeNote(this.note);
     } else {

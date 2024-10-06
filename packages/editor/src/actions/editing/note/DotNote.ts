@@ -15,7 +15,7 @@ export class DotNote extends Action {
     this.chord.changeNote(this.note.withChanges({ value: this.note.value.withDots(this.dots) }));
   }
 
-  undo() {
+  undo(_application: Application) {
     this.chord.changeNote(this.note);
   }
 }

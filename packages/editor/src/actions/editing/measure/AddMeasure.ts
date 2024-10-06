@@ -41,7 +41,7 @@ export class AddMeasure extends Action {
     this.part.addMeasure(this.measure);
   }
 
-  undo() {
+  undo(_application: Application) {
     this.part.removeMeasure(this.measure);
   }
 }

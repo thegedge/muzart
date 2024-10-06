@@ -21,7 +21,7 @@ export class ChangePartName extends Action {
     this.part.setName(this.newName);
   }
 
-  undo() {
+  undo(_application: Application) {
     this.part.setName(this.oldName);
   }
 }
