@@ -1,4 +1,4 @@
-import { Chord, Measure, Note, Score, StaffDetails, changed } from "@muzart/notation";
+import { Chord, Measure, Note, Score, StaffDetails, changed, type ScoreOptions } from "@muzart/notation";
 import { isString, pickBy, range } from "lodash-es";
 import guitarPro from "./guitarpro";
 import musicXml from "./musicxml";
@@ -72,9 +72,10 @@ function loadScore(buffer: ArrayBuffer, type: ScoreDataType): Score {
         const score = guitarPro(buffer).load();
         return postProcess(score);
       }
-      case ScoreDataType.Muzart:
-        const scoreData = JSON.parse(new TextDecoder().decode(buffer));
+      case ScoreDataType.Muzart: {
+        const scoreData: ScoreOptions = JSON.parse(new TextDecoder().decode(buffer));
         return new Score(scoreData);
+      }
     }
   } finally {
     console.timeEnd("loadScore");
@@ -130,42 +131,46 @@ function linkTiedNotes(score: Score): void {
             continue;
           }
 
+          // TODO should we instead be using `chord.changeNote` here?
+
+          const updateTracking = note.tie?.type === "detect";
           const trackedNote = trackedNotes[note.placement.string];
           const trackedChord = trackedChords[note.placement.string];
 
-          if (note.tie?.type === "stop") {
-            if (trackedNote) {
-              note.tie = {
-                type: "middle",
-                next: trackedNote,
-                nextChord: trackedChord,
-              };
-
-              if (trackedNote.tie) {
-                trackedNote.tie.previous = note;
-                trackedNote.tie.previousChord = chord;
-              }
-            }
-
-            trackedNotes[note.placement.string] = note;
-            trackedChords[note.placement.string] = chord;
-          } else if (trackedNote) {
+          if (trackedNote && trackedChord) {
             note.tie = {
               type: "start",
-              next: trackedNote,
-              nextChord: trackedChord,
+              next: {
+                note: trackedNote,
+                chord: trackedChord,
+              },
             };
 
-            if (trackedNote.tie) {
-              trackedNote.tie.previous = note;
-              trackedNote.tie.previousChord = chord;
+            if (trackedNote.tie?.next) {
+              trackedNote.tie = {
+                type: "middle",
+                previous: { note, chord },
+                next: trackedNote.tie.next,
+              };
+            } else {
+              trackedNote.tie = {
+                type: "stop",
+                previous: { note, chord },
+              };
             }
+          }
 
+          if (updateTracking) {
+            trackedNotes[note.placement.string] = note;
+            trackedChords[note.placement.string] = chord;
+          } else {
             trackedNotes[note.placement.string] = undefined;
             trackedChords[note.placement.string] = undefined;
           }
         }
       }
     }
+
+    // TODO if we still have a tracked note, we probably need to let the user know the tie is invalid
   }
 }

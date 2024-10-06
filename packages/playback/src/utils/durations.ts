@@ -8,7 +8,7 @@ export const noteDurationInSeconds = (note: Note, tempo = 128): number => {
   let duration = 0;
   while (currentNote) {
     duration += noteValueToSeconds(currentNote.value, tempo);
-    currentNote = currentNote.tie?.next;
+    currentNote = currentNote.tie?.next?.note;
   }
   return duration;
 };

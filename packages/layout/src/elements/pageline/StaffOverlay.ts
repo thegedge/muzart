@@ -166,10 +166,10 @@ export class StaffOverlay extends SimpleGroupElement<AnyLayoutElement> {
           );
         }
 
-        if (note.tie?.nextChord) {
+        if (note.tie?.next) {
           let tieEnd: { element: Chord; measure: Measure } | undefined;
           for (let endIndex = index + 1; endIndex < chords.length; ++endIndex) {
-            if (chords[endIndex].element.chord == note.tie.nextChord) {
+            if (chords[endIndex].element.chord == note.tie.next.chord) {
               tieEnd = chords[endIndex];
               break;
             }

@@ -37,6 +37,13 @@ const loader = (source: ArrayBuffer): Loader => new GuitarProLoader(source);
 
 export default loader;
 
+type Channel = {
+  instrument: number;
+  volume: number;
+};
+
+type Port = Channel[];
+
 interface TrackData {
   name: string;
   strings: Pitch[];
@@ -540,7 +547,7 @@ class GuitarProLoader {
       noteType = this.cursor.nextNumber(NumberType.Uint8);
     }
 
-    // TODO currently ignore this duration. Fine for tabs, okay for scores?
+    // TODO currently ignore this duration. Fine for tabs, but is it okay for scores?
     const duration = 0;
     if (hasDuration) {
       // -2 = whole note, -1 = half note, ...
@@ -570,7 +577,7 @@ class GuitarProLoader {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- may not be the case in the future
       value: duration == 0 ? defaultNoteValue : NoteValue.fromNumber(duration),
       dead: noteType === 3,
-      tie: noteType === 2 ? { type: "stop" } : undefined,
+      tie: noteType === 2 ? { type: "detect" } : undefined,
       ghost: isGhostNote,
       accent: isAccentuated ? AccentStyle.Accentuated : undefined,
       dynamic,
@@ -583,7 +590,6 @@ class GuitarProLoader {
     if (hasNoteEffects) {
       const effects = this.readNoteEffects();
       if (effects.graceNote) {
-        // TODO let's not do this "as unknown as T" thingy
         noteOptions.graceNote = new Note({
           pitch: stringTuning.adjust(fret),
           value: effects.graceNote.value,
@@ -888,10 +894,10 @@ class GuitarProLoader {
   }
 
   readMidiChannels() {
-    const ports: any[] = [];
+    const ports: Port[] = [];
 
     for (let port = 1; port <= 4; ++port) {
-      const channels: any[] = [];
+      const channels: Channel[] = [];
       for (let channel = 1; channel <= 16; ++channel) {
         const instrument = this.cursor.nextNumber(NumberType.Uint32);
         const volume = this.cursor.nextNumber(NumberType.Uint8);

@@ -3,8 +3,6 @@ import { Chord } from "./Chord";
 import { NoteValue } from "./NoteValue";
 import { Pitch } from "./Pitch";
 
-export type TieType = "start" | "stop" | "middle";
-
 export enum HarmonicStyle {
   Natural = "natural",
   ArtificialPlus5 = "artificial+5",
@@ -48,13 +46,29 @@ export interface Slide {
   upwards: boolean;
 }
 
-export interface Tie {
-  type: TieType;
-  previous?: Note;
-  previousChord?: Chord;
-  next?: Note;
-  nextChord?: Chord;
-}
+export type TiePoint = { note: Note; chord: Chord };
+
+export type Tie =
+  | {
+      type: "start";
+      previous?: never;
+      next: TiePoint;
+    }
+  | {
+      type: "middle";
+      previous: TiePoint;
+      next: TiePoint;
+    }
+  | {
+      type: "stop";
+      previous: TiePoint;
+      next?: never;
+    }
+  | {
+      type: "detect";
+      previous?: never;
+      next?: never;
+    };
 
 export interface NoteOptions {
   pitch: Pitch;
@@ -195,7 +209,7 @@ export class Note {
 
   get rootTieNote(): Note {
     if (this.tie?.previous) {
-      return this.tie.previous.rootTieNote;
+      return this.tie.previous.note.rootTieNote;
     }
 
     return this;
@@ -220,7 +234,7 @@ export class Note {
    *
    * If fromStart, force fetching the property from the starting note for the tie.
    */
-  protected get<T extends keyof Note>(property: T, fromStart = false): unknown {
+  protected get(property: keyof Note, fromStart = false): unknown {
     if (!fromStart || !this.tie || this.tie.type == "start") {
       const v = this[property];
       if (v) {
@@ -229,7 +243,7 @@ export class Note {
     }
 
     if (this.tie?.previous) {
-      return this.tie.previous.get(property, fromStart);
+      return this.tie.previous.note.get(property, fromStart);
     }
   }
 }
