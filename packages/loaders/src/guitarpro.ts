@@ -1082,7 +1082,9 @@ class GuitarProLoader {
   }
 
   debug(msg: unknown) {
-    debug && console.debug(`@ 0x${this.cursor.position.toString(16).toUpperCase()}`, msg);
+    if (debug) {
+      console.debug(`@ 0x${this.cursor.position.toString(16).toUpperCase()}`, msg);
+    }
   }
 }
 

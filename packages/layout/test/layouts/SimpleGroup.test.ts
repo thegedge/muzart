@@ -20,7 +20,7 @@ describe("SimpleGroup", () => {
 
     test("lays out all of its children", () => {
       const group = new SimpleGroupElement();
-      const layoutMock = mock.fn<Parameters<LayoutFn>, ReturnType<LayoutFn>>();
+      const layoutMock = mock.fn<LayoutFn>();
       group.addElement(elem(0, 0, 1, 1, { layout: layoutMock }));
       group.addElement(elem(0, 0, 2, 4, { layout: layoutMock }));
       group.addElement(elem(0, 0, 3, 9, { layout: layoutMock }));
