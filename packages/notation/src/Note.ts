@@ -47,7 +47,10 @@ export interface Slide {
   upwards: boolean;
 }
 
-export type TiePoint = { note: Note; chord: Chord };
+export type TieOptions = {
+  previous?: TiePoint | "detect";
+  next?: TiePoint;
+};
 
 export type Tie =
   | {
@@ -70,6 +73,76 @@ export type Tie =
       previous?: never;
       next?: never;
     };
+export class TiePoint {
+  public noteId!: string;
+
+  constructor(
+    readonly chord: Chord,
+    noteOrNoteId: Note | string,
+  ) {
+    this.note = noteOrNoteId;
+  }
+
+  set note(noteOrNoteId: Note | string) {
+    this.noteId = typeof noteOrNoteId === "string" ? noteOrNoteId : noteOrNoteId.id;
+  }
+
+  get note(): Note {
+    return Note.resolve(this.noteId);
+  }
+
+  toJSON() {
+    return {
+      chord: this.chord,
+      note: this.noteId,
+    };
+  }
+}
+
+class TieInternal {
+  private previous_: TiePoint | "detect" | undefined;
+  private next_: TiePoint | undefined;
+
+  constructor(options: TieOptions) {
+    this.previous_ = options.previous;
+    this.next_ = options.next;
+  }
+
+  get type(): "start" | "middle" | "stop" | "unknown" {
+    const hasPrevious = !!this.previous;
+    const hasNext = !!this.next;
+    if (hasPrevious && hasNext) {
+      return "middle";
+    } else if (hasPrevious) {
+      return "stop";
+    } else if (hasNext) {
+      return "start";
+    } else {
+      return "unknown";
+    }
+  }
+
+  get previous(): TiePoint | undefined {
+    if (!this.previous_ || this.previous_ == "detect" || !Note.tracked(this.previous_.noteId)) {
+      return undefined;
+    }
+    return this.previous_;
+  }
+
+  get next(): TiePoint | undefined {
+    if (!this.next_ || !Note.tracked(this.next_.note.id)) {
+      return undefined;
+    }
+    return this.next_;
+  }
+
+  toJSON() {
+    return {
+      previous: this.previous_ === "detect" ? "detect" : this.previous_?.toJSON(),
+      next: this.next_?.toJSON(),
+    };
+  }
+}
 
 export interface NoteOptions {
   id?: string;
@@ -90,10 +163,12 @@ export interface NoteOptions {
   palmMute?: boolean;
   slide?: Slide;
   staccato?: boolean;
-  tie?: Tie;
+  tie?: TieOptions;
   tremoloPicking?: NoteValue;
   vibrato?: boolean;
 }
+
+type DeepPartial<T> = T extends object ? { [K in keyof T]?: DeepPartial<T[K]> } : T;
 
 export class Note {
   private static noteMapping = new Map<string, WeakRef<Note>>();
@@ -102,12 +177,13 @@ export class Note {
     const existing = this.noteMapping.get(note.id);
     if (!existing) {
       this.noteMapping.set(note.id, new WeakRef(note));
-      return;
-    }
-
-    if (existing.deref() !== note) {
+    } else if (existing.deref() !== note) {
       throw new Error("two notes have the same id");
     }
+  }
+
+  static swap(note: Note): void {
+    this.noteMapping.set(note.id, new WeakRef(note));
   }
 
   static untrack(noteId: string): void {
@@ -118,8 +194,20 @@ export class Note {
     this.noteMapping.clear();
   }
 
-  static resolve(noteId: string): Note | undefined {
-    return this.noteMapping.get(noteId)?.deref() ?? undefined;
+  static tracked(id: string): boolean {
+    return this.noteMapping.has(id);
+  }
+
+  static resolve(id: string): Note {
+    const note = this.noteMapping.get(id)?.deref();
+    if (!note) {
+      throw new Error(`Note with id ${id} not found`);
+    }
+    return note;
+  }
+
+  static id(): string {
+    return nanoid();
   }
 
   public readonly id: string;
@@ -141,12 +229,12 @@ export class Note {
   public palmMute: boolean;
   public slide: Slide | undefined;
   public staccato: boolean;
-  public tie: Tie | undefined;
+  public tie_: TieInternal | undefined;
   public tremoloPicking_: NoteValue | undefined;
   public vibrato_: boolean;
 
   constructor(options: NoteOptions) {
-    this.id = options.id || nanoid(); // TODO don't ignore collisions
+    this.id = options.id || Note.id();
     this.pitch = Pitch.fromJSON(options.pitch);
     this.value = new NoteValue(options.value.name, options.value);
 
@@ -163,7 +251,7 @@ export class Note {
     this.palmMute = !!options.palmMute;
     this.slide = options.slide;
     this.staccato = !!options.staccato;
-    this.tie = options.tie;
+    this.tie_ = options.tie && new TieInternal(options.tie);
     this.tremoloPicking_ = options.tremoloPicking && new NoteValue(options.tremoloPicking.name, options.tremoloPicking);
     this.vibrato_ = !!options.vibrato;
 
@@ -171,7 +259,7 @@ export class Note {
       let text;
       if (this.dead) {
         text = "x";
-      } else if (this.tie && this.tie.previous) {
+      } else if (this.tie_ && this.tie_.previous) {
         text = "";
       } else if (this.placement) {
         text = this.placement.fret.toString();
@@ -185,6 +273,17 @@ export class Note {
 
       return text;
     })();
+  }
+
+  set tie(tie: TieOptions) {
+    if (!this.tie_ || !this.tie_.previous) {
+      this.tie_ = new TieInternal(tie);
+    }
+    throw new Error("Cannot change note tie");
+  }
+
+  get tie(): Tie | undefined {
+    return this.tie_ as Tie;
   }
 
   get vibrato(): boolean {
@@ -239,14 +338,14 @@ export class Note {
   }
 
   get rootTieNote(): Note {
-    if (this.tie?.previous) {
-      return this.tie.previous.note.rootTieNote;
+    if (this.tie_?.previous) {
+      return this.tie_.previous.note.rootTieNote;
     }
 
     return this;
   }
 
-  withChanges(changes: Partial<NoteOptions>): NoteOptions {
+  withChanges(changes: DeepPartial<NoteOptions>): NoteOptions {
     return {
       ...this,
       ...changes,
@@ -258,6 +357,30 @@ export class Note {
     return this.text;
   }
 
+  toJSON(): Record<string, unknown> {
+    // All these `|| undefined` reduce the size of the JSON output
+    return {
+      id: this.id,
+      pitch: this.pitch.toJSON(),
+      value: this.value.toJSON(),
+      placement: this.placement,
+      accent: this.accent,
+      bend: this.bend,
+      dead: this.dead || undefined,
+      dynamic: this.dynamic,
+      ghost: this.ghost || undefined,
+      graceNote: this.graceNote?.toJSON(),
+      hammerOnPullOff: this.hammerOnPullOff || undefined,
+      harmonic: this.harmonic,
+      letRing: this.letRing || undefined,
+      palmMute: this.palmMute || undefined,
+      slide: this.slide,
+      staccato: this.staccato || undefined,
+      tie: this.tie_?.toJSON(),
+      tremoloPicking: this.tremoloPicking,
+    };
+  }
+
   /**
    * Get an options attribute for this note.
    *
@@ -267,15 +390,15 @@ export class Note {
    * If fromStart, force fetching the property from the starting note for the tie.
    */
   protected get(property: keyof Note, fromStart = false): unknown {
-    if (!fromStart || !this.tie || this.tie.type == "start") {
+    if (!fromStart || !this.tie_ || this.tie_.type == "start") {
       const v = this[property];
       if (v) {
         return v;
       }
     }
 
-    if (this.tie?.previous) {
-      return this.tie.previous.note.get(property, fromStart);
+    if (this.tie_?.previous) {
+      return this.tie_.previous.note.get(property, fromStart);
     }
   }
 }

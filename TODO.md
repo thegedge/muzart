@@ -27,7 +27,6 @@
   - Tapping
 - Notes
   - Tuplets
-  - Ties
   - Grace notes
   - Slides
 
@@ -55,6 +54,7 @@
 
 ### Playback
 
+- `noteDurationInSeconds` is wrong: it doesn't count all values in between the two tied notes.
 - Playback box keeps going (only sometimes, maybe all the time?) when reaching the end
 - Vibrato doesn't work on mid/end sections of ties
 - Not hearing dead notes

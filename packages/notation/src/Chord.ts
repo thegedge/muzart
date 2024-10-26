@@ -92,16 +92,34 @@ export class Chord {
     return this.notes_.length == 0;
   }
 
-  removeNote(note: Note) {
-    const existingIndex = this.notes.findIndex((n) => n.placement?.string == note.placement?.string);
-    if (existingIndex >= 0) {
-      this.notes_.splice(existingIndex, 1);
-      Note.untrack(note.id);
-    }
-  }
-
   setValue(value: NoteValue) {
     this.value_ = value;
+  }
+
+  removeNote(note: Note): Note | undefined {
+    if (note.placement) {
+      return this.removeNoteByString(note.placement.string);
+    }
+
+    const existingIndex = this.notes.findIndex((n) => n == note);
+    if (existingIndex >= 0) {
+      const removed = this.notes_.splice(existingIndex, 1);
+      Note.untrack(removed[0].id);
+      return removed[0];
+    }
+
+    return undefined;
+  }
+
+  removeNoteByString(string: number): Note | undefined {
+    const existingIndex = this.notes.findIndex((n) => n.placement?.string == string);
+    if (existingIndex >= 0) {
+      const removed = this.notes_.splice(existingIndex, 1);
+      Note.untrack(removed[0].id);
+      return removed[0];
+    }
+
+    return undefined;
   }
 
   noteByString(string: number): Note | undefined {
@@ -109,17 +127,29 @@ export class Chord {
   }
 
   changeNote(note: Note | NoteOptions): Note | undefined {
-    const chordNote = new Note(note);
-
-    Note.track(chordNote);
-
-    const existingIndex = this.notes.findIndex((n) => n.placement?.string == chordNote.placement?.string);
+    const existingIndex = this.notes.findIndex((n) => n.placement?.string == note.placement?.string);
     if (existingIndex >= 0) {
       const existing = this.notes[existingIndex];
+
+      // If we're swapping out the note, maintain the same id so we don't break any ties
+      const chordNote = new Note({
+        ...note,
+        tie: note.tie, // TODO make it so this is part of the spread
+        id: existing.id,
+      });
+
       this.notes_[existingIndex] = chordNote;
+
+      Note.swap(chordNote);
+
       return existing;
     }
 
+    const chordNote = new Note({
+      ...(note instanceof Note ? note.toJSON() : note),
+      tie: note.tie, // TODO make it so this is part of the spread
+    });
+    Note.track(chordNote);
     this.notes_.push(chordNote);
 
     return undefined;

@@ -578,7 +578,7 @@ class GuitarProLoader {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- may not be the case in the future
       value: duration == 0 ? defaultNoteValue : NoteValue.fromNumber(duration),
       dead: noteType === 3,
-      tie: noteType === 2 ? { type: "detect" } : undefined,
+      tie: noteType === 2 ? { previous: "detect" } : undefined,
       ghost: isGhostNote,
       accent: isAccentuated ? AccentStyle.Accentuated : undefined,
       dynamic,

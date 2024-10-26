@@ -1,4 +1,4 @@
-import { Chord, Measure, Note, Score, StaffDetails, changed, type ScoreOptions } from "@muzart/notation";
+import { Chord, Measure, Note, Score, StaffDetails, TiePoint, changed, type ScoreOptions } from "@muzart/notation";
 import { isString, pickBy, range } from "lodash-es";
 import guitarPro from "./guitarpro";
 import musicXml from "./musicxml";
@@ -91,6 +91,7 @@ function postProcess(score: Score) {
 function propagateStaffDetails(score: Score): void {
   const previousDetails: Partial<StaffDetails> = {};
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   const updateStaffDetails = <K extends keyof StaffDetails>(key: K, measure: Measure): void => {
     const previousValue = previousDetails[key];
     if (previousValue) {
@@ -139,23 +140,17 @@ function linkTiedNotes(score: Score): void {
 
           if (trackedNote && trackedChord) {
             note.tie = {
-              type: "start",
-              next: {
-                note: trackedNote,
-                chord: trackedChord,
-              },
+              next: new TiePoint(trackedChord, trackedNote),
             };
 
             if (trackedNote.tie?.next) {
               trackedNote.tie = {
-                type: "middle",
-                previous: { note, chord },
+                previous: new TiePoint(chord, note),
                 next: trackedNote.tie.next,
               };
             } else {
               trackedNote.tie = {
-                type: "stop",
-                previous: { note, chord },
+                previous: new TiePoint(chord, note),
               };
             }
           }

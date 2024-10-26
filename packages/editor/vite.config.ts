@@ -51,11 +51,13 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
   return {
     build: {
       minify: mode == "production",
+      sourcemap: mode != "production",
     },
 
     esbuild: {
       minifyIdentifiers: mode == "production",
       keepNames: mode != "production",
+      sourcemap: mode != "production",
     },
 
     plugins: [

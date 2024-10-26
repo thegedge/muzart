@@ -1,6 +1,5 @@
 import type { AllElements } from "@muzart/layout";
 import * as layout from "@muzart/layout";
-import { Note } from "@muzart/notation";
 import { inRange, last, minBy } from "lodash-es";
 import { makeAutoObservable } from "mobx";
 import { StorableObject, numberOrDefault } from "../storage/Storage";
@@ -300,8 +299,7 @@ export class Selection implements StorableObject {
   }
 
   setScore(score: layout.Score | null) {
-    Note.clear();
-
+    // TODO clear out all previous notes
     this.score = score;
 
     if (score == null) {

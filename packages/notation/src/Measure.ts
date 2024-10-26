@@ -62,13 +62,4 @@ export class Measure {
   setTimeSignature(timeSignature: Changeable<TimeSignature> | undefined) {
     this.staffDetails.time = timeSignature;
   }
-
-  toJSON() {
-    return {
-      number: this.number,
-      chords: this.chords,
-      staffDetails: this.staffDetails,
-      marker: this.marker,
-    };
-  }
 }
