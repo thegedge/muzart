@@ -12,4 +12,4 @@ Eastern.
 
 Demo URL: https://thegedge.github.io/muzart/
 
-![screenshot of muzart](/public/screenshot.png?raw=true)
+![screenshot of muzart](/packages/editor/public/screenshot.png?raw=true)
