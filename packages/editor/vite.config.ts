@@ -59,7 +59,6 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
     },
 
     plugins: [
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       tsconfigPaths(),
       preact(),
       {
