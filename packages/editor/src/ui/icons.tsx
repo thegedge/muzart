@@ -1,4 +1,4 @@
-import type { JSX } from "preact/compat";
+import type { JSX, SVGAttributes } from "react";
 import { IconBaseProps } from "react-icons";
 
 import {
@@ -26,6 +26,4 @@ export const UnmuteIcon = HiOutlineSpeakerWave as IconType;
 export const UnsoloIcon = HiOutlinePlayCircle as IconType;
 export const VocalistIcon = GiMusicalNotes as IconType;
 
-export type IconType = (
-  props: IconBaseProps & Omit<JSX.SVGAttributes<SVGSVGElement>, keyof IconBaseProps>,
-) => JSX.Element;
+export type IconType = (props: IconBaseProps & Omit<SVGAttributes<SVGSVGElement>, keyof IconBaseProps>) => JSX.Element;

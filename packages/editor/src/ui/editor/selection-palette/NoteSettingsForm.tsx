@@ -1,6 +1,6 @@
 import { HarmonicStyle, NoteDynamic, NoteValue, NoteValueName } from "@muzart/notation";
 import { observer } from "mobx-react-lite";
-import type { ComponentChildren } from "preact";
+import type { ReactNode } from "react";
 import { changeNoteValueAction } from "../../../actions/editing/note/ChangeNoteValue";
 import { dotNoteAction } from "../../../actions/editing/note/DotNote";
 import { EditBend } from "../../../actions/editing/note/EditBend";
@@ -87,7 +87,7 @@ export const NoteSettingsForm = observer(() => {
   );
 });
 
-const childElementForHarmonicButton = (style: HarmonicStyle): ComponentChildren => {
+const childElementForHarmonicButton = (style: HarmonicStyle): ReactNode => {
   switch (style) {
     case HarmonicStyle.Natural:
       return "⬥";

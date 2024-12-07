@@ -1,9 +1,9 @@
 import { NoteValue, type NoteValueName } from "@muzart/notation";
 import { resources } from "@muzart/render";
 import { range } from "lodash-es";
-import type { JSX } from "preact";
+import type { SVGAttributes } from "react";
 
-export const NoteValueIcon = (props: JSX.SVGAttributes<SVGSVGElement> & { noteValue: NoteValue | NoteValueName }) => {
+export const NoteValueIcon = (props: SVGAttributes<SVGSVGElement> & { noteValue: NoteValue | NoteValueName }) => {
   const { noteValue, ...svgProps } = props;
   const noteValueName = noteValue instanceof NoteValue ? noteValue.name : noteValue;
   const icon = resources.NoteValues[noteValueName];

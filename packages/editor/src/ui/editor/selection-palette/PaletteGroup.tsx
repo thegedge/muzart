@@ -1,6 +1,6 @@
-import type { HTMLAttributes } from "preact/compat";
+import type { FieldsetHTMLAttributes } from "react";
 
-export const PaletteGroup = (props: HTMLAttributes<HTMLFieldSetElement>) => {
+export const PaletteGroup = (props: FieldsetHTMLAttributes<HTMLFieldSetElement>) => {
   const { children, ...fieldsetProps } = props;
   return (
     <fieldset {...fieldsetProps} className="rounded border border-gray-600 bg-white/5 px-2 pb-1">

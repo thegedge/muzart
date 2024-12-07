@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition -- bindings[binding] could be undefined, but I don't want to type it that way right now*/
 import console from "console";
-import { useEffect } from "preact/hooks";
+import { useEffect } from "react";
 import { IS_MAC } from "./platform";
 
 export interface KeyBindingContext<T = never> {

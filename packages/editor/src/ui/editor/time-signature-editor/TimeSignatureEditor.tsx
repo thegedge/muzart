@@ -51,14 +51,14 @@ const TimeSignatureEditorInner = observer((props: { measure: notation.Measure })
           gridTemplateColumns: "auto 1fr",
         }}
       >
-        <label for="count">Count:</label>
+        <label htmlFor="count">Count:</label>
         <input
           type="number"
           name="count"
           value={timeSignatureData.count}
           onChange={(event) => timeSignatureData.setCount(parseInt(event.currentTarget.value))}
         />
-        <label for="value">Value:</label>
+        <label htmlFor="value">Value:</label>
         <select
           name="value"
           value={timeSignatureData.value.toNumber()}

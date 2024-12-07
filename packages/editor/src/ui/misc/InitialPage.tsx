@@ -1,13 +1,16 @@
 import { DEFAULT_MARGINS, DEFAULT_PAGE_HEIGHT, DEFAULT_PAGE_WIDTH } from "@muzart/layout";
 import { observer } from "mobx-react-lite";
-import { useReducer } from "preact/hooks";
+import { useReducer } from "react";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { useAsync } from "../../utils/useAsync";
 
 export const InitialPage = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
   const { loading, tabStorage } = application;
-  const [epoch, refresh] = useReducer<number, number>((previousEpoch, epoch) => Math.max(previousEpoch, epoch) + 1, 0);
+  const [epoch, refresh] = useReducer<number, [number]>(
+    (previousEpoch, epoch) => Math.max(previousEpoch, epoch) + 1,
+    0,
+  );
 
   const { value: lines, error } = useAsync(async () => {
     if (loading) {
@@ -36,7 +39,7 @@ export const InitialPage = observer((_props: Record<string, never>) => {
   return (
     <div className="mx-auto w-fit">
       <div
-        class="relative w-fit bg-white text-xl leading-6 text-gray-400"
+        className="relative w-fit bg-white text-xl leading-6 text-gray-400"
         style={{
           width: `${DEFAULT_PAGE_WIDTH}mm`,
           height: `${DEFAULT_PAGE_HEIGHT}mm`,
@@ -71,7 +74,7 @@ export const InitialPage = observer((_props: Record<string, never>) => {
           <ul className="list-inside font-light" style={{ color: "#88aaff" }}>
             {lines.map(({ key, href, text, remove }) => {
               return (
-                <li key={key} style={{ listStyleType: "none" }}>
+                <li key={key.toString()} style={{ listStyleType: "none" }}>
                   <div className="flex w-full items-center p-1 hover:bg-gray-50">
                     <a className="flex-1" href={href}>
                       ▸ {text}

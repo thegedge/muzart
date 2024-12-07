@@ -2,7 +2,7 @@ import * as notation from "@muzart/notation";
 import { Bend, BendPoint, BendType, defaultBendPointsForType } from "@muzart/notation";
 import { observable } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useLayoutEffect, useMemo, useRef } from "preact/hooks";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import { changeNoteAction } from "../../../actions/editing/note/ChangeNote";
 import { useApplicationState } from "../../../utils/ApplicationStateContext";
 import { narrowInstance } from "../../../utils/narrow";
@@ -117,7 +117,7 @@ const BendFormControls = observer((props: { bend: ObservableBend }) => {
     <div className="flex flex-col items-stretch justify-between gap-y-4 self-stretch">
       <div className="flex flex-col gap-y-4">
         <div className="flex flex-col gap-2">
-          <label for="name" className="font-bold">
+          <label htmlFor="name" className="font-bold">
             Type:
           </label>
           <select
@@ -136,7 +136,7 @@ const BendFormControls = observer((props: { bend: ObservableBend }) => {
 
         <div className="flex flex-col gap-2">
           <div className="flex flex-row gap-x-2">
-            <label for="amplitude" className="font-bold">
+            <label htmlFor="amplitude" className="font-bold">
               Amplitude:
             </label>
             <div className="flex-1">{bend.amplitude}</div>

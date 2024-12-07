@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from "preact/compat";
+import type { HTMLAttributes } from "react";
 import type { Command } from "../../../state/Application";
 
 export type PaletteButtonProps = Omit<HTMLAttributes<HTMLButtonElement>, "command" | "onClick"> & {

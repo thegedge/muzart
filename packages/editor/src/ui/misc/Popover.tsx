@@ -1,9 +1,8 @@
 import { useMergeRefs } from "@floating-ui/react";
-import { type JSX } from "preact";
-import { forwardRef, useEffect, useRef, type PropsWithChildren } from "preact/compat";
+import { forwardRef, useEffect, useRef, type HTMLAttributes, type PropsWithChildren } from "react";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 
-export const Popover = forwardRef<HTMLElement, PropsWithChildren<JSX.HTMLAttributes>>((props, ref) => {
+export const Popover = forwardRef<HTMLElement, PropsWithChildren<HTMLAttributes<HTMLElement>>>((props, ref) => {
   const application = useApplicationState();
   const modalRef = useRef<HTMLDivElement>(null);
   const mergedRef = useMergeRefs([ref as any, modalRef]);

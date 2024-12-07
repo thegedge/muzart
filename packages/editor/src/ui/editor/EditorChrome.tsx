@@ -1,8 +1,8 @@
 import * as notation from "@muzart/notation";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
-import type { PropsWithChildren } from "preact/compat";
-import { useEffect } from "preact/hooks";
+import type { PropsWithChildren } from "react";
+import { useEffect } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { EditTimeSignature } from "../../actions/editing/measure/EditTimeSignature";
 import { AddPart } from "../../actions/editing/part/AddPart";

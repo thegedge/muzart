@@ -1,8 +1,7 @@
 import * as layout from "@muzart/layout";
 import { PlaybackController } from "@muzart/playback";
 import { comparer, reaction } from "mobx";
-import { ComponentChildren, createContext } from "preact";
-import { useContext, useEffect, useMemo } from "preact/hooks";
+import { createContext, useContext, useEffect, useMemo, type ReactNode } from "react";
 import { useLocation } from "wouter";
 import { Application } from "../state/Application";
 import { Selection } from "../state/Selection";
@@ -30,7 +29,7 @@ export const useApplicationState = (): Application => {
   return state;
 };
 
-export const ApplicationState = (props: { children?: ComponentChildren }) => {
+export const ApplicationState = (props: { children?: ReactNode }) => {
   const [_location, navigate] = useLocation();
   const application = useMemo(() => {
     const settingsStorage = new LocalStorage();

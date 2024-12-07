@@ -1,4 +1,4 @@
-import { Inputs, useCallback, useEffect, useState } from "preact/hooks";
+import { useCallback, useEffect, useState, type DependencyList } from "react";
 
 export type AsyncResult<ValueT, ErrorT = unknown> =
   | { pending: true; value: undefined; error: undefined }
@@ -7,7 +7,7 @@ export type AsyncResult<ValueT, ErrorT = unknown> =
 
 export const useAsync = <ValueT, ErrorT = Error>(
   f: () => Promise<ValueT>,
-  deps: Inputs = [],
+  deps: DependencyList = [],
 ): AsyncResult<ValueT, ErrorT> => {
   const [result, setResult] = useState<AsyncResult<ValueT, ErrorT>>({
     pending: true,

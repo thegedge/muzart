@@ -1,6 +1,5 @@
 import { clamp } from "lodash-es";
-import { RefObject } from "preact";
-import { useRef } from "preact/hooks";
+import { RefObject, useRef } from "react";
 
 export type OnDragOptions<T> = {
   /**
@@ -8,7 +7,7 @@ export type OnDragOptions<T> = {
    *
    * @default `document.body`
    */
-  boundedBy: RefObject<Element> | null;
+  boundedBy: RefObject<Element | null>;
 
   /**
    * Callback for a drag event.

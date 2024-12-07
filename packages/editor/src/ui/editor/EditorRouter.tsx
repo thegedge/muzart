@@ -1,4 +1,5 @@
 import { ScoreDataType, determineScoreType, getFilenameAndMimeType } from "@muzart/loaders";
+import type { DragEvent } from "react";
 import { Route, useLocation } from "wouter";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { InitialPage } from "../misc/InitialPage";

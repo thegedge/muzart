@@ -1,6 +1,6 @@
 import { type AnyLayoutElement } from "@muzart/layout";
 import { observer } from "mobx-react-lite";
-import { PropsWithChildren } from "preact/compat";
+import { PropsWithChildren } from "react";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 
 export const DebugPanel = observer((_props: Record<string, never>) => {

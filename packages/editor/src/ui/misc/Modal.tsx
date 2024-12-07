@@ -1,7 +1,6 @@
-import { ComponentChildren, type Ref } from "preact";
-import { forwardRef } from "preact/compat";
+import { ReactNode, forwardRef, type Ref } from "react";
 
-export const Modal = forwardRef((props: { title: string; children?: ComponentChildren }, ref?: Ref<HTMLDivElement>) => {
+export const Modal = forwardRef((props: { title: string; children?: ReactNode }, ref?: Ref<HTMLDivElement>) => {
   return (
     <div ref={ref} className="modal" popover="manual">
       <div className="flex flex-col items-center justify-center rounded bg-gray-200 text-black">

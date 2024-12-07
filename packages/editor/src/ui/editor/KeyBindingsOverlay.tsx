@@ -1,6 +1,6 @@
 import { groupBy } from "lodash-es";
 import { observer } from "mobx-react-lite";
-import { Fragment } from "preact";
+import { Fragment } from "react";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { IS_MAC } from "../../utils/platform";
 import { KEY_BINDING_SEPARATOR, KeyBindings } from "../../utils/useKeyBindings";

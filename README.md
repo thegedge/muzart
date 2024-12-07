@@ -2,7 +2,7 @@
 
 Singe-page guitar tab editor (eventually scores!) built with:
 
-- Preact
+- React
 - SVG / Canvas
 - Web Audio
 

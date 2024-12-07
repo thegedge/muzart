@@ -1,7 +1,7 @@
 import { Canvas, CanvasState } from "@muzart/canvas";
 import { ChordDiagram } from "@muzart/layout";
 import { renderScoreElement, StyleComputer } from "@muzart/render";
-import { useEffect, useMemo } from "preact/hooks";
+import { useEffect, useMemo } from "react";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 
 export const RenderedChordDiagram = (props: { diagram: ChordDiagram; styler: StyleComputer }) => {

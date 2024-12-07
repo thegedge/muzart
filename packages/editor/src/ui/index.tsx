@@ -1,22 +1,15 @@
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { App } from "./app";
 
 const renderApp = async () => {
-  if (import.meta.env.DEV) {
-    // Ugh, linters sometimes... Not sure why TS can't find the declaration file for preact/debug as a dynamic import,
-    // but is totally fine when it's a static import.
-    //
-    // @ts-expect-error -- TS can't find the declaration file for preact/debug as a dynamic import, and I don't care
-    await import("preact/debug");
-  }
-
   const root = document.getElementById("root");
   if (!root) {
     throw new Error("couldn't find #root element");
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- typescript-eslint false positive
-  render(<App />, root);
+  const reactRoot = createRoot(root);
+  reactRoot.render(<App />);
 };
 
 void renderApp();

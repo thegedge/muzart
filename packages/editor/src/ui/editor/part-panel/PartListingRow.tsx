@@ -1,9 +1,8 @@
 import { PercussionInstrument, StringInstrument, type Part } from "@muzart/notation";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
-import type { JSX } from "preact";
-import type { ChangeEvent } from "preact/compat";
-import { useRef } from "preact/hooks";
+import type { FocusEventHandler, MouseEventHandler, ReactEventHandler } from "react";
+import { useRef } from "react";
 
 import { ChangePartName } from "../../../actions/editing/part/ChangePartName";
 import { useApplicationState } from "../../../utils/ApplicationStateContext";
@@ -34,24 +33,24 @@ export const PartListingRow = observer((props: { part: Part }) => {
   const application = useApplicationState();
   const nameElementRef = useRef<HTMLDivElement>(null);
 
-  const toggleSolo: JSX.GenericEventHandler<HTMLElement> = (event) => {
+  const toggleSolo: ReactEventHandler<HTMLElement> = (event) => {
     event.preventDefault();
     playback.toggleSolo(props.part);
   };
 
-  const toggleMute: JSX.GenericEventHandler<HTMLElement> = (event) => {
+  const toggleMute: ReactEventHandler<HTMLElement> = (event) => {
     event.preventDefault();
     playback.toggleMute(props.part);
   };
 
-  const partNameChanged = (_event: FocusEvent) => {
+  const partNameChanged: FocusEventHandler = () => {
     if (nameElementRef.current) {
       const newPartName = nameElementRef.current.innerText.trim().replaceAll(/\n\r\t/g, " ");
       application.dispatch(new ChangePartName(props.part, newPartName));
     }
   };
 
-  const onChange = (event: ChangeEvent<HTMLElement>) => {
+  const onChange: MouseEventHandler<HTMLDivElement> = (event) => {
     const part = event.currentTarget.dataset.part;
     const measure = event.currentTarget.dataset.measure;
     selection.update({

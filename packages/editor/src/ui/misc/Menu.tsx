@@ -1,12 +1,11 @@
 import clsx from "clsx";
-import { VNode, isValidElement } from "preact";
-import { Children, HTMLAttributes } from "preact/compat";
+import { Children, HTMLAttributes, isValidElement, type ReactElement } from "react";
 import { Command } from "../../state/Application";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { MaybeArray } from "../../utils/types";
 
 export type MenuProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
-  children: MaybeArray<VNode | Command>;
+  children: MaybeArray<ReactElement | Command>;
 };
 
 export const Menu = (props: MenuProps) => {

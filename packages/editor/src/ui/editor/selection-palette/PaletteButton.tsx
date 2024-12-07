@@ -14,7 +14,7 @@ export const PaletteButton = (props: PaletteButtonProps) => {
   return (
     <>
       <button {...buttonProps} title={command.name} onClick={() => application.dispatch(command)} className={classes} />
-      <span class="hide-for-accessibility">{command.name}</span>
+      <span className="hide-for-accessibility">{command.name}</span>
     </>
   );
 };

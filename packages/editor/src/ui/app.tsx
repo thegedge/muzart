@@ -1,5 +1,4 @@
-import { Suspense } from "preact/compat";
-import { useEffect, useState } from "preact/hooks";
+import { Suspense, useEffect, useState } from "react";
 import { BaseLocationHook, Router } from "wouter";
 import { ApplicationState } from "../utils/ApplicationStateContext";
 import { useEditorKeyBindings } from "../utils/useEditorKeyBindings";

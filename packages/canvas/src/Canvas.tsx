@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
-import type { JSX, RefCallback } from "preact";
-import { useCallback, useEffect, useState } from "preact/hooks";
+import type { MouseEvent, RefCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { CanvasState } from "./CanvasState";
 
 const PX_PER_MM = 4; // assuming 96 pixels per inch, rounded up (from 3.7795275591) so we have integers
@@ -10,7 +10,7 @@ export interface Point {
   y: number;
 }
 
-type MouseEventHandler = (p: Point, event: MouseEvent) => void;
+export type CanvasMouseEventHandler = (p: Point, event: MouseEvent) => void;
 
 interface CanvasProps {
   /** The state to use for this canvas element */
@@ -19,10 +19,10 @@ interface CanvasProps {
   /** If true, all mouse/keyboard interactions are disabled (e.g., scrolling, zoom) */
   disabled?: boolean;
 
-  onContextMenu?: MouseEventHandler;
-  onDoubleClick?: MouseEventHandler;
-  onMouseDown?: MouseEventHandler;
-  onMouseMove?: MouseEventHandler;
+  onContextMenu?: CanvasMouseEventHandler;
+  onDoubleClick?: CanvasMouseEventHandler;
+  onMouseDown?: CanvasMouseEventHandler;
+  onMouseMove?: CanvasMouseEventHandler;
 }
 
 export const Canvas = observer((props: CanvasProps) => {
@@ -131,7 +131,7 @@ export const Canvas = observer((props: CanvasProps) => {
           height: window.screen.height,
           imageRendering: "crisp-edges",
         }}
-        onDblClick={props.onDoubleClick && wrapMouseEvent(state, props.onDoubleClick)}
+        onDoubleClick={props.onDoubleClick && wrapMouseEvent(state, props.onDoubleClick)}
         onMouseDown={props.onMouseDown && wrapMouseEvent(state, props.onMouseDown)}
         onMouseMove={props.onMouseMove && wrapMouseEvent(state, props.onMouseMove)}
         onContextMenu={props.onContextMenu && wrapMouseEvent(state, props.onContextMenu)}
@@ -140,9 +140,9 @@ export const Canvas = observer((props: CanvasProps) => {
   );
 });
 
-const wrapMouseEvent = (state: CanvasState, handler: MouseEventHandler): JSX.MouseEventHandler<HTMLElement> => {
+const wrapMouseEvent = (state: CanvasState, handler: CanvasMouseEventHandler): React.MouseEventHandler<HTMLElement> => {
   return (event) => {
-    const pt = state.canvasViewportToUserSpace({ x: event.offsetX, y: event.offsetY });
+    const pt = state.canvasViewportToUserSpace({ x: event.nativeEvent.offsetX, y: event.nativeEvent.offsetY });
     handler(pt, event);
   };
 };

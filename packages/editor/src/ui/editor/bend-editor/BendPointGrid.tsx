@@ -2,8 +2,8 @@ import { bendPath } from "@muzart/layout";
 import type { Bend, BendPoint } from "@muzart/notation";
 import { clamp, range } from "lodash-es";
 import { observer } from "mobx-react-lite";
-import type { JSX } from "preact";
-import { useRef } from "preact/hooks";
+import type { PointerEventHandler } from "react";
+import { useRef } from "react";
 import { useDrag } from "../../../utils/useDrag";
 import { type ObservableBend } from "./BendEditor";
 
@@ -56,7 +56,7 @@ export const BendPointGrid = observer((props: { bend: ObservableBend; className?
     },
   });
 
-  const onPointerDown: JSX.PointerEventHandler<SVGSVGElement> = (event) => {
+  const onPointerDown: PointerEventHandler<SVGSVGElement> = (event) => {
     event.preventDefault();
 
     // If we clicked on a bend point handle, remove it if we held the meta key, otherwise start dragging it

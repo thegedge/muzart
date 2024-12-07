@@ -1,4 +1,4 @@
-import preact from "@preact/preset-vite";
+import react from "@vitejs/plugin-react-swc";
 import { promises as fs } from "node:fs";
 import { defineConfig, ModuleNode, ServerOptions, UserConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -61,7 +61,7 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
     plugins: [
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       tsconfigPaths(),
-      preact(),
+      react(),
       {
         name: "re-render-score",
         enforce: "post",

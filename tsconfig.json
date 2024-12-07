@@ -19,12 +19,7 @@
     "strict": true,
     "useDefineForClassFields": true,
 
-    "jsx": "preserve",
-    "baseUrl": "./",
-    "paths": {
-      "react": ["./node_modules/preact/compat"],
-      "react-dom": ["./node_modules/preact/compat"]
-    }
+    "jsx": "react-jsx"
   },
   "include": ["./packages/**/*", "./types/*"],
   "exclude": ["vitest.config.ts"]

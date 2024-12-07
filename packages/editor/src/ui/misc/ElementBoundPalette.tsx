@@ -1,8 +1,7 @@
 import { type AnyLayoutElement, PX_PER_MM, toAncestorCoordinateSystem } from "@muzart/layout";
 import type * as CSS from "csstype";
 import { observer } from "mobx-react-lite";
-import { ComponentChildren } from "preact";
-import { useEffect, useRef } from "preact/hooks";
+import { ReactNode, useEffect, useRef } from "react";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 
 export const ElementBoundPalette = observer(
@@ -61,7 +60,7 @@ export const ElementBoundPalette = observer(
   },
 );
 
-function PaletteEntry<T>(props: { onClick: () => void; children: ComponentChildren; value: T; current: boolean }) {
+function PaletteEntry<T>(props: { onClick: () => void; children: ReactNode; value: T; current: boolean }) {
   return (
     <span
       onClick={props.onClick}

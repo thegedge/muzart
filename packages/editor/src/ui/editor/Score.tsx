@@ -1,4 +1,5 @@
 import { Canvas, RenderFunction, type Point } from "@muzart/canvas";
+import type { CanvasMouseEventHandler } from "@muzart/canvas/src/Canvas";
 import * as layout from "@muzart/layout";
 import * as notation from "@muzart/notation";
 import { noteValueToSeconds } from "@muzart/playback";
@@ -7,7 +8,7 @@ import type * as CSS from "csstype";
 import { sumBy } from "lodash-es";
 import { reaction } from "mobx";
 import { observer, useLocalObservable } from "mobx-react-lite";
-import { useCallback, useEffect, useMemo, useRef, useState } from "preact/hooks";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { changeNoteAction } from "../../actions/editing/note/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { ElementBoundPalette } from "../misc/ElementBoundPalette";
@@ -171,8 +172,8 @@ export const Score = observer((_props: Record<string, never>) => {
     [application, styler],
   );
 
-  const onMouseMove = useCallback(
-    (pt: Point, _event: MouseEvent) => {
+  const onMouseMove = useCallback<CanvasMouseEventHandler>(
+    (pt, _event) => {
       let cursor: CSS.Properties["cursor"] = "auto";
       let tooltip: TooltipProps | null = null;
 
@@ -220,8 +221,8 @@ export const Score = observer((_props: Record<string, never>) => {
     [application.canvas, application.debug, application.selection.part, application.state, styler],
   );
 
-  const onContextMenu = useCallback(
-    (pt: Point, event: MouseEvent) => {
+  const onContextMenu = useCallback<CanvasMouseEventHandler>(
+    (pt, event) => {
       let subject: unknown = null;
       let element: layout.AllElements | undefined | null = layout.hitTest(pt, application.selection.score)?.element;
       while (element) {

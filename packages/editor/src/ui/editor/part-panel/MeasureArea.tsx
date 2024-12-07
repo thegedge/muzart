@@ -2,7 +2,7 @@ import type { Score } from "@muzart/notation";
 import clsx from "clsx";
 import { range } from "lodash-es";
 import { observer } from "mobx-react-lite";
-import type { ChangeEvent } from "preact/compat";
+import type { MouseEventHandler } from "react";
 import { useApplicationState } from "../../../utils/ApplicationStateContext";
 import { useMuzartContextMenu } from "../useMuzartContextMenu";
 import { MeasureBox } from "./MeasureBox";
@@ -10,7 +10,7 @@ import { MeasureBox } from "./MeasureBox";
 export const MeasureArea = observer((props: { score: Score }) => {
   const { selection } = useApplicationState();
 
-  const onMeasureChange = (event: ChangeEvent<HTMLElement>) => {
+  const onMeasureChange: MouseEventHandler<HTMLElement> = (event) => {
     const part = event.currentTarget.dataset.part;
     const measure = event.currentTarget.dataset.measure;
     selection.update({
