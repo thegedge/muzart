@@ -30,5 +30,8 @@ export const Popover = forwardRef<HTMLElement, PropsWithChildren<HTMLAttributes<
     };
   }, [modalRef]);
 
-  return <div ref={mergedRef} {...props} popover={props.popover ?? "auto"} />;
+  // REMOVEME once popover typed in react
+  const { popover, ...otherProps } = props as any;
+
+  return <div ref={mergedRef} {...props} {...{ popover: popover ?? "auto" }} />;
 });

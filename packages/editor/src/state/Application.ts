@@ -231,7 +231,12 @@ export class Application {
             const box = current.score.box;
             const aspectRatio = this.canvas.canvasWidth / this.canvas.canvasHeight;
             this.canvas.setViewport(
-              new Box(this.canvas.viewport.x, this.canvas.viewport.y, box.width, box.width / aspectRatio),
+              new Box(
+                this.canvas.viewport.x,
+                this.canvas.viewport.y,
+                box.width,
+                box.width / (Number.isFinite(aspectRatio) ? aspectRatio : 1),
+              ),
             );
           }
         },

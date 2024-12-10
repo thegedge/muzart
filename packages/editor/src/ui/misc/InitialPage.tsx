@@ -7,10 +7,7 @@ import { useAsync } from "../../utils/useAsync";
 export const InitialPage = observer((_props: Record<string, never>) => {
   const application = useApplicationState();
   const { loading, tabStorage } = application;
-  const [epoch, refresh] = useReducer<number, [number]>(
-    (previousEpoch, epoch) => Math.max(previousEpoch, epoch) + 1,
-    0,
-  );
+  const [epoch, refresh] = useReducer((previousEpoch: number, epoch: number) => Math.max(previousEpoch, epoch) + 1, 0);
 
   const { value: lines, error } = useAsync(async () => {
     if (loading) {

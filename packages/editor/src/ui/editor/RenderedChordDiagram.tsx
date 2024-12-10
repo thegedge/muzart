@@ -1,7 +1,7 @@
 import { Canvas, CanvasState } from "@muzart/canvas";
 import { ChordDiagram } from "@muzart/layout";
 import { renderScoreElement, StyleComputer } from "@muzart/render";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 
 export const RenderedChordDiagram = (props: { diagram: ChordDiagram; styler: StyleComputer }) => {
@@ -34,12 +34,29 @@ export const RenderedChordDiagram = (props: { diagram: ChordDiagram; styler: Sty
     state.setViewport(props.diagram.box.translate(baseFret > 1 ? -2.5 : -1, 0));
   }, [state, application, props.diagram, props.styler]);
 
+  const [canvasContainer, setCanvasContainer] = useState<HTMLDivElement | null>(null);
+
+  const canvas = useMemo(() => {
+    if (!canvasContainer) {
+      return;
+    }
+
+    return new Canvas({
+      root: canvasContainer,
+      state,
+      disabled: true,
+    });
+  }, [canvasContainer, state]);
+
+  useEffect(() => {
+    return canvas?.mount();
+  }, [canvas]);
+
   return (
     <div
+      ref={(e) => setCanvasContainer(e)}
       className="relative max-w-48 overflow-hidden"
       style={{ aspectRatio: `${props.diagram.box.width} / ${props.diagram.box.height}` }}
-    >
-      <Canvas state={state} disabled />
-    </div>
+    />
   );
 };

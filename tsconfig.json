@@ -12,12 +12,9 @@
     "noEmit": true,
     "sourceMap": true,
 
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
     "strict": true,
-    "useDefineForClassFields": true,
 
     "jsx": "react-jsx"
   },

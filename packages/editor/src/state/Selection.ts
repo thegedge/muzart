@@ -300,6 +300,7 @@ export class Selection implements StorableObject {
   }
 
   setScore(score: layout.Score | null) {
+    // TODO figure out a better way to have this associated with a Score, instead of global
     Note.clear();
 
     this.score = score;

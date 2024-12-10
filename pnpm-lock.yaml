@@ -67,26 +67,11 @@ importers:
     dependencies:
       mobx:
         specifier: ^6.12.4
-        version: 6.13.3
-      mobx-react-lite:
-        specifier: ^4.0.7
-        version: 4.0.7(mobx@6.13.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      react:
-        specifier: ^18
-        version: 18.3.1
-      react-dom:
-        specifier: ^18
-        version: 18.3.1(react@18.3.1)
+        version: 6.13.5
     devDependencies:
       '@types/node':
         specifier: ^20.14.9
         version: 20.16.10
-      '@types/react':
-        specifier: ^18.0.0
-        version: 18.3.14
-      '@types/react-dom':
-        specifier: ^18.0.0
-        version: 18.3.2
       csstype:
         specifier: ^3.1.3
         version: 3.1.3
@@ -2297,6 +2282,9 @@ packages:
 
   mobx@6.13.3:
     resolution: {integrity: sha512-YtAS+ZMbdpbHYUU4ESht3na8KiX11KuMT1yOiKtbKlQ0GZkHDYPKyEw/Tdp7h7aHyLrTWj2TBaSNJ6bCr638iQ==}
+
+  mobx@6.13.5:
+    resolution: {integrity: sha512-/HTWzW2s8J1Gqt+WmUj5Y0mddZk+LInejADc79NJadrWla3rHzmRHki/mnEUH1AvOmbNTZ1BRbKxr8DSgfdjMA==}
 
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
@@ -5445,6 +5433,8 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
 
   mobx@6.13.3: {}
+
+  mobx@6.13.5: {}
 
   ms@2.1.3: {}
 

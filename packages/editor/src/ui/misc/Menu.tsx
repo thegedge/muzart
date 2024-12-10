@@ -14,7 +14,7 @@ export const Menu = (props: MenuProps) => {
   return (
     <div {...props} className={clsx(props.className, "min-w-48 rounded bg-gray-950 p-1 text-gray-300 outline-none")}>
       {Children.map(props.children, (child) => {
-        if (isValidElement(child)) {
+        if (isValidElement<any>(child)) {
           return child;
         }
 

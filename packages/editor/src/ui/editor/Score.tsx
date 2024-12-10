@@ -3,7 +3,7 @@ import type { CanvasMouseEventHandler } from "@muzart/canvas/src/Canvas";
 import * as layout from "@muzart/layout";
 import * as notation from "@muzart/notation";
 import { noteValueToSeconds } from "@muzart/playback";
-import { StyleComputer, renderScoreElement } from "@muzart/render";
+import { renderScoreElement, StyleComputer } from "@muzart/render";
 import type * as CSS from "csstype";
 import { sumBy } from "lodash-es";
 import { reaction } from "mobx";
@@ -70,9 +70,9 @@ export const Score = observer((_props: Record<string, never>) => {
       }
 
       // Set a timeout to allow the CSS to reload
-      setTimeout(() => {
+      window.requestIdleCallback(() => {
         renderState.epoch += 1;
-      }, 200);
+      });
     });
   }, [renderState]);
 
@@ -123,7 +123,9 @@ export const Score = observer((_props: Record<string, never>) => {
     };
 
     application.canvas.setRenderFunction(render);
+  }, [application.selection.score, application.canvas, styler]);
 
+  useEffect(() => {
     return reaction(
       () => [
         application.selection.partIndex,
@@ -137,8 +139,11 @@ export const Score = observer((_props: Record<string, never>) => {
       () => {
         application.canvas.redraw();
       },
+      {
+        fireImmediately: true,
+      },
     );
-  }, [application.canvas, application, application.selection.part, renderState, styler]);
+  }, [application.canvas, application.canvas.render, application, application.selection.part, renderState]);
 
   const onMouseDown = useCallback(
     (pt: Point) => {
@@ -244,9 +249,30 @@ export const Score = observer((_props: Record<string, never>) => {
     [application.selection.score, application.state],
   );
 
+  const [canvasContainer, setCanvasContainer] = useState<HTMLDivElement | null>(null);
+
+  const canvas = useMemo(() => {
+    if (!canvasContainer) {
+      return;
+    }
+
+    return new Canvas({
+      root: canvasContainer,
+      state: application.canvas,
+      onContextMenu,
+      onDoubleClick,
+      onMouseDown,
+      onMouseMove,
+    });
+  }, [canvasContainer, application.canvas, onContextMenu, onDoubleClick, onMouseDown, onMouseMove]);
+
+  useEffect(() => {
+    return canvas?.mount();
+  }, [canvas]);
+
   // Relative positioning to so element-bound palettes can be positioned relative to the score
   return (
-    <div className="score relative h-full w-full overflow-hidden bg-gray-500">
+    <div ref={(e) => setCanvasContainer(e)} className="score relative h-full w-full overflow-hidden bg-gray-500">
       {textInputState?.visible && <StatefulInput state={textInputState} />}
       {application.state.modalSubject instanceof layout.Note && application.state.modalProperty == "dynamic" && (
         <ElementBoundPalette
@@ -295,13 +321,6 @@ export const Score = observer((_props: Record<string, never>) => {
           }}
         />
       )}
-      <Canvas
-        onContextMenu={onContextMenu}
-        onDoubleClick={onDoubleClick}
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove}
-        state={application.canvas}
-      />
     </div>
   );
 });

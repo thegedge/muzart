@@ -73,7 +73,7 @@ export class CanvasState {
   setCanvasSize(width: number, height: number) {
     this.canvasWidth = width;
     this.canvasHeight = height;
-    this.viewport = this.viewport.update({ height: (this.viewport.width * height) / width });
+    this.setViewport(this.viewport.update({ height: (this.viewport.width * height) / width }));
     this.redraw();
   }
 

@@ -1,4 +1,18 @@
 {
-  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["DOM", "ESNext"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node10",
+
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "sourceMap": true,
+
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "strict": true
+  },
   "include": ["src", "test", "types", "../../types"]
 }
