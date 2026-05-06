@@ -3,7 +3,9 @@ import { Millimetres } from "..";
 import { Box } from "../utils/Box";
 import { LayoutElement } from "./LayoutElement";
 
-export type StringProperties<T> = { [K in keyof T]: T[K] extends string | null | undefined ? K : never }[keyof T];
+export type StringProperties<T> = {
+  [K in keyof T]: T[K] extends string | null | undefined ? K : never;
+}[keyof T];
 
 type TextOptions = {
   value: string;

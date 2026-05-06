@@ -39,12 +39,12 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
   let port = 80;
   let https: ServerOptions["https"] | undefined;
 
-  const certFileExists = await fileExists("muzart.dev+4.pem");
+  const certFileExists = await fileExists("muzart.dev.pem");
   if (certFileExists) {
     port = 443;
     https = {
-      cert: "muzart.dev+4.pem",
-      key: "muzart.dev+4-key.pem",
+      cert: "muzart.dev.pem",
+      key: "muzart.dev-key.pem",
     };
   }
 

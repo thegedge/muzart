@@ -15,7 +15,11 @@ export class Page extends LayoutElement<"Page"> {
     const contentWidth = box.width - margins.left - margins.right;
     const contentHeight = box.height - margins.top - margins.bottom;
     const pageContentBox = new Box(margins.left, margins.top, contentWidth, contentHeight);
-    this.content = new FlexGroupElement({ box: pageContentBox, axis: "vertical", gap: LINE_MARGIN });
+    this.content = new FlexGroupElement({
+      box: pageContentBox,
+      axis: "vertical",
+      gap: LINE_MARGIN,
+    });
     this.content.parent = this;
     this.children = [this.content];
   }

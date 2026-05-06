@@ -116,7 +116,7 @@ export default tseslint.config(
   {
     files: ["**/*.tsx"],
     plugins: {
-      "react": reactPlugin,
+      react: reactPlugin,
       "react-hooks": reactHooksPlugin,
     },
     languageOptions: {
