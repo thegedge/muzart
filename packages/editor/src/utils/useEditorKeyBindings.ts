@@ -11,6 +11,7 @@ import { EditHarmonic } from "../actions/editing/note/EditHarmonic";
 import { IncreaseNoteValue } from "../actions/editing/note/IncreaseNoteValue";
 import { SetNoteFret } from "../actions/editing/note/SetNoteFret";
 import { toggleNoteFeatureAction } from "../actions/editing/note/ToggleNoteFeature";
+import { ToggleSlide } from "../actions/editing/note/ToggleSlide";
 import { Redo } from "../actions/editing/Redo";
 import { NewScore } from "../actions/editing/score/NewScore";
 import { Undo } from "../actions/editing/Undo";
@@ -156,6 +157,7 @@ const ACTION_GROUPS: Record<string, Command[]> = {
     toggleNoteFeatureAction("dead"),
     toggleNoteFeatureAction("ghost"),
     toggleNoteFeatureAction("staccato"),
+    ToggleSlide,
     HideModal,
   ],
 

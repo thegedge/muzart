@@ -32,7 +32,7 @@ const METADATA: Record<BooleanNoteFeatures, { name: string; defaultKeyBinding: s
   },
   staccato: {
     name: "Toggle staccato",
-    defaultKeyBinding: "s",
+    defaultKeyBinding: null,
   },
   vibrato: {
     name: "Toggle vibrato",
