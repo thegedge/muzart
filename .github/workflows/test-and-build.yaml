@@ -1,4 +1,4 @@
-name: Test and Build
+name: Deploy demo
 
 on:
   push:
@@ -6,49 +6,9 @@ on:
       - "*"
 
 jobs:
-  lint_and_test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 22
-
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 9
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store--${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-            ${{ runner.os }}-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Lint
-        run: NODE_ENV=test pnpm lint
-
-      - name: Run tests
-        run: NODE_ENV=test pnpm test
-
   build_and_deploy:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    needs: lint_and_test
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3

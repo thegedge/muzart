@@ -59,7 +59,7 @@ export const EditorRouter = () => {
           }}
         </Route>
         <Route path="/">
-          {(_params: undefined) => {
+          {() => {
             application.setScore(null);
             return <InitialPage />;
           }}
