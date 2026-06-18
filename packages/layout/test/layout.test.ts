@@ -1,9 +1,11 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
 import { load } from "@muzart/loaders";
 import { assert } from "@muzart/testing";
 import { range } from "lodash-es";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { describe, test } from "vitest";
+
 import { layOutScore } from "../src";
 import { Note } from "../src/elements/Note";
 import { PageLine } from "../src/elements/pageline/PageLine";
@@ -12,7 +14,7 @@ import { adjacent } from "./elementHelpers";
 describe("layout", () => {
   test("can lay out a tab", async () => {
     const fileData = await readFile(path.join(__dirname, "../../editor/public/songs/Song13.gp4"));
-    const score = await load(new File([fileData], "Song13.gp4"));
+    const score = await load(new File([new Uint8Array(fileData)], "Song13.gp4"));
 
     for (const partIndex of range(score.parts.length)) {
       const layout = layOutScore(score, [partIndex]);

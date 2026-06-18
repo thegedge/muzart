@@ -1,4 +1,5 @@
-import { inspect } from "util";
+import { inspect } from "node:util";
+
 import * as vitest from "vitest";
 
 type Axis = "horizontal" | "vertical";

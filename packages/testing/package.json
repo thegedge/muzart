@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "main": "src/index.ts",
   "exports": {
     ".": "./src/index.ts"
   },
+  "main": "src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
@@ -17,6 +17,6 @@
   "devDependencies": {
     "@types/lodash-es": "^4.17.6",
     "@types/node": "^20.14.9",
-    "typescript": "^5.5.2"
+    "typescript": "^6.0.3"
   }
 }

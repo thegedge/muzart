@@ -1,5 +1,5 @@
 import { Canvas, RenderFunction, type Point } from "@muzart/canvas";
-import type { CanvasMouseEventHandler } from "@muzart/canvas/src/Canvas";
+import type { CanvasMouseEventHandler } from "@muzart/canvas";
 import * as layout from "@muzart/layout";
 import * as notation from "@muzart/notation";
 import { noteValueToSeconds } from "@muzart/playback";
@@ -9,6 +9,7 @@ import { sumBy } from "lodash-es";
 import { reaction } from "mobx";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import { changeNoteAction } from "../../actions/editing/note/ChangeNote";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { ElementBoundPalette } from "../misc/ElementBoundPalette";

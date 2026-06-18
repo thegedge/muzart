@@ -1,12 +1,14 @@
-import { assert, describe, test } from "@muzart/testing";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+
+import { assert, describe, test } from "@muzart/testing";
+
 import load from "../src/guitarpro";
 
 describe("guitarpro", () => {
   test("can load an example file", async () => {
     const fileData = await readFile(path.join(__dirname, "../../editor/public/songs/Song13.gp4"));
-    const score = load(fileData.buffer).load();
+    const score = load(new Uint8Array(fileData).buffer).load();
 
     assert.matches(score, {
       title: "Song 13",

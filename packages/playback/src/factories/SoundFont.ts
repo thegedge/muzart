@@ -1,6 +1,7 @@
 import { BufferCursor, NumberType } from "@muzart/loaders";
 import * as notation from "@muzart/notation";
 import { compact, uniqBy } from "lodash-es";
+
 import { Sampler } from "../generators/Sampler";
 import { SourceGenerator, SourceGeneratorFactory } from "../types";
 
@@ -109,7 +110,7 @@ export class SoundFont implements SourceGeneratorFactory {
     return new SoundFont(buffer);
   }
 
-  private sampleData!: Float32Array;
+  private sampleData!: Float32Array<ArrayBuffer>;
   private presets!: SoundFontPreset[];
   private instruments_!: SoundFontInstrument[];
   private samples!: SoundFontSample[];

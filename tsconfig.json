@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "lib": ["DOM", "ESNext"],
+    "types": ["node"],
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
 
     "allowJs": true,
     "checkJs": true,

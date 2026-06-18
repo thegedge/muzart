@@ -3,7 +3,7 @@
     "lib": ["DOM", "ESNext"],
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "node10",
+    "moduleResolution": "Bundler",
 
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

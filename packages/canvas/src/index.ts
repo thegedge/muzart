@@ -4,3 +4,4 @@ export { CanvasState } from "./CanvasState";
 
 export type { Point } from "./Box";
 export type { RenderFunction } from "./CanvasState";
+export type { CanvasMouseEventHandler } from "./Canvas";
