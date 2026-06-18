@@ -30,7 +30,7 @@
     "eslint-plugin-promise": "^7.1.0",
     "eslint-plugin-react": "^7.37.0",
     "eslint-plugin-react-hooks": "^4.6.2",
-    "knip": "^5.30.6",
+    "knip": "^6.0.0",
     "prettier": "^3.3.3",
     "prettier-plugin-packagejson": "^2.5.2",
     "prettier-plugin-tailwindcss": "^0.6.8",

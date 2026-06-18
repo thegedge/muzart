@@ -1,13 +1,13 @@
 import type { KnipConfig } from "knip";
 
 const config: KnipConfig = {
-  entry: ["src/editor/ui/index.tsx!", "*.{js,ts}!"],
+  entry: ["packages/editor/src/ui/index.tsx!", "*.{js,ts}!"],
 
   ignore: [
-    "src/editor/utils/suspenseful.ts",
-    "src/editor/utils/svg.ts",
-    "src/playback/nodes/node_helpers.ts",
-    "src/playback/util/gain.ts",
+    "packages/editor/src/utils/suspenseful.ts",
+    "packages/editor/src/utils/svg.ts",
+    "packages/playback/src/nodes/node_helpers.ts",
+    "packages/playback/src/util/gain.ts",
   ],
 
   ignoreDependencies: [
