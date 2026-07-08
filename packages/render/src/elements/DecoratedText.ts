@@ -1,6 +1,6 @@
 import type { TextDecoration } from "@muzart/layout";
 import * as layout from "@muzart/layout";
-import { RenderFunc } from "../types";
+import type { RenderFunc } from "../types";
 
 export const DecoratedText: RenderFunc<layout.DecoratedText> = (element, render, _context) => {
   // TODO use `measureText`, just need to map to user space

@@ -12,8 +12,11 @@ export class EditBend extends Action {
     return note ? new EditBend(note) : null;
   }
 
-  constructor(readonly note: notation.Note) {
+  readonly note: notation.Note;
+
+  constructor(note: notation.Note) {
     super();
+    this.note = note;
   }
 
   apply(application: Application) {

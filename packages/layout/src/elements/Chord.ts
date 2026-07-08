@@ -12,14 +12,17 @@ export class Chord extends LayoutElement<"Chord"> {
 
   readonly notes: Note[];
 
-  constructor(
-    readonly chord: notation.Chord,
-    readonly numStaffLines: number,
-    readonly staffHeight = STAFF_LINE_HEIGHT,
-  ) {
+  readonly chord: notation.Chord;
+  readonly numStaffLines: number;
+  readonly staffHeight: number;
+
+  constructor(chord: notation.Chord, numStaffLines: number, staffHeight = STAFF_LINE_HEIGHT) {
     const maxNoteChars = maxMap(chord.notes, (note) => note.toString().length) || 1;
     const noteWidth = chordWidth(maxNoteChars);
     super(new Box(0, 0, noteWidth, staffHeight * numStaffLines));
+    this.chord = chord;
+    this.numStaffLines = numStaffLines;
+    this.staffHeight = staffHeight;
 
     // Take away 2 line strokes so the text elements with a background fill don't obstruct the staff lines
     const noteHeight = staffHeight - 2 * LINE_STROKE_WIDTH;

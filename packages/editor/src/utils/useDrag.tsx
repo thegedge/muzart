@@ -1,5 +1,5 @@
 import { clamp } from "lodash-es";
-import { RefObject, useRef } from "react";
+import { useRef, type RefObject } from "react";
 
 export type OnDragOptions<T> = {
   /**

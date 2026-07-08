@@ -1,12 +1,13 @@
-export enum Step {
-  A = "A",
-  B = "B",
-  C = "C",
-  D = "D",
-  E = "E",
-  F = "F",
-  G = "G",
-}
+export const Step = {
+  A: "A",
+  B: "B",
+  C: "C",
+  D: "D",
+  E: "E",
+  F: "F",
+  G: "G",
+} as const;
+export type Step = (typeof Step)[keyof typeof Step];
 
 const SEMITONE_OFFSETS = {
   [Step.C]: 0,
@@ -98,11 +99,15 @@ export class Pitch {
     }
   }
 
-  constructor(
-    readonly step: Step,
-    readonly octave: number,
-    readonly alterations = 0,
-  ) {}
+  readonly step: Step;
+  readonly octave: number;
+  readonly alterations: number;
+
+  constructor(step: Step, octave: number, alterations = 0) {
+    this.step = step;
+    this.octave = octave;
+    this.alterations = alterations;
+  }
 
   /**
    * Return a new pitch that is this note adjusted by the given number of semitones.

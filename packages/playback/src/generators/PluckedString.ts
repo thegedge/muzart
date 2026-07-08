@@ -1,6 +1,6 @@
 import * as notation from "@muzart/notation";
 import { AudioWorkletNode } from "../nodes/AudioWorkletNode";
-import { SourceGenerator } from "../types";
+import type { SourceGenerator } from "../types";
 
 export type PluckedStringOptions = {
   /** The audio context this generator will use */
@@ -53,7 +53,11 @@ declare global {
  * A generator that simulates a plucked string.
  */
 export class PluckedString implements SourceGenerator {
-  constructor(private options: PluckedStringOptions) {}
+  private options: PluckedStringOptions;
+
+  constructor(options: PluckedStringOptions) {
+    this.options = options;
+  }
 
   generate(note: notation.Note) {
     const karplusStrongNode = new globalThis.AudioWorkletNode(this.options.context, "karplus-strong", {

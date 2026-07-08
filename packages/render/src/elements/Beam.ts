@@ -1,5 +1,5 @@
 import * as layout from "@muzart/layout";
-import { RenderFunc } from "../types";
+import type { RenderFunc } from "../types";
 
 export const Beam: RenderFunc<layout.Beam> = (element, render) => {
   if (element.size == element.box.height) {

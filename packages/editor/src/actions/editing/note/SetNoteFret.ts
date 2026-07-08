@@ -7,14 +7,17 @@ import { Action } from "../../Action";
 export class SetNoteFret extends Action {
   private note: notation.Note | undefined;
   private shouldPlayNote = true;
+  private instrument: notation.StringInstrument;
+  private chord: notation.Chord;
+  private string: number;
+  readonly fret: number;
 
-  constructor(
-    private instrument: notation.StringInstrument,
-    private chord: notation.Chord,
-    private string: number,
-    readonly fret: number,
-  ) {
+  constructor(instrument: notation.StringInstrument, chord: notation.Chord, string: number, fret: number) {
     super();
+    this.instrument = instrument;
+    this.chord = chord;
+    this.string = string;
+    this.fret = fret;
     this.note = chord.noteByString(string);
   }
 

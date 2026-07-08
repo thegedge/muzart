@@ -1,6 +1,6 @@
 import * as notation from "@muzart/notation";
 import { WrappedNode } from "../nodes/WrappedNode";
-import { SourceGenerator } from "../types";
+import type { SourceGenerator } from "../types";
 
 export interface OscillatorOptions {
   /** The audio context in which this oscillator will be used */
@@ -17,7 +17,11 @@ export interface OscillatorOptions {
  * A generator using a simple oscillator to produce sound.
  */
 export class SimpleOscillator implements SourceGenerator {
-  constructor(private options: OscillatorOptions) {}
+  private options: OscillatorOptions;
+
+  constructor(options: OscillatorOptions) {
+    this.options = options;
+  }
 
   generate(note: notation.Note) {
     const source = this.options.context.createOscillator();

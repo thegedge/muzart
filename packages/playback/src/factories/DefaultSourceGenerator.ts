@@ -1,12 +1,12 @@
 import * as notation from "@muzart/notation";
 import { clamp } from "lodash-es";
 import { svgPathProperties } from "svg-path-properties";
-import { Drum, DrumOptions } from "../generators/Drum";
-import { PluckedString, PluckedStringOptions } from "../generators/PluckedString";
-import { OscillatorOptions, SimpleOscillator } from "../generators/SimpleOscillator";
+import { Drum, type DrumOptions } from "../generators/Drum";
+import { PluckedString, type PluckedStringOptions } from "../generators/PluckedString";
+import { SimpleOscillator, type OscillatorOptions } from "../generators/SimpleOscillator";
 import { CompositeNode } from "../nodes/CompositeNode";
 import { EqualizerNode } from "../nodes/EqualizerNode";
-import { SourceGenerator, SourceGeneratorFactory, type MidiInstrument } from "../types";
+import type { MidiInstrument, SourceGenerator, SourceGeneratorFactory } from "../types";
 
 type OscillatorGenerator = {
   type: "oscillator";

@@ -16,12 +16,12 @@ export class PartHeader extends FlexGroup<"Group", AnyLayoutElement> {
   /** If true, show chord diagrams for all chords used in the tab  */
   readonly summarizeChords = true;
 
-  constructor(
-    readonly score: notation.Score,
-    readonly part: notation.Part,
-    readonly contentWidth: number,
-    readonly context: LayoutContext,
-  ) {
+  readonly score: notation.Score;
+  readonly part: notation.Part;
+  readonly contentWidth: number;
+  readonly context: LayoutContext;
+
+  constructor(score: notation.Score, part: notation.Part, contentWidth: number, context: LayoutContext) {
     const heightFactor = context.layoutMode === "compact" ? 0.8 * STAFF_LINE_HEIGHT : STAFF_LINE_HEIGHT;
 
     super({
@@ -30,6 +30,10 @@ export class PartHeader extends FlexGroup<"Group", AnyLayoutElement> {
       defaultStretchFactor: 0,
       gap: 0.5 * heightFactor,
     });
+    this.score = score;
+    this.part = part;
+    this.contentWidth = contentWidth;
+    this.context = context;
 
     // Lay out the composition title, composer, etc
     if (score.title) {

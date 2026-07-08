@@ -1,7 +1,7 @@
 import * as layout from "@muzart/layout";
 import { StringInstrument } from "@muzart/notation";
 import { Rests } from "../resources/rests";
-import { RenderFunc } from "../types";
+import type { RenderFunc } from "../types";
 
 export const Rest: RenderFunc<layout.Rest> = (element, render) => {
   const path = Rests[element.chord.value.name];

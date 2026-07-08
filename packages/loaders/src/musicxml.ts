@@ -1,12 +1,12 @@
 import {
-  Clef,
-  ClefSign,
-  Key,
-  NoteOptions,
+  type Clef,
+  type ClefSign,
+  type Key,
+  type NoteOptions,
   NoteValue,
   Pitch,
   Score,
-  StaffDetails,
+  type StaffDetails,
   Step,
   TimeSignature,
   type ChordOptions,
@@ -14,7 +14,7 @@ import {
   type PartOptions,
 } from "@muzart/notation";
 import { compact, range } from "lodash-es";
-import { Loader } from "./Loader";
+import type { Loader } from "./Loader";
 
 // TODO this is pretty slow, so perhaps a SAX-based parser
 // TODO quite incomplete, but I can't find any good MusicXML files with all the guitar tablature elements, or programs that can produce them

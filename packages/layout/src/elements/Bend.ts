@@ -11,12 +11,11 @@ const HEAD_HALFW = 4 * LINE_STROKE_WIDTH;
 export class Bend extends SimpleGroup<"Bend", Path | Text> {
   readonly type = "Bend";
   readonly descent: number;
+  readonly bend: notation.Bend;
 
-  constructor(
-    readonly bend: notation.Bend,
-    note: notation.Note,
-  ) {
+  constructor(bend: notation.Bend, note: notation.Note) {
     super(new Box(0, 0, bend.points.length * STAFF_LINE_HEIGHT, 3 * STAFF_LINE_HEIGHT));
+    this.bend = bend;
     this.descent = ((note.placement?.string || 1) - 0.5) * STAFF_LINE_HEIGHT;
   }
 

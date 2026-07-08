@@ -1,5 +1,5 @@
 import * as notation from "@muzart/notation";
-import { Bend, BendPoint, BendType, defaultBendPointsForType } from "@muzart/notation";
+import { BendType, defaultBendPointsForType, type Bend, type BendPoint } from "@muzart/notation";
 import { observable } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useLayoutEffect, useMemo, useRef } from "react";

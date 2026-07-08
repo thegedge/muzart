@@ -14,12 +14,15 @@ export const changeNoteAction = (changes: Partial<notation.Note>) => {
       return chord && note ? new ChangeNote(chord, note, changes) : null;
     }
 
-    constructor(
-      private chord: notation.Chord,
-      private note: notation.Note,
-      private changes: Partial<notation.Note>,
-    ) {
+    private chord: notation.Chord;
+    private note: notation.Note;
+    private changes: Partial<notation.Note>;
+
+    constructor(chord: notation.Chord, note: notation.Note, changes: Partial<notation.Note>) {
       super();
+      this.chord = chord;
+      this.note = note;
+      this.changes = changes;
     }
 
     apply(_application: Application) {

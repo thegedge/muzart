@@ -1,5 +1,5 @@
 import { every, last, zip } from "lodash-es";
-import { Alignment } from "..";
+import type { Alignment } from "..";
 import type { AnyLayoutElement } from "../elements/LayoutElement";
 import { maxMap } from "../utils";
 import type { Box } from "../utils/Box";

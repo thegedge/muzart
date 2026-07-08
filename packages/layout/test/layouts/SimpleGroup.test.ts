@@ -1,7 +1,7 @@
 import { assert, describe, mock, test } from "@muzart/testing";
 import { SimpleGroupElement } from "../../src/layouts/SimpleGroup";
 import { Box } from "../../src/utils/Box";
-import { LayoutFn, elem } from "../elementHelpers";
+import { elem, type LayoutFn } from "../elementHelpers";
 
 describe("SimpleGroup", () => {
   describe("layout", () => {

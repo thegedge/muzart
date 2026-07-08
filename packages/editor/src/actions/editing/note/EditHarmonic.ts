@@ -12,8 +12,11 @@ export class EditHarmonic extends Action {
     return note instanceof Note ? new EditHarmonic(note) : null;
   }
 
-  constructor(readonly note: Note) {
+  readonly note: Note;
+
+  constructor(note: Note) {
     super();
+    this.note = note;
   }
 
   apply(application: Application) {

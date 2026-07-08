@@ -5,12 +5,11 @@ import { AudioNode } from "./AudioNode";
  */
 export class EnvelopeNode extends AudioNode {
   private gain: GainNode;
+  readonly envelope: Envelope;
 
-  constructor(
-    context: AudioContext,
-    readonly envelope: Envelope,
-  ) {
+  constructor(context: AudioContext, envelope: Envelope) {
     super();
+    this.envelope = envelope;
     this.gain = context.createGain();
   }
 

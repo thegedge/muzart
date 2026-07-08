@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { Chord, type ChordOptions } from "./Chord";
 import { TimeSignature } from "./TimeSignature";
-import { Changeable, StaffDetails } from "./staff";
+import type { Changeable, StaffDetails } from "./staff";
 import { initArray } from "./utils";
 
 export interface Marker {

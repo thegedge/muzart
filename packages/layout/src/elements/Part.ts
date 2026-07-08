@@ -11,12 +11,13 @@ export class Part extends SimpleGroup<"Part", Page> {
   readonly type = "Part";
   readonly measures: Measure[] = [];
 
-  constructor(
-    box: Box,
-    readonly part: notation.Part,
-    readonly context: LayoutContext,
-  ) {
+  readonly part: notation.Part;
+  readonly context: LayoutContext;
+
+  constructor(box: Box, part: notation.Part, context: LayoutContext) {
     super(box);
+    this.part = part;
+    this.context = context;
   }
 
   layout() {

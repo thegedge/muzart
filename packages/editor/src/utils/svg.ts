@@ -1,4 +1,4 @@
-import { Box, Margins } from "@muzart/layout";
+import { Box, type Margins } from "@muzart/layout";
 import { pick } from "lodash-es";
 import { type CSSProperties, type SVGAttributes } from "react";
 

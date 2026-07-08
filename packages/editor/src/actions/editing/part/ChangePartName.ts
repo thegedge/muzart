@@ -8,12 +8,13 @@ export class ChangePartName extends Action {
   static readonly defaultKeyBinding = null;
 
   private readonly oldName: string;
+  private part: notation.Part;
+  private newName: string;
 
-  constructor(
-    private part: notation.Part,
-    private newName: string,
-  ) {
+  constructor(part: notation.Part, newName: string) {
     super();
+    this.part = part;
+    this.newName = newName;
     this.oldName = part.name;
   }
 

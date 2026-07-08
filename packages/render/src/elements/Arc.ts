@@ -1,5 +1,5 @@
 import * as layout from "@muzart/layout";
-import { RenderFunc } from "../types";
+import type { RenderFunc } from "../types";
 
 export const Arc: RenderFunc<layout.Arc> = (element, render) => {
   const l = element.box.x;

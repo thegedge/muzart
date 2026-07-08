@@ -1,6 +1,6 @@
 import * as layout from "@muzart/layout";
 import { DEFAULT_SANS_SERIF_FONT_FAMILY } from "@muzart/layout";
-import { RenderFunc } from "../types";
+import type { RenderFunc } from "../types";
 
 export const Text: RenderFunc<layout.Text> = (element, render, context) => {
   let x: number;

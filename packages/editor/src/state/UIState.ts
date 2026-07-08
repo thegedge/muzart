@@ -1,7 +1,7 @@
 import { PlaybackController } from "@muzart/playback";
 import { makeAutoObservable } from "mobx";
-import { TooltipProps } from "../ui/misc/Tooltip";
-import { PropertyPaths } from "../utils/types";
+import type { TooltipProps } from "../ui/misc/Tooltip";
+import type { PropertyPaths } from "../utils/types";
 
 /**
  * Captures all of the state that is related to the UI of the editor.
@@ -22,7 +22,10 @@ export class UIState {
   public modalSubject: unknown = null;
   public modalProperty = "";
 
-  constructor(readonly playback: PlaybackController) {
+  readonly playback: PlaybackController;
+
+  constructor(playback: PlaybackController) {
+    this.playback = playback;
     makeAutoObservable(
       this,
       {

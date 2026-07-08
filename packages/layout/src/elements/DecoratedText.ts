@@ -14,16 +14,26 @@ export class DecoratedText extends SimpleGroup<"DecoratedText", Text> {
 
   readonly textElement: Text;
 
+  readonly text: string;
+  readonly size: Millimetres;
+  readonly decorations: {
+    start?: TextDecoration;
+    end?: TextDecoration;
+  };
+
   constructor(
     box: Box,
-    readonly text: string,
-    readonly size: Millimetres,
-    readonly decorations: {
+    text: string,
+    size: Millimetres,
+    decorations: {
       start?: TextDecoration;
       end?: TextDecoration;
     } = {},
   ) {
     super(box);
+    this.text = text;
+    this.size = size;
+    this.decorations = decorations;
 
     let textAlign: CSS.Properties["textAlign"];
     if (decorations.start && !decorations.end) {

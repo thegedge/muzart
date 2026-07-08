@@ -15,8 +15,11 @@ export class DecreaseNoteValue extends Action {
     return chord ? new DecreaseNoteValue(chord) : null;
   }
 
-  private constructor(readonly chord: notation.Chord) {
+  readonly chord: notation.Chord;
+
+  private constructor(chord: notation.Chord) {
     super();
+    this.chord = chord;
   }
 
   apply(_application: Application) {

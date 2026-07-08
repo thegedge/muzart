@@ -1,8 +1,11 @@
 import { SyncStorage } from "./Storage";
 
 export class LocalStorage extends SyncStorage {
-  constructor(private localStorage = globalThis.localStorage) {
+  private localStorage: Storage;
+
+  constructor(localStorage = globalThis.localStorage) {
     super();
+    this.localStorage = localStorage;
   }
 
   /** @override */

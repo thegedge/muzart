@@ -1,5 +1,5 @@
 import * as layout from "@muzart/layout";
-import { RenderFunc } from "../types";
+import type { RenderFunc } from "../types";
 
 export const BarLine: RenderFunc<layout.BarLine> = (element, render) => {
   render.lineWidth = element.strokeSize;

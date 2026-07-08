@@ -1,10 +1,10 @@
 import * as notation from "@muzart/notation";
 import { memoize } from "lodash-es";
-import { SampleZone, SoundFontGeneratorType } from "../factories/SoundFont";
+import { SoundFontGeneratorType, type SampleZone } from "../factories/SoundFont";
 import { CompositeNode } from "../nodes/CompositeNode";
 import { EnvelopeNode } from "../nodes/EnvelopeNode";
 import { WrappedNode } from "../nodes/WrappedNode";
-import { SourceGenerator } from "../types";
+import type { SourceGenerator } from "../types";
 
 export interface SamplerOptions {
   /** The audio context in which this sampler will be used */
@@ -22,8 +22,10 @@ export interface SamplerOptions {
  */
 export class Sampler implements SourceGenerator {
   private buffers: Map<number, SampleZone>;
+  private options: SamplerOptions;
 
-  constructor(private options: SamplerOptions) {
+  constructor(options: SamplerOptions) {
+    this.options = options;
     this.buffers = new Map(options.buffers);
   }
 

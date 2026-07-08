@@ -1,5 +1,5 @@
 import { last } from "lodash-es";
-import { Alignment } from "..";
+import type { Alignment } from "..";
 import { LayoutElement, type AnyLayoutElement } from "../elements/LayoutElement";
 import { Box } from "../utils/Box";
 

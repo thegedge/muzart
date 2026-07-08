@@ -1,4 +1,4 @@
-import { Canvas, RenderFunction, type Point } from "@muzart/canvas";
+import { Canvas, type RenderFunction, type Point } from "@muzart/canvas";
 import type { CanvasMouseEventHandler } from "@muzart/canvas";
 import * as layout from "@muzart/layout";
 import * as notation from "@muzart/notation";

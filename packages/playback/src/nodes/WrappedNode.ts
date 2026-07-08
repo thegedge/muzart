@@ -3,8 +3,11 @@ import { AudioNode } from "./AudioNode";
 export class WrappedNode extends AudioNode {
   #active = false;
 
-  constructor(readonly raw: globalThis.AudioNode) {
+  readonly raw: globalThis.AudioNode;
+
+  constructor(raw: globalThis.AudioNode) {
     super();
+    this.raw = raw;
 
     this.raw.addEventListener("ended", () => {
       if (this.#active) {

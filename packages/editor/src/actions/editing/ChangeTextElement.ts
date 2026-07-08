@@ -14,12 +14,13 @@ export const changeTextAction = (element: layout.Text, text: string) => {
     }
 
     private prev: string;
+    readonly element: layout.Text;
+    readonly text: string;
 
-    constructor(
-      readonly element: layout.Text,
-      readonly text: string,
-    ) {
+    constructor(element: layout.Text, text: string) {
       super();
+      this.element = element;
+      this.text = text;
       this.prev = element.text;
     }
 

@@ -10,8 +10,11 @@ export abstract class LayoutElement<TypeT extends string> {
   style: CSS.Properties = {};
   className?: string;
   children?: AnyLayoutElement[];
+  box: Box;
 
-  constructor(public box = Box.empty()) {}
+  constructor(box = Box.empty()) {
+    this.box = box;
+  }
 
   layout(): void {
     // noop

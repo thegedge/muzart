@@ -7,14 +7,12 @@ export type LayoutFn = AnyLayoutElement["layout"];
 export type HasBox = { box: Box };
 
 class TestChild extends LayoutElement<string> {
-  constructor(
-    readonly type: string,
-    box: Box,
-    parent: AnyLayoutElement | null,
-    layout?: LayoutFn,
-  ) {
+  readonly type: string;
+
+  constructor(type: string, box: Box, parent: AnyLayoutElement | null, layout?: LayoutFn) {
     super(box);
 
+    this.type = type;
     this.parent = parent;
 
     if (layout) {

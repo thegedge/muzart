@@ -11,7 +11,11 @@ import { TABS_NAMESPACE } from "./namespaces";
  * 3. Present a filesystem like view
  */
 export class TabStorage {
-  constructor(private loaders: Record<string, AsyncStorage>) {}
+  private loaders: Record<string, AsyncStorage>;
+
+  constructor(loaders: Record<string, AsyncStorage>) {
+    this.loaders = loaders;
+  }
 
   async load(url: URL): Promise<Blob | null> {
     const scheme = url.protocol.slice(0, -1);

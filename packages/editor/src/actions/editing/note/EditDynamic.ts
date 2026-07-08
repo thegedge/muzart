@@ -12,8 +12,11 @@ export class EditDynamic extends Action {
     return note instanceof Note ? new EditDynamic(note) : null;
   }
 
-  constructor(readonly note: Note) {
+  readonly note: Note;
+
+  constructor(note: Note) {
     super();
+    this.note = note;
   }
 
   apply(application: Application) {

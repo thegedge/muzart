@@ -52,12 +52,15 @@ export const toggleNoteFeatureAction = (feature: BooleanNoteFeatures) => {
       return chord && note ? new ToggleNoteFeature(chord, note, feature) : null;
     }
 
-    private constructor(
-      private chord: notation.Chord,
-      private note: notation.Note,
-      private feature: BooleanNoteFeatures,
-    ) {
+    private chord: notation.Chord;
+    private note: notation.Note;
+    private feature: BooleanNoteFeatures;
+
+    private constructor(chord: notation.Chord, note: notation.Note, feature: BooleanNoteFeatures) {
       super();
+      this.chord = chord;
+      this.note = note;
+      this.feature = feature;
     }
 
     apply(_application: Application) {

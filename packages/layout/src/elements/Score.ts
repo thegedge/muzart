@@ -6,9 +6,11 @@ import type { Part } from "./Part";
 export class Score extends SimpleGroup<"Score", Part> {
   readonly type = "Score";
   parent = null;
+  readonly score: notation.Score;
 
-  constructor(readonly score: notation.Score) {
+  constructor(score: notation.Score) {
     super();
+    this.score = score;
   }
 
   layout() {

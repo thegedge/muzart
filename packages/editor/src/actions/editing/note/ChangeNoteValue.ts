@@ -14,12 +14,13 @@ export const changeNoteValueAction = (value: notation.NoteValueName) => {
     }
 
     private previousValue: notation.NoteValueName;
+    private chord: notation.Chord;
+    private value: notation.NoteValueName;
 
-    constructor(
-      private chord: notation.Chord,
-      private value: notation.NoteValueName,
-    ) {
+    constructor(chord: notation.Chord, value: notation.NoteValueName) {
       super();
+      this.chord = chord;
+      this.value = value;
       this.previousValue = chord.value.name;
     }
 

@@ -54,12 +54,12 @@ export class StatefulTextInputState {
   public visible = true;
 
   private styles: CSS.Properties;
+  readonly application: Application;
+  readonly element: layout.Text;
 
-  constructor(
-    readonly application: Application,
-    readonly element: layout.Text,
-    styler: StyleComputer,
-  ) {
+  constructor(application: Application, element: layout.Text, styler: StyleComputer) {
+    this.application = application;
+    this.element = element;
     this.styles = merge(styler.stylesFor(this.element, []), this.element.style);
     makeAutoObservable(this, undefined, { deep: false });
   }

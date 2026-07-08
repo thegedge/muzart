@@ -3,7 +3,7 @@ import * as notation from "@muzart/notation";
 import { compact, uniqBy } from "lodash-es";
 
 import { Sampler } from "../generators/Sampler";
-import { SourceGenerator, SourceGeneratorFactory } from "../types";
+import type { SourceGenerator, SourceGeneratorFactory } from "../types";
 
 interface SoundFontPreset {
   name: string;
@@ -61,37 +61,39 @@ export interface SampleZone extends SoundFontSample, SoundFontZone {
   buffer: AudioBuffer;
 }
 
-export enum SoundFontGeneratorType {
+export const SoundFontGeneratorType = {
   /** Time of attack phase (seconds) */
-  EnvelopeVolumeAttack = 34,
+  EnvelopeVolumeAttack: 34,
 
   /** Time of decay phase (seconds) */
-  EnvelopeVolumeDecay = 36,
+  EnvelopeVolumeDecay: 36,
 
   /** Time from end of attack phase to beginning of decay (seconds) */
-  EnvelopeVolumeHold = 35,
+  EnvelopeVolumeHold: 35,
 
   /** Time of decay phase (seconds) */
-  EnvelopeVolumeRelease = 38,
+  EnvelopeVolumeRelease: 38,
 
   /** The decrease in volume during decay (centibels, 0 meaning no change) */
-  EnvelopeVolumeSustain = 37,
+  EnvelopeVolumeSustain: 37,
 
   /** Index into the instrument list */
-  Instrument = 41,
+  Instrument: 41,
 
   /** Range of possible pitches for a sample (midi number) */
-  KeyRange = 43,
+  KeyRange: 43,
 
   /** Overriding root key for samples */
-  RootKeyOverride = 58,
+  RootKeyOverride: 58,
 
   /** A pitch offset to apply to notes */
-  CoarseTune = 51,
+  CoarseTune: 51,
 
   /** Index into sample array */
-  SampleId = 53,
-}
+  SampleId: 53,
+} as const;
+
+export type SoundFontGeneratorType = (typeof SoundFontGeneratorType)[keyof typeof SoundFontGeneratorType];
 
 export class SoundFont implements SourceGeneratorFactory {
   static async fromSource(source: string | URL | File | Response | ArrayBuffer) {

@@ -21,12 +21,13 @@ export class RemovePart extends Action {
   }
 
   private index = -1;
+  private score: notation.Score;
+  private part: notation.Part;
 
-  constructor(
-    private score: notation.Score,
-    private part: notation.Part,
-  ) {
+  constructor(score: notation.Score, part: notation.Part) {
     super();
+    this.score = score;
+    this.part = part;
     this.index = score.parts.indexOf(part);
   }
 

@@ -1,6 +1,6 @@
 import * as layout from "@muzart/layout";
 import { range } from "lodash-es";
-import { RenderFunc } from "../types";
+import type { RenderFunc } from "../types";
 
 export const Vibrato: RenderFunc<layout.Vibrato> = (element, render) => {
   const paddingX = 0.2 * layout.STAFF_LINE_HEIGHT;

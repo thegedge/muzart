@@ -18,8 +18,11 @@ export class EditTimeSignature extends Action {
     return measure ? new EditTimeSignature(measure) : null;
   }
 
-  constructor(readonly measure: notation.Measure) {
+  readonly measure: notation.Measure;
+
+  constructor(measure: notation.Measure) {
     super();
+    this.measure = measure;
   }
 
   apply(application: Application) {

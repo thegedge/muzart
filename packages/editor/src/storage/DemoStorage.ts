@@ -2,8 +2,11 @@ import { AsyncStorage } from "./Storage";
 import { TABS_NAMESPACE } from "./namespaces";
 
 export class DemoStorage extends AsyncStorage {
-  constructor(readonly urls: string[]) {
+  readonly urls: string[];
+
+  constructor(urls: string[]) {
     super();
+    this.urls = urls;
   }
 
   /** @override */

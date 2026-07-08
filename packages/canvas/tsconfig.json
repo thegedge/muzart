@@ -2,8 +2,8 @@
   "compilerOptions": {
     "lib": ["DOM", "ESNext"],
     "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
 
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -12,7 +12,9 @@
 
     "noImplicitAny": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true
   },
   "include": ["src", "test", "types", "../../types"]
 }

@@ -1,5 +1,5 @@
 import type { JSX, SVGAttributes } from "react";
-import { IconBaseProps } from "react-icons";
+import type { IconBaseProps } from "react-icons";
 
 import {
   HiMusicalNote,

@@ -3,12 +3,15 @@ import type { Application } from "../../../state/Application";
 import { Action } from "../../Action";
 
 export class DotNote extends Action {
-  constructor(
-    private chord: notation.Chord,
-    private note: notation.Note,
-    readonly dots: number,
-  ) {
+  private chord: notation.Chord;
+  private note: notation.Note;
+  readonly dots: number;
+
+  constructor(chord: notation.Chord, note: notation.Note, dots: number) {
     super();
+    this.chord = chord;
+    this.note = note;
+    this.dots = dots;
   }
 
   apply(_application: Application) {

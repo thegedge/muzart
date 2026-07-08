@@ -1,19 +1,20 @@
-export enum BendType {
+export const BendType = {
   // Regular
-  Bend = "Bend",
-  BendRelease = "Bend and Release",
-  BendReleaseBend = "Bend and Release and Bend",
-  Prebend = "Prebend",
-  PrebendRelease = "Prebend and Release",
+  Bend: "Bend",
+  BendRelease: "Bend and Release",
+  BendReleaseBend: "Bend and Release and Bend",
+  Prebend: "Prebend",
+  PrebendRelease: "Prebend and Release",
 
   // Tremolo bar
-  Dip = "Dip",
-  Dive = "Dive",
-  ReleaseUp = "Release (up)",
-  InvertedDip = "Inverted Dip",
-  Return = "Return",
-  ReleaseDown = "Release (down)",
-}
+  Dip: "Dip",
+  Dive: "Dive",
+  ReleaseUp: "Release (up)",
+  InvertedDip: "Inverted Dip",
+  Return: "Return",
+  ReleaseDown: "Release (down)",
+} as const;
+export type BendType = (typeof BendType)[keyof typeof BendType];
 
 export interface BendPoint {
   /** The timing of this point, relative to the duration of the associated note (0 = beginning, 1 = end) */

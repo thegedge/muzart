@@ -13,9 +13,11 @@ export class AddMeasure extends Action {
   }
 
   readonly measure: Measure;
+  readonly part: Part;
 
-  constructor(readonly part: Part) {
+  constructor(part: Part) {
     super();
+    this.part = part;
 
     const templateMeasure = part.measures[part.measures.length - 1];
 

@@ -1,6 +1,6 @@
 import { makeObservable } from "mobx";
 import { Pitch } from "../Pitch";
-import { Instrument, InstrumentOptions } from "./Instrument";
+import { Instrument, type InstrumentOptions } from "./Instrument";
 
 export type StringInstrumentOptions = InstrumentOptions & {
   /** Tuning of the instrument strings */

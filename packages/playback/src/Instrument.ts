@@ -2,7 +2,7 @@ import * as notation from "@muzart/notation";
 import { compact } from "lodash-es";
 import { AudioNode } from "./nodes/AudioNode";
 import { WrappedNode } from "./nodes/WrappedNode";
-import { InstrumentOptions, SourceGenerator } from "./types";
+import type { InstrumentOptions, SourceGenerator } from "./types";
 import { noteDurationInSeconds, noteValueToSeconds } from "./utils/durations";
 
 /**

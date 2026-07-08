@@ -13,11 +13,13 @@ export class ToggleSlide extends Action {
     return chord && note ? new ToggleSlide(chord, note) : null;
   }
 
-  private constructor(
-    private chord: notation.Chord,
-    private note: notation.Note,
-  ) {
+  private chord: notation.Chord;
+  private note: notation.Note;
+
+  private constructor(chord: notation.Chord, note: notation.Note) {
     super();
+    this.chord = chord;
+    this.note = note;
   }
 
   apply(_application: Application) {

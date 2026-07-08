@@ -21,12 +21,17 @@ export class Box {
     return boxes.reduce((encompassBox, box) => encompassBox.encompass(box), Box.empty());
   }
 
-  constructor(
-    public x: number,
-    public y: number,
-    public width: number,
-    public height: number,
-  ) {}
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+
+  constructor(x: number, y: number, width: number, height: number) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
 
   /**
    * Create a copy of this box.

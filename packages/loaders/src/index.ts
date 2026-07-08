@@ -1,4 +1,4 @@
-import { Chord, Measure, Note, Score, StaffDetails, changed, type ScoreOptions } from "@muzart/notation";
+import { Chord, Measure, Note, Score, changed, type ScoreOptions, type StaffDetails } from "@muzart/notation";
 import { isString, pickBy, range } from "lodash-es";
 import guitarPro from "./guitarpro";
 import musicXml from "./musicxml";
@@ -19,12 +19,13 @@ export async function load(source: File | Response | URL | string, type?: ScoreD
   }
 }
 
-export enum ScoreDataType {
-  GuitarPro = "Guitar Pro",
-  MusicXML = "MusicXML",
-  Muzart = "Muzart",
-  Unknown = "Unknown",
-}
+export const ScoreDataType = {
+  GuitarPro: "Guitar Pro",
+  MusicXML: "MusicXML",
+  Muzart: "Muzart",
+  Unknown: "Unknown",
+} as const;
+export type ScoreDataType = (typeof ScoreDataType)[keyof typeof ScoreDataType];
 
 export const getFilenameAndMimeType = (source: File | Response) => {
   let filename: string | null;

@@ -1,5 +1,5 @@
 import type * as CSS from "csstype";
-import { Millimetres } from "..";
+import type { Millimetres } from "..";
 import { Box } from "../utils/Box";
 import { LayoutElement } from "./LayoutElement";
 
@@ -48,8 +48,11 @@ export class Text extends LayoutElement<"Text"> {
   private value: string;
   private setText: ((value: string) => void) | undefined;
 
-  constructor(readonly options: TextOptions) {
+  readonly options: TextOptions;
+
+  constructor(options: TextOptions) {
     super(options.box ?? new Box(0, 0, options.size * options.value.length, options.size));
+    this.options = options;
 
     this.size = options.size;
     this.value = options.value;

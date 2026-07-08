@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { Note, NoteOptions } from "./Note";
+import { Note, type NoteOptions } from "./Note";
 import { NoteValue } from "./NoteValue";
 import { initArray } from "./utils";
 
@@ -18,16 +18,18 @@ export interface ChordDiagram {
   };
 }
 
-export enum StrokeDirection {
-  Up = "Up",
-  Down = "Down",
-}
+export const StrokeDirection = {
+  Up: "Up",
+  Down: "Down",
+} as const;
+export type StrokeDirection = (typeof StrokeDirection)[keyof typeof StrokeDirection];
 
-export enum TapStyle {
-  Tap = "Tap",
-  Slap = "Slap",
-  Pop = "Pop",
-}
+export const TapStyle = {
+  Tap: "Tap",
+  Slap: "Slap",
+  Pop: "Pop",
+} as const;
+export type TapStyle = (typeof TapStyle)[keyof typeof TapStyle];
 
 export interface Stroke {
   direction: StrokeDirection;

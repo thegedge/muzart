@@ -1,20 +1,20 @@
 import {
   AccentStyle,
-  Bend,
+  type Bend,
   BendType,
   Chord,
-  ChordDiagram,
+  type ChordDiagram,
   HarmonicStyle,
-  Marker,
+  type Marker,
   Note,
   NoteDynamic,
-  NoteOptions,
+  type NoteOptions,
   NoteValue,
   NoteValueName,
   PercussionInstrument,
   Pitch,
   Score,
-  Slide,
+  type Slide,
   SlideType,
   StringInstrument,
   StrokeDirection,
@@ -24,7 +24,7 @@ import {
   type PartOptions,
 } from "@muzart/notation";
 import { omit, padStart, range, zip } from "lodash-es";
-import { Loader } from "./Loader";
+import type { Loader } from "./Loader";
 import { BufferCursor, NumberType } from "./util/BufferCursor";
 
 const debug = !!import.meta.env.VITE_DEBUG_APP;

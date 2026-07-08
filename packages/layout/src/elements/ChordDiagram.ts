@@ -11,12 +11,11 @@ import { Text } from "./Text";
 
 export class ChordDiagram extends SimpleGroup<"ChordDiagram", AnyLayoutElement> {
   readonly type = "ChordDiagram";
+  readonly diagram: notation.ChordDiagram;
 
-  constructor(
-    readonly diagram: notation.ChordDiagram,
-    showDiagram = true,
-  ) {
+  constructor(diagram: notation.ChordDiagram, showDiagram = true) {
     super(Box.empty()); // will figure this out after laid out
+    this.diagram = diagram;
 
     const diagram_ = showDiagram ? diagram.diagram : undefined;
 

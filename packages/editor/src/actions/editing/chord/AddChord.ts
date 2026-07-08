@@ -15,12 +15,11 @@ export class AddChord extends Action {
   }
 
   readonly chord: Chord;
+  readonly measure: Measure;
 
-  constructor(
-    readonly measure: Measure,
-    value: NoteValue,
-  ) {
+  constructor(measure: Measure, value: NoteValue) {
     super();
+    this.measure = measure;
     this.chord = new Chord({ value, notes: [] });
   }
 

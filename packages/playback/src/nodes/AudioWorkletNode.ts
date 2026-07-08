@@ -6,8 +6,11 @@ import { AudioNode } from "./AudioNode";
 export class AudioWorkletNode extends AudioNode {
   #active = false;
 
-  constructor(private readonly node: globalThis.AudioWorkletNode) {
+  private readonly node: globalThis.AudioWorkletNode;
+
+  constructor(node: globalThis.AudioWorkletNode) {
     super();
+    this.node = node;
   }
 
   start(when?: number | undefined, durationSecs?: number | undefined): void {

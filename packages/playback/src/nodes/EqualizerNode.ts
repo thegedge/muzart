@@ -1,5 +1,5 @@
 import { AudioNode } from "./AudioNode";
-import { WebAudioNode } from "./node_helpers";
+import type { WebAudioNode } from "./node_helpers";
 
 export interface EqualizerOptions {
   /** The audio context to use for the equalizer node. */
@@ -27,8 +27,11 @@ export class EqualizerNode extends AudioNode {
   #mid3: WebAudioNode;
   #hi: WebAudioNode;
 
-  constructor(readonly options: EqualizerOptions) {
+  readonly options: EqualizerOptions;
+
+  constructor(options: EqualizerOptions) {
     super();
+    this.options = options;
 
     this.#lo = new BiquadFilterNode(options.context, {
       type: "lowshelf",

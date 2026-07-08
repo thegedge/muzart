@@ -4,14 +4,15 @@ class OutOfBoundsError extends Error {
   }
 }
 
-export enum NumberType {
-  Int8 = "byte",
-  Int16 = "short",
-  Int32 = "integer",
-  Uint8 = "unsigned byte",
-  Uint16 = "unsigned short",
-  Uint32 = "unsigned integer",
-}
+export const NumberType = {
+  Int8: "byte",
+  Int16: "short",
+  Int32: "integer",
+  Uint8: "unsigned byte",
+  Uint16: "unsigned short",
+  Uint32: "unsigned integer",
+} as const;
+export type NumberType = (typeof NumberType)[keyof typeof NumberType];
 
 const NUM_BYTES = {
   [NumberType.Int8]: 1,
@@ -26,8 +27,10 @@ export class BufferCursor {
   private byteOffset = 0;
   private view: DataView;
   private decoder = new TextDecoder();
+  readonly buffer: ArrayBuffer;
 
-  constructor(readonly buffer: ArrayBuffer) {
+  constructor(buffer: ArrayBuffer) {
+    this.buffer = buffer;
     this.view = new DataView(buffer);
   }
 

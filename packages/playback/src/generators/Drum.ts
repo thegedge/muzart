@@ -1,6 +1,6 @@
 import * as notation from "@muzart/notation";
 import { AudioWorkletNode } from "../nodes/AudioWorkletNode";
-import { SourceGenerator } from "../types";
+import type { SourceGenerator } from "../types";
 
 export interface DrumOptions {
   /** The audio context this generator will use */
@@ -14,7 +14,11 @@ export interface DrumOptions {
  * A generator that simulates a drum.
  */
 export class Drum implements SourceGenerator {
-  constructor(private options: DrumOptions) {}
+  private options: DrumOptions;
+
+  constructor(options: DrumOptions) {
+    this.options = options;
+  }
 
   // TODO actually use the note
 

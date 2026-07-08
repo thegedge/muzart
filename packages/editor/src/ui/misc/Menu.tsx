@@ -1,8 +1,8 @@
 import clsx from "clsx";
-import { Children, HTMLAttributes, isValidElement, type ReactElement } from "react";
-import { Command } from "../../state/Application";
+import { Children, isValidElement, type HTMLAttributes, type ReactElement } from "react";
+import type { Command } from "../../state/Application";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
-import { MaybeArray } from "../../utils/types";
+import type { MaybeArray } from "../../utils/types";
 
 export type MenuProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   children: MaybeArray<ReactElement | Command>;

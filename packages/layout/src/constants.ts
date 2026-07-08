@@ -1,4 +1,4 @@
-import { Margins, Millimetres } from "./types";
+import type { Margins, Millimetres } from "./types";
 
 export const PX_PER_MM = 4; // assuming 96 pixels per inch, rounded up (from 3.7795275591) so we have integers
 

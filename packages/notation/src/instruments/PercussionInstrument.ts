@@ -1,5 +1,5 @@
 import { makeObservable } from "mobx";
-import { Instrument, InstrumentOptions } from "./Instrument";
+import { Instrument, type InstrumentOptions } from "./Instrument";
 
 export type PercussionInstrumentOptions = InstrumentOptions;
 

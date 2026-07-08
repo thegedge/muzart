@@ -1,44 +1,48 @@
 import { nanoid } from "nanoid/non-secure";
-import { Bend } from "./Bend";
+import type { Bend } from "./Bend";
 import { Chord } from "./Chord";
 import { NoteValue } from "./NoteValue";
 import { Pitch } from "./Pitch";
 
-export enum HarmonicStyle {
-  Natural = "natural",
-  ArtificialPlus5 = "artificial+5",
-  ArtificialPlus7 = "artificial+7",
-  ArtificialPlus12 = "artificial+12",
-  Tapped = "tapped",
-  Pinch = "pinch",
-  Semi = "semi",
-}
+export const HarmonicStyle = {
+  Natural: "natural",
+  ArtificialPlus5: "artificial+5",
+  ArtificialPlus7: "artificial+7",
+  ArtificialPlus12: "artificial+12",
+  Tapped: "tapped",
+  Pinch: "pinch",
+  Semi: "semi",
+} as const;
+export type HarmonicStyle = (typeof HarmonicStyle)[keyof typeof HarmonicStyle];
 
-export enum AccentStyle {
-  Accentuated = "accentuated",
-  Marcato = "marcato",
-}
+export const AccentStyle = {
+  Accentuated: "accentuated",
+  Marcato: "marcato",
+} as const;
+export type AccentStyle = (typeof AccentStyle)[keyof typeof AccentStyle];
 
-export enum NoteDynamic {
-  Pianississimo = "ppp",
-  Pianissimo = "pp",
-  Piano = "p",
-  MezzoPiano = "mp",
-  MezzoForte = "mf",
-  Forte = "f",
-  Fortissimo = "ff",
-  Fortississimo = "fff",
-}
+export const NoteDynamic = {
+  Pianississimo: "ppp",
+  Pianissimo: "pp",
+  Piano: "p",
+  MezzoPiano: "mp",
+  MezzoForte: "mf",
+  Forte: "f",
+  Fortissimo: "ff",
+  Fortississimo: "fff",
+} as const;
+export type NoteDynamic = (typeof NoteDynamic)[keyof typeof NoteDynamic];
 
-export enum SlideType {
-  SlideIntoFromAbove = "Slide into from above",
-  SlideIntoFromBelow = "Slide into from below",
+export const SlideType = {
+  SlideIntoFromAbove: "Slide into from above",
+  SlideIntoFromBelow: "Slide into from below",
   // TODO need to post process to figure out if we're sliding up or down for these two
-  ShiftSlide = "Shift slide",
-  LegatoSlide = "Legato slide",
-  SlideOutDownwards = "Slide out of downwards",
-  SlideOutUpwards = "Slide out of upwards",
-}
+  ShiftSlide: "Shift slide",
+  LegatoSlide: "Legato slide",
+  SlideOutDownwards: "Slide out of downwards",
+  SlideOutUpwards: "Slide out of upwards",
+} as const;
+export type SlideType = (typeof SlideType)[keyof typeof SlideType];
 
 export interface Slide {
   type: SlideType;

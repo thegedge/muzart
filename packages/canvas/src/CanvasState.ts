@@ -1,7 +1,7 @@
 import type * as CSS from "csstype";
 import { makeAutoObservable } from "mobx";
-import { Box } from "./Box";
-import { type Point } from "./Canvas";
+import { Box } from "./Box.js";
+import { type Point } from "./Canvas.js";
 
 export interface RenderFunction {
   (context: CanvasRenderingContext2D, viewport: Box): void;

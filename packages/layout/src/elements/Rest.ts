@@ -5,11 +5,10 @@ import { LayoutElement } from "./LayoutElement";
 
 export class Rest extends LayoutElement<"Rest"> {
   readonly type = "Rest";
+  readonly chord: notation.Chord;
 
-  constructor(
-    readonly chord: notation.Chord,
-    staffLineCount: number,
-  ) {
+  constructor(chord: notation.Chord, staffLineCount: number) {
     super(new Box(0, 0, chordWidth(4), staffLineCount * STAFF_LINE_HEIGHT));
+    this.chord = chord;
   }
 }

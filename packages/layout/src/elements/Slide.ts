@@ -6,12 +6,11 @@ import { Line } from "./Line";
 
 export class Slide extends SimpleGroup<"Slide", Arc | Line> {
   readonly type = "Slide";
+  readonly upwards: boolean;
 
-  constructor(
-    box: Box,
-    readonly upwards: boolean,
-  ) {
+  constructor(box: Box, upwards: boolean) {
     super(box);
+    this.upwards = upwards;
 
     // TODO specify line colors below in score.css
 

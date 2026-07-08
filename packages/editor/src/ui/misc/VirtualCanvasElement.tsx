@@ -5,10 +5,13 @@ import { type AnyLayoutElement, Box, toAncestorCoordinateSystem } from "@muzart/
  * Represents an element in the canvas as a virtual DOM element.
  */
 export class VirtualCanvasElement {
-  constructor(
-    readonly element: AnyLayoutElement,
-    readonly canvas: CanvasState,
-  ) {}
+  readonly element: AnyLayoutElement;
+  readonly canvas: CanvasState;
+
+  constructor(element: AnyLayoutElement, canvas: CanvasState) {
+    this.element = element;
+    this.canvas = canvas;
+  }
 
   /**
    * A `DOMRect`-like object for this box.

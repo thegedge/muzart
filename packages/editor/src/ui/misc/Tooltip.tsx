@@ -13,7 +13,7 @@ import { PX_PER_MM } from "@muzart/layout";
 import clsx from "clsx";
 import { reaction } from "mobx";
 import { Observer } from "mobx-react-lite";
-import { JSX, useRef } from "react";
+import { useRef, type JSX } from "react";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import type { VirtualCanvasElement } from "./VirtualCanvasElement";
 

@@ -1,15 +1,16 @@
 import { clamp } from "lodash-es";
 
-export enum NoteValueName {
-  Whole = "whole",
-  Half = "half",
-  Quarter = "quarter",
-  Eighth = "eighth",
-  Sixteenth = "sixteenth",
-  ThirtySecond = "thirty second",
-  SixtyFourth = "sixty fourth",
-  OneTwentyEighth = "one hundred and twenty eighth",
-}
+export const NoteValueName = {
+  Whole: "whole",
+  Half: "half",
+  Quarter: "quarter",
+  Eighth: "eighth",
+  Sixteenth: "sixteenth",
+  ThirtySecond: "thirty second",
+  SixtyFourth: "sixty fourth",
+  OneTwentyEighth: "one hundred and twenty eighth",
+} as const;
+export type NoteValueName = (typeof NoteValueName)[keyof typeof NoteValueName];
 
 export interface NoteValueOptions {
   /** The number of dots in this note */
@@ -85,13 +86,12 @@ export class NoteValue {
     }
   }
 
+  readonly name: NoteValueName;
   readonly dots: number;
   readonly tuplet?: Tuplet;
 
-  constructor(
-    readonly name: NoteValueName,
-    options?: Partial<NoteValueOptions>,
-  ) {
+  constructor(name: NoteValueName, options?: Partial<NoteValueOptions>) {
+    this.name = name;
     this.dots = clamp(options?.dots || 0, 0, 3);
     this.tuplet = options?.tuplet;
   }

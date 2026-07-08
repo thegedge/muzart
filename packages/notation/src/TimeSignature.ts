@@ -15,10 +15,13 @@ export class TimeSignature {
     throw new Error("Invalid TimeSignature value");
   }
 
-  constructor(
-    readonly value: NoteValue,
-    readonly count: number,
-  ) {}
+  readonly value: NoteValue;
+  readonly count: number;
+
+  constructor(value: NoteValue, count: number) {
+    this.value = value;
+    this.count = count;
+  }
 
   /**
    * Compute the expected duration for a measure under this time signature.

@@ -16,11 +16,13 @@ export class DeleteNote extends Action {
     return instrument && chord && note ? new DeleteNote(chord, note) : null;
   }
 
-  private constructor(
-    private chord: notation.Chord,
-    private note: notation.Note,
-  ) {
+  private chord: notation.Chord;
+  private note: notation.Note;
+
+  private constructor(chord: notation.Chord, note: notation.Note) {
     super();
+    this.chord = chord;
+    this.note = note;
   }
 
   apply(_application: Application) {

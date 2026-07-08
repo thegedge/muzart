@@ -3,7 +3,7 @@ import * as layout from "@muzart/layout";
 import { Note } from "@muzart/notation";
 import { inRange, last, minBy } from "lodash-es";
 import { makeAutoObservable } from "mobx";
-import { StorableObject, numberOrDefault } from "../storage/Storage";
+import { numberOrDefault, type StorableObject } from "../storage/Storage";
 
 export class Selection implements StorableObject {
   public score: layout.Score | null = null;

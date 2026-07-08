@@ -18,9 +18,11 @@ export class AddPart extends Action {
   }
 
   private part: notation.Part;
+  private score: notation.Score;
 
-  constructor(private score: notation.Score) {
+  constructor(score: notation.Score) {
     super();
+    this.score = score;
     this.part = newPart(score);
   }
 

@@ -1,5 +1,5 @@
 import Emittery from "emittery";
-import { WebAudioNode } from "./node_helpers";
+import type { WebAudioNode } from "./node_helpers";
 
 export abstract class AudioNode extends Emittery<{ ended: never }> {
   #tempo = 128;

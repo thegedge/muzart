@@ -8,13 +8,15 @@ export class ChangeTimeSignature extends Action {
   static readonly defaultKeyBinding = null;
 
   private oldTimeSignature: notation.Changeable<notation.TimeSignature> | undefined;
+  private part: notation.Part;
+  private measure: notation.Measure;
+  private timeSignature: notation.TimeSignature | null;
 
-  constructor(
-    private part: notation.Part,
-    private measure: notation.Measure,
-    private timeSignature: notation.TimeSignature | null,
-  ) {
+  constructor(part: notation.Part, measure: notation.Measure, timeSignature: notation.TimeSignature | null) {
     super();
+    this.part = part;
+    this.measure = measure;
+    this.timeSignature = timeSignature;
     this.oldTimeSignature = measure.staffDetails.time;
   }
 

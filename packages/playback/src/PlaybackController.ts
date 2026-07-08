@@ -8,7 +8,7 @@ import { DefaultSourceGenerator } from "./factories/DefaultSourceGenerator";
 import { SoundFont } from "./factories/SoundFont";
 import type { AudioNode } from "./nodes/AudioNode";
 import { WrappedNode } from "./nodes/WrappedNode";
-import { SourceGeneratorFactory } from "./types";
+import type { SourceGeneratorFactory } from "./types";
 import { noteValueToSeconds } from "./utils/durations";
 
 type Selection = {
@@ -50,7 +50,10 @@ export class PlaybackController {
 
   private destination: AudioNode;
 
-  constructor(private selection: Selection) {
+  private selection: Selection;
+
+  constructor(selection: Selection) {
+    this.selection = selection;
     this.audioContext = new AudioContext();
     this.init().catch((err) => {
       console.error("could not load audio worklets", err);

@@ -25,14 +25,13 @@ export class PageLine extends SimpleGroup<"PageLine", AnyLayoutElement> {
   private staffLines: Line[] = [];
   private staffOverlay: StaffOverlay;
   private dirty = true;
+  private numStaffLines: number;
 
   public measures: Measure[] = [];
 
-  constructor(
-    box: Box,
-    private numStaffLines = 6,
-  ) {
+  constructor(box: Box, numStaffLines = 6) {
     super(box);
+    this.numStaffLines = numStaffLines;
 
     this.staffOverlay = new StaffOverlay();
     this.aboveStaffLayout = new AboveStaff({ gap: STAFF_LINE_HEIGHT * 0.25 });

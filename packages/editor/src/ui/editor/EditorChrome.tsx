@@ -8,7 +8,7 @@ import { EditTimeSignature } from "../../actions/editing/measure/EditTimeSignatu
 import { AddPart } from "../../actions/editing/part/AddPart";
 import { RemovePart } from "../../actions/editing/part/RemovePart";
 import { TogglePlayback } from "../../actions/playback/TogglePlayback";
-import { Command } from "../../state/Application";
+import type { Command } from "../../state/Application";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 import { PauseIcon, PlayIcon, type IconType } from "../icons";
 import { Loading } from "../misc/Loading";

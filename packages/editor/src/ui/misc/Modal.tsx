@@ -1,4 +1,4 @@
-import { ReactNode, forwardRef, type Ref } from "react";
+import { forwardRef, type ReactNode, type Ref } from "react";
 
 export const Modal = forwardRef((props: { title: string; children?: ReactNode }, ref?: Ref<HTMLDivElement>) => {
   return (

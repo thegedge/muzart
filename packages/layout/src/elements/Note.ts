@@ -5,12 +5,11 @@ import { Text } from "./Text";
 
 export class Note extends SimpleGroup<"Note", Text> {
   readonly type = "Note";
+  readonly note: notation.Note;
 
-  constructor(
-    box: Box,
-    readonly note: notation.Note,
-  ) {
+  constructor(box: Box, note: notation.Note) {
     super(box);
+    this.note = note;
     this.addElement(
       Text.centered({
         box: new Box(0, 0, box.width, box.height),

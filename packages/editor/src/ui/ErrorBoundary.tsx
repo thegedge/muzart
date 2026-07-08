@@ -1,4 +1,4 @@
-import { Component, ReactNode } from "react";
+import { Component, type ReactNode } from "react";
 import { PageCallout } from "./layout/PageCallout";
 
 export default class ErrorBoundary extends Component<{ children: ReactNode }, { error?: Error }> {

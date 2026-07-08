@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useState } from "react";
-import { BaseLocationHook, Router } from "wouter";
+import { Router, type BaseLocationHook } from "wouter";
 import { ApplicationState } from "../utils/ApplicationStateContext";
 import { useEditorKeyBindings } from "../utils/useEditorKeyBindings";
 import ErrorBoundary from "./ErrorBoundary";

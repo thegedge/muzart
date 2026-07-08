@@ -3,7 +3,7 @@ import { NoteValue, NoteValueName } from "@muzart/notation";
 import { maxMap } from "..";
 import { STAFF_LINE_HEIGHT } from "../constants";
 import { FlexGroup } from "../layouts/FlexGroup";
-import { Millimetres } from "../types";
+import type { Millimetres } from "../types";
 import { Box } from "../utils/Box";
 import { Chord } from "./Chord";
 import type { AnyLayoutElement } from "./LayoutElement";
@@ -19,16 +19,18 @@ export class Measure extends FlexGroup<"Measure", AnyLayoutElement> {
 
   public chords: (Chord | Rest)[] = [];
 
-  constructor(
-    readonly part: notation.Part,
-    readonly measure: notation.Measure,
-  ) {
+  readonly part: notation.Part;
+  readonly measure: notation.Measure;
+
+  constructor(part: notation.Part, measure: notation.Measure) {
     super({
       box: Box.empty(),
       axis: "horizontal",
       crossAxisAlignment: "center",
       defaultStretchFactor: 0,
     });
+    this.part = part;
+    this.measure = measure;
 
     const singleWholeRest =
       measure.chords.length == 1 && measure.chords[0].rest && measure.chords[0].value.name == NoteValueName.Whole;

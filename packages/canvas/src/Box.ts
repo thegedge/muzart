@@ -23,12 +23,17 @@ export class Box {
     return boxes.reduce((encompassBox, box) => encompassBox.encompass(box), Box.empty());
   }
 
-  constructor(
-    public x: number,
-    public y: number,
-    public width: number,
-    public height: number,
-  ) {}
+  public x: number;
+  public y: number;
+  public width: number;
+  public height: number;
+
+  constructor(x: number, y: number, width: number, height: number) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
 
   /**
    * Create a copy of this box.
@@ -54,7 +59,12 @@ export class Box {
   expand(amountH: number, amountV: number): Box;
   expand(amountH: number, amountV?: number) {
     amountV ??= amountH;
-    return new Box(this.x - amountH, this.y - amountV, this.width + 2 * amountH, this.height + 2 * amountV);
+    return new Box(
+      this.x - amountH,
+      this.y - amountV,
+      this.width + 2 * amountH,
+      this.height + 2 * amountV,
+    );
   }
 
   /**
@@ -87,7 +97,12 @@ export class Box {
    */
   contains(geom: Point | Box): boolean {
     if (geom instanceof Box) {
-      return this.x <= geom.x && geom.right <= this.right && this.y <= geom.y && geom.bottom <= this.bottom;
+      return (
+        this.x <= geom.x &&
+        geom.right <= this.right &&
+        this.y <= geom.y &&
+        geom.bottom <= this.bottom
+      );
     }
 
     return this.x <= geom.x && geom.x <= this.right && this.y <= geom.y && geom.y <= this.bottom;
@@ -97,14 +112,18 @@ export class Box {
    * Returns whether or not this box overlaps the other.
    */
   overlaps(box: Box): boolean {
-    return this.x <= box.right && this.right >= box.x && this.y <= box.bottom && this.bottom >= box.y;
+    return (
+      this.x <= box.right && this.right >= box.x && this.y <= box.bottom && this.bottom >= box.y
+    );
   }
 
   /**
    * Does this box equal the other?
    */
   equals(box: Box): boolean {
-    return this.x === box.x && this.y === box.y && this.width === box.width && this.height === box.height;
+    return (
+      this.x === box.x && this.y === box.y && this.width === box.width && this.height === box.height
+    );
   }
 
   get top() {

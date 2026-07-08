@@ -1,6 +1,6 @@
 import { AudioNode } from "./AudioNode";
 import { WrappedNode } from "./WrappedNode";
-import { WebAudioNode } from "./node_helpers";
+import type { WebAudioNode } from "./node_helpers";
 
 /**
  * A node that is composed of a separate input and output node.

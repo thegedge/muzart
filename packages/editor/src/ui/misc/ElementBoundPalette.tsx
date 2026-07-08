@@ -1,7 +1,7 @@
 import { type AnyLayoutElement, PX_PER_MM, toAncestorCoordinateSystem } from "@muzart/layout";
 import type * as CSS from "csstype";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { useApplicationState } from "../../utils/ApplicationStateContext";
 
 export const ElementBoundPalette = observer(

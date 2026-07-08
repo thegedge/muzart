@@ -1,6 +1,6 @@
 import * as layout from "@muzart/layout";
 import { StrokeDirection } from "@muzart/notation";
-import { RenderFunc } from "../types";
+import type { RenderFunc } from "../types";
 
 export const Stroke: RenderFunc<layout.Stroke> = (element, render) => {
   switch (element.stroke.direction) {

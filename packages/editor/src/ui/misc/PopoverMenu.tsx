@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { HTMLAttributes, useState, type MouseEventHandler, type ReactElement } from "react";
+import { useState, type HTMLAttributes, type MouseEventHandler, type ReactElement } from "react";
 import { Menu } from "./Menu";
 
 export const PopoverMenu = (

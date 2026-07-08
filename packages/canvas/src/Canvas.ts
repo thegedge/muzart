@@ -1,4 +1,4 @@
-import { CanvasState } from "./CanvasState";
+import { CanvasState } from "./CanvasState.js";
 
 const PX_PER_MM = 4; // assuming 96 pixels per inch, rounded up (from 3.7795275591) so we have integers
 

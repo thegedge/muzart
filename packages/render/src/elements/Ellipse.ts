@@ -1,5 +1,5 @@
 import * as layout from "@muzart/layout";
-import { RenderFunc } from "../types";
+import type { RenderFunc } from "../types";
 
 export const Ellipse: RenderFunc<layout.Ellipse> = (element, render, context) => {
   render.beginPath();
