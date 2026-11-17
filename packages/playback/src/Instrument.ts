@@ -5,6 +5,9 @@ import { WrappedNode } from "./nodes/WrappedNode";
 import type { InstrumentOptions, SourceGenerator } from "./types";
 import { noteDurationInSeconds, noteValueToSeconds } from "./utils/durations";
 
+/** How long after a note ends to wait before disconnecting its nodes */
+const NOTE_TEARDOWN_GRACE_MS = 250;
+
 /**
  * Base class for any playback instrument.
  */
@@ -85,13 +88,21 @@ export class Instrument {
         return;
       }
 
+      // Additional nodes we will track and dispose of once the note is done
+      // TODO set up a context or some other thing that tracks all of the nodes so we don't need to
+      //      track all of this ourselves
+      const extraNodes: globalThis.AudioNode[] = [];
+
       const source = this.sourceGenerator.generate(note);
       const pitchParam = source.pitch;
       if (pitchParam) {
         this.maybeBend(note, pitchParam, tempo, startTime);
 
         const vibrato = this.maybeVibrato(note, startTime);
-        const effects: globalThis.AudioNode[] = compact([vibrato]);
+        if (vibrato) {
+          extraNodes.push(vibrato.oscillator, vibrato.amplitude);
+        }
+        const effects: globalThis.AudioNode[] = compact([vibrato?.amplitude]);
         if (effects.length > 0) {
           effects.reduce((previousNode, node) => {
             previousNode.connect(node);
@@ -105,6 +116,7 @@ export class Instrument {
         const gainNode = new WrappedNode(new GainNode(this.context, { gain }));
         source.connect(gainNode);
         gainNode.connect(this.destination);
+        extraNodes.push(gainNode.raw);
       } else {
         source.connect(this.destination);
       }
@@ -112,8 +124,16 @@ export class Instrument {
 
       this.activeSources.set(note, source);
       source.on("ended", () => {
-        source.dispose();
-        this.activeSources.delete(note);
+        if (this.activeSources.get(note) === source) {
+          this.activeSources.delete(note);
+        }
+
+        setTimeout(() => {
+          source.dispose();
+          for (const node of extraNodes) {
+            node.disconnect();
+          }
+        }, NOTE_TEARDOWN_GRACE_MS);
       });
     } catch (e) {
       console.warn(e);
@@ -150,7 +170,7 @@ export class Instrument {
     oscillator.connect(amplitude);
     oscillator.start(when);
 
-    return amplitude;
+    return { oscillator, amplitude };
   }
 
   /**
