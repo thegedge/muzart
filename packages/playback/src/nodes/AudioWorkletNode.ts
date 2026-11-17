@@ -22,7 +22,9 @@ export class AudioWorkletNode extends AudioNode {
     });
 
     if (durationSecs !== undefined) {
-      setTimeout(() => this.stop(), ((when ?? 0) + durationSecs) * 1000);
+      const now = this.node.context.currentTime;
+      const stopTime = Math.max(0, (when ?? now) + durationSecs - now) * 1000;
+      setTimeout(() => this.stop(), stopTime);
     }
   }
 
