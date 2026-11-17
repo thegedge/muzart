@@ -31,8 +31,8 @@ export const BendPointGrid = observer((props: { bend: ObservableBend; className?
     onDrag: (dragging, px, py, event) => {
       const pointIndex = bend.points.indexOf(dragging);
 
-      let minX = 0;
-      let maxX = 0;
+      let minX: number;
+      let maxX: number;
       if (pointIndex == 0) {
         minX = 0;
         maxX = 0;

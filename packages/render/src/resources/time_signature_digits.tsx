@@ -23,7 +23,7 @@ const TIME_SIGNATURE_NUMBER_HEIGHT = 20.102856;
  * If only one of width/height is given, scale to the given dimension proportionally.
  * If neither are given, use the natural width/height.
  */
-export const timeSignatureDigit = (digit: number, width?: number | undefined, height?: number | undefined) => {
+export const timeSignatureDigit = (digit: number, width?: number, height?: number) => {
   // TODO find the actual widths (e.g., 1 is less wide) and lay out an entire number so it looks good (e.g., 10 looks bad)
 
   const path = DigitPaths[digit];

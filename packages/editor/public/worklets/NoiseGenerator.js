@@ -29,7 +29,9 @@ class NoiseGenerator extends AudioWorkletProcessor {
       switch (event.data.type) {
         case "start": {
           this.start = event.data.when ?? currentTime - 0.001;
-          this.end = event.data.durationSecs ? this.start + event.data.durationSecs : Number.POSITIVE_INFINITY;
+          this.end = event.data.durationSecs
+            ? this.start + event.data.durationSecs
+            : Number.POSITIVE_INFINITY;
           break;
         }
         case "stop": {
@@ -52,12 +54,16 @@ class NoiseGenerator extends AudioWorkletProcessor {
     const output = outputs[0][0];
 
     if (currentTime < this.start) {
-      output && output.fill(0.0);
+      if (output) {
+        output.fill(0.0);
+      }
       return true;
     }
 
     if (currentTime >= this.end) {
-      output && output.fill(0.0);
+      if (output) {
+        output.fill(0.0);
+      }
       return false;
     }
 

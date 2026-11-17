@@ -27,16 +27,13 @@ export class Text extends LayoutElement<"Text"> {
     });
   }
 
-  static boundText<Target, Property extends StringProperties<Target>>(
-    target: Target,
-    prop: Property,
-    options: Omit<TextOptions, "value">,
-  ): Text {
+  static boundText<Target>(target: Target, prop: StringProperties<Target>, options: Omit<TextOptions, "value">): Text {
     return new Text({
       ...options,
       value: (target[prop] as string | null | undefined) ?? "", // TODO why are these casts necessary?
       setText: (value: string) => {
-        target[prop] = value as Target[Property];
+        // TODO type Text in some way that to avoid this cast
+        target[prop] = value as Target[StringProperties<Target>];
       },
     });
   }

@@ -28,7 +28,11 @@ export const BendEditor = observer((_props: Record<string, never>) => {
       return;
     }
 
-    note ? popoverRef.current.showPopover() : popoverRef.current.hidePopover();
+    if (note) {
+      popoverRef.current.showPopover();
+    } else {
+      popoverRef.current.hidePopover();
+    }
   }, [note]);
 
   return (

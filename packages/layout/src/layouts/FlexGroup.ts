@@ -215,7 +215,7 @@ export abstract class FlexGroup<Type extends string, ChildT extends AnyLayoutEle
         child.box[this.dimensionAttribute.main] += extraSpace * (factor / factorsSum);
 
         // TODO should this come first, then the above two lines?
-        child.layout?.();
+        child.layout();
 
         mainAxisStart += child.box[this.dimensionAttribute.main] + this.gap;
         crossAxisSize = Math.max(crossAxisSize, child.box[this.dimensionAttribute.cross]);

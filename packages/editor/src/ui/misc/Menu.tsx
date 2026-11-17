@@ -5,7 +5,7 @@ import { useApplicationState } from "../../utils/ApplicationStateContext";
 import type { MaybeArray } from "../../utils/types";
 
 export type MenuProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
-  children: MaybeArray<ReactElement | Command>;
+  children: MaybeArray<ReactElement<unknown> | Command>;
 };
 
 export const Menu = (props: MenuProps) => {
@@ -14,7 +14,7 @@ export const Menu = (props: MenuProps) => {
   return (
     <div {...props} className={clsx(props.className, "min-w-48 rounded bg-gray-950 p-1 text-gray-300 outline-none")}>
       {Children.map(props.children, (child) => {
-        if (isValidElement<any>(child)) {
+        if (isValidElement(child)) {
           return child;
         }
 
@@ -49,7 +49,7 @@ const MenuItem = (props: HTMLAttributes<HTMLDivElement>) => {
       }}
       className={clsx(
         props.className,
-        "text-shadow-sm flex w-full cursor-pointer gap-2 rounded bg-gray-950 py-1 pl-6 shadow-black hover:bg-blue-700",
+        "flex w-full cursor-pointer gap-2 rounded bg-gray-950 py-1 pl-6 shadow-black text-shadow-sm hover:bg-blue-700",
       )}
     />
   );

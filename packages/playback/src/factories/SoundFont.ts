@@ -193,7 +193,7 @@ export class SoundFont implements SourceGeneratorFactory {
           buffer.copyToChannel(this.sampleData.subarray(sampleInfo.start, sampleInfo.end), 0);
 
           const generators = { ...globalZone?.generators, ...zone.generators };
-          const modulators = { ...globalZone?.modulators, ...zone.modulators };
+          const modulators = [...(globalZone?.modulators ?? []), ...zone.modulators];
 
           const basePitch = generators[SoundFontGeneratorType.RootKeyOverride] ?? sampleInfo.originalPitch;
           const pitchOffset = generators[SoundFontGeneratorType.CoarseTune] ?? 0;

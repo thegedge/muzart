@@ -6,12 +6,8 @@ import type { WebAudioNode } from "./node_helpers";
  * A node that is composed of a separate input and output node.
  */
 export class CompositeNode extends AudioNode {
-  static compose = <
-    Input extends AudioNode | WebAudioNode,
-    Output extends AudioNode | WebAudioNode,
-    Nodes extends [Input, ...(AudioNode | WebAudioNode)[], Output],
-  >(
-    ...nodes: Nodes
+  static compose = (
+    ...nodes: [AudioNode | WebAudioNode, ...(AudioNode | WebAudioNode)[], AudioNode | WebAudioNode]
   ): CompositeNode => {
     const muzartNodes = nodes.map((current) => {
       if (current instanceof AudioNode) {
@@ -41,7 +37,7 @@ export class CompositeNode extends AudioNode {
     this.#output = output;
   }
 
-  start(when?: number | undefined, durationSecs?: number | undefined): void {
+  start(when?: number, durationSecs?: number): void {
     this.#active = true;
     this.#input.start(when, durationSecs);
   }

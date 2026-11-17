@@ -3,7 +3,7 @@ import { Instrument, type InstrumentOptions } from "./Instrument";
 
 export type PercussionInstrumentOptions = InstrumentOptions;
 
-export class PercussionInstrument extends Instrument<PercussionInstrumentOptions> {
+export class PercussionInstrument extends Instrument {
   readonly type = "percussion";
 
   constructor(options: PercussionInstrumentOptions) {

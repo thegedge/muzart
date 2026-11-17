@@ -196,6 +196,7 @@ export function runs<T, V>(
  *
  * @returns The element whose `type` matches the given `type`. If `e` itself is of the given type, `e` will be returned.
  */
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters -- callers assert the expected element type
 export const getAncestorOfType = <T extends AnyLayoutElement>(e: AnyLayoutElement, type: string): T | null => {
   let current: AnyLayoutElement | null = e;
   while (current) {

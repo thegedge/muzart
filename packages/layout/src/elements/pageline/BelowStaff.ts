@@ -163,7 +163,7 @@ export class BelowStaff extends SimpleGroupElement<AnyLayoutElement> {
   private layOutBeams(measureBox: Box, beatElements: BeatElements[]) {
     let y = STEM_HEIGHT - BEAM_HEIGHT;
     const beamCounts = beatElements.map((element) => this.numBeams(element));
-    // eslint-disable-next-line no-constant-condition
+
     while (true) {
       // Find runs of elements that still need a beam drawn, then draw a beam between the two
       const beamRuns = runs(beamCounts, (v) => (v > 0 ? true : undefined));

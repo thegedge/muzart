@@ -31,6 +31,7 @@ export const useApplicationState = (): Application => {
 
 export const ApplicationState = (props: { children?: ReactNode }) => {
   const [_location, navigate] = useLocation();
+
   const application = useMemo(() => {
     const settingsStorage = new LocalStorage();
     const tabStorage = new TabStorage({
@@ -51,7 +52,7 @@ export const ApplicationState = (props: { children?: ReactNode }) => {
       playback,
       navigate,
     });
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     return () => application.dispose();

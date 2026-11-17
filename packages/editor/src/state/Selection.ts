@@ -3,6 +3,7 @@ import * as layout from "@muzart/layout";
 import { Note } from "@muzart/notation";
 import { inRange, last, minBy } from "lodash-es";
 import { makeAutoObservable } from "mobx";
+
 import { numberOrDefault, type StorableObject } from "../storage/Storage";
 
 export class Selection implements StorableObject {
@@ -28,9 +29,12 @@ export class Selection implements StorableObject {
   get page(): layout.Page | undefined {
     const page = this.part?.children.find((p) => {
       const rangeStart = p.measures[0].measure.number;
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- there's always at least one measure
-      const rangeEnd = last(p.measures)!.measure.number + 1;
-      return inRange(this.measureIndex + 1, rangeStart, rangeEnd);
+      const rangeEnd = last(p.measures)?.measure.number;
+      if (rangeEnd === undefined) {
+        return false;
+      }
+
+      return inRange(this.measureIndex + 1, rangeStart, rangeEnd + 1);
     });
     if (!page) {
       throw new Error("current measure not found in any page");
@@ -51,7 +55,6 @@ export class Selection implements StorableObject {
       return undefined;
     }
 
-    // Need the `as` here because TS doesn't understand that the type check internally prevents returning anything else
     const noteIndex = this.chord.chord.notes.findIndex((note) => note.placement?.string == this.noteIndex + 1);
     return noteIndex == -1 ? undefined : this.chord.notes[noteIndex];
   }
@@ -225,7 +228,7 @@ export class Selection implements StorableObject {
     const nextLineChords = nextLine.measures.flatMap((measure) =>
       measure.chords.map((chord) => [measure, chord] as const),
     );
-    const closestChordOnNextLine = minBy(nextLineChords, ([_, chord]) =>
+    const closestChordOnNextLine = minBy(nextLineChords, ([_measure, chord]) =>
       Math.abs(layout.toAncestorCoordinateSystem(chord).x - chordX),
     );
     if (closestChordOnNextLine) {

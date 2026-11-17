@@ -1,7 +1,6 @@
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 import { promises as fs } from "node:fs";
-import { defineConfig, ModuleNode, ServerOptions, UserConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
+import { defineConfig, type ModuleNode, type ServerOptions, type UserConfig } from "vite";
 
 const includeAllImporters = (modules: ModuleNode[]) => {
   const modulesToUpdate: ModuleNode[] = [];
@@ -49,18 +48,15 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
   }
 
   return {
+    resolve: {
+      tsconfigPaths: true,
+    },
+
     build: {
       minify: mode == "production",
     },
 
-    esbuild: {
-      minifyIdentifiers: mode == "production",
-      keepNames: mode != "production",
-    },
-
     plugins: [
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      tsconfigPaths(),
       react(),
       {
         name: "re-render-score",

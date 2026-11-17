@@ -4,8 +4,8 @@ import { useApplicationState } from "../../utils/ApplicationStateContext";
 
 export const Popover = forwardRef<HTMLElement, PropsWithChildren<HTMLAttributes<HTMLElement>>>((props, ref) => {
   const application = useApplicationState();
-  const modalRef = useRef<HTMLDivElement>(null);
-  const mergedRef = useMergeRefs([ref as any, modalRef]);
+  const modalRef = useRef<HTMLElement>(null);
+  const mergedRef = useMergeRefs([ref, modalRef]);
   useEffect(() => {
     const modal = modalRef.current;
     if (!modal) {
@@ -28,10 +28,10 @@ export const Popover = forwardRef<HTMLElement, PropsWithChildren<HTMLAttributes<
     return () => {
       modal.removeEventListener("toggle", listener);
     };
-  }, [modalRef]);
+  }, [modalRef, application.state]);
 
   // REMOVEME once popover typed in react
-  const { popover, ...otherProps } = props as any;
+  const { popover } = props as { popover?: string };
 
   return <div ref={mergedRef} {...props} {...{ popover: popover ?? "auto" }} />;
 });

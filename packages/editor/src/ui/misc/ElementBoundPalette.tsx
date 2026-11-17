@@ -46,7 +46,7 @@ export const ElementBoundPalette = observer(
             };
 
             return (
-              <PaletteEntry key={label} onClick={onSelect} value={value} current={value === props.currentValue}>
+              <PaletteEntry key={label} onClick={onSelect} current={value === props.currentValue}>
                 {label}
               </PaletteEntry>
             );
@@ -60,7 +60,7 @@ export const ElementBoundPalette = observer(
   },
 );
 
-function PaletteEntry<T>(props: { onClick: () => void; children: ReactNode; value: T; current: boolean }) {
+const PaletteEntry = (props: { onClick: () => void; children: ReactNode; current: boolean }) => {
   return (
     <span
       onClick={props.onClick}
@@ -71,4 +71,4 @@ function PaletteEntry<T>(props: { onClick: () => void; children: ReactNode; valu
       {props.children}
     </span>
   );
-}
+};

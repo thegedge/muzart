@@ -13,17 +13,17 @@ import {
 
 import { GiDrumKit, GiGrandPiano, GiGuitarBassHead, GiGuitarHead, GiMusicalNotes } from "react-icons/gi";
 
-export const BassHeadIcon = GiGuitarBassHead as IconType;
-export const DrumIcon = GiDrumKit as IconType;
-export const GuitarHeadIcon = GiGuitarHead as IconType;
-export const MusicNoteIcon = HiMusicalNote as IconType;
-export const MuteIcon = HiOutlineSpeakerXMark as IconType;
-export const PauseIcon = HiPause as IconType;
-export const PianoIcon = GiGrandPiano as IconType;
-export const PlayIcon = HiPlay as IconType;
-export const SoloIcon = HiPlayCircle as IconType;
-export const UnmuteIcon = HiOutlineSpeakerWave as IconType;
-export const UnsoloIcon = HiOutlinePlayCircle as IconType;
-export const VocalistIcon = GiMusicalNotes as IconType;
+export const BassHeadIcon = GiGuitarBassHead;
+export const DrumIcon = GiDrumKit;
+export const GuitarHeadIcon = GiGuitarHead;
+export const MusicNoteIcon = HiMusicalNote;
+export const MuteIcon = HiOutlineSpeakerXMark;
+export const PauseIcon = HiPause;
+export const PianoIcon = GiGrandPiano;
+export const PlayIcon = HiPlay;
+export const SoloIcon = HiPlayCircle;
+export const UnmuteIcon = HiOutlineSpeakerWave;
+export const UnsoloIcon = HiOutlinePlayCircle;
+export const VocalistIcon = GiMusicalNotes;
 
 export type IconType = (props: IconBaseProps & Omit<SVGAttributes<SVGSVGElement>, keyof IconBaseProps>) => JSX.Element;

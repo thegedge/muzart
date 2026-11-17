@@ -38,7 +38,7 @@ export const MeasureBox = observer(
 
     return (
       <div
-        className="p-0.8 flex cursor-pointer rounded-sm"
+        className="flex cursor-pointer rounded-sm p-0.8"
         style={{ backgroundColor: replaceAlpha(color, opacity) }}
         onClick={onChange}
         data-measure={measure.number - 1}

@@ -1,5 +1,4 @@
-import { Canvas, type RenderFunction, type Point } from "@muzart/canvas";
-import type { CanvasMouseEventHandler } from "@muzart/canvas";
+import { Canvas, type CanvasMouseEventHandler, type RenderFunction, type Point } from "@muzart/canvas";
 import * as layout from "@muzart/layout";
 import * as notation from "@muzart/notation";
 import { noteValueToSeconds } from "@muzart/playback";
@@ -124,6 +123,8 @@ export const Score = observer((_props: Record<string, never>) => {
     };
 
     application.canvas.setRenderFunction(render);
+    // The render function reads application state lazily at draw time, so only these three need to change it
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [application.selection.score, application.canvas, styler]);
 
   useEffect(() => {

@@ -132,7 +132,7 @@ export class GridGroup<ChildrenT extends AnyLayoutElement> extends AbstractGroup
         break;
     }
 
-    element.layout?.();
+    element.layout();
 
     row.columnAvailability.fill(false, constraint.startColumn, constraint.endColumn + 1);
     row.elements.push([element, constraint]);

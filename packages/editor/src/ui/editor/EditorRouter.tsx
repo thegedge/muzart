@@ -11,9 +11,6 @@ export const EditorRouter = () => {
 
   const onDrop = async (event: DragEvent) => {
     event.preventDefault();
-    if (!event.dataTransfer) {
-      return;
-    }
 
     const sources = filesFromDataTransfer(event.dataTransfer);
 
@@ -43,7 +40,7 @@ export const EditorRouter = () => {
 
   return (
     <div
-      className="min-w-screen min-h-screen"
+      className="min-h-screen min-w-screen"
       onDrop={(e) => {
         onDrop(e).catch(console.error);
       }}
@@ -51,7 +48,7 @@ export const EditorRouter = () => {
         e.preventDefault();
       }}
     >
-      <div className="max-w-screen flex h-screen max-h-screen w-screen flex-col items-center overflow-clip">
+      <div className="flex h-screen max-h-screen w-screen max-w-screen flex-col items-center overflow-clip">
         <Route path="/:url">
           {(params: { url: string }) => {
             const url = decodeURIComponent(params.url);

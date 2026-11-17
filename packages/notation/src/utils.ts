@@ -2,6 +2,7 @@ export const initPolyObject = <
   Types extends Record<
     string,
     {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- constructors of any option type must be accepted
       new (options: any): { readonly type: string };
     }
   >,
@@ -14,6 +15,7 @@ export const initPolyObject = <
   if (!("prototype" in value) || value.prototype == Object) {
     if ("type" in value && typeof value.type === "string") {
       const constructor = constructorMap[value.type];
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- runtime check of an untrusted type discriminator
       if (!constructor) {
         throw new Error(`No constructor found for "${value.type}"`);
       }
@@ -35,6 +37,6 @@ export const initPolyObject = <
   );
 };
 
-export const initArray = <T extends { new (options: any): any }>(constructor: T, value: any[] | undefined | null) => {
+export const initArray = <T, O>(constructor: new (options: O) => T, value: readonly O[] | undefined | null): T[] => {
   return (value ?? []).map((item) => (item instanceof constructor ? item : new constructor(item)));
 };

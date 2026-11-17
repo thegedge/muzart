@@ -7,7 +7,7 @@ export type StringInstrumentOptions = InstrumentOptions & {
   tuning: Pitch[];
 };
 
-export class StringInstrument extends Instrument<StringInstrumentOptions> {
+export class StringInstrument extends Instrument {
   readonly type = "string";
 
   public tuning: Pitch[];

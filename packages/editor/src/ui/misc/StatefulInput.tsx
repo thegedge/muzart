@@ -5,7 +5,7 @@ import type * as CSS from "csstype";
 import { merge } from "lodash-es";
 import { makeAutoObservable } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useRef } from "react";
 import { changeTextAction } from "../../actions/editing/ChangeTextElement";
 import { Application } from "../../state/Application";
 
@@ -29,7 +29,7 @@ export const StatefulInput = observer((props: { state: StatefulTextInputState })
       ref={inputRef}
       contentEditable
       className={className}
-      style={props.state.style as CSSProperties}
+      style={props.state.style}
       onKeyDown={(e) => {
         if (e.code == "Escape") {
           e.preventDefault();

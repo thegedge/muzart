@@ -7,7 +7,6 @@ const renderApp = async () => {
     throw new Error("couldn't find #root element");
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- typescript-eslint false positive
   const reactRoot = createRoot(root);
   reactRoot.render(<App />);
 };

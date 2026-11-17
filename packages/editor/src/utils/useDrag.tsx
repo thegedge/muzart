@@ -68,7 +68,7 @@ export function useDrag<T>(options: OnDragOptions<T>) {
   };
 
   const startDrag = (target: T) => {
-    const element = options.boundedBy?.current ?? document.body;
+    const element = options.boundedBy.current ?? document.body;
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", onPointerUp);
     boundingRect.current = element.getBoundingClientRect();

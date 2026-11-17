@@ -1,4 +1,5 @@
 import { nanoid } from "nanoid/non-secure";
+
 import type { Bend } from "./Bend";
 import { Chord } from "./Chord";
 import { NoteValue } from "./NoteValue";
@@ -252,6 +253,7 @@ export class Note {
 
   withChanges(changes: Partial<NoteOptions>): NoteOptions {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-misused-spread -- I don't want the prototype, eslint, geeeeez
       ...this,
       ...changes,
       id: undefined,
@@ -272,6 +274,7 @@ export class Note {
    */
   protected get(property: keyof Note, fromStart = false): unknown {
     if (!fromStart || !this.tie || this.tie.type == "start") {
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- whatever, eslint
       const v = this[property];
       if (v) {
         return v;

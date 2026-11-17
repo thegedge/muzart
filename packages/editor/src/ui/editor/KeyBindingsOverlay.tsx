@@ -10,7 +10,7 @@ export const KeyBindingsOverlay = observer(function KeyBindingsOverlay<T>(props:
 
   return (
     <div
-      className={`z-top absolute bottom-0 left-0 right-0 top-0 flex flex-col gap-4 overflow-clip bg-black/80 p-4 text-gray-300 backdrop-blur-md ${
+      className={`absolute bottom-0 left-0 right-0 top-0 z-top flex flex-col gap-4 overflow-clip bg-black/80 p-4 text-gray-300 backdrop-blur-md ${
         application.state.helpVisible ? "block" : "hidden"
       }`}
     >
@@ -26,7 +26,7 @@ export const KeyBindingsOverlay = observer(function KeyBindingsOverlay<T>(props:
             return (
               <div key={groupName} className="rounded-lg bg-white/10 px-4 py-2 shadow-lg">
                 <h2 className="text-3 mb-2 border-b-2 border-b-white/25 font-bold">{groupName}</h2>
-                <div className="grid-cols-key-bindings grid gap-x-4 gap-y-1">
+                <div className="grid grid-cols-key-bindings gap-x-4 gap-y-1">
                   {bindingsToShow.map((binding) => (
                     <Fragment key={binding.key}>
                       <KeyBinding binding={binding.key} />

@@ -1,27 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 // @ts-check
 
-import tseslint from "typescript-eslint";
-
-// @ts-expect-error -- Could not find a declaration file for module
 import eslint from "@eslint/js";
-// @ts-expect-error -- Could not find a declaration file for module
-import lodashPlugin from "eslint-plugin-lodash";
-// @ts-expect-error -- Could not find a declaration file for module
-import importPlugin from "eslint-plugin-import";
-// @ts-expect-error -- Could not find a declaration file for module
-import promisePlugin from "eslint-plugin-promise";
-// @ts-expect-error -- Could not find a declaration file for module
-import reactPlugin from "eslint-plugin-react";
-// @ts-expect-error -- Could not find a declaration file for module
 import prettierPlugin from "eslint-config-prettier";
-// @ts-expect-error -- Could not find a declaration file for module
+import importPlugin from "eslint-plugin-import";
+import lodashPlugin from "eslint-plugin-lodash";
+import promisePlugin from "eslint-plugin-promise";
+import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
+import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["node_modules", "dist", "public"],
+    ignores: ["**/node_modules/**", "**/dist/**", "**/public/**", "**/*.config.{js,mjs,ts}"],
   },
 
   eslint.configs.recommended,

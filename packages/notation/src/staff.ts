@@ -25,16 +25,7 @@ export interface Key {
 }
 
 export type KeyMode =
-  | "major"
-  | "minor"
-  | "dorian"
-  | "phrygian"
-  | "lydian"
-  | "mixolydian"
-  | "aeolian"
-  | "ionian"
-  | "locrian"
-  | "none";
+  "major" | "minor" | "dorian" | "phrygian" | "lydian" | "mixolydian" | "aeolian" | "ionian" | "locrian" | "none";
 
 export interface Clef {
   sign: ClefSign;

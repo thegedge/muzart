@@ -156,7 +156,7 @@ export class AboveStaff extends GridGroup<AnyLayoutElement> {
     const tempoSize = STAFF_LINE_HEIGHT;
     const baseSize = STAFF_LINE_HEIGHT;
 
-    for (let index = 0; index < this.staffElements.length; ) {
+    for (let index = 0; index < this.staffElements.length;) {
       const measure = this.staffElements[index].measure.measure;
 
       this.addElement(

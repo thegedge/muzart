@@ -1,7 +1,8 @@
 import { makeAutoObservable } from "mobx";
+
 import { Chord, type ChordOptions } from "./Chord";
-import { TimeSignature } from "./TimeSignature";
 import type { Changeable, StaffDetails } from "./staff";
+import { TimeSignature } from "./TimeSignature";
 import { initArray } from "./utils";
 
 export interface Marker {
@@ -18,7 +19,10 @@ export interface MeasureOptions {
 }
 
 export class Measure {
-  /** @deprecated eventually moving to this measure's index inside the parent part */
+  /**
+   * TODO find a better way to figure this out or not depend on it (otherwise we have an expensive
+   *      update on our hands whenever measures are introduced anywhere but at the end)
+   */
   public number: number;
 
   public chords: Chord[];

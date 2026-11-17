@@ -88,7 +88,7 @@ export const PartListingRow = observer((props: { part: Part }) => {
       </div>
       <div
         ref={nameElementRef}
-        className="text-shadow flex cursor-text items-center bg-inherit px-2 text-xs font-extralight shadow-black"
+        className="flex cursor-text items-center bg-inherit px-2 text-xs font-extralight shadow-black text-shadow"
         onClick={onChange}
         onBlur={partNameChanged}
         data-part={partIndex}

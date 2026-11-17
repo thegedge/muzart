@@ -92,6 +92,7 @@ function postProcess(score: Score) {
 function propagateStaffDetails(score: Score): void {
   const previousDetails: Partial<StaffDetails> = {};
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters -- ties the key to the cast of the stored value type
   const updateStaffDetails = <K extends keyof StaffDetails>(key: K, measure: Measure): void => {
     const previousValue = previousDetails[key];
     if (previousValue) {

@@ -13,7 +13,7 @@ export const DecoratedText: RenderFunc<layout.DecoratedText> = (element, render,
     switch (element.style.textAlign) {
       case undefined:
       case "left":
-        element.decorations.end &&
+        if (element.decorations.end)
           drawDecoration(
             render,
             element.decorations.end,
@@ -26,7 +26,7 @@ export const DecoratedText: RenderFunc<layout.DecoratedText> = (element, render,
           );
         break;
       case "right":
-        element.decorations.start &&
+        if (element.decorations.start)
           drawDecoration(
             render,
             element.decorations.start,
@@ -40,7 +40,7 @@ export const DecoratedText: RenderFunc<layout.DecoratedText> = (element, render,
           );
         break;
       case "center":
-        element.decorations.start &&
+        if (element.decorations.start)
           drawDecoration(
             render,
             element.decorations.start,
@@ -53,7 +53,7 @@ export const DecoratedText: RenderFunc<layout.DecoratedText> = (element, render,
             true,
           );
 
-        element.decorations.end &&
+        if (element.decorations.end)
           drawDecoration(
             render,
             element.decorations.end,

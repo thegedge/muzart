@@ -60,7 +60,7 @@ const RegularScreenView = observer((props: PropsWithChildren) => {
   const application = useApplicationState();
 
   return (
-    <div className="chrome max-w-screen relative grid h-screen max-h-screen w-screen gap-px bg-gray-950 fill-gray-200 text-gray-200">
+    <div className="chrome relative grid h-screen max-h-screen w-screen max-w-screen gap-px bg-gray-950 fill-gray-200 text-gray-200">
       <PanelGroup autoSaveId="muzart-chrome" direction="vertical">
         <Panel defaultSize={80} minSize={10}>
           <PanelGroup autoSaveId="muzart-chrome-inner" direction="horizontal">

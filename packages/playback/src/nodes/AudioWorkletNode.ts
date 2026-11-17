@@ -13,7 +13,7 @@ export class AudioWorkletNode extends AudioNode {
     this.node = node;
   }
 
-  start(when?: number | undefined, durationSecs?: number | undefined): void {
+  start(when?: number, durationSecs?: number): void {
     this.#active = true;
     this.node.port.postMessage({
       type: "start",

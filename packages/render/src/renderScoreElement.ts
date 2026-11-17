@@ -19,7 +19,6 @@ import type { RenderContext, RenderFunc } from "./types";
 
 const BOX_SHADOW_REGEX =
   /^(?<color>(#?\w+|(rgba?|hsl|hwb|lab|lch|oklab|oklch)\(.+?\)|\w+))(?<offsetX> \d+\w*)?(?<offsetY> \d+\w*)?(?<blur> \d+\w*)?(?<spread> \d+\w*)?$/;
-``;
 
 export const renderScoreElement = (
   element: layout.AnyLayoutElement,

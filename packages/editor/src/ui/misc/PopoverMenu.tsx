@@ -24,7 +24,7 @@ export const PopoverMenu = (
       {...props}
       className={clsx(
         left == -1 || top == -1 ? "invisible" : "visible",
-        "z-top absolute bottom-0 left-0 right-0 top-0",
+        "absolute bottom-0 left-0 right-0 top-0 z-top",
         props.className,
       )}
       onMouseDown={hideMenu}

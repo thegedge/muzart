@@ -13,7 +13,7 @@ export class EnvelopeNode extends AudioNode {
     this.gain = context.createGain();
   }
 
-  start(when?: number | undefined, _durationSecs?: number | undefined): void {
+  start(when?: number, _durationSecs?: number): void {
     createEnvelope(this.gain.gain, this.envelope, when ?? 0);
   }
 
@@ -76,6 +76,5 @@ const createEnvelope = (param: AudioParam, envelope: Envelope, when: number) => 
 
   if (release) {
     param.linearRampToValueAtTime(0, currentEnvelopeTime + release);
-    currentEnvelopeTime += release;
   }
 };

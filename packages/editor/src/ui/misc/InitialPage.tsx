@@ -94,7 +94,7 @@ export const InitialPage = observer((_props: Record<string, never>) => {
               );
             })}
           </ul>
-          <div className="flex-grow-2 flex-shrink" />
+          <div className="flex-shrink flex-grow-2" />
         </div>
       </div>
     </div>

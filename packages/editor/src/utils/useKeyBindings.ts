@@ -54,9 +54,10 @@ export const bindingKeyCompare = (a: string, b: string) => {
  * @param keybindingGroups The key bindings to install.
  * @param state The state to use for evaluating `when` clauses.
  */
-export const useKeyBindings = <StateT, ContextOtherT = never>(
+export const useKeyBindings = <ContextOtherT = never>(
   keyBindings: KeyBindings<ContextOtherT>,
-  state: StateT,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO figure out a non-any approach
+  state: Record<string, any>,
 ): void => {
   useEffect(() => {
     const bindingGroups = keyBindings.reduce<Record<string, KeyBinding<ContextOtherT>[]>>((bindings, binding) => {
@@ -101,7 +102,7 @@ export const useKeyBindings = <StateT, ContextOtherT = never>(
         // TODO support parentheses and ||
         const pieces = binding.when.split(" && ");
         return pieces.every((piece) => {
-          return piece[0] == "!" ? !state[piece.substring(1) as keyof StateT] : state[piece as keyof StateT];
+          return piece[0] == "!" ? !state[piece.substring(1)] : state[piece];
         });
       });
 

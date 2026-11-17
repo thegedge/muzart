@@ -25,13 +25,13 @@ const formatLayoutElement = (e: LayoutElement) => {
   return `${e.type}(${e.box.x}, ${e.box.y}, ${e.box.width}, ${e.box.height})`;
 };
 
-const contains = <T>(actual: unknown, expected: T): void => {
+const contains = (actual: unknown, expected: unknown): void => {
   if (!Array.isArray(actual) || !actual.includes(expected)) {
     vitest.expect.fail(`${inspect(actual)} does not contain ${inspect(expected)}`);
   }
 };
 
-const doesNotContain = <T>(actual: unknown, expected: T): void => {
+const doesNotContain = (actual: unknown, expected: unknown): void => {
   if (!Array.isArray(actual)) {
     vitest.expect.fail(`${inspect(actual)} is not an array`);
   }
@@ -97,7 +97,7 @@ const identityEqual = <T>(actual: T, expected: T, message?: string) => {
   vitest.expect(actual, message).toBe(expected);
 };
 
-const matches = <T1 extends object, T2 extends object>(actual: T1, expected: T2, message?: string) => {
+const matches = (actual: object, expected: object, message?: string) => {
   vitest.expect(actual, message).toMatchObject(expected);
 };
 

@@ -8,13 +8,13 @@ export type InstrumentOptions = {
   volume: number;
 };
 
-export abstract class Instrument<OptionsT extends InstrumentOptions = InstrumentOptions> {
+export abstract class Instrument {
   abstract readonly type: string;
 
   public midiPreset: number;
   public volume: number;
 
-  constructor(options: OptionsT) {
+  constructor(options: InstrumentOptions) {
     this.midiPreset = options.midiPreset;
     this.volume = options.volume;
 

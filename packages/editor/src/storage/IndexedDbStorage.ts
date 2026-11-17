@@ -88,7 +88,7 @@ export class IndexedDbStorage extends AsyncStorage {
     const objectStore = transaction.objectStore(namespace);
     const request = objectStore.getAllKeys();
     return await new Promise<string[]>((resolve, reject) => {
-      request.onsuccess = () => resolve(request.result.map((key) => String(key)));
+      request.onsuccess = () => resolve(request.result.filter((key) => typeof key == "string"));
       request.onerror = () => reject(request.error ?? new Error("unknown error listing IndexedDB storage"));
     });
   }

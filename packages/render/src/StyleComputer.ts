@@ -30,7 +30,7 @@ export class StyleComputer<ElementType extends AnyLayoutElement = AnyLayoutEleme
     styles: CSS.Properties;
   }[] = [];
 
-  constructor(stylesheet?: CSSStyleSheet | undefined) {
+  constructor(stylesheet?: CSSStyleSheet) {
     if (stylesheet) {
       for (let ruleIndex = 0; ruleIndex < stylesheet.cssRules.length; ++ruleIndex) {
         const rule = stylesheet.cssRules.item(ruleIndex);

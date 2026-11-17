@@ -606,7 +606,7 @@ class GuitarProLoader {
 
   readNoteEffects(): NoteEffects {
     let vibrato = false;
-    let letRing = false;
+    let letRing: boolean;
     let palmMute = false;
     let staccato = false;
     let bend: Bend | undefined;

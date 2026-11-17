@@ -30,7 +30,7 @@ export abstract class SyncStorage {
   }
 
   /** Load a storable object from this storage instance */
-  loadObject<T extends StorableObject>(namespace: string, subkey: string, object: T): void {
+  loadObject(namespace: string, subkey: string, object: StorableObject): void {
     const value = this.get(namespace, subkey);
     if (!value) {
       return;
@@ -76,7 +76,7 @@ export abstract class AsyncStorage {
   }
 
   /** Load a storable object from this storage instance */
-  async loadObject<T extends StorableObject>(namespace: string, subkey: string, object: T): Promise<void> {
+  async loadObject(namespace: string, subkey: string, object: StorableObject): Promise<void> {
     const value = await this.get(namespace, subkey);
     if (!value) {
       return;

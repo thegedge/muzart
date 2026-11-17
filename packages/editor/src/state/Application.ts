@@ -155,7 +155,7 @@ export class Application {
   }
 
   loadScore = flow(function* (this: Application, url: string) {
-    if (this.selection.score != null && url.toString() == this.currentTabUrl_?.toString()) {
+    if (this.selection.score != null && url == this.currentTabUrl_?.toString()) {
       return;
     }
 

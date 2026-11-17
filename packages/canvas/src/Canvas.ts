@@ -46,13 +46,25 @@ export class Canvas {
     const canvas = document.createElement("canvas");
     canvas.width = window.screen.width * window.devicePixelRatio;
     canvas.height = window.screen.height * window.devicePixelRatio;
-    canvas.style.width = window.screen.width + "px";
-    canvas.style.height = window.screen.height + "px";
+    canvas.style.width = `${window.screen.width}px`;
+    canvas.style.height = `${window.screen.height}px`;
     canvas.style.imageRendering = "crisp-edges";
-    onDoubleClick && canvas.addEventListener("dblclick", wrapMouseEvent(state, onDoubleClick));
-    onMouseDown && canvas.addEventListener("mousedown", wrapMouseEvent(state, onMouseDown));
-    onMouseMove && canvas.addEventListener("mousemove", wrapMouseEvent(state, onMouseMove));
-    onContextMenu && canvas.addEventListener("contextmenu", wrapMouseEvent(state, onContextMenu));
+
+    if (onDoubleClick) {
+      canvas.addEventListener("dblclick", wrapMouseEvent(state, onDoubleClick));
+    }
+
+    if (onMouseDown) {
+      canvas.addEventListener("mousedown", wrapMouseEvent(state, onMouseDown));
+    }
+
+    if (onMouseMove) {
+      canvas.addEventListener("mousemove", wrapMouseEvent(state, onMouseMove));
+    }
+
+    if (onContextMenu) {
+      canvas.addEventListener("contextmenu", wrapMouseEvent(state, onContextMenu));
+    }
 
     container.appendChild(canvas);
 

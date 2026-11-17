@@ -331,7 +331,7 @@ export class PlaybackController {
           destination: this.destination,
         });
         this.instruments_[midiPreset] = instrument;
-      } catch (err) {
+      } catch {
         return null;
       }
     }

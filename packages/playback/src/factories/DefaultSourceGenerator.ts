@@ -1,7 +1,7 @@
 import * as notation from "@muzart/notation";
 import { clamp } from "lodash-es";
 import { svgPathProperties } from "svg-path-properties";
-import { Drum, type DrumOptions } from "../generators/Drum";
+import { Drum } from "../generators/Drum";
 import { PluckedString, type PluckedStringOptions } from "../generators/PluckedString";
 import { SimpleOscillator, type OscillatorOptions } from "../generators/SimpleOscillator";
 import { CompositeNode } from "../nodes/CompositeNode";
@@ -20,7 +20,7 @@ type PluckedStringGenerator = {
 
 type DrumGenerator = {
   type: "drum";
-  options: Omit<DrumOptions, "context" | "instrument">;
+  options: Record<string, never>;
 };
 
 type CustomGenerator = {
@@ -74,7 +74,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
                 }),
               );
             },
-          } as SourceGenerator;
+          };
         },
       },
     },
@@ -205,7 +205,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
 
               return CompositeNode.compose(generator.generate(note), pre, distortion, post, tone);
             },
-          } as SourceGenerator;
+          };
         },
       },
     },
