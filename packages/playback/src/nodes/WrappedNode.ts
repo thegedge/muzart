@@ -1,6 +1,21 @@
 import { AudioNode } from "./AudioNode";
+import type { WebAudioNode } from "./node_helpers";
 
 export class WrappedNode extends AudioNode {
+  /**
+   * Potentially wrap a given node.
+   *
+   * If the node is already a Muzart {@link AudioNode}, return it as is. Otherwise, wrap the given
+   * {@link WebAudioNode} in a {@link WrappedNode} instance.
+   */
+  static from(node: AudioNode | WebAudioNode): AudioNode {
+    if (node instanceof AudioNode) {
+      return node;
+    }
+
+    return new WrappedNode(node);
+  }
+
   #active = false;
 
   readonly raw: globalThis.AudioNode;
