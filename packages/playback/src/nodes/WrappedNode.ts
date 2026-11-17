@@ -35,6 +35,7 @@ export class WrappedNode extends AudioNode {
   start(when?: number, durationSecs?: number) {
     if (this.raw instanceof AudioScheduledSourceNode) {
       this.#active = true;
+
       this.raw.start(when);
       if (durationSecs !== undefined) {
         this.raw.stop((when ?? 0) + durationSecs);
@@ -46,8 +47,6 @@ export class WrappedNode extends AudioNode {
     if (this.#active) {
       if (this.raw instanceof AudioScheduledSourceNode) {
         this.raw.stop();
-      } else {
-        this.raw.disconnect();
       }
 
       this.#active = false;
