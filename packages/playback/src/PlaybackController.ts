@@ -10,6 +10,7 @@ import type { AudioNode } from "./nodes/AudioNode";
 import { WrappedNode } from "./nodes/WrappedNode";
 import type { SourceGeneratorFactory } from "./types";
 import { noteValueToSeconds } from "./utils/durations";
+import { karplusStrongWorkletUrl } from "./worklets/urls";
 
 type Selection = {
   score: layout.Score | null;
@@ -95,8 +96,7 @@ export class PlaybackController {
   }
 
   async init() {
-    await Promise.all([this.audioContext.audioWorklet.addModule("./worklets/KarplusStrong.js")]);
-
+    await this.audioContext.audioWorklet.addModule(karplusStrongWorkletUrl);
     this.reset();
     this.#isReady = true;
   }
