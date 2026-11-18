@@ -10,6 +10,7 @@ import type { AudioNode } from "./nodes/AudioNode";
 import { WrappedNode } from "./nodes/WrappedNode";
 import type { SourceGeneratorFactory } from "./types";
 import { noteValueToSeconds } from "./utils/durations";
+import { karplusStrongWorkletUrl } from "./worklets/urls";
 
 type Selection = {
   score: layout.Score | null;
@@ -46,7 +47,15 @@ export class PlaybackController {
   private playbackHandle: number | undefined;
   private setCurrentMeasureHandle: number | undefined;
 
-  private instruments_: Record<string, Instrument | null> = {};
+  /**
+   * Mapping from {@part notation.Part} to {@link Instrument}
+   *
+   * Instruments cannot be shared, even if they're exactly the same definition across parts, because
+   * it can negatively impact things like bends and compressor nodes.
+   *
+   * @private
+   */
+  private instruments_ = new Map<notation.Part, { midiPreset: number; instrument: Instrument }>();
 
   private destination: AudioNode;
 
@@ -87,13 +96,13 @@ export class PlaybackController {
   }
 
   async init() {
-    await Promise.all([this.audioContext.audioWorklet.addModule("./worklets/KarplusStrong.js")]);
-
+    await this.audioContext.audioWorklet.addModule(karplusStrongWorkletUrl);
     this.reset();
     this.#isReady = true;
   }
 
   reset() {
+    this.garbageCollectInstruments();
     this.mutedParts = new Array(this.selection.score?.score.parts.length).fill(false);
     this.soloedParts = new Array(this.selection.score?.score.parts.length).fill(false);
     this.stop();
@@ -121,7 +130,7 @@ export class PlaybackController {
     try {
       console.time("loading soundfont");
       this.sourceGeneratorFactory = (yield SoundFont.fromSource(source)) as SoundFont;
-      this.instruments_ = {};
+      this.garbageCollectInstruments();
       console.timeEnd("loading soundfont");
     } catch (error) {
       console.error(error);
@@ -144,6 +153,7 @@ export class PlaybackController {
       return;
     }
 
+    this.garbageCollectInstruments();
     this.startOfCurrentMeasure = this.audioContext.currentTime;
 
     // The (approximate) number of seconds before the next measure where we queue up its note events
@@ -257,8 +267,8 @@ export class PlaybackController {
       this.playing = false;
       this.currentMeasure = undefined;
 
-      for (const instrument of Object.values(this.instruments_)) {
-        instrument?.stop();
+      for (const { instrument } of this.instruments_.values()) {
+        instrument.stop();
       }
 
       this.audioContext.suspend().catch(console.error);
@@ -313,10 +323,17 @@ export class PlaybackController {
       return null;
     }
 
-    // TODO this may be problematic if two parts have the same midi preset, but share the same instrument (verify)
-
     const midiPreset = part.instrument.midiPreset;
-    let instrument = this.instruments_[midiPreset];
+    const cached = this.instruments_.get(part);
+
+    let instrument = cached?.instrument;
+    if (cached && cached.midiPreset !== midiPreset) {
+      // The part's preset changed; the cached instrument is for the old sound
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- cached is defined iff instrument is defined
+      instrument!.dispose();
+      instrument = undefined;
+    }
+
     if (!instrument) {
       try {
         const sourceGenerator = this.sourceGeneratorFactory.generator(this.audioContext, part.instrument);
@@ -330,13 +347,25 @@ export class PlaybackController {
           sourceGenerator,
           destination: this.destination,
         });
-        this.instruments_[midiPreset] = instrument;
+        this.instruments_.set(part, { midiPreset, instrument });
       } catch {
         return null;
       }
     }
 
     return instrument;
+  }
+
+  /** Dispose instruments not associated with a part in the current score */
+  private garbageCollectInstruments() {
+    for (const [part, { instrument }] of [...this.instruments_]) {
+      if (this.selection.score?.score.parts.includes(part)) {
+        continue;
+      }
+
+      instrument.dispose();
+      this.instruments_.delete(part);
+    }
   }
 
   private withPlayback(f: () => void) {

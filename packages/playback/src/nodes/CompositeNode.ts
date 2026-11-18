@@ -2,39 +2,47 @@ import { AudioNode } from "./AudioNode";
 import { WrappedNode } from "./WrappedNode";
 import type { WebAudioNode } from "./node_helpers";
 
+/** A composite node chain with at least a distinct input/output chain */
+export type Chain<T> = [T, ...T[], T];
+
 /**
  * A node that is composed of a separate input and output node.
  */
 export class CompositeNode extends AudioNode {
-  static compose = (
-    ...nodes: [AudioNode | WebAudioNode, ...(AudioNode | WebAudioNode)[], AudioNode | WebAudioNode]
-  ): CompositeNode => {
-    const muzartNodes = nodes.map((current) => {
-      if (current instanceof AudioNode) {
-        return current;
-      }
+  static compose = (...nodes: Chain<AudioNode | WebAudioNode>): CompositeNode => {
+    const muzartNodes = nodes.map((current) => WrappedNode.from(current)) as Chain<AudioNode>;
 
-      return new WrappedNode(current);
-    });
-
-    muzartNodes.reduce<AudioNode | null>((previous, current) => {
+    let previous: AudioNode | null = null;
+    for (const node of muzartNodes) {
       if (previous) {
-        previous.connect(current);
+        previous.connect(node);
       }
-      return current;
-    }, null);
 
-    return new CompositeNode(muzartNodes[0], muzartNodes[nodes.length - 1]);
+      previous = node;
+    }
+
+    return new CompositeNode(...muzartNodes);
   };
 
   #input: AudioNode;
   #output: AudioNode;
+  #chain: AudioNode[];
   #active = false;
 
-  constructor(input: AudioNode, output: AudioNode) {
+  /**
+   * Construct a composite node from the given chain of nodes.
+   *
+   * @param nodes - the chain of nodes, with the first element being the input and the last the output
+   */
+  constructor(...nodes: Chain<AudioNode>) {
     super();
-    this.#input = input;
-    this.#output = output;
+    this.#chain = nodes;
+    this.#input = nodes[0];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `Chain` ensures at least two elements
+    this.#output = nodes.at(-1)!;
+
+    // The source (input) is what knows when the sound is over (e.g. a worklet's duration timer)
+    this.#input.on("ended", () => this.#end());
   }
 
   start(when?: number, durationSecs?: number): void {
@@ -45,15 +53,24 @@ export class CompositeNode extends AudioNode {
   stop(): void {
     if (this.#active) {
       this.#output.stop();
+      this.#end();
+    }
+  }
 
+  #end(): void {
+    if (this.#active) {
       this.#active = false;
       this.emit("ended").catch(console.error);
     }
   }
 
   dispose(): void {
-    this.#input.dispose();
-    this.#output.dispose();
+    this.#chain.forEach((node) => node.dispose());
+  }
+
+  /** @override */
+  get rawInput(): WebAudioNode {
+    return this.#input.raw;
   }
 
   get raw(): WebAudioNode {

@@ -1,6 +1,21 @@
 import { AudioNode } from "./AudioNode";
+import type { WebAudioNode } from "./node_helpers";
 
 export class WrappedNode extends AudioNode {
+  /**
+   * Potentially wrap a given node.
+   *
+   * If the node is already a Muzart {@link AudioNode}, return it as is. Otherwise, wrap the given
+   * {@link WebAudioNode} in a {@link WrappedNode} instance.
+   */
+  static from(node: AudioNode | WebAudioNode): AudioNode {
+    if (node instanceof AudioNode) {
+      return node;
+    }
+
+    return new WrappedNode(node);
+  }
+
   #active = false;
 
   readonly raw: globalThis.AudioNode;
@@ -20,6 +35,7 @@ export class WrappedNode extends AudioNode {
   start(when?: number, durationSecs?: number) {
     if (this.raw instanceof AudioScheduledSourceNode) {
       this.#active = true;
+
       this.raw.start(when);
       if (durationSecs !== undefined) {
         this.raw.stop((when ?? 0) + durationSecs);
@@ -31,8 +47,6 @@ export class WrappedNode extends AudioNode {
     if (this.#active) {
       if (this.raw instanceof AudioScheduledSourceNode) {
         this.raw.stop();
-      } else {
-        this.raw.disconnect();
       }
 
       this.#active = false;

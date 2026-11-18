@@ -1,12 +1,11 @@
 import * as notation from "@muzart/notation";
-import { clamp } from "lodash-es";
-import { svgPathProperties } from "svg-path-properties";
 import { Drum } from "../generators/Drum";
 import { PluckedString, type PluckedStringOptions } from "../generators/PluckedString";
 import { SimpleOscillator, type OscillatorOptions } from "../generators/SimpleOscillator";
 import { CompositeNode } from "../nodes/CompositeNode";
 import { EqualizerNode } from "../nodes/EqualizerNode";
 import type { MidiInstrument, SourceGenerator, SourceGeneratorFactory } from "../types";
+import { LinearRampedNode } from "../nodes/LinearRampedNode";
 
 type OscillatorGenerator = {
   type: "oscillator";
@@ -95,6 +94,8 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
       },
     },
 
+    // TODO eventually make these different
+
     30: {
       name: "Electric Guitar (overdrive)",
       generator: {
@@ -105,105 +106,90 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
             options: {
               impulseType: "white-noise",
               filterType: "gaussian",
+              detuneCents: 3,
             },
           });
 
-          const preHi = 2000;
-          const preLo = 150;
-          const postFrequency = 10000;
-          const frequency = Math.sqrt(preHi - preLo);
-          const Q = frequency / (preHi - preLo);
-
-          // Create a curve that adjusts input/output like the following:
-          //
-          //  ^
-          //  |
-          //
-          //  O             ----
-          //  U            /
-          //  T       _   /
-          //         / \_/
-          //  |     /
-          //  v
-          //           <- IN ->
-          //
-          const pathW = 210.65314;
-          const pathH = 210.65159;
-          const tx = 0.13639704;
-          const ty = -45.30019;
-          const path = new svgPathProperties(
-            [
-              ["M", 0.01371475 + tx, 255.93989 + ty],
-              ["C", 2.4957989 + tx, 224.63855 + ty, 1.675487 + tx, 141.29052 + ty, 19.984253 + tx, 141.11971 + ty],
-              ["c", 25.223313, -0.23531, 37.719831, 88.87167, 37.719831, 88.87167],
-              ["c", 0, 0, 49.456596, -52.55299, 90.235276, -127.00691],
-              ["c", 12.18918, -22.255104, 26.27927, -20.471436, 62.57729, -20.449335],
-            ] as unknown as string, // svg-path-properties is happy with this array structure
-          );
-
-          const n = 512;
-
-          const pathLength = path.getTotalLength();
-          const points = [];
-          for (let i = 0; i < n; ++i) {
-            const x = i / (n - 1);
-            const p = path.getPointAtLength(x * pathLength);
-            points.push({ x: p.x / pathW, y: clamp(1.0 - p.y / pathH, 0, 1) });
-          }
-
-          const curve = new Float32Array(n);
-          for (let i = 0, pointIndex = n - 1; 2 * i < n; ++i) {
-            const t = 1.0 - (2 * i) / (n - 1);
-
-            // Find the next point on the path whose x is lower than t
-            while (pointIndex > 0 && t < points[pointIndex].x - 1e-10) {
-              --pointIndex;
-            }
-
-            let value: number;
-            if (pointIndex == n - 1) {
-              value = points[pointIndex].y;
-            } else {
-              // Linearly interpolate between the two points
-              const { x, y } = points[pointIndex];
-              const { x: prevX, y: prevY } = points[pointIndex + 1];
-              value = prevY + ((y - prevY) / (x - prevX)) * (t - prevX);
-            }
-
-            curve[i] = value;
-            curve[n - i - 1] = value;
-          }
-
-          // Ensure the crossing points are zero to avoid "clicking"
-          curve[n / 2] = 0;
-          curve[n / 2 - 1] = 0;
+          // Amp-like: gentle early stages, with a hard final stage
+          const softCurve = softClipCurve(2048, 2.5, 0.03);
+          const midCurve = softClipCurve(2048, 4, 0.06);
+          const hardCurve = softClipCurve(2048, 10, 0.1);
 
           return {
+            createBus() {
+              // Pre-shaping (think Tube Screamer, or something like that!)
+              const drive = new GainNode(context, { gain: 30 });
+              const drive2 = new GainNode(context, { gain: 3 });
+              const fizz1 = new BiquadFilterNode(context, { type: "lowpass", frequency: 5500, Q: Math.SQRT1_2 });
+              const fizz2 = new BiquadFilterNode(context, { type: "lowpass", frequency: 5000, Q: Math.SQRT1_2 });
+              const tight = new BiquadFilterNode(context, { type: "highpass", frequency: 80, Q: Math.SQRT1_2 });
+
+              // Distortion clipping
+              const distortion = new WaveShaperNode(context, { oversample: "4x", curve: softCurve });
+              const distortion2 = new WaveShaperNode(context, { oversample: "4x", curve: midCurve });
+              const distortion3 = new WaveShaperNode(context, { oversample: "4x", curve: hardCurve });
+
+              // Post-shaping (cabinet modeling)
+              const cabHighpass = new BiquadFilterNode(context, { type: "highpass", frequency: 80, Q: Math.SQRT1_2 });
+              const cabResonance = new BiquadFilterNode(context, {
+                type: "peaking",
+                frequency: 110,
+                gain: 3.5,
+                Q: 1.8,
+              });
+              const boxCut = new BiquadFilterNode(context, { type: "peaking", frequency: 400, gain: -4, Q: 1 });
+              const presence = new BiquadFilterNode(context, { type: "peaking", frequency: 2500, gain: 3, Q: 1.2 });
+              const cabLowpass1 = new BiquadFilterNode(context, { type: "lowpass", frequency: 4800, Q: 0.6 });
+              const cabLowpass2 = new BiquadFilterNode(context, { type: "lowpass", frequency: 4800, Q: 0.9 });
+              const trim = new GainNode(context, { gain: 0.13 });
+
+              return CompositeNode.compose(
+                drive,
+                distortion,
+                fizz1,
+                tight,
+                distortion2,
+                fizz2,
+                drive2,
+                distortion3,
+                cabHighpass,
+                cabResonance,
+                boxCut,
+                presence,
+                cabLowpass1,
+                cabLowpass2,
+                trim,
+              );
+            },
+
             generate(note) {
-              const pre = new BiquadFilterNode(context, {
-                type: "bandpass",
-                Q,
-                frequency,
+              // Avoid the clicks/plucks at the beginning
+              const attack = new GainNode(context, { gain: 0 });
+
+              // Pre-shaping
+              const preHighpass = new BiquadFilterNode(context, { type: "highpass", frequency: 55, Q: Math.SQRT1_2 });
+              const midHump = new BiquadFilterNode(context, { type: "peaking", frequency: 750, gain: 3, Q: 0.6 });
+              const sustain = new DynamicsCompressorNode(context, {
+                threshold: -34,
+                knee: 20,
+                ratio: 4,
+                attack: 0.01,
+                release: 0.35,
               });
 
-              const distortion = new WaveShaperNode(context, {
-                oversample: "none",
-                curve,
-              });
+              const pitchScale = (330 / Math.min(Math.max(note.pitch.toFrequency(), 82), 660)) ** 0.5;
+              const level = new GainNode(context, { gain: pitchScale });
 
-              const post = new BiquadFilterNode(context, {
-                type: "lowpass",
-                frequency: postFrequency,
-                Q: Math.SQRT1_2,
-              });
+              const chain = CompositeNode.compose(
+                generator.generate(note),
+                attack,
+                preHighpass,
+                midHump,
+                sustain,
+                level,
+              );
 
-              const tone = new BiquadFilterNode(context, {
-                type: "lowpass",
-                frequency: Math.pow(350, 2),
-                Q: Math.SQRT1_2,
-              });
-
-              return CompositeNode.compose(generator.generate(note), pre, distortion, post, tone);
+              return new LinearRampedNode(chain, attack.gain, 0.01);
             },
           };
         },
@@ -292,3 +278,22 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
     }
   }
 }
+
+/**
+ * Build an odd-symmetric soft-clipping transfer curve
+ *
+ * Properties:
+ * - `f(0) = 0`
+ * - Normalized to [-1, 1]
+ * - Exactly `tanh(k * x) / tanh(k)` when bias = 0
+ */
+const softClipCurve = (n: number, k: number, bias: number): Float32Array<ArrayBuffer> => {
+  const offset = Math.tanh(k * bias);
+  const norm = Math.max(Math.tanh(k * (1 + bias)) - offset, Math.tanh(k * (1 - bias)) + offset);
+  const curve = new Float32Array(n);
+  for (let i = 0; i < n; ++i) {
+    const x = (2 * i) / (n - 1) - 1;
+    curve[i] = (Math.tanh(k * (x + bias)) - offset) / norm;
+  }
+  return curve;
+};

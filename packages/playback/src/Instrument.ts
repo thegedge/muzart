@@ -5,6 +5,9 @@ import { WrappedNode } from "./nodes/WrappedNode";
 import type { InstrumentOptions, SourceGenerator } from "./types";
 import { noteDurationInSeconds, noteValueToSeconds } from "./utils/durations";
 
+/** How long after a note ends to wait before disconnecting its nodes */
+const NOTE_TEARDOWN_GRACE_MS = 250;
+
 /**
  * Base class for any playback instrument.
  */
@@ -24,6 +27,9 @@ export class Instrument {
   /** A generator that can produce a source node for a given note */
   protected sourceGenerator: SourceGenerator;
 
+  /** Optional processing chain shared by all notes */
+  protected bus: AudioNode;
+
   constructor(options: InstrumentOptions) {
     this.context = options.context;
     this.instrument = options.instrument;
@@ -41,6 +47,15 @@ export class Instrument {
     );
 
     this.destination.connect(options.destination ?? new WrappedNode(this.context.destination));
+
+    // Optional shared chain (e.g. an amp) that all notes are summed into, ahead of the output compressor
+    const maybeBus = this.sourceGenerator.createBus?.();
+    if (maybeBus) {
+      this.bus = maybeBus;
+      this.bus.connect(this.destination);
+    } else {
+      this.bus = this.destination;
+    }
   }
 
   /**
@@ -85,13 +100,21 @@ export class Instrument {
         return;
       }
 
+      // Additional nodes we will track and dispose of once the note is done
+      // TODO set up a context or some other thing that tracks all of the nodes so we don't need to
+      //      track all of this ourselves
+      const extraNodes: globalThis.AudioNode[] = [];
+
       const source = this.sourceGenerator.generate(note);
       const pitchParam = source.pitch;
       if (pitchParam) {
         this.maybeBend(note, pitchParam, tempo, startTime);
 
         const vibrato = this.maybeVibrato(note, startTime);
-        const effects: globalThis.AudioNode[] = compact([vibrato]);
+        if (vibrato) {
+          extraNodes.push(vibrato.oscillator, vibrato.amplitude);
+        }
+        const effects: globalThis.AudioNode[] = compact([vibrato?.amplitude]);
         if (effects.length > 0) {
           effects.reduce((previousNode, node) => {
             previousNode.connect(node);
@@ -104,16 +127,25 @@ export class Instrument {
       if (gain) {
         const gainNode = new WrappedNode(new GainNode(this.context, { gain }));
         source.connect(gainNode);
-        gainNode.connect(this.destination);
+        gainNode.connect(this.bus);
+        extraNodes.push(gainNode.raw);
       } else {
-        source.connect(this.destination);
+        source.connect(this.bus);
       }
       source.start(startTime, durationSecs !== undefined || tieType === undefined ? duration : undefined);
 
       this.activeSources.set(note, source);
       source.on("ended", () => {
-        source.dispose();
-        this.activeSources.delete(note);
+        if (this.activeSources.get(note) === source) {
+          this.activeSources.delete(note);
+        }
+
+        setTimeout(() => {
+          source.dispose();
+          for (const node of extraNodes) {
+            node.disconnect();
+          }
+        }, NOTE_TEARDOWN_GRACE_MS);
       });
     } catch (e) {
       console.warn(e);
@@ -128,6 +160,15 @@ export class Instrument {
    */
   get currentTime() {
     return this.context.currentTime;
+  }
+
+  /**
+   * Stop this instrument and dispose of any associated nodes, including the shared bus.
+   */
+  dispose() {
+    this.stop();
+    this.bus.dispose();
+    this.destination.dispose();
   }
 
   /**
@@ -150,7 +191,7 @@ export class Instrument {
     oscillator.connect(amplitude);
     oscillator.start(when);
 
-    return amplitude;
+    return { oscillator, amplitude };
   }
 
   /**

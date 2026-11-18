@@ -28,15 +28,24 @@ export abstract class AudioNode extends Emittery<{ ended: never }> {
   abstract get pitch(): AudioParam | undefined;
 
   /**
-   * Get the raw, Web Audio node used as output for this node.
+   * Get the Web Audio node used as output for this node.
    */
   abstract get raw(): WebAudioNode;
+
+  /**
+   * Get the Web Audio node used as input for this node.
+   *
+   * @defaultValue {@link raw}
+   */
+  get rawInput(): WebAudioNode {
+    return this.raw;
+  }
 
   /**
    * Connect to the given destination node.
    */
   connect(destination: AudioNode): this {
-    this.raw.connect(destination.raw);
+    this.raw.connect(destination.rawInput);
     return this;
   }
 
