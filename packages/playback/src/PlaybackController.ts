@@ -121,6 +121,9 @@ export class PlaybackController {
     try {
       console.time("loading soundfont");
       this.sourceGeneratorFactory = (yield SoundFont.fromSource(source)) as SoundFont;
+      for (const instrument of Object.values(this.instruments_)) {
+        instrument?.dispose();
+      }
       this.instruments_ = {};
       console.timeEnd("loading soundfont");
     } catch (error) {
