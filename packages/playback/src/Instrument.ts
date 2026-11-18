@@ -151,6 +151,14 @@ export class Instrument {
   }
 
   /**
+   * Stop this instrument and dispose of any associated nodes.
+   */
+  dispose() {
+    this.stop();
+    this.destination.dispose();
+  }
+
+  /**
    * Return an audio node that can adjust `playbackRate` of the source node for vibrato, if the note has it.
    */
   protected maybeVibrato(note: notation.Note, when: number) {
