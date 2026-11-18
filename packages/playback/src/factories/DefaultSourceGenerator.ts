@@ -94,7 +94,7 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
       },
     },
 
-    // TODO eventually make these different
+    // TODO eventually make this distortion, and have overdrive be different
 
     30: {
       name: "Electric Guitar (overdrive)",
@@ -106,7 +106,6 @@ export class DefaultSourceGenerator implements SourceGeneratorFactory {
             options: {
               impulseType: "white-noise",
               filterType: "gaussian",
-              detuneCents: 3,
             },
           });
 
