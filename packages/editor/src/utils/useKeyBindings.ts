@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition -- bindings[binding] could be undefined, but I don't want to type it that way right now*/
-import console from "console";
 import { useEffect } from "react";
 import { IS_MAC } from "./platform";
 
