@@ -296,9 +296,6 @@ importers:
       mobx:
         specifier: ^6.13.3
         version: 6.13.3
-      svg-path-properties:
-        specifier: ^1.3.0
-        version: 1.3.0
     devDependencies:
       '@types/lodash-es':
         specifier: ^4.17.12

@@ -38,7 +38,7 @@ export class CompositeNode extends AudioNode {
     super();
     this.#chain = nodes;
     this.#input = nodes[0];
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Chain ensures at least two elements, so it must be set
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `Chain` ensures at least two elements
     this.#output = nodes.at(-1)!;
 
     // The source (input) is what knows when the sound is over (e.g. a worklet's duration timer)
@@ -66,6 +66,11 @@ export class CompositeNode extends AudioNode {
 
   dispose(): void {
     this.#chain.forEach((node) => node.dispose());
+  }
+
+  /** @override */
+  get rawInput(): WebAudioNode {
+    return this.#input.raw;
   }
 
   get raw(): WebAudioNode {

@@ -27,6 +27,9 @@ export class Instrument {
   /** A generator that can produce a source node for a given note */
   protected sourceGenerator: SourceGenerator;
 
+  /** Optional processing chain shared by all notes */
+  protected bus: AudioNode;
+
   constructor(options: InstrumentOptions) {
     this.context = options.context;
     this.instrument = options.instrument;
@@ -44,6 +47,15 @@ export class Instrument {
     );
 
     this.destination.connect(options.destination ?? new WrappedNode(this.context.destination));
+
+    // Optional shared chain (e.g. an amp) that all notes are summed into, ahead of the output compressor
+    const maybeBus = this.sourceGenerator.createBus?.();
+    if (maybeBus) {
+      this.bus = maybeBus;
+      this.bus.connect(this.destination);
+    } else {
+      this.bus = this.destination;
+    }
   }
 
   /**
@@ -115,10 +127,10 @@ export class Instrument {
       if (gain) {
         const gainNode = new WrappedNode(new GainNode(this.context, { gain }));
         source.connect(gainNode);
-        gainNode.connect(this.destination);
+        gainNode.connect(this.bus);
         extraNodes.push(gainNode.raw);
       } else {
-        source.connect(this.destination);
+        source.connect(this.bus);
       }
       source.start(startTime, durationSecs !== undefined || tieType === undefined ? duration : undefined);
 
@@ -151,10 +163,11 @@ export class Instrument {
   }
 
   /**
-   * Stop this instrument and dispose of any associated nodes.
+   * Stop this instrument and dispose of any associated nodes, including the shared bus.
    */
   dispose() {
     this.stop();
+    this.bus.dispose();
     this.destination.dispose();
   }
 
