@@ -100,7 +100,7 @@ export class PluckedString implements SourceGenerator {
       throw new Error("Frequency parameter not found");
     }
 
-    frequency.setValueAtTime(note.pitch.toFrequency() * randomDetuneRatio(this.options.detuneCents ?? 3), 0);
+    frequency.value = note.pitch.toFrequency() * randomDetuneRatio(this.options.detuneCents ?? 3);
 
     return new AudioWorkletNode(karplusStrongNode);
   }
